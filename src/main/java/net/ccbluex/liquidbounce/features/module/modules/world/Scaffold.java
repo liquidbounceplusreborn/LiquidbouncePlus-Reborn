@@ -60,7 +60,7 @@ public class Scaffold extends Module {
      */
     // Global settings
     private final BoolValue towerEnabled = new BoolValue("EnableTower", false);
-    private final ListValue towerModeValue = new ListValue("TowerMode", new String[] {
+    private final ListValue towerModeValue = new ListValue("TowerMode", new String[]{
             "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus"
     }, "Motion", () -> towerEnabled.get());
     private final ListValue towerPlaceModeValue = new ListValue("Tower-PlaceTiming", new String[]{"Pre", "Post"}, "Post");
@@ -126,7 +126,7 @@ public class Scaffold extends Module {
     private final BoolValue stayAutoBlock = new BoolValue("StayAutoBlock", false, () -> !autoBlockMode.get().equalsIgnoreCase("off"));
 
     //make sprint compatible with tower.add sprint tricks
-    public final ListValue sprintModeValue = new ListValue("SprintMode",  new String[]{"Same", "Ground", "Air", "Hypixel", "Off"}, "Off");
+    public final ListValue sprintModeValue = new ListValue("SprintMode", new String[]{"Same", "Ground", "Air", "Hypixel", "Off"}, "Off");
     // Basic stuff
     private final BoolValue swingValue = new BoolValue("Swing", true);
     private final BoolValue downValue = new BoolValue("Down", false);
@@ -181,7 +181,7 @@ public class Scaffold extends Module {
 
     private final BoolValue keepRotationValue = new BoolValue("KeepRotation", false, () -> rotationsValue.get());
     private final IntegerValue keepLengthValue = new IntegerValue("KeepRotationLength", 0, 0, 20, () -> rotationsValue.get() && !keepRotationValue.get());
-    private final ListValue placeConditionValue = new ListValue("Place-Condition", new String[] {"Air", "FallDown", "NegativeMotion", "Always"}, "Always");
+    private final ListValue placeConditionValue = new ListValue("Place-Condition", new String[]{"Air", "FallDown", "NegativeMotion", "Always"}, "Always");
 
     private final BoolValue rotationStrafeValue = new BoolValue("RotationStrafe", false);
 
@@ -280,10 +280,14 @@ public class Scaffold extends Module {
     public void onEnable() {
         if (mc.thePlayer == null) return;
 
-        if (sprintModeValue.get().equalsIgnoreCase("Hypixel")){
+        if (sprintModeValue.get().equalsIgnoreCase("Hypixel")) {
+            if (mc.thePlayer.onGround) ;
             mc.thePlayer.setSprinting(false);
             mc.thePlayer.motionX *= 1.19;
             mc.thePlayer.motionZ *= 1.19;
+        } else {
+            mc.thePlayer.motionX = 0;
+            mc.thePlayer.motionZ = 0;
         }
 
         progress = 0;
@@ -444,6 +448,16 @@ public class Scaffold extends Module {
             mc.gameSettings.keyBindSneak.pressed = false;
             mc.thePlayer.setSprinting(false);
             return;
+        }
+
+        if (sprintModeValue.get().equalsIgnoreCase("Hypixel")) {
+            if (mc.thePlayer.onGround) ;
+            mc.thePlayer.setSprinting(false);
+            mc.thePlayer.motionX *= 1.19;
+            mc.thePlayer.motionZ *= 1.19;
+        } else {
+            mc.thePlayer.motionX = 0;
+            mc.thePlayer.motionZ = 0;
         }
 
         mc.timer.timerSpeed = timerValue.get();
