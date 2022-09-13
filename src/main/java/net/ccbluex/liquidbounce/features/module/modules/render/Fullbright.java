@@ -46,7 +46,7 @@ public class Fullbright extends Module {
                         mc.gameSettings.gammaSetting++;
                     break;
                 case "nightvision":
-                    mc.thePlayer.addPotionEffect(new PotionEffect(Potion.nightVision.id, 1337, 1));
+                    mc.thePlayer.addPotionEffect(new PotionEffect(Potion.nightVision.id, 5200, 1));
                     break;
             }
         }else if(prevGamma != -1) {
