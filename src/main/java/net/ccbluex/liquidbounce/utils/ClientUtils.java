@@ -22,6 +22,10 @@ public final class ClientUtils extends MinecraftInstance {
 
     private static final Logger logger = LogManager.getLogger("LiquidBounce");
 
+    public static void logError(String msg) {
+        logger.error(msg);
+    }
+
     private static Field fastRenderField;
 
     static {

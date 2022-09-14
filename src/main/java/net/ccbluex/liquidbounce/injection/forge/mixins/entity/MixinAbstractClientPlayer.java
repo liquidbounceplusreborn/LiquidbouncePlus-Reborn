@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.misc.NameProtect;
 import net.ccbluex.liquidbounce.features.module.modules.render.NoFOV;
-import net.ccbluex.liquidbounce.features.module.modules.render.Cape;
+import net.ccbluex.liquidbounce.ui.cape.GuiCape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -28,10 +28,12 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getCape(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
-        final Cape capeMod = LiquidBounce.moduleManager.getModule(Cape.class);
-        if (capeMod.getState() && Objects.equals(getGameProfile().getName(), Minecraft.getMinecraft().thePlayer.getGameProfile().getName())) {
-            callbackInfoReturnable.setReturnValue(capeMod.getCapeLocation(capeMod.getStyleValue().get()));
-        }
+
+        if(!getUniqueID().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()))
+            return;
+
+        if(GuiCape.INSTANCE.getNowCape()!=null)
+            callbackInfoReturnable.setReturnValue(GuiCape.INSTANCE.getNowCape().getCape());
     }
 
     @Inject(method = "getFovModifier", at = @At("HEAD"), cancellable = true)
