@@ -280,16 +280,6 @@ public class Scaffold extends Module {
     public void onEnable() {
         if (mc.thePlayer == null) return;
 
-        if (sprintModeValue.get().equalsIgnoreCase("Hypixel")) {
-            if (mc.thePlayer.onGround) ;
-            mc.thePlayer.setSprinting(false);
-            mc.thePlayer.motionX *= 1.19;
-            mc.thePlayer.motionZ *= 1.19;
-        } else {
-            mc.thePlayer.motionX = 0;
-            mc.thePlayer.motionZ = 0;
-        }
-
         progress = 0;
         spinYaw = 0;
         launchY = (int) mc.thePlayer.posY;
@@ -451,13 +441,10 @@ public class Scaffold extends Module {
         }
 
         if (sprintModeValue.get().equalsIgnoreCase("Hypixel")) {
-            if (mc.thePlayer.onGround) ;
-            mc.thePlayer.setSprinting(false);
-            mc.thePlayer.motionX *= 1.19;
-            mc.thePlayer.motionZ *= 1.19;
-        } else {
-            mc.thePlayer.motionX = 0;
-            mc.thePlayer.motionZ = 0;
+            if (mc.thePlayer.onGround);
+                mc.thePlayer.setSprinting(true);
+                mc.thePlayer.motionX *= 1.0;
+                mc.thePlayer.motionZ *= 1.0;
         }
 
         mc.timer.timerSpeed = timerValue.get();
@@ -816,6 +803,11 @@ public class Scaffold extends Module {
             if (placeableDelay.get())
                 delayTimer.reset();
             return;
+        }
+        if (sprintModeValue.get().equalsIgnoreCase("Hypixel")) {
+            mc.thePlayer.setSprinting(false);
+            mc.thePlayer.motionX *= 1.0;
+            mc.thePlayer.motionZ *= 1.0;
         }
 
         if (!towerActivation() && (!delayTimer.hasTimePassed(delay) || (smartDelay.get() && mc.rightClickDelayTimer > 0) || ((sameYValue.get() || ((autoJumpValue.get() || (smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed.class).getState())) && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump))) && launchY - 1 != (int) (towerActive ? towerPlace : targetPlace).getVec3().yCoord)))
