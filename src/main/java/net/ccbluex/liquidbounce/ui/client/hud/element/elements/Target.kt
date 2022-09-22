@@ -77,7 +77,7 @@ class Target : Element() {
             styleList.forEach { valueList.addAll(it.values) }
             return super.values.toMutableList() + valueList
         }
-
+    //
     init {
         styleValue = ListValue("Style", addStyles(
             LiquidBounce(this),

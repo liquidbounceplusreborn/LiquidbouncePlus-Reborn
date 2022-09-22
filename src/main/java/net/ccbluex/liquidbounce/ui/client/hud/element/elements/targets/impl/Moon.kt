@@ -42,7 +42,7 @@ class Moon(inst: Target): TargetStyle("Moon", inst, true) {
                 .coerceAtLeast(118)
                 .toFloat()
 
-        // Draw rect box
+        // Draw rect box 1
             RenderUtils.drawRect(0F, 0F, width + 40.5f, 51.5F, Color(0,0,0, 100).rgb)
             RenderUtils.drawBorder(0F, 0F, width + 40.5f, 51.5F, 2f, getColor(Color.black.darker().darker()).rgb)
 

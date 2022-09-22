@@ -50,7 +50,7 @@ class MoonLatest(inst: Target): TargetStyle("MoonLatest", inst, true) {
         RenderUtils.drawRect(37F, 25.5F, 45F + 69F, 26.5F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth).darker(0.3F)).rgb)
         RenderUtils.drawRect(37F, 25.5F, 45F + barLength, 26.5F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth)).rgb)
 
-        // Draw rect
+        // Draw rect 1
         RenderUtils.drawRect(0F, 0F, width, 1F, RenderUtils.skyRainbow(0, 1f,1f))
 
         // Armor bar
