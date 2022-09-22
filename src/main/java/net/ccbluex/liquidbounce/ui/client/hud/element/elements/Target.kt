@@ -85,7 +85,9 @@ class Target : Element() {
             Rice(this),
             Exhibition(this),
             Remix(this),
-            Slowly(this)
+            Slowly(this),
+            Moon(this),
+            MoonLatest(this)
         ).toTypedArray(), "LiquidBounce")
     }
 
