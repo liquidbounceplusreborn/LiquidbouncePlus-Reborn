@@ -482,20 +482,20 @@ public abstract class MixinItemRenderer {
                                 }
                                 case "Exhibition1": {
                                     float var9 = MathHelper.sin(MathHelper.sqrt_float(this.mc.thePlayer.getSwingProgress(partialTicks)) * 3.1415927F);
-                                    GL11.glTranslated(-0.03D, 0.25D, 0.0D);
+                                    GL11.glTranslated(-0.03D, 0.23D, 0.0D);
                                     this.transformFirstPersonItem(f / 2.5F, 0.0f);
                                     GlStateManager.rotate(-var9 * 25.0F /1.0F, var9 / 2.0F, 1.0F, 4.0F);
                                     GlStateManager.rotate(-var9 * 45.0F, 1.0F, var9 / 3.0F, -0.0F);
-                                    this.func_178103_d(-0.07F);
+                                    this.func_178103_d(-0.05F);
                                     break;
                                 }
                                 case "Exhibition2": {
                                     this.transformFirstPersonItem(f / 2.0F, 0.0F);
-                                    GL11.glTranslated(-0.07D, 0.61D, 0.0D);
+                                    GL11.glTranslated(-0.07D, 0.58D, 0.0D);
                                     float var9 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
                                     GL11.glRotated(-var9 * 60.0F / 2.0F, -var9 / 2.0F, -0.0F, 9.0F);
                                     GL11.glRotated(-var9 * 53.0F, 1.0F, var9 / 2.0F, -0.0F);
-                                    this.func_178103_d(-0.07F);
+                                    this.func_178103_d(-0.05F);
                                     break;
                                 }
                                 case "Tifality": {
