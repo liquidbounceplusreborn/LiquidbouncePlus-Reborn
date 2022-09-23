@@ -20,7 +20,7 @@ public class Animations extends Module {
     public static final ListValue Sword = new ListValue("Style", new String[]{
             "Normal", "SlideDown1", "SlideDown2" , "Slide", "Minecraft", "Remix", "Exhibition1", "Exhibition2",
             "Avatar", "Swang", "Tap1", "Tap2", "Poke", "Push1", "Push2" , "Up" , "Shield", "Akrien", "VisionFX", "Swong","Swank",
-            "SigmaOld", "ETB", "Rotate360", "SmoothFloat", "Strange" , "Reverse", "Zoom", "Move", "Stab", "Jello", "Test", "1.7", "Flux", "Stella", "Tifality"
+            "SigmaOld", "ETB", "Rotate360", "SmoothFloat", "Strange" , "Reverse", "Zoom", "Move", "Stab", "Jello", "1.7", "Flux", "Stella", "Tifality"
         }, "Minecraft");
 
     // item general scale
