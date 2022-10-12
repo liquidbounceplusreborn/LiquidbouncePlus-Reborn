@@ -19,6 +19,11 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spartan.SpartanYPort;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.HypixelStable;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixDynamic;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixMultiply;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixSemiStrafe;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixTimerBalance;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
@@ -98,10 +103,16 @@ public class Speed extends Module {
             // Verus
             new VerusHop(),
             new VerusLowHop(),
-            new VerusHard()
+            new VerusHard(),
+
+            // Matrix
+            new MatrixSemiStrafe(),
+            new MatrixTimerBalance(),
+            new MatrixMultiply(),
+            new MatrixDynamic()
     };
 
-    public final ListValue typeValue = new ListValue("Type", new String[]{"NCP", "AAC", "Spartan", "Spectre", "Hypixel", "Verus", "Custom", "Other"}, "NCP") {
+    public final ListValue typeValue = new ListValue("Type", new String[]{"NCP", "AAC", "Spartan", "Spectre", "Hypixel", "Verus", "Matrix", "Custom", "Other"}, "NCP") {
 
         @Override
         protected void onChange(final String oldValue, final String newValue) {
@@ -226,6 +237,21 @@ public class Speed extends Module {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             if(getState())
+                onEnable();
+        }
+    };
+
+    public final ListValue matrixModeValue = new ListValue("Matrix-Mode", new String[]{"MatrixSemiStrafe", "MatrixTimerBalance", "MatrixMultiply", "MatrixDynamic"}, "MatrixSemiStrafe", () -> typeValue.get().equalsIgnoreCase("matrix")) {
+
+        @Override
+        protected void onChange(final String oldValue, final String newValue) {
+            if (getState())
+                onDisable();
+        }
+
+        @Override
+        protected void onChanged(final String oldValue, final String newValue) {
+            if (getState())
                 onEnable();
         }
     };
@@ -411,9 +437,13 @@ public class Speed extends Module {
             case "Verus":
             mode = verusModeValue.get();
             break;
+            case "Matrix":
+            mode = matrixModeValue.get();
+            break;
         }
         return mode;
     }
+
 
     public String getModeName() {
         String mode = "";
@@ -443,6 +473,9 @@ public class Speed extends Module {
             break;
             case "Other":
             mode = otherModeValue.get();
+            break;
+            case "Matrix":
+            mode = matrixModeValue.get();
             break;
         }
         return mode;
