@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ thank-you ]
+    branches: [ main ]
   pull_request:
-    branches: [ thank-you ]
+    branches: [ main ]
 
 jobs:
   build:
