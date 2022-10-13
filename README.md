@@ -1,4 +1,4 @@
-# LiquidBounce+ (Officially Discontinued.)
+# LiquidBounce+ (Unofficially Reborn.)
 A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
 
 ### Thank you.
