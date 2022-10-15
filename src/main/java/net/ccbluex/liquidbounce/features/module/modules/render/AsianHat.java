@@ -108,7 +108,7 @@ public class AsianHat extends Module {
             float yaw = RenderUtils.interpolate(entity.rotationYaw, entity.prevRotationYaw, partialTicks);
             float pitch = RenderUtils.interpolate(entity.rotationPitch, entity.prevRotationPitch, partialTicks);
 
-            if (rotMod != null) {
+            if (rotMod != null && rotMod.shouldRotate()) {
                 yaw = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getYaw() : 
                         (RotationUtils.serverRotation != null ? RotationUtils.serverRotation.getYaw() : yaw);
                 pitch = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getPitch() : 
