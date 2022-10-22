@@ -113,8 +113,8 @@ public class FluxClassic extends GuiScreen {
             Fonts.fontSFUI35.drawString(getCategoryIcon(categories[i]),windowsX + 10, windowsY + i * 25 + 47,categories[i] == currentCategory && (lastHeight > animationHeight ? animationHeight >= lastHeight : animationHeight <= lastHeight) ? -1 : new Color(160,160,160).getRGB());
             Fonts.fontSFUI35.drawString(categories[i].getDisplayName(),windowsX + 30, windowsY + i * 25 + 45, categories[i] == currentCategory && (lastHeight > animationHeight ? animationHeight >= lastHeight : animationHeight <= lastHeight) ? -1 : new Color(160,160,160).getRGB());
         }
-        Fonts.fontSFUI35.drawString("q", windowsX + 5, windowsY + 10, new Color(70, 92 ,255).getRGB());
-        Fonts.fontSFUI35.drawString("Overflow", windowsX + 10 + Fonts.fontSFUI35.getStringWidth("q"), windowsY + 10, new Color(70, 92, 255).getRGB());
+        Fonts.fontSFUI35.drawString("", windowsX + 5, windowsY + 10, new Color(70, 92 ,255).getRGB());
+        Fonts.fontSFUI35.drawString("Liquidbounce+", windowsX + 10 + Fonts.fontSFUI35.getStringWidth("q"), windowsY + 10, new Color(70, 92, 255).getRGB());
         RenderUtils.drawGradientSideways(windowsX + 100,windowsY, windowsX + 110, windowsY + 250, new Color(0, 0, 0, 70).getRGB(),new Color(241, 241, 241, 30).getRGB());
         RenderUtils.startGlScissor((int)windowsX + 100 + (int)animationPosition, (int)windowsY + 20, 400 - (int) animationPosition, 230 - (int) animationPosition);//Start Scissor Box
         float moduleY = translate.getY();
@@ -433,21 +433,21 @@ public class FluxClassic extends GuiScreen {
     private String getCategoryIcon(ModuleCategory category) {
         switch(category) {
             case COMBAT:
-                return "a";
+                return "";
             case MOVEMENT:
-                return "b";
+                return "";
             case RENDER:
-                return "c";
+                return "";
             case PLAYER:
-                return "d";
+                return "";
             case WORLD:
-                return "e";
+                return "";
             case MISC:
-                return "g";
+                return "";
             case EXPLOIT:
-                return "f";
+                return "";
             default:
-                return "m";
+                return "";
         }
     }
     //Check cursor hovered something.

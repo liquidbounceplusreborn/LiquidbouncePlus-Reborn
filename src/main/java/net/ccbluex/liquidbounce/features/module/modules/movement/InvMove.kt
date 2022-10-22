@@ -24,13 +24,11 @@ import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.client.settings.GameSettings
-import net.minecraft.network.play.client.C0FPacketConfirmTransaction
-import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 @ModuleInfo(name = "InvMove", spacedName = "Inv Move", description = "Allows you to walk while an inventory is opened.", category = ModuleCategory.MOVEMENT)
 class InvMove : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Vanilla", "Silent", "Blink","Hypixel"), "Vanilla")
+    val modeValue = ListValue("Mode", arrayOf("Vanilla", "Silent", "Blink"), "Vanilla")
     val sprintModeValue = ListValue("InvSprint", arrayOf("AACAP", "Stop", "Keep"), "Keep")
     val noDetectableValue = BoolValue("NoDetectable", false)
     val noMoveClicksValue = BoolValue("NoMoveClicks", false)
@@ -45,7 +43,7 @@ class InvMove : Module() {
             mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
             mc.gameSettings.keyBindRight.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindRight)
             mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
-            if (!speedModule.state || !speedModule.getMode().modeName.equals("Legit", true))
+            if (!speedModule.state || !speedModule.getMode().modeName.equals("Legit", true)) 
                 mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
             mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint)
 
@@ -68,23 +66,17 @@ class InvMove : Module() {
             event.cancelEvent()
     }
 
-@EventTarget
-fun onPacket(event: PacketEvent) {
-    val packet = event.packet
-    when (modeValue.get().toLowerCase()) {
-        "silent" -> if (packet is C16PacketClientStatus && packet.getStatus() == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) event.cancelEvent()
-        "blink" -> if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer) && packet is C03PacketPlayer) {
-            event.cancelEvent()
-            playerPackets.add(packet)
-        }
-        "hypixel" -> if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu) {
-            if (packet is S08PacketPlayerPosLook)
-                event.cancelEvent();
-            if (packet is C0FPacketConfirmTransaction)
-                event.cancelEvent();
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+        when (modeValue.get().toLowerCase()) {
+            "silent" -> if (packet is C16PacketClientStatus && packet.getStatus() == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) event.cancelEvent()
+            "blink" -> if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer) && packet is C03PacketPlayer) {
+                event.cancelEvent()
+                playerPackets.add(packet)
+            }
         }
     }
-}
 
     override fun onDisable() {
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindForward) || mc.currentScreen != null)
@@ -101,8 +93,8 @@ fun onPacket(event: PacketEvent) {
             mc.gameSettings.keyBindSprint.pressed = false
     }
 
-    fun isAACAP(): Boolean = sprintModeValue.get().equals(
-        "aacap",
-        true
-    ) && mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)
+    fun isAACAP(): Boolean = sprintModeValue.get().equals("aacap", true) && mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)
+
+    override val tag: String?
+        get() = modeValue.get()
 }
