@@ -9,13 +9,10 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.Config
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.SettingsUtils
-import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import java.io.File
 import java.io.IOException
-
-import org.apache.commons.io.FileUtils
 
 class LocalThemeCommand : Command("localtheme", arrayOf("localthememanager", "ltm", "localthemes")) {
     /**
@@ -38,7 +35,7 @@ class LocalThemeCommand : Command("localtheme", arrayOf("localthememanager", "lt
                                 LiquidBounce.hud = Config(theme).toHUD()
                                 LiquidBounce.isStarting = false
                                 chat("§6Theme applied successfully.")
-                                LiquidBounce.hud.addNotification(Notification("Updated HUD Theme.", Notification.Type.SUCCESS))
+                                LiquidBounce.hud.addNotification(Notification("Updated HUD Theme.", NotifyType.SUCCESS))
                                 playEdit()
                             } catch (e: IOException) {
                                 e.printStackTrace()

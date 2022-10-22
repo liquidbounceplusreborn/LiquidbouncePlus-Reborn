@@ -25,6 +25,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.M
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixSemiStrafe;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixTimerBalance;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -376,7 +377,7 @@ public class Speed extends Module {
             return;
 
         if (bypassWarning.get() && typeValue.get().equalsIgnoreCase("hypixel") && !LiquidBounce.moduleManager.getModule(Disabler.class).getState()) {
-            LiquidBounce.hud.addNotification(new Notification("Disabler is OFF! Disable this notification in settings.", Notification.Type.WARNING, 3000L));
+            LiquidBounce.hud.addNotification(new Notification("Disabler is OFF! Disable this notification in settings.", NotifyType.WARNING, 3000, 500));
         }
 
         mc.timer.timerSpeed = 1F;

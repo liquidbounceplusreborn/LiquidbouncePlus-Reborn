@@ -9,11 +9,11 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 //import net.minecraft.network.play.server.S02PacketChat
@@ -65,7 +65,7 @@ class AntiBan : Module() {
             val entity = mc.theWorld.getEntityByID(packet.entityId)
             if (entity != null && (obStaffs.contains(entity.name) || obStaffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification("${entity.name} / effect.", Notification.Type.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("${entity.name} / effect.", NotifyType.ERROR))
                     mc.thePlayer.sendChatMessage("/leave")
                     detected = true
                 }
@@ -75,7 +75,7 @@ class AntiBan : Module() {
             val entity = mc.theWorld.getEntityByID(packet.entityId)
             if (entity != null && (obStaffs.contains(entity.name) || obStaffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification("${entity.name} / teleport.", Notification.Type.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("${entity.name} / teleport.", NotifyType.ERROR))
                     mc.thePlayer.sendChatMessage("/leave")
                     detected = true
                 }
@@ -85,7 +85,7 @@ class AntiBan : Module() {
             val entity = mc.theWorld.getEntityByID(packet.entityId)
             if (entity != null && (obStaffs.contains(entity.name) || obStaffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification("${entity.name} / properties.", Notification.Type.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("${entity.name} / properties.", NotifyType.ERROR))
                     mc.thePlayer.sendChatMessage("/leave")
                     detected = true
                 }
@@ -95,7 +95,7 @@ class AntiBan : Module() {
             val entity = mc.theWorld.getEntityByID(packet.getEntityID())
             if (entity != null && (obStaffs.contains(entity.name) || obStaffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification("${entity.name} / animation.", Notification.Type.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("${entity.name} / animation.", NotifyType.ERROR))
                     mc.thePlayer.sendChatMessage("/leave")
                     detected = true
                 }
@@ -106,7 +106,7 @@ class AntiBan : Module() {
 
             if (entity != null && (obStaffs.contains(entity.name) || obStaffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification("${entity.name} / update.", Notification.Type.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("${entity.name} / update.", NotifyType.ERROR))
                     mc.thePlayer.sendChatMessage("/leave")
                     detected = true
                 }
@@ -117,7 +117,7 @@ class AntiBan : Module() {
 
             if (entity != null && (obStaffs.contains(entity.name) || obStaffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification("${entity.name} / status.", Notification.Type.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("${entity.name} / status.", NotifyType.ERROR))
                     mc.thePlayer.sendChatMessage("/leave")
                     detected = true
                 }
@@ -128,7 +128,7 @@ class AntiBan : Module() {
 
             if (entity != null && (obStaffs.contains(entity.name) || obStaffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification("${entity.name} / head.", Notification.Type.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("${entity.name} / head.", NotifyType.ERROR))
                     mc.thePlayer.sendChatMessage("/leave")
                     detected = true
                 }
@@ -139,7 +139,7 @@ class AntiBan : Module() {
 
             if (entity != null && (obStaffs.contains(entity.name) || obStaffs.contains(entity.displayName.unformattedText))) {
                 if (!detected) {
-                    LiquidBounce.hud.addNotification(Notification("${entity.name} / nbt.", Notification.Type.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("${entity.name} / nbt.", NotifyType.ERROR))
                     mc.thePlayer.sendChatMessage("/leave")
                     detected = true
                 }

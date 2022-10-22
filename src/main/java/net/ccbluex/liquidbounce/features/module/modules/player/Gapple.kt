@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -79,7 +80,7 @@ class Gapple : Module() {
             }
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
         }else if (warn)
-            LiquidBounce.hud.addNotification(Notification("No Gapple were found in hotbar.", Notification.Type.ERROR))
+            LiquidBounce.hud.addNotification(Notification("No Gapple were found in hotbar.", NotifyType.ERROR))
     }
 
     override val tag: String

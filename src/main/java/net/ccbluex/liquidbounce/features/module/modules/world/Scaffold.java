@@ -16,6 +16,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import java.awt.Color;
+
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
 import net.ccbluex.liquidbounce.utils.*;
@@ -289,7 +291,7 @@ public class Scaffold extends Module {
 
         if (autoDisableSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed.class).getState()) {
             LiquidBounce.moduleManager.getModule(Speed.class).setState(false);
-            LiquidBounce.hud.addNotification(new Notification("Speed is disabled to prevent flags/errors.", Notification.Type.WARNING));
+            LiquidBounce.hud.addNotification(new Notification("Speed is disabled to prevent flags/errors.", NotifyType.WARNING, 1500, 500));
         }
 
         faceBlock = false;

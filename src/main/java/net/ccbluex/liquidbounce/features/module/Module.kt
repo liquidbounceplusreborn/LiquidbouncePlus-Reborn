@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.features.module.modules.misc.AutoDisable.DisableEvent
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.AnimationHelper
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.Translate
 import net.ccbluex.liquidbounce.value.*
@@ -91,7 +92,7 @@ open class Module : MinecraftInstance(), Listenable {
                     2 -> (if (value) LiquidBounce.tipSoundManager.enableSound else LiquidBounce.tipSoundManager.disableSound).asyncPlay(LiquidBounce.moduleManager.toggleVolume)
                 }
                 if (LiquidBounce.moduleManager.shouldNotify)
-                    LiquidBounce.hud.addNotification(Notification("${if (value) "Enabled" else "Disabled"} §r$name", if (value) Notification.Type.SUCCESS else Notification.Type.ERROR, 1000L))
+                    LiquidBounce.hud.addNotification(Notification("${if (value) "Enabled" else "Disabled"} §r$name", if (value) NotifyType.SUCCESS else NotifyType.ERROR, 1000))
             }
 
             // Call on enabled or disabled

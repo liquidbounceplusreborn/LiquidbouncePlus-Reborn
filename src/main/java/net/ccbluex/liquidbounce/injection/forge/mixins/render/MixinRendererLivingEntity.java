@@ -8,12 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 import co.uk.hexeption.utils.OutlineUtils;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer;
-import net.ccbluex.liquidbounce.features.module.modules.render.Chams;
-import net.ccbluex.liquidbounce.features.module.modules.render.ESP;
-import net.ccbluex.liquidbounce.features.module.modules.render.ESP2D;
-import net.ccbluex.liquidbounce.features.module.modules.render.ThreeDTags;
-import net.ccbluex.liquidbounce.features.module.modules.render.NoRender;
-import net.ccbluex.liquidbounce.features.module.modules.render.TrueSight;
+import net.ccbluex.liquidbounce.features.module.modules.render.*;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -25,6 +20,10 @@ import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EnumPlayerModelParts;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -41,6 +40,37 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
     @Shadow
     protected ModelBase mainModel;
+
+    @Shadow
+    protected <T extends EntityLivingBase> float getDeathMaxRotation(T p_getDeathMaxRotation_1_) {
+        return 90.0F;
+    }
+
+    /**
+     * @author
+     * @reason
+     */
+    @Overwrite
+    protected <T extends EntityLivingBase> void rotateCorpse(T p_rotateCorpse_1_, float p_rotateCorpse_2_, float p_rotateCorpse_3_, float p_rotateCorpse_4_) {
+        final PlayerEdit playerEdit = LiquidBounce.moduleManager.getModule(PlayerEdit.class);
+        GlStateManager.rotate(180.0F - p_rotateCorpse_3_, 0.0F, 1.0F, 0.0F);
+        if (p_rotateCorpse_1_.deathTime > 0) {
+            float f = ((float)p_rotateCorpse_1_.deathTime + p_rotateCorpse_4_ - 1.0F) / 20.0F * 1.6F;
+            f = MathHelper.sqrt_float(f);
+            if (f > 1.0F) {
+                f = 1.0F;
+            }
+
+            GlStateManager.rotate(f * this.getDeathMaxRotation(p_rotateCorpse_1_), 0.0F, 0.0F, 1.0F);
+        } else {
+            String s = EnumChatFormatting.getTextWithoutFormattingCodes(p_rotateCorpse_1_.getName());
+            if (s != null && (PlayerEdit.rotatePlayer.get() && p_rotateCorpse_1_.equals(Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.get(PlayerEdit.class).getState()) && (!(p_rotateCorpse_1_ instanceof EntityPlayer) || ((EntityPlayer)p_rotateCorpse_1_).isWearing(EnumPlayerModelParts.CAPE))) {
+                GlStateManager.translate(0.0F, p_rotateCorpse_1_.height + 0.1F, 0.0F);
+                GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
+            }
+        }
+
+    }
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {

@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
@@ -254,7 +255,7 @@ public class LongJump extends Module {
             int enderPearlSlot = getPearlSlot();
             if (pearlState == 0) {
                 if (enderPearlSlot == -1) {
-                    LiquidBounce.hud.addNotification(new Notification("You don't have any ender pearl!", Notification.Type.ERROR));
+                    LiquidBounce.hud.addNotification(new Notification("You don't have any ender pearl!", NotifyType.ERROR, 1500, 500));
                     pearlState = -1;
                     this.setState(false);
                     return;

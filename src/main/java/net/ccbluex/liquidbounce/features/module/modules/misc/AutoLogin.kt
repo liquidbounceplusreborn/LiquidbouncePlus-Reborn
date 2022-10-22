@@ -8,17 +8,15 @@ package net.ccbluex.liquidbounce.features.module.modules.misc
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S45PacketTitle
-import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C01PacketChatMessage
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.TextValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 
@@ -50,7 +48,7 @@ class AutoLogin : Module() {
 		else if (regTimer.hasTimePassed(delayValue.get().toLong())) {
 			for (packet in registerPackets)
 				PacketUtils.sendPacketNoEvent(packet)
-			LiquidBounce.hud.addNotification(Notification("Successfully registered.", Notification.Type.SUCCESS))
+			LiquidBounce.hud.addNotification(Notification("Successfully registered.", NotifyType.SUCCESS))
 			registerPackets.clear()
 			regTimer.reset()
 		}
@@ -60,7 +58,7 @@ class AutoLogin : Module() {
 		else if (logTimer.hasTimePassed(delayValue.get().toLong())) {
 			for (packet in loginPackets)
 				PacketUtils.sendPacketNoEvent(packet)
-			LiquidBounce.hud.addNotification(Notification("Successfully logined.", Notification.Type.SUCCESS))
+			LiquidBounce.hud.addNotification(Notification("Successfully logined.", NotifyType.SUCCESS))
 			loginPackets.clear()
 			logTimer.reset()
 		}
