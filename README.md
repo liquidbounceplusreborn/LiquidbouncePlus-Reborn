@@ -3,6 +3,7 @@ A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft F
 
 ### Thank you.
 No long shit, I just want to say thank you to everyone.
+Discord:https://discord.com/invite/YHNeWawsP4
 
 ### LiquidBounce's contact info
 Website: https://liquidbounce.net \
