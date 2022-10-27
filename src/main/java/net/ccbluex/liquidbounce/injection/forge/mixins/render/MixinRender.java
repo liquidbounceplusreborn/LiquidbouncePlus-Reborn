@@ -16,12 +16,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Render.class)
-public abstract class MixinRender {  
+public abstract class MixinRender {
     @Shadow
     protected abstract <T extends Entity> boolean bindEntityTexture(T entity);
 
     @Inject(method = "doRender", at = @At("HEAD"))
-    private void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
+    private void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
+        LiquidBounce.eventManager.callEvent(new RenderEntityEvent(entity, x, y, z, entityYaw, partialTicks));
+    }
+
+    public void doRenders(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
         LiquidBounce.eventManager.callEvent(new RenderEntityEvent(entity, x, y, z, entityYaw, partialTicks));
     }
 }
