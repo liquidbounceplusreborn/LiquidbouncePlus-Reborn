@@ -27,6 +27,7 @@ open class HUD : MinecraftInstance() {
 
         val elements = arrayOf(
                 Armor::class.java,
+                SessionInfo::class.java,
                 Arraylist::class.java,
                 Effects::class.java,
                 Image::class.java,

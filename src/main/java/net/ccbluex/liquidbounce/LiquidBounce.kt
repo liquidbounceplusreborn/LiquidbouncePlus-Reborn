@@ -68,6 +68,8 @@ object LiquidBounce {
 
     var lastTick : Long = 0L
 
+    var playTimeStart: Long = 0
+
     /**
      * Execute if client will be started
      */
