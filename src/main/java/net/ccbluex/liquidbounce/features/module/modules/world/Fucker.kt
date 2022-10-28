@@ -296,7 +296,7 @@ object Fucker : Module() {
         if (ignoreFirstBlockValue.get() && nearestBlock != null) {
             if (firstPos == null) {
                 firstPos = nearestBlock
-                LiquidBounce.hud.addNotification(Notification("Found first ${getBlockName(targetID)} block at ${nearestBlock!!.x.toInt()} ${nearestBlock!!.y.toInt()} ${nearestBlock!!.z.toInt()}", NotifyType.SUCCESS))
+                LiquidBounce.hud.addNotification(Notification("Fucker","Found first ${getBlockName(targetID)} block at ${nearestBlock!!.x.toInt()} ${nearestBlock!!.y.toInt()} ${nearestBlock!!.z.toInt()}", NotifyType.SUCCESS))
             }
             if (targetID == 26 && firstPos != null && firstPosBed == null) { // bed
                 when (true) {
@@ -306,7 +306,7 @@ object Fucker : Module() {
                     getBlock(firstPos!!.north()) != null && Block.getIdFromBlock(getBlock(firstPos!!.north())!!) == 26 -> firstPosBed = firstPos!!.north()
                 }
                 if (firstPosBed != null)
-                    LiquidBounce.hud.addNotification(Notification("Found second Bed block at ${firstPosBed!!.x.toInt()} ${firstPosBed!!.y.toInt()} ${firstPosBed!!.z.toInt()}", NotifyType.SUCCESS))
+                    LiquidBounce.hud.addNotification(Notification("Fucker","Found second Bed block at ${firstPosBed!!.x.toInt()} ${firstPosBed!!.y.toInt()} ${firstPosBed!!.z.toInt()}", NotifyType.SUCCESS))
             }
         }
         return if (ignoreFirstBlockValue.get() && (firstPos == nearestBlock || firstPosBed == nearestBlock)) null else nearestBlock

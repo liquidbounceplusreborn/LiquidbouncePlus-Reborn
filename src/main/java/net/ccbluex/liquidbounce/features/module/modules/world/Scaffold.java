@@ -291,7 +291,7 @@ public class Scaffold extends Module {
 
         if (autoDisableSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed.class).getState()) {
             LiquidBounce.moduleManager.getModule(Speed.class).setState(false);
-            LiquidBounce.hud.addNotification(new Notification("Speed is disabled to prevent flags/errors.", NotifyType.WARNING, 1500, 500));
+            LiquidBounce.hud.addNotification(new Notification("Speed","Speed is disabled to prevent flags/errors.", NotifyType.WARNING,1500,500));
         }
 
         faceBlock = false;

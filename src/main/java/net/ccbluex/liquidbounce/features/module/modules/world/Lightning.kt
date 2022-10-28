@@ -37,7 +37,7 @@ class Lightning : Module() {
                 ClientUtils.displayChatMessage("§7[§6§lLightning§7] §fDetected lightning at §a$x $y $z §7($dist blocks away)")
             
             if (notifValue.get())
-                LiquidBounce.hud.addNotification(Notification("Lightning [$x $y $z] ($dist blocks away)", NotifyType.WARNING, 3000))
+                LiquidBounce.hud.addNotification(Notification("Lightning","Lightning [$x $y $z] ($dist blocks away)", NotifyType.WARNING, 3000))
         }
     }
 }

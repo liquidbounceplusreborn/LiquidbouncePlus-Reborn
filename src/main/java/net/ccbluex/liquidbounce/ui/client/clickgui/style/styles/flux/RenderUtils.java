@@ -31,6 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.Math.*;
+import static net.ccbluex.liquidbounce.utils.render.GLUtils.glDisable;
+import static net.ccbluex.liquidbounce.utils.render.GLUtils.glEnable;
 import static net.minecraft.client.renderer.RenderGlobal.drawSelectionBoundingBox;
 import static org.lwjgl.opengl.GL11.*;
 

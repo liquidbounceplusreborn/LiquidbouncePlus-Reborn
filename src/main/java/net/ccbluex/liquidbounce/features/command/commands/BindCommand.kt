@@ -30,7 +30,7 @@ class BindCommand : Command("bind", emptyArray()) {
 
             // Response to user
             chat("Bound module §a§l${module.name}§3 to key §a§l${Keyboard.getKeyName(key)}§3.")
-            LiquidBounce.hud.addNotification(Notification("Bound ${module.name} to ${Keyboard.getKeyName(key)}", NotifyType.SUCCESS))
+            LiquidBounce.hud.addNotification(Notification("Bind","Bound ${module.name} to ${Keyboard.getKeyName(key)}", NotifyType.SUCCESS))
             playEdit()
             return
         }

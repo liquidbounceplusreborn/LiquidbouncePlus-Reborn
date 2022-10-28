@@ -33,7 +33,7 @@ class AutoDisable : Module() {
         LiquidBounce.moduleManager.modules.filter { it.autoDisables.contains(enumDisable) && it.state }.forEach { it.toggle(); moduleNames++ }
 
         if (moduleNames <= 0) return
-        LiquidBounce.hud.addNotification(Notification("Disabled $moduleNames ${if (moduleNames > 1) "modules" else "module"} due to ${ when (enumDisable) {
+        LiquidBounce.hud.addNotification(Notification("AutoDisable","Disabled $moduleNames ${if (moduleNames > 1) "modules" else "module"} due to ${ when (enumDisable) {
                 DisableEvent.FLAG -> "unexpected teleport"
                 DisableEvent.WORLD_CHANGE -> "world change"
                 else -> "game ended"}}.", NotifyType.INFO, 1000))

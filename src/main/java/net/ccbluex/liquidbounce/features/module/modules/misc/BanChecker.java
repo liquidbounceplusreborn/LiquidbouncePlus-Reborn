@@ -66,9 +66,9 @@ public class BanChecker extends Module {
                                 
                                 if (LiquidBounce.moduleManager.getModule(BanChecker.class).getState() && alertValue.get() && mc.thePlayer != null && (!serverCheckValue.get() || isOnHypixel()))
                                     if (STAFF_BAN_LAST_MIN > 0)
-                                        LiquidBounce.hud.addNotification(new Notification("Staffs banned " + STAFF_BAN_LAST_MIN + " players in the last minute!", STAFF_BAN_LAST_MIN > 3 ? NotifyType.ERROR : NotifyType.WARNING, 1500, alertTimeValue.get() * 500));
+                                        LiquidBounce.hud.addNotification(new Notification("BanChecker","Staffs banned " + STAFF_BAN_LAST_MIN + " players in the last minute!", STAFF_BAN_LAST_MIN > 3 ? NotifyType.ERROR : NotifyType.WARNING, 1500, alertTimeValue.get() * 500));
                                     else
-                                        LiquidBounce.hud.addNotification(new Notification("Staffs didn't ban any player in the last minute.", NotifyType.SUCCESS, 1500, alertTimeValue.get() * 500));
+                                        LiquidBounce.hud.addNotification(new Notification("BanChecker","Staffs didn't ban any player in the last minute.", NotifyType.SUCCESS, 1500, alertTimeValue.get() * 500));
 
                                 // watchdog ban doesnt matter, open an issue if you want to add it.
                             }
@@ -76,7 +76,7 @@ public class BanChecker extends Module {
                             e.printStackTrace();
 
                             if (LiquidBounce.moduleManager.getModule(BanChecker.class).getState() && alertValue.get() && mc.thePlayer != null && (!serverCheckValue.get() || isOnHypixel()))
-                                LiquidBounce.hud.addNotification(new Notification("An error has occurred.", NotifyType.ERROR, 1500, alertTimeValue.get() * 500));
+                                LiquidBounce.hud.addNotification(new Notification("BanChecker","An error has occurred.", NotifyType.ERROR, 1500, alertTimeValue.get() * 500));
                         }
                         checkTimer.reset();
                     }

@@ -94,7 +94,7 @@ public class BowJump extends Module {
         case 0:
             int slot = getBowSlot();
             if (slot < 0 || !mc.thePlayer.inventory.hasItem(Items.arrow)) {
-                LiquidBounce.hud.addNotification(new Notification("No arrows or bow found in your inventory!", NotifyType.ERROR, 1500, 500));
+                LiquidBounce.hud.addNotification(new Notification("BowJump","No arrows or bow found in your inventory!", NotifyType.ERROR, 1500, 500));
                 forceDisable = true;
                 bowState = 5;
                 break; // nothing to shoot

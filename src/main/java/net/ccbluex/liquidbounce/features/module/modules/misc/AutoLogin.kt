@@ -48,7 +48,7 @@ class AutoLogin : Module() {
 		else if (regTimer.hasTimePassed(delayValue.get().toLong())) {
 			for (packet in registerPackets)
 				PacketUtils.sendPacketNoEvent(packet)
-			LiquidBounce.hud.addNotification(Notification("Successfully registered.", NotifyType.SUCCESS))
+			LiquidBounce.hud.addNotification(Notification("AutoLogin","Successfully registered.", NotifyType.SUCCESS))
 			registerPackets.clear()
 			regTimer.reset()
 		}
@@ -58,7 +58,7 @@ class AutoLogin : Module() {
 		else if (logTimer.hasTimePassed(delayValue.get().toLong())) {
 			for (packet in loginPackets)
 				PacketUtils.sendPacketNoEvent(packet)
-			LiquidBounce.hud.addNotification(Notification("Successfully logined.", NotifyType.SUCCESS))
+			LiquidBounce.hud.addNotification(Notification("AutoLogin","Successfully logined.", NotifyType.SUCCESS))
 			loginPackets.clear()
 			logTimer.reset()
 		}

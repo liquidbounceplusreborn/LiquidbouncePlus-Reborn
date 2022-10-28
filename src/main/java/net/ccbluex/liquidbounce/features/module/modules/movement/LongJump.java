@@ -255,7 +255,7 @@ public class LongJump extends Module {
             int enderPearlSlot = getPearlSlot();
             if (pearlState == 0) {
                 if (enderPearlSlot == -1) {
-                    LiquidBounce.hud.addNotification(new Notification("You don't have any ender pearl!", NotifyType.ERROR, 1500, 500));
+                    LiquidBounce.hud.addNotification(new Notification("LongJump","You don't have any ender pearl!", NotifyType.ERROR, 1500, 500));
                     pearlState = -1;
                     this.setState(false);
                     return;
