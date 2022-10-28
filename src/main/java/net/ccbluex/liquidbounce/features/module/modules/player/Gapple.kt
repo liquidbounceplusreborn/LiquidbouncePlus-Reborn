@@ -80,7 +80,7 @@ class Gapple : Module() {
             }
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
         }else if (warn)
-            LiquidBounce.hud.addNotification(Notification("No Gapple were found in hotbar.", NotifyType.ERROR))
+            LiquidBounce.hud.addNotification(Notification("Gapple","No Gapple were found in hotbar.", NotifyType.ERROR))
     }
 
     override val tag: String
