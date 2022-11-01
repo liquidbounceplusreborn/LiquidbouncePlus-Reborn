@@ -1,91 +1,80 @@
 
+/*
+ * LiquidBounce+ Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/WYSI-Foundation/LiquidBouncePlus/
+ *
+ * This code was taken from UnlegitMC/FDPClient. Please credit them when using this code in your repository.
+ */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
+import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacketNoEvent
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "SpeedMine", spacedName = "Speed Mine", description = "Mines blocks faster.", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "SpeedMine", spacedName = "Speed Mine", description = "Mines blocks faster. (pasted edition)", category = ModuleCategory.WORLD)
 class SpeedMine : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Hypixel", "Packet", "NewPacket", "NewPacket2"),"NewPacket")
-    private val breakSpeedValue = FloatValue("BreakSpeed", 1.2F, 1F, 2.0F)
-    private var bzs = false
-    private var bzx = 0.0F
-    var blockPos: BlockPos? = null
+    private val speed = FloatValue("Speed", 1.5f, 1f, 3f)
     private var facing: EnumFacing? = null
+    private var pos: BlockPos? = null
+    private var boost = false
+    private var damage = 0f
     @EventTarget
-    fun onPacket(event: PacketEvent) {
-        if(modeValue.get() == "Hypixel") {
-            if (event.packet is C07PacketPlayerDigging && !mc.playerController.extendedReach()
-                    && mc.playerController != null) {
-                val c07PacketPlayerDigging = event.packet
-                if (c07PacketPlayerDigging.status == C07PacketPlayerDigging.Action.START_DESTROY_BLOCK) {
-                    bzs = true
-                    blockPos = c07PacketPlayerDigging.position
-                    facing = c07PacketPlayerDigging.facing
-                    bzx = 0.0f
-                } else if (c07PacketPlayerDigging.status == C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK
-                        || c07PacketPlayerDigging.status == C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK) {
-                    bzs = false
-                    blockPos = null
-                    facing = null
+    fun onMotion(e: MotionEvent) {
+        if (e.eventState == EventState.PRE) {
+            mc.playerController.blockHitDelay = 0
+            if (pos != null && boost) {
+                val blockState = mc.theWorld.getBlockState(pos) ?: return
+                damage += try {
+                    blockState.block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, pos) * speed.get()
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                    return
+                }
+                if (damage >= 1) {
+                    try {
+                        mc.theWorld.setBlockState(pos, Blocks.air.defaultState, 11)
+                    } catch (ex: Exception) {
+                        ex.printStackTrace()
+                        return
+                    }
+                    sendPacketNoEvent(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+                            pos,
+                            facing
+                        )
+                    )
+                    damage = 0f
+                    boost = false
                 }
             }
         }
     }
 
     @EventTarget
-    private fun onUpdate(e: UpdateEvent) {
-        when(modeValue.get()) {
-            "Packet" -> {
-                if(mc.playerController.curBlockDamageMP in 0.1F..0.19F)
-                    mc.playerController.curBlockDamageMP += 0.1F
-                if(mc.playerController.curBlockDamageMP in 0.4F..0.49F)
-                    mc.playerController.curBlockDamageMP += 0.1F
-                if(mc.playerController.curBlockDamageMP in 0.8F..0.89F)
-                    mc.playerController.curBlockDamageMP += 0.9F
-            }
-            "NewPacket" -> {
-                if(mc.playerController.curBlockDamageMP == 0.1F)
-                    mc.playerController.curBlockDamageMP += 0.1F
-                if(mc.playerController.curBlockDamageMP == 0.4F)
-                    mc.playerController.curBlockDamageMP += 0.1F
-                if(mc.playerController.curBlockDamageMP == 0.7F)
-                    mc.playerController.curBlockDamageMP += 0.1F
-            }
-            "NewPacket2" -> {
-                if(mc.playerController.curBlockDamageMP == 0.2F)
-                    mc.playerController.curBlockDamageMP += 0.1F
-                if(mc.playerController.curBlockDamageMP == 0.4F)
-                    mc.playerController.curBlockDamageMP += 0.1F
-                if(mc.playerController.curBlockDamageMP == 0.6F)
-                    mc.playerController.curBlockDamageMP += 0.1F
-                if(mc.playerController.curBlockDamageMP == 0.8F)
-                    mc.playerController.curBlockDamageMP += 0.2F
-            }
-            "Hypixel" -> {
-                if (mc.playerController.extendedReach()) {
-                    mc.playerController.blockHitDelay = 0
-                } else if (bzs) {
-                    val block = mc.theWorld.getBlockState(blockPos).block
-                    bzx += (block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, blockPos).toDouble() * breakSpeedValue.get()).toFloat()
-                    if (bzx >= 1.0F) {
-                        mc.theWorld.setBlockState(blockPos, Blocks.air.defaultState, 11)
-                        mc.netHandler.networkManager.sendPacket(C07PacketPlayerDigging(
-                                C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, blockPos, facing))
-                        bzx = 0.0F
-                        bzs = false
-                    }
-                }
+    fun onPacket(e: PacketEvent) {
+        if (e.packet is C07PacketPlayerDigging) {
+            val packet = e.packet
+            if (packet.status == C07PacketPlayerDigging.Action.START_DESTROY_BLOCK) {
+                boost = true
+                pos = packet.position
+                facing = packet.facing
+                damage = 0f
+            } else if ((packet.status == C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK) or (packet.status == C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK)) {
+                boost = false
+                pos = null
+                facing = null
             }
         }
     }
