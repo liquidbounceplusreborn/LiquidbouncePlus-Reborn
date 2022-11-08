@@ -8,65 +8,55 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.MathHelper
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import kotlin.math.cos
-import kotlin.math.sin
 
-@ModuleInfo(name = "TargetStrafe", spacedName = "Target Strafe", description = "Strafe around your target. (Require Fly or Speed to be enabled)", category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "TargetStrafe", description = "Strafe around your target. (Require Fly or Speed to be enabled)", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
-    val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f, "m")
+    val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
     private val render = BoolValue("Render", true)
     private val alwaysRender = BoolValue("Always-Render", true, { render.get() })
     private val modeValue = ListValue("KeyMode", arrayOf("Jump", "None"), "None")
-    private val safewalk = BoolValue("SafeWalk", true)
-    val thirdPerson = BoolValue("ThirdPerson", true)
     private val colorType = ListValue("Color", arrayOf("Custom", "Dynamic", "Rainbow", "Rainbow2", "Sky", "Fade", "Mixer"), "Custom")
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
+    private val safewalk = BoolValue("SafeWalk", true)
+    val thirdPerson = BoolValue("ThirdPerson", true)
+    val onground = BoolValue("GroundStrafe",false)
+    private val accuracyValue = IntegerValue("Accuracy", 0, 0, 59)
+    private val thicknessValue = FloatValue("Thickness", 1F, 0.1F, 5F)
+    private val mixerSecondsValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
+    private val outLine = BoolValue("Outline", true)
     private val saturationValue = FloatValue("Saturation", 0.7F, 0F, 1F)
     private val brightnessValue = FloatValue("Brightness", 1F, 0F, 1F)
-    private val mixerSecondsValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
-    private val accuracyValue = IntegerValue("Accuracy", 0, 0, 59)
-    private val thicknessValue = FloatValue("Thickness", 1F, 0.1F, 7F)
-    private val outLine = BoolValue("Outline", true)
-    private val expMode = BoolValue("ExperimentalSpeed", false)
-    private lateinit var killAura: KillAura
-    private lateinit var speed: Speed
-    private lateinit var fly: Fly
 
-    var direction = 1
-    var lastView = 0
-    var hasChangedThirdPerson = true
+    private  var killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
+    private  var speed=LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
+    private  var fly =LiquidBounce.moduleManager.getModule(Fly::class.java) as Fly
 
-    var hasModifiedMovement = false
+    var direction: Int = 1
+    var lastView: Int = 0
+    var hasChangedThirdPerson: Boolean = true
 
-    override fun onInitialize() {
-        killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
-        speed = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
-        fly = LiquidBounce.moduleManager.getModule(Fly::class.java) as Fly
-    }
+
 
     override fun onEnable() {
         hasChangedThirdPerson = true
@@ -89,7 +79,7 @@ class TargetStrafe : Module() {
         if (event.eventState == EventState.PRE) {
             if (mc.thePlayer.isCollidedHorizontally)
                 this.direction = -this.direction
-            
+
             if (mc.gameSettings.keyBindLeft.pressed)
                 this.direction = 1
 
@@ -98,56 +88,27 @@ class TargetStrafe : Module() {
         }
     }
 
-    @EventTarget(priority = 2)
+    @EventTarget
     fun onMove(event: MoveEvent) {
         if (canStrafe) {
-            if (!hasModifiedMovement) strafe(event, MovementUtils.getSpeed(event.x, event.z))
-            
+            strafe(event, MovementUtils.getSpeed(event.x, event.z))
+
             if (safewalk.get() && checkVoid())
                 event.isSafeWalk = true
         }
-        hasModifiedMovement = false
     }
 
     fun strafe(event: MoveEvent, moveSpeed: Double) {
         if (killAura.target == null) return
 
-        val target = killAura.target!!
+        val target = killAura.target
         val rotYaw = RotationUtils.getRotationsEntity(target).yaw
 
-        val forward = if (mc.thePlayer.getDistanceToEntity(target) <= radius.get()) 0.0 else 1.0
-        val strafe = direction.toDouble()
-        var modifySpeed = if (expMode.get()) maximizeSpeed(target, moveSpeed, killAura.rangeValue.get()) else moveSpeed
-        
-        MovementUtils.setSpeed(event, modifySpeed, rotYaw, strafe, forward)
-        hasModifiedMovement = true
-    }
+        if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
+            MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 0.0)
+        else
+            MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 1.0)
 
-    fun getData(): Array<Float> {
-        if (killAura.target == null) return arrayOf(0F, 0F, 0F)
-
-        val target = killAura.target!!
-        val rotYaw = RotationUtils.getRotationsEntity(target).yaw
-
-        val forward = if (mc.thePlayer.getDistanceToEntity(target) <= radius.get()) 0F else 1F
-        val strafe = direction.toFloat()
-
-        return arrayOf(rotYaw, strafe, forward)
-    }
-
-    fun getMovingYaw(): Float {
-        val dt = getData()
-        return MovementUtils.getRawDirectionRotation(dt[0], dt[1], dt[2])
-    }
-
-    fun getMovingDir(): Double {
-        val dt = getData()
-        return MovementUtils.getDirectionRotation(dt[0], dt[1], dt[2])
-    }
-
-    private fun maximizeSpeed(ent: EntityLivingBase, speed: Double, range: Float): Double {
-        mc.thePlayer ?: return 0.0
-        return if (mc.thePlayer.getDistanceToEntity(ent) <= radius.get()) speed.coerceIn(0.0, range.toDouble() / 20.0) else speed
     }
 
     val keyMode: Boolean
@@ -158,7 +119,7 @@ class TargetStrafe : Module() {
         }
 
     val canStrafe: Boolean
-        get() = (state && (speed.state || fly.state) && killAura.state && killAura.target != null && !mc.thePlayer.isSneaking && keyMode)
+        get() = (state && (speed.state || fly.state || onground.get()) && killAura.state && killAura.target != null && !mc.thePlayer.isSneaking && keyMode)
 
     private fun checkVoid(): Boolean {
         for (x in -1..0) {
@@ -187,7 +148,6 @@ class TargetStrafe : Module() {
         }
         return true
     }
-
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         val target = killAura.target
@@ -256,3 +216,4 @@ class TargetStrafe : Module() {
         }
     }
 }
+
