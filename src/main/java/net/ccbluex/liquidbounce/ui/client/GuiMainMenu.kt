@@ -31,7 +31,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
 
 
-        Fonts.fontSFUI40.drawCenteredString("Liquidbounce+",(width / 2).toFloat(), (bHeight - 20).toFloat(),Color.WHITE.rgb,false)
+        Fonts.fontSFUI40.drawCenteredString("Liquidbounce+ reborn",(width / 2).toFloat(), (bHeight - 20).toFloat(),Color.WHITE.rgb,false)
         super.drawScreen(mouseX, mouseY, partialTicks)
 
         GL11.glPushMatrix()

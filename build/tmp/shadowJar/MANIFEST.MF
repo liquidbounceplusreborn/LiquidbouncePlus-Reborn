@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+TweakOrder: 0
+MixinConfigs: liquidbounce.forge.mixins.json
+ModSide: CLIENT
+FMLCorePluginContainsFMLMod: true
+FMLAT: liquidbounce_at.cfg
+TweakClass: org.spongepowered.asm.launch.MixinTweaker
+ForceLoadAsMod: true
+FMLCorePlugin: net.ccbluex.liquidbounce.injection.forge.TransformerLoa
+ der
+
