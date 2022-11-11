@@ -586,6 +586,15 @@ public abstract class MixinItemRenderer {
                                         rotateItemAnim();
                                     break;
                                 }
+                                case "Slide1": {
+                                    this.transformFirstPersonItem(f, 0.0f);
+                                    float var91 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
+                                    this.func_178103_d(0.2F);
+                                    GlStateManager.translate(-0.4f, 0.3f, 0.0f);
+                                    GlStateManager.rotate(-var91 * 35.0f, -8.0f, -0.0f, 9.0f);
+                                    GlStateManager.rotate(-var91 * 70.0f, 1.0f, -0.4f, -0.0f);
+                                    break;
+                                }
                                 case "Up": {
                                     this.up(f, f1);
                                     if (Animations.RotateItems.get()) 
