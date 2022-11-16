@@ -30,6 +30,7 @@ public class FileManager extends MinecraftInstance {
     public final File settingsDir = new File(dir, "settings");
     public final File soundsDir = new File(dir, "sounds");
     public final File themesDir = new File(dir, "themes");
+    public final File ClickguiDir = new File(dir, "clickgui");
 
     public final List<ProfilesConfig> profilesConfigs = new ArrayList<>();
 
