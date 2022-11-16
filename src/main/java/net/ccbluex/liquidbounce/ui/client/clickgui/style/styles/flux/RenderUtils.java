@@ -775,25 +775,25 @@ public final class RenderUtils extends MinecraftInstance {
         float f5 = (float) (col2 >> 16 & 255) / 255.0f;
         float f6 = (float) (col2 >> 8 & 255) / 255.0f;
         float f7 = (float) (col2 & 255) / 255.0f;
-        GL11.glEnable((int) 3042);
-        GL11.glDisable((int) 3553);
-        GL11.glBlendFunc((int) 770, (int) 771);
-        GL11.glEnable((int) 2848);
+        GL11.glEnable(3042);
+        GL11.glDisable(3553);
+        GL11.glBlendFunc(770, 771);
+        GL11.glEnable(2848);
         GL11.glShadeModel(7425);
         GL11.glPushMatrix();
         GL11.glBegin(7);
-        GL11.glColor4f((float) f1, (float) f2, (float) f3, (float) f);
-        GL11.glVertex2d((double) left, (double) bottom);
-        GL11.glVertex2d((double) right, (double) bottom);
-        GL11.glColor4f((float) f5, (float) f6, (float) f7, (float) f4);
-        GL11.glVertex2d((double) right, (double) top);
-        GL11.glVertex2d((double) left, (double) top);
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glVertex2d(left, bottom);
+        GL11.glVertex2d(right, bottom);
+        GL11.glColor4f(f5, f6, f7, f4);
+        GL11.glVertex2d(right, top);
+        GL11.glVertex2d(left, top);
         GL11.glEnd();
         GL11.glPopMatrix();
-        GL11.glEnable((int) 3553);
-        GL11.glDisable((int) 3042);
-        GL11.glDisable((int) 2848);
-        GL11.glShadeModel((int) 7424);
+        GL11.glEnable(3553);
+        GL11.glDisable(3042);
+        GL11.glDisable(2848);
+        GL11.glShadeModel(7424);
         Gui.drawRect(0, 0, 0, 0, 0);
     }
 
@@ -1589,5 +1589,16 @@ public final class RenderUtils extends MinecraftInstance {
             glEnable(cap);
         else
             glDisable(cap);
+    }
+    public static void doGlScissor(int x, int y, int width, int height2) {
+        int scaleFactor = 1;
+        int k = mc.gameSettings.guiScale;
+        if (k == 0) {
+            k = 1000;
+        }
+        while (scaleFactor < k && mc.displayWidth / (scaleFactor + 1) >= 320 && mc.displayHeight / (scaleFactor + 1) >= 240) {
+            ++scaleFactor;
+        }
+        GL11.glScissor((x * scaleFactor), (mc.displayHeight - (y + height2) * scaleFactor), (width * scaleFactor), (height2 * scaleFactor));
     }
 }
