@@ -36,7 +36,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.roundToInt
 
-@ModuleInfo(name = "3DFTags", spacedName = "3D Tags", description = "Changes the scale of the nametags so you can always read them.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "3DTags", spacedName = "3D Tags", description = "Changes the scale of the nametags so you can always read them.", category = ModuleCategory.RENDER)
 class ThreeDTags : Module() {
     private val healthValue = BoolValue("Health", true)
     private val healthBarValue = BoolValue("Bar", true)
