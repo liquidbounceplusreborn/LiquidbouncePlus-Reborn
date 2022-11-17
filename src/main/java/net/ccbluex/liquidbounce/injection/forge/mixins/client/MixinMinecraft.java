@@ -273,75 +273,75 @@ public abstract class MixinMinecraft {
             final Nuker nuker = LiquidBounce.moduleManager.getModule(Nuker.class);
             final EntityLivingBase entityLivingBase = (EntityLivingBase) renderViewEntity;
             final float yaw = RotationUtils.serverRotation.getYaw();
-            if (killAura.getTarget() != null && Rotations.getHeadValue().get()) {
+            if (killAura.getTarget() != null && Rotations.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (killAura.getTarget() != null && Rotations.getBodyValue().get()) {
+            if (killAura.getTarget() != null && Rotations.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (scaffold.getState() && Rotations.getHeadValue().get()) {
+            if (scaffold.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (scaffold.getState() && Rotations.getBodyValue().get()) {
+            if (scaffold.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (disabler.getCanRenderInto3D() && Rotations.getHeadValue().get()) {
+            if (disabler.getCanRenderInto3D() && Rotations.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (disabler.getCanRenderInto3D() && Rotations.getBodyValue().get()) {
+            if (disabler.getCanRenderInto3D() && Rotations.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (spinBot.getState() && Rotations.getHeadValue().get()) {
+            if (spinBot.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (spinBot.getState() && Rotations.getBodyValue().get()) {
+            if (spinBot.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (chestAura.getState() && Rotations.getHeadValue().get()) {
+            if (chestAura.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (chestAura.getState() && Rotations.getBodyValue().get()) {
+            if (chestAura.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (fly.getState() && Rotations.getHeadValue().get()) {
+            if (fly.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (fly.getState() && Rotations.getBodyValue().get()) {
+            if (fly.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (bowAimbot.getState() && Rotations.getHeadValue().get()) {
+            if (bowAimbot.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (bowAimbot.getState() && Rotations.getBodyValue().get()) {
+            if (bowAimbot.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (fucker.getState() && Rotations.getHeadValue().get()) {
+            if (fucker.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (fucker.getState() && Rotations.getBodyValue().get()) {
+            if (fucker.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (nuker.getState() && Rotations.getHeadValue().get()) {
+            if (nuker.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (nuker.getState() && Rotations.getBodyValue().get()) {
+            if (nuker.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
@@ -366,7 +366,7 @@ public abstract class MixinMinecraft {
     private void rightClickMouse(final CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT);
 
-        final FastPlace fastPlace = (FastPlace) LiquidBounce.moduleManager.getModule(FastPlace.class);
+        final FastPlace fastPlace = LiquidBounce.moduleManager.getModule(FastPlace.class);
 
         if (fastPlace.getState())
             rightClickDelayTimer = fastPlace.getSpeedValue().get();

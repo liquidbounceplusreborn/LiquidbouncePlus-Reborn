@@ -22,7 +22,8 @@ class Rotations : Module() {
 
     val headValue = BoolValue("Head", true)
     val bodyValue = BoolValue("Body", true)
-    var mode = ListValue("Mode", arrayOf("No","FakeBody"),"FakeBody")
+    val fakeValue = BoolValue("FakeBody", true)
+//    var mode = ListValue("Mode", arrayOf("No","FakeBody"),"FakeBody")
     var R = FloatValue("R", 255f, 0f, 255f)
     var G = FloatValue("G", 255f, 0f, 255f)
     var B = FloatValue("B", 255f, 0f, 255f)

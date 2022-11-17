@@ -236,7 +236,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 }
 
 
-                Rotations rotations = (Rotations) LiquidBounce.moduleManager.getModule(Rotations.class);
+                Rotations rotations = LiquidBounce.moduleManager.getModule(Rotations.class);
                 final int blend = 3042;
                 final int depth = 2929;
                 final int srcAlpha = 770;
@@ -244,10 +244,10 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 final int polygonOffsetLine = 10754;
                 final int texture2D = 3553;
                 final int lighting = 2896; // 250.36f / 255, 250.36f / 255, 250.36f / 255, 4.64f / 255
-                float renderpitch = (Minecraft.getMinecraft().gameSettings.thirdPersonView != 0 && rotations.getState() && rotations.getMode().get().equals("FakeBody") && entity == Minecraft.getMinecraft().thePlayer) ? (entity.prevRotationPitch + (((RotationUtils.serverRotation.getPitch() != 0.0f) ? RotationUtils.serverRotation.getPitch() : entity.rotationPitch) - entity.prevRotationPitch)) : (entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks);
-                float renderyaw = (Minecraft.getMinecraft().gameSettings.thirdPersonView != 0 && rotations.getState() && rotations.getMode().get().equals("FakeBody") && entity == Minecraft.getMinecraft().thePlayer) ? (entity.prevRotationYaw + (((RotationUtils.serverRotation.getYaw() != 0.0f) ? RotationUtils.serverRotation.getYaw() : entity.rotationYaw) - entity.prevRotationYaw)) : (entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks);
+                float renderpitch = (Minecraft.getMinecraft().gameSettings.thirdPersonView != 0 && rotations.getState() && rotations.getFakeValue().get() && entity == Minecraft.getMinecraft().thePlayer) ? (entity.prevRotationPitch + (((RotationUtils.serverRotation.getPitch() != 0.0f) ? RotationUtils.serverRotation.getPitch() : entity.rotationPitch) - entity.prevRotationPitch)) : (entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks);
+                float renderyaw = (Minecraft.getMinecraft().gameSettings.thirdPersonView != 0 && rotations.getState() && rotations.getFakeValue().get() && entity == Minecraft.getMinecraft().thePlayer) ? (entity.prevRotationYaw + (((RotationUtils.serverRotation.getYaw() != 0.0f) ? RotationUtils.serverRotation.getYaw() : entity.rotationYaw) - entity.prevRotationYaw)) : (entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks);
 
-                if (entity == Minecraft.getMinecraft().thePlayer && rotations.getState() && rotations.getMode().get().equals("FakeBody") && rotations.shouldRotate()) {
+                if (entity == Minecraft.getMinecraft().thePlayer && rotations.getState() && rotations.getFakeValue().get() && rotations.shouldRotate()) {
                     GlStateManager.pushMatrix();
                     GlStateManager.enableBlend();
                     GlStateManager.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -255,7 +255,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                     GlStateManager.popMatrix();
                 }
 
-                if (rotations.getState() && rotations.getMode().get().equals("FakeBody") && entity.equals(Minecraft.getMinecraft().thePlayer) && rotations.shouldRotate()) {
+                if (rotations.getState() && rotations.getFakeValue().get() && entity.equals(Minecraft.getMinecraft().thePlayer) && rotations.shouldRotate()) {
                     //假身绘制 :/
                     GL11.glPushMatrix();
                     GL11.glPushAttrib(1048575);
@@ -280,7 +280,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
                 GlStateManager.disableRescaleNormal();
             } catch (Exception exception) {
-                logger.error((String) "Couldn\'t render entity", (Throwable) exception);
+                logger.error("Couldn't render entity", exception);
             }
 
             GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);

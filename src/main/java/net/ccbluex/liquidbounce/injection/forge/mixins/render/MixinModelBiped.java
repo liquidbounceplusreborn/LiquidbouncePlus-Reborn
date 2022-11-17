@@ -42,7 +42,7 @@ public class MixinModelBiped {
             final SpinBot spinBot = LiquidBounce.moduleManager.getModule(SpinBot.class);
             if (spinBot.getState() && !spinBot.getPitchMode().get().equalsIgnoreCase("none"))
                 this.bipedHead.rotateAngleX = spinBot.getPitch() / (180F / (float) Math.PI);
-            else if (rotationModule.getHeadValue().get() && RotationUtils.serverRotation != null && p_setRotationAngles_7_ instanceof EntityPlayer
+            else if (rotationModule.getState() && rotationModule.getHeadValue().get() && RotationUtils.serverRotation != null && p_setRotationAngles_7_ instanceof EntityPlayer
                     && p_setRotationAngles_7_.equals(Minecraft.getMinecraft().thePlayer)) {
                 this.bipedHead.rotateAngleX = RotationUtils.serverRotation.getPitch() / (180F / (float) Math.PI);
             }
