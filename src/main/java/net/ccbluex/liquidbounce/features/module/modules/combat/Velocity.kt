@@ -71,7 +71,6 @@ class Velocity : Module() {
 
     //epic
     private val phaseOffsetValue = FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m", { modeValue.get().equals("phase", true) })
-    private val debug = BoolValue("Debug",true)
 
 
     /**
@@ -328,10 +327,7 @@ class Velocity : Module() {
             mc.thePlayer.motionZ = mc.thePlayer.motionZ + packet.func_149147_e() * (horizontalExplosionValue.get())
             event.cancelEvent()
         }
-        if (debug.get()) {
-            ClientUtils.displayChatMessage("§c§oVelocity tick:" + ThreadLocalRandom.current().nextInt(1000, 4000))
-        }
-        }
+        )
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
