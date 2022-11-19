@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
@@ -38,6 +40,7 @@ public class MixinLayerHeldItem {
     @Overwrite
     public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float partialTicks, float p_177141_5_, float p_177141_6_, float p_177141_7_, float scale) {
         ItemStack itemstack = entitylivingbaseIn.getHeldItem();
+        final Animations animations = LiquidBounce.moduleManager.getModule(Animations.class);
 
         if(itemstack != null) {
             GlStateManager.pushMatrix();
@@ -53,7 +56,7 @@ public class MixinLayerHeldItem {
             final EntityPlayer entityplayer = Minecraft.getMinecraft().theWorld.getPlayerEntityByUUID(uuid);
 
             if(entityplayer != null && entityplayer.isBlocking()) {
-                if(entitylivingbaseIn.isSneaking()) {
+                if(entitylivingbaseIn.isSneaking() || Animations.fakeBlock.get()){
                     ((ModelBiped) this.livingEntityRenderer.getMainModel()).postRenderArm(0.0325F);
                     GlStateManager.translate(-0.58F, 0.3F, -0.2F);
                     GlStateManager.rotate(-24390.0F, 137290.0F, -2009900.0F, -2054900.0F);
