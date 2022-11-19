@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer;
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.*;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline2.DropdownGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.ClickUI;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -37,7 +38,7 @@ public class ClickGUI extends Module {
     public float animationHeight = 0;
 
     public String configName = "Basic";
-    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday"}, "Null") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Novoline2", "Flux","Zeroday","Chocolate"}, "Null") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -48,9 +49,9 @@ public class ClickGUI extends Module {
     public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
 
     private static final ListValue colorModeValue = new ListValue("Color", new String[]{"Custom", "Sky", "Rainbow", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
-    private static final IntegerValue colorRedValue = new IntegerValue("Red", 0, 0, 255);
-    private static final IntegerValue colorGreenValue = new IntegerValue("Green", 160, 0, 255);
-    private static final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
+    public static final IntegerValue colorRedValue = new IntegerValue("Red", 0, 0, 255);
+    public static final IntegerValue colorGreenValue = new IntegerValue("Green", 160, 0, 255);
+    public static final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
     private static final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
     private static final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
     private static final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
@@ -62,6 +63,8 @@ public class ClickGUI extends Module {
 
     public final ListValue animationValue = new ListValue("Animation", new String[]{"Azura", "Slide", "SlideBounce", "Zoom", "ZoomBounce", "None"}, "Azura");
     public final FloatValue animSpeedValue = new FloatValue("AnimSpeed", 1F, 0.01F, 5F, "x");
+
+    public final BoolValue getClosePrevious = (BoolValue) new BoolValue("ClosePrevious",false);
 
     public static Color generateColor() {
         Color c = new Color(255, 255, 255, 255);
@@ -94,6 +97,10 @@ public class ClickGUI extends Module {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
         } else {
+            if (styleValue.get().contains("Novoline2")) {
+                mc.displayGuiScreen(new DropdownGUI());
+                this.setState(false);
+            } else {
             if (styleValue.get().contains("Flux")) {
                 mc.displayGuiScreen(new FluxClassic());
                 this.setState(false);
@@ -102,12 +109,17 @@ public class ClickGUI extends Module {
                     mc.displayGuiScreen(new ClickUI());
                     this.setState(false);
                 } else {
-                    updateStyle();
-                    mc.displayGuiScreen(LiquidBounce.clickGui);
-                    LiquidBounce.clickGui.progress = 0;
-                    LiquidBounce.clickGui.slide = 0;
-                    LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
-                    mc.displayGuiScreen(LiquidBounce.clickGui);
+                    if (styleValue.get().equalsIgnoreCase("Chocolate")) {
+                        mc.displayGuiScreen(new SkeetStyle());
+                    } else {
+                        updateStyle();
+                        mc.displayGuiScreen(LiquidBounce.clickGui);
+                        LiquidBounce.clickGui.progress = 0;
+                        LiquidBounce.clickGui.slide = 0;
+                        LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
+                        mc.displayGuiScreen(LiquidBounce.clickGui);
+                    }
+                }
                 }
             }
         }
