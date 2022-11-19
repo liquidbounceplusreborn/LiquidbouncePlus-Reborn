@@ -64,7 +64,7 @@ public class Scaffold extends Module {
     // Global settings
     private final BoolValue towerEnabled = new BoolValue("EnableTower", false);
     private final ListValue towerModeValue = new ListValue("TowerMode", new String[]{
-            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus","Watchdog"
+            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus"
     }, "Motion", () -> towerEnabled.get());
     private final ListValue towerPlaceModeValue = new ListValue("Tower-PlaceTiming", new String[]{"Pre", "Post"}, "Post");
     private final BoolValue stopWhenBlockAbove = new BoolValue("StopWhenBlockAbove", false, () -> towerEnabled.get());
@@ -385,12 +385,7 @@ public class Scaffold extends Module {
                     mc.thePlayer.motionY -= 0.00000945;
                     mc.timer.timerSpeed = 1.6F;
                 }
-            case "watchdog":
-                if (PlayerUtils.isOnGround(0.99)) {
-                    mc.thePlayer.motionY = 0.36;
-                    break;
-                }
-                break;
+
             case "aac3.6.4":
                 if (mc.thePlayer.ticksExisted % 4 == 1) {
                     mc.thePlayer.motionY = 0.4195464;
@@ -1232,3 +1227,4 @@ public class Scaffold extends Module {
         return (towerActivation()) ? "" + rotationModeValue.get() : rotationModeValue.get();
     }
 }
+
