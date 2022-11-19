@@ -327,7 +327,7 @@ class Velocity : Module() {
             mc.thePlayer.motionZ = mc.thePlayer.motionZ + packet.func_149147_e() * (horizontalExplosionValue.get())
             event.cancelEvent()
         }
-        )
+    }
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
