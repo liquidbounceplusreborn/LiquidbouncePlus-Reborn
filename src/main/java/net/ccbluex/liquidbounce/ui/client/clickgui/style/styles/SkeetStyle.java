@@ -68,7 +68,7 @@ public class SkeetStyle extends GuiScreen {
         RenderUtils.drawRect(startX + 100.0F, startY + 50.0F, startX + 430.0F, startY + 315.0F, (new Color(35, 35, 35, alpha)).getRGB());
         RenderUtils.drawRect(startX + 200.0F, startY + 50.0F, startX + 430.0F, startY + 315.0F, (new Color(37, 37, 37, alpha)).getRGB());
         RenderUtils.drawRect(startX + 202.0F, startY + 50.0F, startX + 430.0F, startY + 315.0F, (new Color(40, 40, 40, alpha)).getRGB());
-        Fonts.fontSFUI40.drawCenteredString("LA MIERDA", startX + 50.0F, startY + 12.0F, (new Color(255, 255, 255, alpha)).getRGB());
+        Fonts.fontSFUI40.drawCenteredString("Chocolate", startX + 50.0F, startY + 12.0F, (new Color(255, 255, 255, alpha)).getRGB());
         Fonts.fontSFUI35.drawCenteredString("ClickGUI", startX + 50.0F, startY + 32.0F, color39);
         Fonts.fontSFUI35.drawString("", startX + 15.0F, startY + 330.0F, (new Color(180, 180, 180, alpha)).getRGB());
         int dWheel = Mouse.getDWheel();
