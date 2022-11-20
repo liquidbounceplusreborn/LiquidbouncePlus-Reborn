@@ -170,6 +170,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         return (x + getStringWidth(text)).toInt()
     }
 
+
     override fun getColorCode(charCode: Char) =
             ColorUtils.hexColors[getColorIndex(charCode)]
 
