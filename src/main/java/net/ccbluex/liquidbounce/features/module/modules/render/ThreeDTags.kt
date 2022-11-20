@@ -44,7 +44,7 @@ class ThreeDTags : Module() {
     private val translateY = FloatValue("TanslateY", 0.55F, -2F, 2F)
     private val distanceValue = BoolValue("Distance", false)
     private val armorValue = BoolValue("Armor", true)
-    private val enchantValue = BoolValue("Enchant", true)
+    private val enchantValue = BoolValue("Enchant", false) { armorValue.get() }
     private val potionValue = BoolValue("Potions", true)
     private val clearNamesValue = BoolValue("ClearNames", false)
     private val fontValue = FontValue("Font", Fonts.font40)
@@ -107,10 +107,10 @@ class ThreeDTags : Module() {
         val nameColor = if (bot) "§3" else if (entity.isInvisible) "§6" else if (entity.isSneaking) "§4" else "§7"
         val ping = if (entity is EntityPlayer) EntityUtils.getPing(entity) else 0
 
-        val distanceText = if (distanceValue.get()) "§a${mc.thePlayer.getDistanceToEntity(entity).roundToInt()}" else ""
+        val distanceText = if (distanceValue.get()) " §a${mc.thePlayer.getDistanceToEntity(entity).roundToInt()} " else ""
         val pingText = if (pingValue.get() && entity is EntityPlayer) " §7[" + (if (ping > 200) "§c" else if (ping > 100) "§e" else "§a") + ping + "ms§7]" else ""
-        val healthText = if (healthValue.get()) "§7 [§f" + entity.health.toInt() + "§c❤§7]" else ""
-        val botText = if (bot) " §7[§6§lBot§7]" else ""
+        val healthText = if (healthValue.get()) " §a" + entity.health.toInt() + " " else ""
+        val botText = if (bot) " §7[§6§lBot§7] " else ""
 
         val text = "$nameColor$tag$healthText$distanceText$pingText$botText"
 

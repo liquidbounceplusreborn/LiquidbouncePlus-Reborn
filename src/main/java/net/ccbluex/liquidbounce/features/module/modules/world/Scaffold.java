@@ -385,7 +385,7 @@ public class Scaffold extends Module {
                     mc.thePlayer.motionY -= 0.00000945;
                     mc.timer.timerSpeed = 1.6F;
                 }
-                break;
+
             case "aac3.6.4":
                 if (mc.thePlayer.ticksExisted % 4 == 1) {
                     mc.thePlayer.motionY = 0.4195464;
@@ -1227,3 +1227,4 @@ public class Scaffold extends Module {
         return (towerActivation()) ? "" + rotationModeValue.get() : rotationModeValue.get();
     }
 }
+
