@@ -36,9 +36,9 @@ import kotlin.concurrent.thread
 object LiquidBounce {
 
     // Client information
-    const val CLIENT_NAME = "LiquidBounce+"
-    const val CLIENT_VERSION = "Reborn"
-    const val CLIENT_CREATOR = "CCBlueX, exit-scammed,Random"
+    const val CLIENT_NAME = "LiquidBounce+ Reborn"
+    const val CLIENT_VERSION = "beta"
+    const val CLIENT_CREATOR = "CCBlueX, exit-scammed,Randomguy,wxdbie"
     const val CLIENT_CLOUD = "https://wysi-foundation.github.io/LiquidCloud/LiquidBounce"
 
     var isStarting = false
@@ -159,7 +159,7 @@ object LiquidBounce {
             }
         }
 
-        ClientUtils.getLogger().info("Finished loading LiquidBounce+ in ${System.currentTimeMillis() - lastTick}ms.")
+        ClientUtils.getLogger().info("Finished loading LiquidBounce+ Reborn in ${System.currentTimeMillis() - lastTick}ms.")
 
         // Set is starting status
         isStarting = false
