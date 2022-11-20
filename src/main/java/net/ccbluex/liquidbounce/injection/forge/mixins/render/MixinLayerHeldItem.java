@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -41,6 +42,7 @@ public class MixinLayerHeldItem {
     public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float p_177141_2_, float p_177141_3_, float partialTicks, float p_177141_5_, float p_177141_6_, float p_177141_7_, float scale) {
         ItemStack itemstack = entitylivingbaseIn.getHeldItem();
         final Animations animations = LiquidBounce.moduleManager.getModule(Animations.class);
+        final KillAura killaura = LiquidBounce.moduleManager.getModule(KillAura.class);
 
         if(itemstack != null) {
             GlStateManager.pushMatrix();
