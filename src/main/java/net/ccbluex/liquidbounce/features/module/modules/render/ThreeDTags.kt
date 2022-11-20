@@ -36,7 +36,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.roundToInt
 
-@ModuleInfo(name = "3DTags", spacedName = "3D Tags", description = "Changes the scale of the nametags so you can always read them.", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "3DFTags", spacedName = "3D Tags", description = "Changes the scale of the nametags so you can always read them.", category = ModuleCategory.RENDER)
 class ThreeDTags : Module() {
     private val healthValue = BoolValue("Health", true)
     private val healthBarValue = BoolValue("Bar", true)
@@ -107,10 +107,10 @@ class ThreeDTags : Module() {
         val nameColor = if (bot) "§3" else if (entity.isInvisible) "§6" else if (entity.isSneaking) "§4" else "§7"
         val ping = if (entity is EntityPlayer) EntityUtils.getPing(entity) else 0
 
-        val distanceText = if (distanceValue.get()) " §a${mc.thePlayer.getDistanceToEntity(entity).roundToInt()} " else ""
+        val distanceText = if (distanceValue.get()) "§a${mc.thePlayer.getDistanceToEntity(entity).roundToInt()}" else ""
         val pingText = if (pingValue.get() && entity is EntityPlayer) " §7[" + (if (ping > 200) "§c" else if (ping > 100) "§e" else "§a") + ping + "ms§7]" else ""
-        val healthText = if (healthValue.get()) " §a" + entity.health.toInt() + " " else ""
-        val botText = if (bot) " §7[§6§lBot§7] " else ""
+        val healthText = if (healthValue.get()) "§7 [§f" + entity.health.toInt() + "§c❤§7]" else ""
+        val botText = if (bot) " §7[§6§lBot§7]" else ""
 
         val text = "$nameColor$tag$healthText$distanceText$pingText$botText"
 

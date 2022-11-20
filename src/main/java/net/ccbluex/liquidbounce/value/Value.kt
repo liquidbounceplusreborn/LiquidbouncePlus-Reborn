@@ -18,7 +18,7 @@ import java.awt.Color
 import java.util.*
 
 abstract class Value<T>(val name: String, var value: T, var canDisplay: () -> Boolean) {
-    var textHovered: Boolean = false
+
     fun set(newValue: T) {
         if (newValue == value) return
 
@@ -39,11 +39,6 @@ abstract class Value<T>(val name: String, var value: T, var canDisplay: () -> Bo
     open fun changeValue(value: T) {
         this.value = value
     }
-
-    val displayable: Boolean
-        get() = displayableFunc()
-
-    private var displayableFunc: () -> Boolean = { true }
 
     abstract fun toJson(): JsonElement?
     abstract fun fromJson(element: JsonElement)
@@ -130,10 +125,6 @@ open class TextValue(name: String, value: String, displayable: () -> Boolean) : 
         if (element.isJsonPrimitive)
             value = element.asString
     }
-    fun append(o: Any): TextValue {
-        set(get() + o)
-        return this
-    }
 }
 /*
 open class ColorValue(name: String, value: Color, val transparent: Boolean, displayable: () -> Boolean) : Value<Color>(name, value, displayable) {
@@ -197,10 +188,6 @@ open class ListValue(name: String, val values: Array<String>, value: String, dis
 
     @JvmField
     var openList = false
-    fun getModeListNumber(mode: String) = values.indexOf(mode)
-    init {
-        this.value = value
-    }
 
     init {
         this.value = value

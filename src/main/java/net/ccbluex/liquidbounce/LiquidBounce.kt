@@ -38,7 +38,7 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "LiquidBounce+"
     const val CLIENT_VERSION = "Reborn"
-    const val CLIENT_CREATOR = "CCBlueX, exit-scammed,Random,wxdbie"
+    const val CLIENT_CREATOR = "CCBlueX, exit-scammed,Random"
     const val CLIENT_CLOUD = "https://wysi-foundation.github.io/LiquidCloud/LiquidBounce"
 
     var isStarting = false
@@ -128,7 +128,7 @@ object LiquidBounce {
 
         // Load configs
         fileManager.loadConfigs(fileManager.modulesConfig, fileManager.valuesConfig, fileManager.accountsConfig,
-            fileManager.friendsConfig, fileManager.xrayConfig)
+                fileManager.friendsConfig, fileManager.xrayConfig)
 
         // ClickGUI
         clickGui = ClickGui()

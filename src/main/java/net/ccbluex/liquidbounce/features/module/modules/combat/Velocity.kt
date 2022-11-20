@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -31,7 +30,6 @@ import net.minecraft.util.MathHelper
 import net.minecraft.util.BlockPos
 
 import java.lang.Math
-import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.sin
 import kotlin.math.cos
 
@@ -71,7 +69,6 @@ class Velocity : Module() {
 
     //epic
     private val phaseOffsetValue = FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m", { modeValue.get().equals("phase", true) })
-
 
     /**
      * VALUES

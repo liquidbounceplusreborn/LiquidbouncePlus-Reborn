@@ -1,8 +1,3 @@
-/*
- * LiquidBounce+ Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/WYSI-Foundation/LiquidBouncePlus/
- */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -21,14 +16,17 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiIngameMenu
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.client.settings.GameSettings
+import net.minecraft.network.play.client.C0FPacketConfirmTransaction
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 @ModuleInfo(name = "InvMove", spacedName = "Inv Move", description = "Allows you to walk while an inventory is opened.", category = ModuleCategory.MOVEMENT)
 class InvMove : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("Vanilla", "Silent", "Blink"), "Vanilla")
+    val modeValue = ListValue("Mode", arrayOf("Vanilla", "Silent", "Blink","HypixelTest"), "Vanilla")
     val sprintModeValue = ListValue("InvSprint", arrayOf("AACAP", "Stop", "Keep"), "Keep")
     val noDetectableValue = BoolValue("NoDetectable", false)
     val noMoveClicksValue = BoolValue("NoMoveClicks", false)
@@ -75,6 +73,14 @@ class InvMove : Module() {
                 event.cancelEvent()
                 playerPackets.add(packet)
             }
+            "HypixelTest" -> if (mc.currentScreen != null && !(mc.currentScreen !is GuiChat) && mc.currentScreen !is GuiInventory) {
+                if (event.packet is S08PacketPlayerPosLook) {
+                    event.cancelEvent();
+                }
+                if (event.packet is C0FPacketConfirmTransaction) {
+                    event.cancelEvent();
+                }
+            }
         }
     }
 
@@ -94,4 +100,5 @@ class InvMove : Module() {
     }
 
     fun isAACAP(): Boolean = sprintModeValue.get().equals("aacap", true) && mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)
+
 }

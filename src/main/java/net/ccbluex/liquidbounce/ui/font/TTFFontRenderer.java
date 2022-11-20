@@ -652,5 +652,4 @@ public class TTFFontRenderer {
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
         }
     }
-
 }
