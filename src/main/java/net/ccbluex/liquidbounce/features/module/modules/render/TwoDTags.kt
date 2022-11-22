@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.GLUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.Gui
@@ -26,9 +27,11 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 
+
 @ModuleInfo(name = "2DTags", description = "Changes the scale of the nametags so you can always read them.", category = ModuleCategory.RENDER)
 class TwoDTags : Module() {
     private val armorValue = BoolValue("Armor", true)
+    private val outlineValue = BoolValue("Outline", true)
     private val scaleValue = FloatValue("Scale", 1.0F, 0.5F, 2.0F)
 
     @EventTarget
@@ -98,7 +101,15 @@ class TwoDTags : Module() {
         val STRING_WIDTH = fr.getStringWidth(USERNAME) / 2
         Gui.drawRect((-STRING_WIDTH - 1).toInt(), -14, (STRING_WIDTH + 1).toInt(), -4, Integer.MIN_VALUE)
 
-        fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22).toFloat(), 16777215)
+        if (outlineValue.get()) {
+            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat() - 1, (fr.FONT_HEIGHT - 22).toFloat(), Color.BLACK.rgb)
+            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat() + 1, (fr.FONT_HEIGHT - 22).toFloat(), Color.BLACK.rgb)
+            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22 - 1).toFloat(), Color.BLACK.rgb)
+            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22 + 1).toFloat(), Color.BLACK.rgb)
+            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22).toFloat(), 16777215)
+        }else{
+            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22).toFloat(), 16777215)
+        }
         glColor3f(1f, 1f, 1f)
         glScaled(0.5, 0.5, 0.5)
         glScaled(1.0, 1.0, 1.0)
