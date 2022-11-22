@@ -32,6 +32,7 @@ import java.awt.Color
 class TwoDTags : Module() {
     private val armorValue = BoolValue("Armor", true)
     private val outlineValue = BoolValue("Outline", true)
+    private val background = BoolValue("Background", true)
     private val scaleValue = FloatValue("Scale", 1.0F, 0.5F, 2.0F)
 
     @EventTarget
@@ -99,8 +100,9 @@ class TwoDTags : Module() {
         val lol = entity.displayName.formattedText
         val USERNAME = bot + lol + hp
         val STRING_WIDTH = fr.getStringWidth(USERNAME) / 2
+        if(background.get()){
         Gui.drawRect((-STRING_WIDTH - 1).toInt(), -14, (STRING_WIDTH + 1).toInt(), -4, Integer.MIN_VALUE)
-
+    }
         if (outlineValue.get()) {
             fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat() - 1, (fr.FONT_HEIGHT - 22).toFloat(), Color.BLACK.rgb)
             fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat() + 1, (fr.FONT_HEIGHT - 22).toFloat(), Color.BLACK.rgb)
