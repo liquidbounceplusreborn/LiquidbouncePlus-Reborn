@@ -23,8 +23,8 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import org.lwjgl.input.Keyboard;
 
-@ModuleInfo(name = "LiquidWalk", spacedName = "Liquid Walk", description = "Allows you to walk on water.", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_J)
-public class LiquidWalk extends Module {
+@ModuleInfo(name = "Jesus", description = "Allows you to walk on water.", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_J)
+public class Jesus extends Module {
 
     public final ListValue modeValue = new ListValue("Mode", new String[] {"Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "AAC4.2.1", "Horizon1.4.6", "Twillight", "Matrix", "Dolphin", "Swim"}, "NCP");
     private final BoolValue noJumpValue = new BoolValue("NoJump", false);

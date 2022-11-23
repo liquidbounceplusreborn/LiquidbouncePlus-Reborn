@@ -30,6 +30,7 @@ public class Animations extends Module {
     public static final FloatValue itemPosX = new FloatValue("ItemX", 0f, -1f, 1f);
     public static final FloatValue itemPosY = new FloatValue("ItemY", 0f, -1f, 1f);
     public static final FloatValue itemPosZ = new FloatValue("ItemZ", 0f, -1f, 1f);
+    public static final FloatValue itemDistance = new FloatValue("ItemDistance", 1, 1, 5f);
 
     // change Position Blocking Sword
     public static final FloatValue blockPosX = new FloatValue("BlockingX", 0f, -1f, 1f);

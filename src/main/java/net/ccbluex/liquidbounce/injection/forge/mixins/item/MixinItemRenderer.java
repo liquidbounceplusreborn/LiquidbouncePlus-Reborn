@@ -362,6 +362,7 @@ public abstract class MixinItemRenderer {
         this.rotateArroundXAndY(f2, f3);
         this.setLightMapFromPlayer(abstractclientplayer);
         this.rotateWithPlayerRotations((EntityPlayerSP) abstractclientplayer, partialTicks);
+        GlStateManager.scale(1, 1, Animations.itemDistance.getValue());
         GlStateManager.enableRescaleNormal();
         GlStateManager.pushMatrix();
 

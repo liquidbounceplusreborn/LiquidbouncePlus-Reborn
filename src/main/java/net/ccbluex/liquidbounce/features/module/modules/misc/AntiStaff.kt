@@ -21,8 +21,8 @@ import net.minecraft.network.play.server.*
 
 import kotlin.concurrent.thread
 
-@ModuleInfo(name = "AntiBan", spacedName = "Anti Ban", description = "Anti staff on BlocksMC. Automatically leaves a map if detected known staffs.", category = ModuleCategory.MISC)
-class AntiBan : Module() {
+@ModuleInfo(name = "AntiStaff", spacedName = "Anti Staff", description = "Anti staff on BlocksMC. Automatically leaves a map if detected known staffs.", category = ModuleCategory.MISC)
+class AntiStaff : Module() {
 
     private var obStaffs = "_"
     private var detected = false

@@ -71,6 +71,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 0, 0, 255)
+    private val backgroundExpand = IntegerValue("Background-Expand", 2, 0, 10)
     private val rectRightValue = ListValue("Rect-Right", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "None")
     private val rectLeftValue = ListValue("Rect-Left", arrayOf("None", "Left", "Right"), "None")
     private val caseValue = ListValue("Case", arrayOf("None", "Lower", "Upper"), "None")

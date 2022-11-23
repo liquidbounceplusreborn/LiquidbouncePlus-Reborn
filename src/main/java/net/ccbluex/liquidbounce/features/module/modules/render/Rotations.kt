@@ -10,12 +10,10 @@ import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestAura
-import net.ccbluex.liquidbounce.features.module.modules.world.Fucker
+import net.ccbluex.liquidbounce.features.module.modules.world.Breaker
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "Rotations", description = "Allows you to see server-sided head and body rotations.", category = ModuleCategory.RENDER)
 class Rotations : Module() {
@@ -39,7 +37,7 @@ class Rotations : Module() {
                 (getState(Sprint::class.java) && sprint.allDirectionsValue.get() && sprint.moveDirPatchValue.get()) ||
                 (getState(KillAura::class.java) && killAura.target != null) ||
                 (getState(Disabler::class.java) && disabler.canRenderInto3D) ||
-                getState(BowAimbot::class.java) || getState(Fucker::class.java) ||
+                getState(BowAimbot::class.java) || getState(Breaker::class.java) ||
                 getState(ChestAura::class.java) || getState(Fly::class.java)
     }
 }

@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
-import net.ccbluex.liquidbounce.features.module.modules.world.Timer
+import net.ccbluex.liquidbounce.features.module.modules.world.GameSpeed
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.utils.MovementUtils.*
 import kotlin.math.max
@@ -25,7 +25,7 @@ class HypixelCustom: SpeedMode("HypixelCustom") {
 
         val speedModule = (LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed?)!!
         val scaffoldModule = LiquidBounce.moduleManager.getModule(Scaffold::class.java)
-        val timer = LiquidBounce.moduleManager.getModule(Timer::class.java)
+        val timer = LiquidBounce.moduleManager.getModule(GameSpeed::class.java)
 
         if (isMoving()) {
             when {

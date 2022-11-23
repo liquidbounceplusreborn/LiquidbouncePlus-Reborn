@@ -10,29 +10,24 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.JumpEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.misc.Patcher;
-import net.ccbluex.liquidbounce.features.module.modules.movement.AirJump;
-import net.ccbluex.liquidbounce.features.module.modules.movement.LiquidWalk;
-import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
-import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe;
+import net.ccbluex.liquidbounce.features.module.modules.movement.*;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.play.server.S0BPacketAnimation;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
-import net.minecraft.world.WorldServer;
+
 import java.util.Iterator;
-import java.util.Map;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -147,7 +142,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             this.jumpTicks = 10;
         }
 
-        final LiquidWalk liquidWalk = LiquidBounce.moduleManager.getModule(LiquidWalk.class);
+        final Jesus liquidWalk = LiquidBounce.moduleManager.getModule(Jesus.class);
 
         if (liquidWalk.getState() && !isJumping && !isSneaking() && isInWater() &&
                 liquidWalk.modeValue.get().equalsIgnoreCase("Swim")) {

@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.*
 import net.ccbluex.liquidbounce.features.module.modules.player.*
 import net.ccbluex.liquidbounce.features.module.modules.render.*
 import net.ccbluex.liquidbounce.features.module.modules.world.*
-import net.ccbluex.liquidbounce.features.module.modules.world.Timer
+import net.ccbluex.liquidbounce.features.module.modules.world.GameSpeed
 import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.util.*
@@ -57,12 +57,12 @@ class ModuleManager : Listenable {
                 HighJump::class.java,
                 InvMove::class.java,
                 NoSlow::class.java,
-                LiquidWalk::class.java,
+                Jesus::class.java,
                 Strafe::class.java,
                 Sprint::class.java,
 		        ClickGUI::class.java,
                 Teams::class.java,
-                NoRotateSet::class.java,
+                NoRotate::class.java,
                 AntiBot::class.java,
                 ChestStealer::class.java,
                 Scaffold::class.java,
@@ -96,7 +96,7 @@ class ModuleManager : Listenable {
                 NoHurtCam::class.java,
                 MidClick::class.java,
                 XRay::class.java,
-                Timer::class.java,
+                GameSpeed::class.java,
                 FreeCam::class.java,     
                 HitBox::class.java,
                 Plugins::class.java,
@@ -183,7 +183,7 @@ class ModuleManager : Listenable {
                 PacketFixer::class.java,
                 AutoPlay::class.java,
                 AutoKit::class.java,
-                AntiBan::class.java,
+                AntiStaff::class.java,
                 NoInvClose::class.java,
                 TeleportAura::class.java,
                 AutoPot::class.java,
@@ -222,7 +222,7 @@ class ModuleManager : Listenable {
                 SpeedMine::class.java
         )
 
-        registerModule(Fucker)
+        registerModule(Breaker)
         registerModule(ChestAura)
 
         ClientUtils.getLogger().info("[ModuleManager] Successfully loaded ${modules.size} modules.")

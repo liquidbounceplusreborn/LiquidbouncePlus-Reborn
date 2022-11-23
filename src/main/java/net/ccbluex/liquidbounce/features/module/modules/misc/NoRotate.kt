@@ -15,8 +15,8 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-@ModuleInfo(name = "NoRotateSet", spacedName = "No Rotate Set", description = "Prevents the server from rotating your head.", category = ModuleCategory.MISC)
-class NoRotateSet : Module() {
+@ModuleInfo(name = "NoRotate", spacedName = "No Rotate", description = "Prevents the server from rotating your head.", category = ModuleCategory.MISC)
+class NoRotate : Module() {
 
     private val confirmValue = BoolValue("Confirm", true)
     private val illegalRotationValue = BoolValue("ConfirmIllegalRotation", false)

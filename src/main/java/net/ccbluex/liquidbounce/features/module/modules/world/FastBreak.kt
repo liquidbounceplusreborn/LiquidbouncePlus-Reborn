@@ -24,7 +24,7 @@ class FastBreak : Module() {
         if (mc.playerController.curBlockDamageMP > breakDamage.get())
             mc.playerController.curBlockDamageMP = 1F
 
-        if (Fucker.currentDamage > breakDamage.get())
-            Fucker.currentDamage = 1F
+        if (Breaker.currentDamage > breakDamage.get())
+            Breaker.currentDamage = 1F
     }
 }
