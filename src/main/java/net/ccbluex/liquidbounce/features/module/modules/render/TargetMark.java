@@ -142,7 +142,7 @@ public class TargetMark extends Module {
 
 		    post3D();
         } else if (modeValue.get().equalsIgnoreCase("default")) {
-            if (!aura.getTargetModeValue().get().equalsIgnoreCase("multi") && aura.getTarget() != null) RenderUtils.drawPlatform(aura.getCurrentTarget(), (aura.getCurrentTarget().hurtTime > 3) ? ColorUtils.reAlpha(getColor(aura.getTarget()), colorAlphaValue.get()) : new Color(235, 40, 40, colorAlphaValue.get()));
+            if (!aura.getTargetModeValue().get().equalsIgnoreCase("multi") && aura.getTarget() != null) RenderUtils.drawPlatform(aura.getCurrentTarget(), (aura.getCurrentTarget().hurtTime > 0) ? ColorUtils.reAlpha(getColor(aura.getTarget()), colorAlphaValue.get()) : new Color(235, 40, 40, colorAlphaValue.get()));
         } else if (modeValue.get().equalsIgnoreCase("tracers")) {
 			if (!aura.getTargetModeValue().get().equalsIgnoreCase("multi") && aura.getTarget() != null) {
 				final Tracers tracers = LiquidBounce.moduleManager.getModule(Tracers.class);
