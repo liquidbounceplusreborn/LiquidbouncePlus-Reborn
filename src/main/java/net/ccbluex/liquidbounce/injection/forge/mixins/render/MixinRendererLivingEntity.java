@@ -256,7 +256,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 }
 
                 if (rotations.getState() && rotations.getFakeValue().get() && entity.equals(Minecraft.getMinecraft().thePlayer) && rotations.shouldRotate()) {
-                    //假身绘制 :/
+                    //fakebody display
                     GL11.glPushMatrix();
                     GL11.glPushAttrib(1048575);
                     GL11.glDisable(2929);
@@ -267,7 +267,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                     GL11.glDisable(2896);
                     GL11.glPolygonMode(1032, 6914);
                     GL11.glColor4f(rotations.getR().get() / 255, rotations.getG().get() / 255, rotations.getB().get(), rotations.getAlpha().get() / 255);
-                    GL11.glRotatef(f2 - f, 0, 0.001f, 0);
+                    GL11.glRotatef(renderyaw - f, 0, 0.001f, 0);
                     this.mainModel.render(Minecraft.getMinecraft().thePlayer, f6, f5, renderpitch, f2, renderpitch, 0.0625F);
                     GL11.glEnable(2896);
                     GL11.glDisable(3042);
