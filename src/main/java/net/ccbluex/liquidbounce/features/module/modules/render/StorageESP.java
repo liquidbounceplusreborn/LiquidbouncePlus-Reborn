@@ -12,13 +12,16 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestAura;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.FramebufferShader;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.OutlineShader;
 import net.ccbluex.liquidbounce.value.BoolValue;
+import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -39,6 +42,9 @@ public class StorageESP extends Module {
     private final BoolValue furnaceValue = new BoolValue("Furnace", true);
     private final BoolValue dispenserValue = new BoolValue("Dispenser", true);
     private final BoolValue hopperValue = new BoolValue("Hopper", true);
+    public static final IntegerValue colorRedValue = new IntegerValue("Red", 0, 0, 255);
+    public static final IntegerValue colorGreenValue = new IntegerValue("Green", 160, 0, 255);
+    public static final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
 
     @EventTarget
     public void onRender3D(Render3DEvent event) {
@@ -57,7 +63,7 @@ public class StorageESP extends Module {
                 Color color = null;
 
                 if (chestValue.get() && tileEntity instanceof TileEntityChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
-                    color = new Color(89, 128, 230);
+                    color = new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get());
 
                 if (enderChestValue.get() && tileEntity instanceof TileEntityEnderChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
                     color = Color.MAGENTA;
@@ -126,23 +132,23 @@ public class StorageESP extends Module {
                     switch (mode.toLowerCase()) {
                         case "otherbox":
                         case "box":
-                            RenderUtils.drawEntityBox(entity, new Color(89, 128, 230), !mode.equalsIgnoreCase("otherbox"));
+                            RenderUtils.drawEntityBox(entity, new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get()), !mode.equalsIgnoreCase("otherbox"));
                             break;
                         case "2d":
-                            RenderUtils.draw2D(entity.getPosition(), new Color(0, 66, 255).getRGB(), Color.BLACK.getRGB());
+                            RenderUtils.draw2D(entity.getPosition(), new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get()).getRGB(), Color.BLACK.getRGB());
                             break;
                         case "outline": {
                             final boolean entityShadow = mc.gameSettings.entityShadows;
                             mc.gameSettings.entityShadows = false;
 
-                            RenderUtils.glColor(new Color(0, 66, 255));
+                            RenderUtils.glColor(new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get()));
                             OutlineUtils.renderOne(3F);
                             mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
                             OutlineUtils.renderTwo();
                             mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
                             OutlineUtils.renderThree();
                             mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
-                            OutlineUtils.renderFour(new Color(0, 66, 255));
+                            OutlineUtils.renderFour(new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get()));
                             mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
                             OutlineUtils.renderFive();
 
@@ -164,9 +170,9 @@ public class StorageESP extends Module {
                             glEnable(GL_LINE_SMOOTH);
                             glEnable(GL_BLEND);
                             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-                            RenderUtils.glColor(new Color(0, 66, 255));
+                            RenderUtils.glColor(new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get()));
                             mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
-                            RenderUtils.glColor(new Color(0, 66, 255));
+                            RenderUtils.glColor(new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get()));
                             glLineWidth(1.5F);
                             mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
                             glPopAttrib();
@@ -224,7 +230,7 @@ public class StorageESP extends Module {
             ClientUtils.getLogger().error("An error occurred while rendering all storages for shader esp", ex);
         }
 
-        shader.stopDraw(new Color(0, 66, 255), mode.equalsIgnoreCase("shaderglow") ? 2.5F : 1.5F, 1F);
+        shader.stopDraw(new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get()), mode.equalsIgnoreCase("shaderglow") ? 2.5F : 1.5F, 1F);
     }
 }
 
