@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.misc.Patcher;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
@@ -158,9 +158,9 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "isPotionActive(Lnet/minecraft/potion/Potion;)Z", at = @At("HEAD"), cancellable = true)
     private void isPotionActive(Potion p_isPotionActive_1_, final CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
+        final Camera camera = LiquidBounce.moduleManager.getModule(Camera.class);
 
-        if ((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && antiBlind.getState() && antiBlind.getConfusionEffect().get())
+        if ((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && camera.getState() && camera.getConfusionEffect().get() && camera.getAntiBlindValue().get())
             callbackInfoReturnable.setReturnValue(false);
     }
 

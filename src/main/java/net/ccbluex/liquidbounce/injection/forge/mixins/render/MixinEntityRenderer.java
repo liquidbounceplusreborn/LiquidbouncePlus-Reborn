@@ -10,8 +10,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.player.Reach;
-import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.render.CameraClip;
+import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
 import net.ccbluex.liquidbounce.features.module.modules.render.NoHurtCam;
 import net.ccbluex.liquidbounce.features.module.modules.render.TargetMark;
 import net.ccbluex.liquidbounce.features.module.modules.render.Tracers;
@@ -28,7 +27,6 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.util.*;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -107,7 +105,8 @@ public abstract class MixinEntityRenderer {
 
     @Inject(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Vec3;distanceTo(Lnet/minecraft/util/Vec3;)D"), cancellable = true)
     private void cameraClip(float partialTicks, CallbackInfo callbackInfo) {
-        if (LiquidBounce.moduleManager.getModule(CameraClip.class).getState()) {
+        final Camera camera = LiquidBounce.moduleManager.getModule(Camera.class);
+        if (camera.getState() && camera.getCameraClipValue().get()) {
             callbackInfo.cancel();
 
             Entity entity = this.mc.getRenderViewEntity();

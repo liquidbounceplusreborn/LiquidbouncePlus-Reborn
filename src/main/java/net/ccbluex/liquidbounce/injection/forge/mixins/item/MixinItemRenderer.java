@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -877,9 +877,9 @@ public abstract class MixinItemRenderer {
 
     @Inject(method = "renderFireInFirstPerson", at = @At("HEAD"), cancellable = true)
     private void renderFireInFirstPerson(final CallbackInfo callbackInfo) {
-        final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
+        final Camera camera = LiquidBounce.moduleManager.getModule(Camera.class);
 
-        if (antiBlind.getState() && antiBlind.getFireEffect().get()) {
+        if (camera.getState() && camera.getFireEffect().get() && camera.getAntiBlindValue().get()) {
             //vanilla's method
             GlStateManager.color(1.0F, 1.0F, 1.0F, 0.9F);
             GlStateManager.depthFunc(519);

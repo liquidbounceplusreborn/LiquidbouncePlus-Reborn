@@ -9,7 +9,7 @@ import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer
-import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind
+import net.ccbluex.liquidbounce.features.module.modules.render.Camera
 import net.ccbluex.liquidbounce.features.module.modules.render.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -18,27 +18,17 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.BlurUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.ShadowUtils
-import net.ccbluex.liquidbounce.utils.render.Stencil
+import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.scoreboard.ScoreObjective
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.scoreboard.Scoreboard
 import net.minecraft.util.EnumChatFormatting
-import java.awt.Color
-
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 /**
  * CustomHUD scoreboard
@@ -113,8 +103,8 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
      * Draw element
      */
     override fun drawElement(): Border? {
-        val antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind::class.java) as AntiBlind
-        if (antiBlind.state && antiBlind.scoreBoard.get())
+        val camera = LiquidBounce.moduleManager.getModule(Camera::class.java) as Camera
+        if (camera.state && camera.scoreBoard.get() && camera.antiBlindValue.get())
             return null
 
         val fontRenderer = fontValue.get()
