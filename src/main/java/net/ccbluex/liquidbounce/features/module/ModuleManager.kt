@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.features.module.modules.world.Timer
 import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.util.*
-import javax.swing.border.Border
 
 
 class ModuleManager : Listenable {
@@ -78,8 +77,7 @@ class ModuleManager : Listenable {
                 Sneak::class.java,
                 Speed::class.java,
                 Tracers::class.java,
-                ThreeDTags::class.java,
-                TwoDTags::class.java,
+                NameTags::class.java,
                 FastUse::class.java,
                 Fullbright::class.java,
                 ItemESP::class.java,

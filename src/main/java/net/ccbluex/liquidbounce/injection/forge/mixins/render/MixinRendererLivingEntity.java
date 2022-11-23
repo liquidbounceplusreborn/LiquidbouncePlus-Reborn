@@ -148,7 +148,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
 
         if (!ESP.renderNameTags
-                || (LiquidBounce.moduleManager.getModule(ThreeDTags.class).getState() && ((LiquidBounce.moduleManager.getModule(ThreeDTags.class).getLocalValue().get() && entity == Minecraft.getMinecraft().thePlayer && (!LiquidBounce.moduleManager.getModule(ThreeDTags.class).getNfpValue().get() || Minecraft.getMinecraft().gameSettings.thirdPersonView != 0)) || EntityUtils.isSelected(entity, false)))
+                || (LiquidBounce.moduleManager.getModule(NameTags.class).getState() && ((LiquidBounce.moduleManager.getModule(NameTags.class).getLocalValue().get() && entity == Minecraft.getMinecraft().thePlayer && (!LiquidBounce.moduleManager.getModule(NameTags.class).getNfpValue().get() || Minecraft.getMinecraft().gameSettings.thirdPersonView != 0)) || EntityUtils.isSelected(entity, false)))
                 || ESP2D.shouldCancelNameTag(entity)
                 || (noRender.getState() && noRender.getNameTagsValue().get()))
             callbackInfoReturnable.setReturnValue(false);
@@ -267,8 +267,8 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                     GL11.glDisable(2896);
                     GL11.glPolygonMode(1032, 6914);
                     GL11.glColor4f(rotations.getR().get() / 255, rotations.getG().get() / 255, rotations.getB().get(), rotations.getAlpha().get() / 255);
-                    GL11.glRotatef(renderyaw - f, 0, 0.001f, 0);
-                    this.mainModel.render(entity, f6, f5, f7, f2, f7, f4);
+                    GL11.glRotatef(f2 - f, 0, 0.001f, 0);
+                    this.mainModel.render(Minecraft.getMinecraft().thePlayer, f6, f5, renderpitch, f2, renderpitch, 0.0625F);
                     GL11.glEnable(2896);
                     GL11.glDisable(3042);
                     GL11.glEnable(3553);
