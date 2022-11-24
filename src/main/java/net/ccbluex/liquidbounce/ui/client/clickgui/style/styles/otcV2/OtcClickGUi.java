@@ -99,8 +99,7 @@ public class OtcClickGUi extends GuiScreen
                 this.mc.fontRendererObj.drawString("-------------", (int)this.mainx + 109, (int)this.mainy + 40, new Color(255, 255, 255).getRGB());
                 this.mc.fontRendererObj.drawString(" Select one of", (int)this.mainx + 109, (int)this.mainy + 50, new Color(255, 255, 255).getRGB());
                 this.mc.fontRendererObj.drawString("-------------", (int)this.mainx + 109, (int)this.mainy + 60, new Color(255, 255, 255).getRGB());
-                this.mc.fontRendererObj.drawString("Enjoy Overflow client", (int)this.mainx + 107, (int)this.mainy + 75, new Color(255, 255, 255).getRGB());
-                this.mc.fontRendererObj.drawString("made by QingRan. ", (int)this.mainx + 110, (int)this.mainy + 290, new Color(255, 255, 255).getRGB());
+                this.mc.fontRendererObj.drawString("Enjoy OneTap", (int)this.mainx + 107, (int)this.mainy + 75, new Color(255, 255, 255).getRGB());
             }
             this.tabs.forEach(s -> s.drawScreen(mouseX, mouseY));
             super.drawScreen(mouseX, mouseY, partialTicks);
