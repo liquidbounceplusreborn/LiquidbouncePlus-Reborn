@@ -38,19 +38,17 @@ class NameTags : Module() {
     val typeValue = ListValue("Mode", arrayOf("3DTag", "2DTag"), "3DTag")
 
     //2DTags
-    private val armorValue = BoolValue("Armor", true, { !typeValue.get().equals("3dtag", true) })
-    private val healthValue = BoolValue("Health", true, { !typeValue.get().equals("3dtag", true) })
-    private val outlineValue = BoolValue("Outline", true, { !typeValue.get().equals("3dtag", true) })
+    private val armorValue = BoolValue("Armor", true)
+    private val healthValue = BoolValue("Health", true)
+    private val outlineValue = BoolValue("Outline", true)
     private val background = BoolValue("Background", true, { !typeValue.get().equals("3dtag", true) })
-    private val scaleValue = FloatValue("Scale", 1.0F, 0.5F, 2.0F, { !typeValue.get().equals("3dtag", true) })
+    private val scaleValue = FloatValue("Scale", 1.0F, 0.5F, 2.0F)
     //3DTags
-    private val healthsValue = BoolValue("Health", true, { !typeValue.get().equals("2dtag", true) })
     private val healthBarValue = BoolValue("Bar", true, { !typeValue.get().equals("2dtag", true) })
     private val pingValue = BoolValue("Ping", true, { !typeValue.get().equals("2dtag", true) })
-    private val translateY = FloatValue("TanslateY", 0.55F, -2F, 2F, { !typeValue.get().equals("2dtag", true) })
+    private val translateY = FloatValue("TranslateY", 0.55F, -2F, 2F, { !typeValue.get().equals("2dtag", true) })
     private val distanceValue = BoolValue("Distance", false, { !typeValue.get().equals("2dtag", true) })
-    private val armorsValue = BoolValue("Armor", true, { !typeValue.get().equals("2dtag", true) })
-    private val enchantValue = BoolValue("Enchant", false) { armorsValue.get() && !typeValue.get().equals("2dtag", true)}
+    private val enchantValue = BoolValue("Enchant", false) { armorValue.get() && !typeValue.get().equals("2dtag", true)}
     private val potionValue = BoolValue("Potions", true, { !typeValue.get().equals("2dtag", true) })
     private val clearNamesValue = BoolValue("ClearNames", false, { !typeValue.get().equals("2dtag", true) })
     private val fontValue = FontValue("Font", Fonts.font40, { !typeValue.get().equals("2dtag", true) })
@@ -66,7 +64,6 @@ class NameTags : Module() {
     private val borderColorGreenValue = IntegerValue("Border-G", 0, 0, 255, { !typeValue.get().equals("2dtag", true) })
     private val borderColorBlueValue = IntegerValue("Border-B", 0, 0, 255, { !typeValue.get().equals("2dtag", true) })
     private val borderColorAlphaValue = IntegerValue("Border-Alpha", 0, 0, 255, { !typeValue.get().equals("2dtag", true) })
-    private val scalesValue = FloatValue("Scale", 1F, 1F, 4F, "x", { !typeValue.get().equals("2dtag", true) })
 
     private val inventoryBackground = ResourceLocation("textures/gui/container/inventory.png")
     @EventTarget
@@ -75,7 +72,7 @@ class NameTags : Module() {
             "2dtag" -> {
                 for (o in mc.theWorld.playerEntities) {
                     val e = o as EntityLivingBase
-                    if (e.isEntityAlive && e !== mc.thePlayer) {
+                    if (e.isEntityAlive && e !== mc.theWorld.playerEntities) {
                         if (!EntityUtils.isSelected(e, false))
                             continue
                         val renderManager = mc.renderManager
@@ -182,11 +179,11 @@ class NameTags : Module() {
 
         }
         if (outlineValue.get()) {
-            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat() - 1, (fr.FONT_HEIGHT - 22).toFloat(), Color.BLACK.rgb)
-            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat() + 1, (fr.FONT_HEIGHT - 22).toFloat(), Color.BLACK.rgb)
-            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22 - 1).toFloat(), Color.BLACK.rgb)
-            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22 + 1).toFloat(), Color.BLACK.rgb)
-            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22).toFloat(), 16777215)
+            fr.drawString(USERNAME, (-STRING_WIDTH)- 1, (fr.FONT_HEIGHT - 22), Color.BLACK.rgb)
+            fr.drawString(USERNAME, (-STRING_WIDTH) + 1, (fr.FONT_HEIGHT - 22), Color.BLACK.rgb)
+            fr.drawString(USERNAME, (-STRING_WIDTH), (fr.FONT_HEIGHT - 22 - 1), Color.BLACK.rgb)
+            fr.drawString(USERNAME, (-STRING_WIDTH), (fr.FONT_HEIGHT - 22 + 1), Color.BLACK.rgb)
+            fr.drawString(USERNAME, (-STRING_WIDTH), (fr.FONT_HEIGHT - 22), 16777215)
         }else{
             fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22).toFloat(), 16777215)
         }
@@ -237,15 +234,14 @@ class NameTags : Module() {
 
         // Modify tag
         val bot = AntiBot.isBot(entity)
-        val nameColor = if (bot) "§3" else if (entity.isInvisible) "§6" else if (entity.isSneaking) "§4" else "§7"
         val ping = if (entity is EntityPlayer) EntityUtils.getPing(entity) else 0
 
         val distanceText = if (distanceValue.get()) " §a${mc.thePlayer.getDistanceToEntity(entity).roundToInt()} " else ""
         val pingText = if (pingValue.get() && entity is EntityPlayer) " §7[" + (if (ping > 200) "§c" else if (ping > 100) "§e" else "§a") + ping + "ms§7]" else ""
-        val healthText = if (healthsValue.get()) " §a" + entity.health.toInt() + " " else ""
+        val healthText = if (healthValue.get()) " §a" + entity.health.toInt() + " " else ""
         val botText = if (bot) " §7[§6§lBot§7] " else ""
 
-        val text = "$nameColor$tag$healthText$distanceText$pingText$botText"
+        val text = "$tag$healthText$distanceText$pingText$botText"
 
         // Push
         glPushMatrix()
@@ -272,7 +268,7 @@ class NameTags : Module() {
             distance = 1F
         }
 
-        val scale = (distance / 150F) * scalesValue.get()
+        val scale = (distance / 150F) * scaleValue.get()
 
         glScalef(-scale, -scale, scale)
 
@@ -305,9 +301,15 @@ class NameTags : Module() {
             }
 
         glEnable(GL_TEXTURE_2D)
-
-        fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F,
-                0xFFFFFF, fontShadowValue.get())
+        if (outlineValue.get()) {
+            fontRenderer.drawString(text, 1F + -width - 1, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, Color.BLACK.rgb, fontShadowValue.get())
+            fontRenderer.drawString(text, 1F + -width + 1, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, Color.BLACK.rgb, fontShadowValue.get())
+            fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F - 1 else 1.5F - 1, Color.BLACK.rgb, fontShadowValue.get())
+            fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F + 1 else 1.5F + 1, Color.BLACK.rgb, fontShadowValue.get())
+            fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, fontShadowValue.get())
+                    }else{
+            fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, fontShadowValue.get())
+        }
 
         //AWTFontRenderer.assumeNonVolatile = false
 
@@ -343,7 +345,7 @@ class NameTags : Module() {
             }
         }
 
-        if (armorsValue.get() && entity is EntityPlayer) {
+        if (armorValue.get() && entity is EntityPlayer) {
             for (index in 0..4) {
                 if (entity.getEquipmentInSlot(index) == null)
                     continue
