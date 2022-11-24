@@ -27,6 +27,10 @@ public class TimerUtil {
         return false;
     }
 
+    public void setTime(final long time) {
+        this.lastMS = time;
+    }
+
     public long getTime() {
         return System.nanoTime() / 1000000L;
     }

@@ -10,14 +10,17 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.TickEvent;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.FluxClassic;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
+//import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer;
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.*;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline2.Client;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline2.DropdownGUI;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.OtcClickGUi;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.ClickUI;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -38,7 +41,7 @@ public class ClickGUI extends Module {
     public float animationHeight = 0;
 
     public String configName = "Basic";
-    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Novoline2", "Flux","Zeroday","Chocolate"}, "Null") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Novoline2", "Flux","Zeroday","Chocolate", "OneTap"}, "Null") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -65,6 +68,7 @@ public class ClickGUI extends Module {
     public final FloatValue animSpeedValue = new FloatValue("AnimSpeed", 1F, 0.01F, 5F, "x");
 
     public final BoolValue getClosePrevious = (BoolValue) new BoolValue("ClosePrevious",false);
+   public final BoolValue disp = new BoolValue("DisplayValue", false);
 
     public static Color generateColor() {
         Color c = new Color(255, 255, 255, 255);
@@ -109,17 +113,22 @@ public class ClickGUI extends Module {
                     mc.displayGuiScreen(new ClickUI());
                     this.setState(false);
                 } else {
-                    if (styleValue.get().equalsIgnoreCase("Chocolate")) {
-                        mc.displayGuiScreen(new SkeetStyle());
+                    if (styleValue.get().contains("OneTap")) {
+                        mc.displayGuiScreen(new OtcClickGUi());
+                        this.setState(false);
                     } else {
-                        updateStyle();
-                        mc.displayGuiScreen(LiquidBounce.clickGui);
-                        LiquidBounce.clickGui.progress = 0;
-                        LiquidBounce.clickGui.slide = 0;
-                        LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
-                        mc.displayGuiScreen(LiquidBounce.clickGui);
+                        if (styleValue.get().equalsIgnoreCase("Chocolate")) {
+                            mc.displayGuiScreen(new SkeetStyle());
+                        } else {
+                            updateStyle();
+                            mc.displayGuiScreen(LiquidBounce.clickGui);
+                            LiquidBounce.clickGui.progress = 0;
+                            LiquidBounce.clickGui.slide = 0;
+                            LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
+                            mc.displayGuiScreen(LiquidBounce.clickGui);
+                            }
+                        }
                     }
-                }
                 }
             }
         }

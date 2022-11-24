@@ -60,6 +60,10 @@ open class BoolValue(name: String, value: Boolean, displayable: () -> Boolean) :
 
     constructor(name: String, value: Boolean): this(name, value, { true } )
 
+    fun toggle() {
+        value = !value
+    }
+
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
@@ -135,12 +139,61 @@ open class TextValue(name: String, value: String, displayable: () -> Boolean) : 
         return this
     }
 }
-/*
-open class ColorValue(name: String, value: Color, val transparent: Boolean, displayable: () -> Boolean) : Value<Color>(name, value, displayable) {
 
-    constructor(name: String, value: Color, transparent: Boolean): this(name, value, transparent, { true } )
+open class ColorValue(name: String, value: Color, displayable: () -> Boolean) : Value<Color>(name, value, displayable) {
 
+    constructor(name: String, value: Color): this(name, value, { true } )
+
+    private val Expanded = false
+
+    open fun isExpanded(): Boolean {
+        return this.Expanded
+    }
+
+    fun getExpanded(): Boolean {
+        return Expanded
+    }
+
+    fun setExpanded(set: Boolean): Boolean {
+        return Expanded
+    }
     fun set(hue: Float, saturation: Float, brightness: Float, alpha: Float) = set(Color(Color.HSBtoRGB(hue, saturation, brightness)).setAlpha(alpha))
+
+    open fun getValue(): Int {
+        return super.get().rgb
+    }
+
+    open fun getHSB(): FloatArray? {
+        val hsbValues = FloatArray(3)
+        var saturation = 0.0f
+        var brightness = 0.0f
+        var hue = 0.0f
+        var cMax: Int = Math.max(this.getValue() ushr 16 and 0xFF, this.getValue() ushr 8 and 0xFF)
+        if (this.getValue() and 0xFF > cMax) {
+            cMax = this.getValue() and 0xFF
+        }
+        var cMin: Int = Math.min(this.getValue() ushr 16 and 0xFF, this.getValue() ushr 8 and 0xFF)
+        if (this.getValue() and 0xFF < cMin) {
+            cMin = this.getValue() and 0xFF
+        }
+        brightness = cMax / 255.0f
+        saturation = if (cMax != 0) (cMax - cMin) / cMax.toFloat() else 0.0f
+        if (saturation == 0.0f) {
+            hue = 0.0f
+        } else {
+            val redC: Float = (cMax - (this.getValue() ushr 16 and 0xFF)) / (cMax - cMin).toFloat()
+            val greenC: Float = (cMax - (this.getValue() ushr 8 and 0xFF)) / (cMax - cMin).toFloat()
+            val blueC: Float = (cMax - (this.getValue() and 0xFF)) / (cMax - cMin).toFloat()
+            hue = (if (this.getValue() ushr 16 and 0xFF == cMax) blueC - greenC else if (this.getValue() ushr 8 and 0xFF == cMax) 2.0f + redC - blueC else 4.0f + greenC - redC) / 6.0f
+            if (hue < 0) {
+                ++hue
+            }
+        }
+        hsbValues[0] = hue
+        hsbValues[1] = saturation
+        hsbValues[2] = brightness
+        return hsbValues
+    }
 
     override fun toJson(): JsonElement? {
         val valueObject = JsonObject()
@@ -158,7 +211,6 @@ open class ColorValue(name: String, value: Color, val transparent: Boolean, disp
     }
 
 }
-*/
 /**
  * Font value represents a value with a font
  */
@@ -195,6 +247,9 @@ open class ListValue(name: String, val values: Array<String>, value: String, dis
 
     constructor(name: String, values: Array<String>, value: String): this(name, values, value, { true } )
 
+    open fun getModes(): List<String?>? {
+        return values.toList()
+    }
     @JvmField
     var openList = false
     fun getModeListNumber(mode: String) = values.indexOf(mode)
@@ -204,6 +259,10 @@ open class ListValue(name: String, val values: Array<String>, value: String, dis
 
     init {
         this.value = value
+    }
+
+    open fun getModeGet(i: Int): String? {
+        return values[i]
     }
 
     operator fun contains(string: String?): Boolean {
