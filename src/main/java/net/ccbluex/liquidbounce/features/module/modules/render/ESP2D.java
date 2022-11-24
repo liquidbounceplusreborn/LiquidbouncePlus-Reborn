@@ -78,6 +78,7 @@ public final class ESP2D extends Module {
     public final BoolValue tagsValue = new BoolValue("Tags", true);
     public final BoolValue tagsBGValue = new BoolValue("Tags-Background", true, () -> tagsValue.get());
     public final BoolValue itemTagsValue = new BoolValue("Item-Tags", true);
+    public final BoolValue outlineFont = new BoolValue("OutlineFont", true);
     public final BoolValue clearNameValue = new BoolValue("Use-Clear-Name", false);
     public final BoolValue localPlayer = new BoolValue("Local-Player", true);
     public final BoolValue droppedItems = new BoolValue("Dropped-Items", false);
@@ -383,7 +384,16 @@ public final class ESP2D extends Module {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, x);
         GlStateManager.scale(scale, scale, scale);
-        Fonts.minecraftFont.drawStringWithShadow(text, 0, 0, color);
+        if(outlineFont.get()) {
+            Fonts.minecraftFont.drawString(text, 0 - 1, 0, Color.black.getRGB());
+            Fonts.minecraftFont.drawString(text, 0 + 1, 0, Color.black.getRGB());
+            Fonts.minecraftFont.drawString(text, 0, 0 - 1, Color.black.getRGB());
+            Fonts.minecraftFont.drawString(text, 0, 0 + 1, Color.black.getRGB());
+            Fonts.minecraftFont.drawString(text, 0, 0, color);
+        }else{
+            Fonts.minecraftFont.drawStringWithShadow(text, 0, 0, color);
+
+        }
         GlStateManager.popMatrix();
     }
 
