@@ -7,11 +7,11 @@ package net.ccbluex.liquidbounce.features.module.modules.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.FluxClassic;
-//import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.*;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nn.nn;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline2.DropdownGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.OtcClickGUi;
@@ -33,7 +33,7 @@ public class ClickGUI extends Module {
     public float animationHeight = 0;
 
     public String configName = "Basic";
-    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Novoline2", "Flux","Zeroday","Chocolate", "OneTap"}, "Null") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Novoline2", "Flux","Zeroday","Chocolate", "OneTap","NoName"}, "Null") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -97,27 +97,32 @@ public class ClickGUI extends Module {
                 mc.displayGuiScreen(new DropdownGUI());
                 this.setState(false);
             } else {
-            if (styleValue.get().contains("Flux")) {
-                mc.displayGuiScreen(new FluxClassic());
-                this.setState(false);
-            } else {
-                if (styleValue.get().contains("Zeroday")) {
-                    mc.displayGuiScreen(new ClickUI());
+                if (styleValue.get().contains("Flux")) {
+                    mc.displayGuiScreen(new FluxClassic());
                     this.setState(false);
                 } else {
-                    if (styleValue.get().contains("OneTap")) {
-                        mc.displayGuiScreen(new OtcClickGUi());
+                    if (styleValue.get().contains("Zeroday")) {
+                        mc.displayGuiScreen(new ClickUI());
                         this.setState(false);
                     } else {
-                        if (styleValue.get().equalsIgnoreCase("Chocolate")) {
-                            mc.displayGuiScreen(new SkeetStyle());
+                        if (styleValue.get().contains("OneTap")) {
+                            mc.displayGuiScreen(new OtcClickGUi());
+                            this.setState(false);
                         } else {
-                            updateStyle();
-                            mc.displayGuiScreen(LiquidBounce.clickGui);
-                            LiquidBounce.clickGui.progress = 0;
-                            LiquidBounce.clickGui.slide = 0;
-                            LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
-                            mc.displayGuiScreen(LiquidBounce.clickGui);
+                            if (styleValue.get().equalsIgnoreCase("Chocolate")) {
+                                mc.displayGuiScreen(new SkeetStyle());
+                            } else {
+                                if (styleValue.get().contains("NoName")) {
+                                    mc.displayGuiScreen(new nn());
+                                    this.setState(false);
+                                } else {
+                                    updateStyle();
+                                    mc.displayGuiScreen(LiquidBounce.clickGui);
+                                    LiquidBounce.clickGui.progress = 0;
+                                    LiquidBounce.clickGui.slide = 0;
+                                    LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
+                                    mc.displayGuiScreen(LiquidBounce.clickGui);
+                                }
                             }
                         }
                     }
