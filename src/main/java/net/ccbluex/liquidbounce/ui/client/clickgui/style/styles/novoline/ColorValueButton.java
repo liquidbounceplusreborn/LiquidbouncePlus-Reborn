@@ -1,6 +1,3 @@
-/*
- * Decompiled with CFR 0.136.
- */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline;
 
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
