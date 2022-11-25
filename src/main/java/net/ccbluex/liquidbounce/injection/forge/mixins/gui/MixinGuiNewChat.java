@@ -7,11 +7,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.misc.Patcher;
 import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
-import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiNewChat;
@@ -137,10 +134,6 @@ public abstract class MixinGuiNewChat {
         checkHud();
         boolean canFont = hud.getState() && hud.getFontChatValue().get();
 
-        if (Patcher.chatPosition.get()) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(0, -12, 0);
-        }
 
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
             int i = this.getLineCount();
@@ -239,9 +232,6 @@ public abstract class MixinGuiNewChat {
                 GlStateManager.popMatrix();
             }
         }
-
-        if (Patcher.chatPosition.get())
-            GlStateManager.popMatrix();
     }
 
     private String fixString(String str) {
@@ -281,7 +271,7 @@ public abstract class MixinGuiNewChat {
             int scaleFactor = sc.getScaleFactor();
             float chatScale = this.getChatScale();
             int mX = p_146236_1_ / scaleFactor - 3;
-            int mY = p_146236_2_ / scaleFactor - 27 - (Patcher.chatPosition.get() ? 12 : 0);
+            int mY = p_146236_2_ / scaleFactor - 27;
             mX = MathHelper.floor_float((float) mX / chatScale);
             mY = MathHelper.floor_float((float) mY / chatScale);
             if (mX >= 0 && mY >= 0) {

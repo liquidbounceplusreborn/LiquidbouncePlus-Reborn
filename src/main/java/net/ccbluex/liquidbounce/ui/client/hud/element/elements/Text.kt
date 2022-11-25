@@ -8,16 +8,14 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 import de.enzaxd.viaforge.ViaForge
 import de.enzaxd.viaforge.protocol.ProtocolCollection
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer
-import net.ccbluex.liquidbounce.features.module.modules.misc.BanChecker
-import net.ccbluex.liquidbounce.features.module.modules.misc.NameProtect
+import net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer
+import net.ccbluex.liquidbounce.features.module.modules.world.BanChecker
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils
@@ -26,7 +24,6 @@ import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.UiUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatAllowedCharacters

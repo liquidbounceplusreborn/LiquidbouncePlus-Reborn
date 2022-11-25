@@ -61,12 +61,6 @@ public class OtcClickGUi extends GuiScreen
         if (moduleCategory.getDisplayName().equals("World")) {
             return "world";
         }
-        if (moduleCategory.getDisplayName().equals("Misc")) {
-            return "misc";
-        }
-        if (moduleCategory.getDisplayName().equals("Exploit")) {
-            return "exploit";
-        }
         return "";
     }
     

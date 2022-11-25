@@ -9,7 +9,6 @@ import de.enzaxd.viaforge.ViaForge;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.JumpEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.misc.Patcher;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
@@ -109,7 +108,6 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             final KillAura auraMod = LiquidBounce.moduleManager.getModule(KillAura.class);
             final Sprint sprintMod = LiquidBounce.moduleManager.getModule(Sprint.class);
             float yaw = this.rotationYaw;
-            if (Patcher.jumpPatch.get())
                 if (auraMod.getState() && auraMod.getRotationStrafeValue().get().equalsIgnoreCase("strict") && auraMod.getTarget() != null)
                     yaw = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getYaw() : (RotationUtils.serverRotation != null ? RotationUtils.serverRotation.getYaw() : yaw);
                 else if (sprintMod.getState() && sprintMod.getAllDirectionsValue().get() && sprintMod.getMoveDirPatchValue().get())

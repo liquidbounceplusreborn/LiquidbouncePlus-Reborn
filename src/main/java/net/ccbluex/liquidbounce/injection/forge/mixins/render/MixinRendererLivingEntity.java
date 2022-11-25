@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import co.uk.hexeption.utils.OutlineUtils;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.color.ColorMixer;
+import net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer;
 import net.ccbluex.liquidbounce.features.module.modules.render.*;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityArmorStand;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.util.EnumChatFormatting;
@@ -38,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 
-import static net.ccbluex.liquidbounce.utils.render.GLUtils.glDisable;
 import static net.minecraft.client.renderer.GlStateManager.disableCull;
 import static org.lwjgl.opengl.GL11.*;
 

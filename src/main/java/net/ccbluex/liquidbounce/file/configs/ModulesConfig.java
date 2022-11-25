@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
-import net.ccbluex.liquidbounce.features.module.modules.misc.AutoDisable.DisableEvent;
+import net.ccbluex.liquidbounce.features.module.modules.world.AutoDisable.DisableEvent;
 
 import java.io.*;
 import java.util.Iterator;

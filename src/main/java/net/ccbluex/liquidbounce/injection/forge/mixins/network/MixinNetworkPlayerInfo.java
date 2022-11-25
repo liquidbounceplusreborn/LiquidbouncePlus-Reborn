@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import com.mojang.authlib.GameProfile;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.misc.NameProtect;
+import net.ccbluex.liquidbounce.features.module.modules.render.NameProtect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.resources.DefaultPlayerSkin;

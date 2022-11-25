@@ -46,7 +46,6 @@ class HUD : Module() {
     val containerButton = ListValue("Container-Button", arrayOf("TopLeft", "TopRight", "Off"), "TopLeft")
     val invEffectOffset = BoolValue("InvEffect-Offset", false)
     val domainValue = TextValue("Scoreboard-Domain", ".hud scoreboard-domain <your domain here>")
-
     private var hotBarX = 0F
 
     @EventTarget

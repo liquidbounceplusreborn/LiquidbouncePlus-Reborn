@@ -12,21 +12,18 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.combat.BowAimbot;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
-import net.ccbluex.liquidbounce.features.module.modules.misc.Patcher;
-import net.ccbluex.liquidbounce.features.module.modules.misc.SpinBot;
+import net.ccbluex.liquidbounce.features.module.modules.world.AbortBreaking;
+import net.ccbluex.liquidbounce.features.module.modules.world.Disabler;
+import net.ccbluex.liquidbounce.features.module.modules.world.MultiActions;
+import net.ccbluex.liquidbounce.features.module.modules.render.SpinBot;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.world.*;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
 import net.ccbluex.liquidbounce.ui.client.GuiMainMenu;
-//import net.ccbluex.liquidbounce.ui.client.GuiWelcome;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.render.IconUtils;
-//import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -43,6 +40,7 @@ import net.minecraft.client.stream.IStream;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Util;
@@ -240,21 +238,6 @@ public abstract class MixinMinecraft {
         LiquidBounce.INSTANCE.stopClient();
     }
 
-    @Inject(method = "clickMouse", at = @At("HEAD"))
-    private void clickMouse(CallbackInfo callbackInfo) {
-        CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
-
-        if (Patcher.noHitDelay.get() || LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
-            leftClickCounter = 0;
-    }
-
-    @Redirect(
-            method = "clickMouse",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;swingItem()V")
-    )
-    private void fixAttackOrder_VanillaSwing() {
-        AttackOrder.sendConditionalSwing(this.objectMouseOver);
-    }
 
     @Inject(method = "getRenderViewEntity", at = @At("HEAD"))
     public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir) {
@@ -351,7 +334,7 @@ public abstract class MixinMinecraft {
             method = "clickMouse",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;attackEntity(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/entity/Entity;)V")
     )
-    private void fixAttackOrder_VanillaAttack() {
+    private void fixAttackOrder_VanillaAttack(PlayerControllerMP instance, EntityPlayer p_attackEntity_1_, Entity p_attackEntity_2_) {
         AttackOrder.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
     }
 

@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.combat.NoFriends;
-import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot;
-import net.ccbluex.liquidbounce.features.module.modules.misc.Teams;
+import net.ccbluex.liquidbounce.features.module.modules.world.AntiBot;
+import net.ccbluex.liquidbounce.features.module.modules.world.Teams;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.entity.Entity;

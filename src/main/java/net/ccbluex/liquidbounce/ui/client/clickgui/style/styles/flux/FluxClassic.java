@@ -442,10 +442,6 @@ public class FluxClassic extends GuiScreen {
                 return "";
             case WORLD:
                 return "";
-            case MISC:
-                return "";
-            case EXPLOIT:
-                return "";
             default:
                 return "";
         }

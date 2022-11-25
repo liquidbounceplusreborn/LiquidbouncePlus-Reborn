@@ -9,8 +9,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.misc.AutoDisable.DisableEvent
+import net.ccbluex.liquidbounce.features.module.modules.world.AutoDisable.DisableEvent
 import net.ccbluex.liquidbounce.utils.ClientUtils
 
 class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
