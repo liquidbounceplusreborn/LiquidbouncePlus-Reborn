@@ -12,12 +12,10 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.combat.BowAimbot;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.world.AbortBreaking;
-import net.ccbluex.liquidbounce.features.module.modules.world.Disabler;
-import net.ccbluex.liquidbounce.features.module.modules.world.MultiActions;
-import net.ccbluex.liquidbounce.features.module.modules.render.SpinBot;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
+import net.ccbluex.liquidbounce.features.module.modules.player.Patcher;
 import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
+import net.ccbluex.liquidbounce.features.module.modules.render.SpinBot;
 import net.ccbluex.liquidbounce.features.module.modules.world.*;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
 import net.ccbluex.liquidbounce.ui.client.GuiMainMenu;
@@ -35,12 +33,11 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.stream.IStream;
-import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Util;
@@ -53,11 +50,7 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -238,6 +231,21 @@ public abstract class MixinMinecraft {
         LiquidBounce.INSTANCE.stopClient();
     }
 
+    @Inject(method = "clickMouse", at = @At("HEAD"))
+    private void clickMouse(CallbackInfo callbackInfo) {
+        CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
+
+        if (Patcher.noHitDelay.get() || LiquidBounce.moduleManager.getModule(AutoClicker.class).getState())
+            leftClickCounter = 0;
+    }
+
+    @Redirect(
+            method = "clickMouse",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;swingItem()V")
+    )
+    private void fixAttackOrder_VanillaSwing() {
+        AttackOrder.sendConditionalSwing(this.objectMouseOver);
+    }
 
     @Inject(method = "getRenderViewEntity", at = @At("HEAD"))
     public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir) {
@@ -254,75 +262,75 @@ public abstract class MixinMinecraft {
             final Nuker nuker = LiquidBounce.moduleManager.getModule(Nuker.class);
             final EntityLivingBase entityLivingBase = (EntityLivingBase) renderViewEntity;
             final float yaw = RotationUtils.serverRotation.getYaw();
-            if (killAura.getTarget() != null && Rotations.getState() && Rotations.getHeadValue().get()) {
+            if (killAura.getTarget() != null && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (killAura.getTarget() != null && Rotations.getState() && Rotations.getBodyValue().get()) {
+            if (killAura.getTarget() != null && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (scaffold.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
+            if (scaffold.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (scaffold.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
+            if (scaffold.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (disabler.getCanRenderInto3D() && Rotations.getState() && Rotations.getHeadValue().get()) {
+            if (disabler.getCanRenderInto3D() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (disabler.getCanRenderInto3D() && Rotations.getState() && Rotations.getBodyValue().get()) {
+            if (disabler.getCanRenderInto3D() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (spinBot.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
+            if (spinBot.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (spinBot.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
+            if (spinBot.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (chestAura.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
+            if (chestAura.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (chestAura.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
+            if (chestAura.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (fly.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
+            if (fly.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (fly.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
+            if (fly.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (bowAimbot.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
+            if (bowAimbot.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (bowAimbot.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
+            if (bowAimbot.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (fucker.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
+            if (fucker.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (fucker.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
+            if (fucker.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
-            if (nuker.getState() && Rotations.getState() && Rotations.getHeadValue().get()) {
+            if (nuker.getState() && Rotations.getHeadValue().get()) {
                 entityLivingBase.rotationYawHead = yaw;
                 entityLivingBase.prevRotationYawHead = yaw;
             }
-            if (nuker.getState() && Rotations.getState() && Rotations.getBodyValue().get()) {
+            if (nuker.getState() && Rotations.getBodyValue().get()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
@@ -334,7 +342,7 @@ public abstract class MixinMinecraft {
             method = "clickMouse",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;attackEntity(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/entity/Entity;)V")
     )
-    private void fixAttackOrder_VanillaAttack(PlayerControllerMP instance, EntityPlayer p_attackEntity_1_, Entity p_attackEntity_2_) {
+    public void fixAttackOrder_VanillaAttack() {
         AttackOrder.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
     }
 
@@ -347,7 +355,7 @@ public abstract class MixinMinecraft {
     private void rightClickMouse(final CallbackInfo callbackInfo) {
         CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT);
 
-        final FastPlace fastPlace = LiquidBounce.moduleManager.getModule(FastPlace.class);
+        final FastPlace fastPlace = (FastPlace) LiquidBounce.moduleManager.getModule(FastPlace.class);
 
         if (fastPlace.getState())
             rightClickDelayTimer = fastPlace.getSpeedValue().get();

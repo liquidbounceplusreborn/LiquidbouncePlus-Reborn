@@ -67,6 +67,7 @@ class ModuleManager : Listenable {
                 PlayerEdit::class.java,
                 FPSHurtCam::class.java,
                 FastBreak::class.java,
+                Patcher::class.java,
                 FastPlace::class.java,
                 ESP::class.java,
                 HudDesigner::class.java,
