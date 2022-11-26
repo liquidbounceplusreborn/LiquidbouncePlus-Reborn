@@ -39,7 +39,7 @@ object LiquidBounce {
     const val CLIENT_NAME = "LiquidBounce+"
     const val CLIENT_VERSION = "reborn"
     const val CLIENT_CREATOR = "CCBlueX,exit-scammed,Random,wxdbie"
-    const val CLIENT_CLOUD = "https://wysi-foundation.github.io/LiquidCloud/LiquidBounce"
+    const val CLIENT_CLOUD = "https://liquidbounceplusreborn.github.io/cloud/"
 
     var isStarting = false
     var mainMenuPrep = false
