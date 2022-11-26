@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday;
 
+import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -32,14 +33,15 @@ public class ValueButton {
     }
     
     public void render(int mouseX, int mouseY, Window parent) {
+        int guiColor = ClickGUI.generateColor().getRGB();
         animationY = y;
-        int left = Colors.getColor(ColorUtils.rainbow().getRGB(),150);
-        int right = Colors.getColor(ColorUtils.rainbow(1).getRGB(),150);
+        int left = guiColor;
+        int right = guiColor;
         if (value instanceof BoolValue){
             RenderUtils.drawRect(x+5,animationY-5,x+120,animationY+15,new Color(46,46,46));
             ValueFont.drawString(value.getName(), (float) (x+8), (float) (animationY+2.5),-1);
             if (((BoolValue) value).get()){
-                parent.drawGradientRect(x+106,animationY,x+116,animationY+10,true, ColorUtils.rainbow().getRGB(),ColorUtils.rainbow(1).getRGB());
+                parent.drawGradientRect(x+106,animationY,x+116,animationY+10,true, guiColor,guiColor);
             }else{
                 parent.drawGradientRect(x+106,animationY,x+116,animationY+10,true, new Color(56,56,56).getRGB(),new Color(56,56,56).getRGB());
             }
@@ -55,7 +57,7 @@ public class ValueButton {
             RenderUtils.drawRect(posX, animationY+15, posX+90, animationY+19,(new Color(56,56,56)).getRGB());
 
             parent.drawGradientRect(posX, animationY+15, posX+(optionInt.getTranslate().getX()-2),animationY+19,true,left,right);
-            parent.drawGradientRect(posX+(optionInt.getTranslate().getX()-1), animationY+12, posX+(optionInt.getTranslate().getX()+3),animationY+22,true,ColorUtils.rainbow().getRGB(),ColorUtils.rainbow(1).getRGB());
+            parent.drawGradientRect(posX+(optionInt.getTranslate().getX()-1), animationY+12, posX+(optionInt.getTranslate().getX()+3),animationY+22,true,guiColor,guiColor);
             ValueFont.drawString(String.valueOf(value.get()), posX+(optionInt.getTranslate().getX()+5), animationY+15,-1);
             if (this.isHovered(posX,animationY+15, posX+90,animationY+19, mouseX, mouseY) && Mouse.isButtonDown(0))
                 optionInt.set(Math.toIntExact(Math.round(optionInt.getMinimum() + (optionInt.getMaximum() - optionInt.getMinimum()) * Math.min(max, 1.0))));
@@ -70,7 +72,7 @@ public class ValueButton {
             RenderUtils.drawRect(posX, animationY+15, posX+90, animationY+19,(new Color(56,56,56)).getRGB());
 
             parent.drawGradientRect(posX, animationY+15, posX+(optionInt.getTranslate().getX()-2),animationY+19,true,left,right);
-            parent.drawGradientRect(posX+(optionInt.getTranslate().getX()-1), animationY+12, posX+(optionInt.getTranslate().getX()+3),animationY+22,true,ColorUtils.rainbow().getRGB(),ColorUtils.rainbow(1).getRGB());
+            parent.drawGradientRect(posX+(optionInt.getTranslate().getX()-1), animationY+12, posX+(optionInt.getTranslate().getX()+3),animationY+22,true,guiColor,guiColor);
             ValueFont.drawString(String.valueOf(value.get()), posX+(optionInt.getTranslate().getX()+5), animationY+15,-1);
             if (this.isHovered(posX,animationY+15, posX+90,animationY+19, mouseX, mouseY) && Mouse.isButtonDown(0))
                 optionInt.set(Math.round((optionInt.getMinimum() + (optionInt.getMaximum() - optionInt.getMinimum()) * Math.min(max, 1.0)) * 100.0) / 100.0);
@@ -83,10 +85,10 @@ public class ValueButton {
             if (((ListValue) value).openList){
                 listY = animationY+16;
                 for (String value1 : ((ListValue) value).getValues()){
-                    Fonts.fontSFUI35.drawString("n",x+11,listY,ColorUtils.rainbow().getRGB());
+                    Fonts.fontSFUI35.drawString("n",x+11,listY,guiColor);
                     Fonts.fontSFUI35.drawString(value1,(float) (x+28), listY+1,-1);
                     if (value1.equals(((ListValue) value).getValue())){
-                        GuiRenderUtils.drawRoundedRect(x+13.2f,listY-0.2F, 8,8,13f,ColorUtils.rainbow().getRGB(),1f,ColorUtils.rainbow().getRGB());
+                        GuiRenderUtils.drawRoundedRect(x+13.2f,listY-0.2F, 8,8,13f,guiColor,1f,guiColor);
                     }
                     listY+=15;
                 }

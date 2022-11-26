@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.RenderUtils;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
@@ -56,6 +57,7 @@ public class Window {
     }
     
     public void render(int tick,int mouseX,int mouseY){
+        int guiColor = ClickGUI.generateColor().getRGB();
         if(dragged) {
             x = mouseX2 + mouseX;
             y = mouseY2 + mouseY;
@@ -148,8 +150,8 @@ public class Window {
         Stencil.write(false);
         Stencil.erase(true);
         Stencil.dispose();
-        drawGradientRect(x,y,x+125,y+25,false,ColorUtils.rainbow().getRGB(),ColorUtils.rainbow().getRGB());
-        net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect(x,y,x+26,y+25,ColorUtils.rainbow().getRGB());
+        drawGradientRect(x,y,x+125,y+25,false,guiColor,guiColor);
+        net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect(x,y,x+26,y+25,guiColor);
         net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage(new ResourceLocation("liquidbounce+/clickgui/zeroday/" + moduleCategory.getDisplayName() + ".png"), (int) (x+pngX), (int) (y+pngY),pngWidth,pngHeight);
         TitleFont.drawString(moduleCategory.getDisplayName(),x+31,y+5, -1);
         GlStateManager.pushMatrix();

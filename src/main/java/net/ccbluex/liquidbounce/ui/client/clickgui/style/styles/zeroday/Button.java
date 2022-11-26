@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday;
 
 
 import net.ccbluex.liquidbounce.features.module.Module;
+import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
@@ -40,9 +41,10 @@ public class Button {
     }
     
     public void render(int mouseX,int mouseY,Window window){
+        int guiColor = ClickGUI.generateColor().getRGB();
         animationY = y;
         if (module.getState()){
-            this.parent.drawGradientRect(x,animationY-7,x+125,animationY+17,true, ColorUtils.rainbow().getRGB(),ColorUtils.rainbow(1).getRGB());
+            this.parent.drawGradientRect(x,animationY-7,x+125,animationY+17,true, guiColor, guiColor);
         }
         GlStateManager.resetColor();
 

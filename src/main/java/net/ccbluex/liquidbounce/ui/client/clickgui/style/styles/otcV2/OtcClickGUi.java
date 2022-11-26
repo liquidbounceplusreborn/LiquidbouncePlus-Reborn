@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2;
 import kotlin.jvm.JvmStatic;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
+import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
 import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Utils.OtcScroll;
@@ -69,19 +70,17 @@ public class OtcClickGUi extends GuiScreen
     }
     
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
+        int guiColor = ClickGUI.generateColor().getRGB();
         try {
             if (this.dragging) {
                 this.mainx = (float)(this.x2 + mouseX);
                 this.mainy = (float)(this.y2 + mouseY);
             }
-            final Integer hudHSB = hud.getHudcolor().get();
-            final Color color = Color.getHSBColor(hudHSB, hudHSB, 0.5f);
             final ScaledResolution scaledResolution = new ScaledResolution(this.mc);
             RenderUtils.drawRect(0.0f, 0.0f, (float)scaledResolution.getScaledWidth(), (float)scaledResolution.getScaledHeight(), new Color(0, 0, 0, 120).getRGB());
             RoundedUtil.drawRound(this.mainx, this.mainy, 290.0f, this.hight + 180.0f, 3.0f, new Color(44, 47, 56));
             RoundedUtil.drawRound(this.mainx, this.mainy - 50.0f, 290.0f, this.hight - 80.0f, 3.0f, new Color(44, 47, 56));
-            RoundedUtil.drawGradientHorizontal(this.mainx, this.mainy - 50.0f, 290.0f, this.hight - 116.0f, 3.0f, color, new Color(hud.getHudcolor().get()));
+            RoundedUtil.drawGradientHorizontal(this.mainx, this.mainy - 50.0f, 290.0f, this.hight - 116.0f, 3.0f, new Color(guiColor), new Color(guiColor));
             Fonts.fontTahoma.drawString("onetap.su", this.mainx + 11.0f, this.mainy - 31.0f, new Color(255, 255, 255).getRGB());
             RoundedUtil.drawRound(this.mainx + 64.0f, this.mainy - 35.0f, 0.5f, this.hight - 105.0f, 1.0f, new Color(255, 255, 255, 150));
             final CategoryScreen selectedTab = this.getSelectedTab();

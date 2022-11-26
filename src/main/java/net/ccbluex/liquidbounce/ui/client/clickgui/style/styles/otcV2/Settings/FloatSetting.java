@@ -30,7 +30,7 @@ public class FloatSetting extends Downward<FloatValue>
 
     @Override
     public void draw(final int mouseX, final int mouseY) {
-        HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
+        int guiColor = ClickGUI.generateColor().getRGB();
         this.modulex = OtcClickGUi.getMainx();
         this.moduley = OtcClickGUi.getMainy();
         this.numbery = this.pos.y + this.getScrollY();
@@ -39,7 +39,7 @@ public class FloatSetting extends Downward<FloatValue>
         final double percentBar = (((FloatValue)this.setting).get() - (double)((FloatValue)this.setting).getMinimum()) / (((FloatValue)this.setting).getMaximum() - ((FloatValue)this.setting).getMinimum());
         this.percent = Math.max(0.0f, Math.min(1.0f, (float)(this.percent + (Math.max(0.0, Math.min(percentBar, 1.0)) - this.percent) * (0.2 / clamp))));
         RoundedUtil.drawRound(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.numbery + 8.0f, 75.0f, 2.5f, 1.0f, new Color(34, 38, 48));
-        RoundedUtil.drawRound(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.numbery + 8.0f, 75.0f * this.percent, 2.5f, 1.0f, new Color(hud.getHudcolor().get()));
+        RoundedUtil.drawRound(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.numbery + 8.0f, 75.0f * this.percent, 2.5f, 1.0f, new Color(guiColor));
         Fonts.fontTahoma.drawString(((FloatValue)this.setting).getName(), this.modulex + 5.0f + this.pos.x + 4.0f, this.moduley + 17.0f + this.numbery + 8.0f, new Color(200, 200, 200).getRGB());
         if (this.iloveyou) {
             final float percentt = Math.min(1.0f, Math.max(0.0f, (mouseX - (this.modulex + 5.0f + this.pos.x + 55.0f)) / 99.0f * 1.3f));
@@ -53,7 +53,7 @@ public class FloatSetting extends Downward<FloatValue>
             Fonts.fontTahoma.drawString(((Value<?>)this.setting).get() + "", this.modulex + 5.0f + this.pos.x + 55.0f + 62.0f * this.percent, this.moduley + 17.0f + this.numbery + 8.0f + 8.0f, new Color(250, 250, 250).getRGB());
         }
         if (this.isHovered(mouseX, mouseY)) {
-            RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.numbery + 8.0f, 75.0f, 2.5f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, new Color(hud.getHudcolor().get()).getRGB());
+            RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.numbery + 8.0f, 75.0f, 2.5f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, guiColor);
         }
     }
 

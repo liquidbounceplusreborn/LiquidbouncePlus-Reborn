@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
+import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
 import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings.*;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Utils.Position;
@@ -68,20 +69,18 @@ public class ModuleRender
     }
     
     public void drawScreen(final int mouseX, final int mouseY) {
-        HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
+        int guiColor = ClickGUI.generateColor().getRGB();
         try {
             this.modulex = OtcClickGUi.getMainx();
             this.moduley = OtcClickGUi.getMainy();
             this.x = this.pos.x;
             this.y = this.pos.y + this.getScrollY();
-            final Integer hudHSB = hud.getHudcolor().get();
-            final Color color = Color.getHSBColor(hudHSB, hudHSB, 0.5f);
             RoundedUtil.drawRound(this.modulex + 5.0f + this.x, this.moduley + 17.0f + this.y, 135.0f, this.pos.height, 3.0f, new Color(50, 54, 65));
-            RoundedUtil.drawGradientHorizontal(this.modulex + 5.0f + this.x, this.moduley + 18.0f + this.y, 135.0f, 1.5f, 1.0f, color, new Color(hud.getHudcolor().get()));
+            RoundedUtil.drawGradientHorizontal(this.modulex + 5.0f + this.x, this.moduley + 18.0f + this.y, 135.0f, 1.5f, 1.0f, new Color(guiColor), new Color(guiColor));
             Fonts.fontTahoma.drawString(this.parentModule.getName(), this.modulex + 5.0f + this.x, this.moduley + 17.0f + this.y - 8.0f, new Color(255, 255, 255).getRGB());
             RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.x + 4.0f, this.moduley + 17.0f + this.y + 8.0f, 7.0f, 7.0f, 1.0f, this.parentModule.getState() ? new Color(86, 94, 115).getRGB() : new Color(50, 54, 65).getRGB(), 1.0f, this.parentModule.getState() ? new Color(86, 94, 115).getRGB() : new Color(85, 90, 96).getRGB());
             if (this.isHovered(mouseX, mouseY)) {
-                RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.x + 4.0f, this.moduley + 17.0f + this.y + 8.0f, 7.0f, 7.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, new Color(hud.getHudcolor().get()).getRGB());
+                RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.x + 4.0f, this.moduley + 17.0f + this.y + 8.0f, 7.0f, 7.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, new Color(guiColor).getRGB());
             }
             Fonts.fontTahoma.drawString("Enable", this.modulex + 5.0f + this.x + 4.0f + 10.0f, this.moduley + 17.0f + this.y + 8.0f + 3.0f, new Color(200, 200, 200).getRGB());
             for (final Downward downward : this.downwards) {
@@ -90,7 +89,7 @@ public class ModuleRender
             RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.x + 115.0f - Fonts.fontTahoma.getStringWidth(this.binds ? "..." : Keyboard.getKeyName(this.parentModule.getKeyBind()).toLowerCase()) + 13.0f, this.moduley + 17.0f + this.y + 8.0f + 0.5f, (float)(Fonts.fontTahoma.getStringWidth(this.binds ? "..." : Keyboard.getKeyName(this.parentModule.getKeyBind()).toLowerCase()) + 4), 7.0f, 1.0f, new Color(28, 32, 40).getRGB(), 1.0f, new Color(86, 94, 115).getRGB());
             Fonts.fontTahoma.drawString(this.binds ? "..." : Keyboard.getKeyName(this.parentModule.getKeyBind()).toLowerCase(), this.modulex + 5.0f + this.x + 117.0f - Fonts.fontTahoma.getStringWidth(this.binds ? "..." : Keyboard.getKeyName(this.parentModule.getKeyBind()).toLowerCase()) + 13.0f, this.moduley + 17.0f + this.y + 11.0f, -1);
             if (this.isKeyBindHovered(mouseX, mouseY)) {
-                RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.x + 115.0f - Fonts.fontTahoma.getStringWidth(this.binds ? "..." : Keyboard.getKeyName(this.parentModule.getKeyBind()).toLowerCase()) + 13.0f, this.moduley + 17.0f + this.y + 8.0f + 0.5f, (float)(Fonts.fontTahoma.getStringWidth(this.binds ? "..." : Keyboard.getKeyName(this.parentModule.getKeyBind()).toLowerCase()) + 4), 7.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, new Color(hud.getHudcolor().get()).getRGB());
+                RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.x + 115.0f - Fonts.fontTahoma.getStringWidth(this.binds ? "..." : Keyboard.getKeyName(this.parentModule.getKeyBind()).toLowerCase()) + 13.0f, this.moduley + 17.0f + this.y + 8.0f + 0.5f, (float)(Fonts.fontTahoma.getStringWidth(this.binds ? "..." : Keyboard.getKeyName(this.parentModule.getKeyBind()).toLowerCase()) + 4), 7.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, guiColor);
             }
         }
         catch (NullPointerException e) {

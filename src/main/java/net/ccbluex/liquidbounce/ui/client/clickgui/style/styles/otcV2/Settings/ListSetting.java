@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
 import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.*;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
@@ -30,14 +31,14 @@ public class ListSetting extends Downward
     
     @Override
     public void draw(final int mouseX, final int mouseY) {
-        HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
+        int guiColor = ClickGUI.generateColor().getRGB();
         this.modulex = OtcClickGUi.getMainx();
         this.moduley = OtcClickGUi.getMainy();
         this.listy = this.pos.y + this.getScrollY();
         Fonts.fontTahoma.drawString(this.listValue.getName(), this.modulex + 5.0f + this.pos.x + 4.0f, this.moduley + 17.0f + this.listy + 13.0f, new Color(200, 200, 200).getRGB());
         RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 80.0f, this.moduley + 17.0f + this.listy + 8.0f, 50.0f, 11.0f, 1.0f, new Color(59, 63, 72).getRGB(), 1.0f, new Color(85, 90, 96).getRGB());
         if (this.isHovered(mouseX, mouseY)) {
-            RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 80.0f, this.moduley + 17.0f + this.listy + 8.0f, 50.0f, 11.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, new Color(hud.getHudcolor().get()).getRGB());
+            RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 80.0f, this.moduley + 17.0f + this.listy + 8.0f, 50.0f, 11.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, guiColor);
         }
         Fonts.fontTahoma.drawString(this.listValue.get() + "", this.modulex + 5.0f + this.pos.x + 82.0f, this.moduley + 17.0f + this.listy + 13.0f, new Color(200, 200, 200).getRGB());
         this.arrowAnimation.setDirection(this.listValue.openList ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -46,7 +47,7 @@ public class ListSetting extends Downward
             GL11.glTranslatef(0.0f, 0.0f, 2.0f);
             RenderUtils.drawBorderedRect(this.modulex + 5.0f + this.pos.x + 80.0f, this.moduley + 17.0f + this.listy + 8.0f + 13.0f, this.modulex + 5.0f + this.pos.x + 80.0f + 50.0f, this.moduley + 17.0f + this.listy + 8.0f + 13.0f + this.listValue.getModes().size() * 11.0f, 1.0f, new Color(85, 90, 96).getRGB(), new Color(59, 63, 72).getRGB());
             for (final String option : this.listValue.getModes()) {
-                Fonts.fontTahoma.drawString(option, this.modulex + 5.0f + this.pos.x + 82.0f, this.moduley + 17.0f + this.listy + 1.0f + 13.0f + 12.0f + this.listValue.getModeListNumber(option) * 11, option.equals(((Value<?>)this.listValue).get()) ? new Color(hud.getHudcolor().get()).getRGB() : new Color(200, 200, 200).getRGB());
+                Fonts.fontTahoma.drawString(option, this.modulex + 5.0f + this.pos.x + 82.0f, this.moduley + 17.0f + this.listy + 1.0f + 13.0f + 12.0f + this.listValue.getModeListNumber(option) * 11, option.equals(((Value<?>)this.listValue).get()) ? guiColor : new Color(200, 200, 200).getRGB());
             }
             GL11.glTranslatef(0.0f, 0.0f, -2.0f);
         }

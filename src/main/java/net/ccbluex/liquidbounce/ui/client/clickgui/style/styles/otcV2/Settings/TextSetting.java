@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
 import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Downward;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.ModuleRender;
@@ -27,13 +28,13 @@ public class TextSetting extends Downward<TextValue>
     
     @Override
     public void draw(final int mouseX, final int mouseY) {
-        HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
+        int guiColor = ClickGUI.generateColor().getRGB();
         this.modulex = OtcClickGUi.getMainx();
         this.moduley = OtcClickGUi.getMainy();
         this.texty = this.pos.y + this.getScrollY();
-        RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.texty + 8.0f, 75.0f, 11.0f, 1.0f, new Color(59, 63, 72).getRGB(), 1.0f, this.textValue.getTextHovered() ? new Color(hud.getHudcolor().get()).getRGB() : new Color(85, 90, 96).getRGB());
+        RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.texty + 8.0f, 75.0f, 11.0f, 1.0f, new Color(59, 63, 72).getRGB(), 1.0f, this.textValue.getTextHovered() ? guiColor : new Color(85, 90, 96).getRGB());
         if (this.isHovered(mouseX, mouseY) && !this.textValue.getTextHovered()) {
-            RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.texty + 8.0f, 75.0f, 11.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, new Color(hud.getHudcolor().get()).getRGB());
+            RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.texty + 8.0f, 75.0f, 11.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, guiColor);
         }
         Fonts.fontTahoma.drawString(this.textValue.getName(), this.modulex + 5.0f + this.pos.x + 4.0f, this.moduley + 17.0f + this.texty + 13.0f, new Color(200, 200, 200).getRGB());
         if (Fonts.fontTahoma.getStringWidth(this.textValue.getTextHovered() ? (this.textValue.get() + "_") : ((Value<String>)this.textValue).get()) > 70) {
