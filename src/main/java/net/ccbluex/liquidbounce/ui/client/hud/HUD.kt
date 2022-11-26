@@ -29,6 +29,7 @@ open class HUD : MinecraftInstance() {
                 Armor::class.java,
                 SessionInfo::class.java,
                 Arraylist::class.java,
+                Indicators::class.java,
                 Effects::class.java,
                 Image::class.java,
                 Model::class.java,

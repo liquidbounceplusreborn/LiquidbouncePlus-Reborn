@@ -129,6 +129,37 @@ public final class RenderUtils extends MinecraftInstance {
         drawTexturedRect(x, y + height, width, 9, "panelbottom");
     }
 
+    public static void drawNewRect(double left, double top, double right, double bottom, int color) {
+        if (left < right) {
+            double i = left;
+            left = right;
+            right = i;
+        }
+        if (top < bottom) {
+            double j = top;
+            top = bottom;
+            bottom = j;
+        }
+        float f3 = (float)(color >> 24 & 0xFF) / 255.0f;
+        float f = (float)(color >> 16 & 0xFF) / 255.0f;
+        float f1 = (float)(color >> 8 & 0xFF) / 255.0f;
+        float f2 = (float)(color & 0xFF) / 255.0f;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer vertexbuffer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1);
+        GlStateManager.color(f, f1, f2, f3);
+        vertexbuffer.begin(7, DefaultVertexFormats.POSITION);
+        vertexbuffer.pos(left, bottom, 0.0).endVertex();
+        vertexbuffer.pos(right, bottom, 0.0).endVertex();
+        vertexbuffer.pos(right, top, 0.0).endVertex();
+        vertexbuffer.pos(left, top, 0.0).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
     public static void drawCheckeredBackground(final float x, float y, final float x2, final float y2) {
         drawRect(x, y, x2, y2, getColor(16777215));
         boolean offset = false;
