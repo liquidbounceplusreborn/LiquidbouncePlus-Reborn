@@ -52,7 +52,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
     val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255)
     private val saturationValue = FloatValue("Saturation", 0.9f, 0f, 1f)
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
-    private val skyDistanceValue = IntegerValue("Sky-Distance", 2, 0, 4)
+    private val skyDistanceValue = IntegerValue("Sky-Distance", 2, -4, 4)
     private val cRainbowSecValue = IntegerValue("CRainbow-Seconds", 2, 1, 10)
     private val cRainbowDistValue = IntegerValue("CRainbow-Distance", 2, 1, 6)
     private val mixerSecValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
