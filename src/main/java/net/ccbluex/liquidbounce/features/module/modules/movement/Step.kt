@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.stats.StatList
 import net.minecraft.util.MathHelper
+import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -29,7 +30,7 @@ class Step : Module() {
      */
 
     private val modeValue = ListValue("Mode", arrayOf(
-        "Vanilla", "Jump", "NCPPacket", "NCP", "MotionNCP", "OldNCP", "AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside", "1.5Twillight"
+        "Vanilla", "Jump", "NCPPacket", "NCP", "MotionNCP", "OldNCP", "Vulcan","Verus","AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside", "1.5Twillight",
     ), "NCP")
 
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
@@ -317,6 +318,55 @@ class Step : Module() {
                         stepY + 1.001335979112147, stepZ, false))
 
                     // Reset timer
+                    timer.reset()
+                }
+                mode.equals("Vulcan", true) -> {
+                    val rstepHeight = mc.thePlayer.entityBoundingBox.minY - stepY
+                    fakeJump()
+                    when {
+                        rstepHeight > 2.0 -> {
+                            val stpPacket = arrayOf(0.5, 1.0, 1.5, 2.0)
+                            stpPacket.forEach {
+                                mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + it, stepZ, true))
+                            }
+                        }
+
+                        rstepHeight <= 2.0 && rstepHeight > 1.5 -> {
+                            val stpPacket = arrayOf(0.5, 1.0, 1.5)
+                            stpPacket.forEach {
+                                mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + it, stepZ, true))
+                            }
+                        }
+
+                        rstepHeight <= 1.5 && rstepHeight > 1.0 -> {
+                            val stpPacket = arrayOf(0.5, 1.0)
+                            stpPacket.forEach {
+                                mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + it, stepZ, true))
+                            }
+                        }
+
+                        rstepHeight <= 1.0 && rstepHeight > 0.6 -> {
+                            val stpPacket = arrayOf(0.5)
+                            stpPacket.forEach {
+                                mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
+                                    stepY + it, stepZ, true))
+                            }
+                        }
+                    }
+                    timer.reset()
+                }
+                mode.equals("Verus", true) -> {
+                    val rstepHeight = mc.thePlayer.entityBoundingBox.minY - stepY
+                    mc.timer.timerSpeed = 1f / ceil(rstepHeight * 2.0).toFloat()
+                    var stpHight = 0.0
+                    fakeJump()
+                    repeat ((ceil(rstepHeight * 2.0) - 1.0).toInt()) {
+                        stpHight += 0.5
+                        mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX, stepY + stpHight, stepZ, true))
+                    }
                     timer.reset()
                 }
 
