@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.*;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nn.nn;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline2.DropdownGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.OtcClickGUi;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.ClickUI;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -33,7 +32,7 @@ public class ClickGUI extends Module {
     public float animationHeight = 0;
 
     public String configName = "Basic";
-    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Novoline2", "Flux","Zeroday","Chocolate", "OneTap","NoName"}, "Null") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap","NoName"}, "Null") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -93,10 +92,6 @@ public class ClickGUI extends Module {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
         } else {
-            if (styleValue.get().contains("Novoline2")) {
-                mc.displayGuiScreen(new DropdownGUI());
-                this.setState(false);
-            } else {
                 if (styleValue.get().contains("Flux")) {
                     mc.displayGuiScreen(new FluxClassic());
                     this.setState(false);
@@ -129,7 +124,6 @@ public class ClickGUI extends Module {
                 }
             }
         }
-    }
 
     private void updateStyle() {
         switch(styleValue.get().toLowerCase()) {
