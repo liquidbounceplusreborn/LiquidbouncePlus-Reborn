@@ -56,15 +56,6 @@ public class Fonts {
     @FontDetails(fontName = "Tahoma Bold", fontSize = 30)
     public static GameFontRenderer fontTahoma30;
 
-    @FontDetails(fontName = "Calibrib", fontSize = 40)
-    public static GameFontRenderer fontcalibrib;
-
-    @FontDetails(fontName = "Calibrib", fontSize = 45)
-    public static GameFontRenderer fontcalibrib1;
-
-    @FontDetails(fontName = "Tahoma", fontSize = 30)
-    public static GameFontRenderer fontTahomaSmall2;
-
     public static TTFFontRenderer fontTahomaSmall;
 
     @FontDetails(fontName = "Bangers", fontSize = 45)
@@ -94,10 +85,7 @@ public class Fonts {
         fontTahoma = new GameFontRenderer(getFont("TahomaBold.ttf", 35));
         fontTahoma30 = new GameFontRenderer(getFont("TahomaBold.ttf", 30));
         fontTahomaSmall = new TTFFontRenderer(getFont("Tahoma.ttf", 11));
-        fontTahomaSmall2 = new GameFontRenderer(getFont("Tahoma.ttf", 45));
         fontBangers = new GameFontRenderer(getFont("Bangers-Regular.ttf", 45));
-        fontcalibrib = new GameFontRenderer(getFont("calibrib.ttf", 40));
-        fontcalibrib1 = new GameFontRenderer(getFont("calibrib.ttf", 45));
 
         try {
             CUSTOM_FONT_RENDERERS.clear();
