@@ -23,19 +23,16 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
 import net.ccbluex.liquidbounce.value.*;
 
 import net.minecraft.block.BlockAir;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
-import net.minecraft.network.Packet;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.lwjgl.opengl.GL11.*;
 
-@ModuleInfo(name = "AntiVoid", spacedName = "Anti Void", description = "Prevents you from falling into the void.", category = ModuleCategory.PLAYER)
-public class AntiVoid extends Module {
+@ModuleInfo(name = "AntiFall", spacedName = "Anti Fall", description = "Prevents you from falling into the void.", category = ModuleCategory.PLAYER)
+public class AntiFall extends Module {
 
     public final ListValue voidDetectionAlgorithm = new ListValue("Detect-Method", new String[]{"Collision", "Predict"}, "Collision");
     public final ListValue setBackModeValue = new ListValue("SetBack-Mode", new String[]{"Teleport", "FlyFlag", "IllegalPacket", "IllegalTeleport", "StopMotion", "Position", "Edit", "SpoofBack"}, "Teleport");

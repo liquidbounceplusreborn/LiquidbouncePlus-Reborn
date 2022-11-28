@@ -18,8 +18,8 @@ import java.net.URI
 import java.net.URISyntaxException
 import java.io.File
 
-@ModuleInfo(name = "PackSpoofer", spacedName = "Pack Spoofer", description = "Prevents servers from forcing you to download their resource pack.", category = ModuleCategory.WORLD)
-class PackSpoofer : Module() {
+@ModuleInfo(name = "PackSpoof", spacedName = "Pack Spoof", description = "Prevents servers from forcing you to download their resource pack.", category = ModuleCategory.WORLD)
+class PackSpoof : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
