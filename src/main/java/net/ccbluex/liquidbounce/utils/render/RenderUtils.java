@@ -244,6 +244,34 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.enableAlpha();
         GlStateManager.enableTexture2D();
     }
+    public static void drawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        quickDrawGradientSidewaysV(left, top, right, bottom, col1, col2);
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+    }
+    public static void quickDrawGradientSidewaysV(double left, double top, double right, double bottom, int col1, int col2) {
+        glBegin(GL_QUADS);
+
+        glColor(col1);
+        glVertex2d(left, top);
+        glVertex2d(right, top);
+        glColor(col2);
+        glVertex2d(right, bottom);
+        glVertex2d(left, bottom);
+
+        glEnd();
+    }
+
+
 
     public static void scissor(final double x, final double y, final double width, final double height) {
         int scaleFactor;
