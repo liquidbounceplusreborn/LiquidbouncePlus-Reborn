@@ -14,11 +14,13 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestAura;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.FramebufferShader;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.OutlineShader;
 import net.ccbluex.liquidbounce.value.BoolValue;
+import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -34,7 +36,10 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "StorageESP", spacedName = "Storage ESP", description = "Allows you to see chests, dispensers, etc. through walls.", category = ModuleCategory.RENDER)
 public class StorageESP extends Module {
     private final ListValue modeValue = new ListValue("Mode", new String[]{"Box", "OtherBox", "Outline", "ShaderOutline", "ShaderGlow", "2D", "WireFrame"}, "Outline");
-
+    private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
+    private final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
+    private final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
+    private final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
     private final BoolValue chestValue = new BoolValue("Chest", true);
     private final BoolValue enderChestValue = new BoolValue("EnderChest", true);
     private final BoolValue furnaceValue = new BoolValue("Furnace", true);
@@ -59,9 +64,32 @@ public class StorageESP extends Module {
 
             for (final TileEntity tileEntity : mc.theWorld.loadedTileEntityList) {
                 Color color = null;
+                final int index = 0;
 
                 if (chestValue.get() && tileEntity instanceof TileEntityChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
-                    color = new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get());
+                    if (colorModeValue.isMode("Custom")) {
+                        color = new Color(colorRedValue.get(), colorBlueValue.get(), colorGreenValue.get());
+                    } else{
+                        if (colorModeValue.isMode("Rainbow")){
+                            color = new Color(RenderUtils.getRainbowOpaque(mixerSecondsValue.get(), saturationValue.get(), brightnessValue.get(), index));
+                        } else{
+                            if (colorModeValue.isMode("Sky")){
+                                color = RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get());
+                            } else{
+                                if (colorModeValue.isMode("LiquidSlowly")){
+                                    color = ColorUtils.LiquidSlowly(System.nanoTime(), index, saturationValue.get(), brightnessValue.get());
+                                } else {
+                                    if (colorModeValue.isMode("Fade")){
+                                        color = ColorMixer.getMixedColor(index, mixerSecondsValue.get());
+                                    } else {
+                                        if (colorModeValue.isMode("Mixer")){
+                                            color = ColorUtils.fade(new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), index, 100);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                 if (enderChestValue.get() && tileEntity instanceof TileEntityEnderChest && !ChestAura.INSTANCE.getClickedBlocks().contains(tileEntity.getPos()))
                     color = Color.MAGENTA;
