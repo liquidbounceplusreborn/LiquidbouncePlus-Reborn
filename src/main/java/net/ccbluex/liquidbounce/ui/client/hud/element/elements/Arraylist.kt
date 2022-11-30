@@ -36,7 +36,7 @@ import org.lwjgl.opengl.GL11
 @ElementInfo(name = "Arraylist", single = true)
 class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                 side: Side = Side(Horizontal.RIGHT, Vertical.UP)) : Element(x, y, scale, side) {
-    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Random", "Sky", "CRainbow", "LiquidSlowly", "Fade", "Mixer"), "Custom")
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Random", "Sky", "CRainbow", "LiquidSlowly", "Fade", "Nostalgia", "Mixer"), "Custom")
     private val blurValue = BoolValue("Blur", false)
     private val blurStrength = FloatValue("Blur-Strength", 0F, 0F, 30F, { blurValue.get() })
     private val shadowShaderValue = BoolValue("Shadow", false)
@@ -231,6 +231,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                             var Sky = RenderUtils.SkyRainbow(counter[0] * (skyDistanceValue.get() * 50), saturationValue.get(), brightnessValue.get())
                                             var CRainbow = RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), counter[0] * (50 * cRainbowDistValue.get()))
                                             var FadeColor = ColorUtils.fade(Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get()), index * fadeDistanceValue.get(), 100).rgb
+                                            var Nostalgia = module.category.getColor()
                                             counter[0] = counter[0] - 1
 
                                             val test = ColorUtils.LiquidSlowly(System.nanoTime(), index * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())?.rgb
@@ -244,6 +245,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                                 colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
                                                 colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
                                                 colorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                                                colorMode.equals("Nostalgia", ignoreCase = true) -> Nostalgia
                                                 colorMode.equals("Mixer", ignoreCase = true) -> mixerColor
                                                 else -> customColor
                                             }
@@ -320,6 +322,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                     var FadeColor: Int = ColorUtils.fade(Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get()), index * fadeDistanceValue.get(), 100).rgb
                     counter[0] = counter[0] - 1
 
+                    var Nostalgia = module.category.getColor()
+
                     val test = ColorUtils.LiquidSlowly(System.nanoTime(), index * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())?.rgb
                     var LiquidSlowly : Int = test!!
 
@@ -338,6 +342,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                         colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
                         colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
                         colorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                        colorMode.equals("Nostalgia", ignoreCase = true) -> Nostalgia
                         colorMode.equals("Mixer", ignoreCase = true) -> mixerColor
                         else -> customColor
                     }, textShadow)
@@ -350,6 +355,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             rectColorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
                             rectColorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
                             rectColorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                            rectColorMode.equals("Nostalgia", ignoreCase = true) -> Nostalgia
                             rectColorMode.equals("Mixer", ignoreCase = true) -> mixerColor
                             else -> rectCustomColor
                         }
@@ -422,6 +428,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                             var FadeColor = ColorUtils.fade(Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get()), index * fadeDistanceValue.get(), 100).rgb
                                             counter[0] = counter[0] - 1
 
+                                            var Nostalgia = module.category.getColor()
+
                                             val test = ColorUtils.LiquidSlowly(System.nanoTime(), index * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())?.rgb
                                             var LiquidSlowly : Int = test!!
 
@@ -433,6 +441,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                                                 colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
                                                 colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
                                                 colorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                                                colorMode.equals("Nostalgia", ignoreCase = true) -> Nostalgia
                                                 colorMode.equals("Mixer", ignoreCase = true) -> mixerColor
                                                 else -> customColor
                                             }
@@ -516,6 +525,8 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                     val test = ColorUtils.LiquidSlowly(System.nanoTime(), index * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())?.rgb
                     var LiquidSlowly : Int = test!!
 
+                    var Nostalgia = module.category.getColor()
+
                     val mixerColor = ColorMixer.getMixedColor(-index * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
 
                     RenderUtils.drawRect(
@@ -531,6 +542,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                         colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
                         colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
                         colorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                        colorMode.equals("Nostalgia", ignoreCase = true) -> Nostalgia
                         colorMode.equals("Mixer", ignoreCase = true) -> mixerColor
                         else -> customColor
                     }, textShadow)
@@ -542,6 +554,7 @@ class Arraylist(x: Double = 1.0, y: Double = 2.0, scale: Float = 1F,
                             rectColorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
                             rectColorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
                             rectColorMode.equals("Fade", ignoreCase = true) -> FadeColor
+                            rectColorMode.equals("Nostalgia", ignoreCase = true) -> Nostalgia
                             rectColorMode.equals("Mixer", ignoreCase = true) -> mixerColor
                             else -> rectCustomColor
                         }
