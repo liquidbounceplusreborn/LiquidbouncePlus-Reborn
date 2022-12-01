@@ -9,7 +9,7 @@ import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.math.*
+import kotlin.math.abs
 
 object ColorUtils {
 
@@ -56,6 +56,25 @@ object ColorUtils {
     @JvmStatic
     fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Double): Int {
         return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble())!!.toInt()
+    }
+
+    @JvmStatic
+    fun getColor(n: Int): String? {
+        if (n != 1) {
+            if (n == 2) {
+                return "\u00a7a"
+            }
+            if (n == 3) {
+                return "\u00a73"
+            }
+            if (n == 4) {
+                return "\u00a74"
+            }
+            if (n >= 5) {
+                return "\u00a7e"
+            }
+        }
+        return "\u00a7f"
     }
 
     @JvmStatic
