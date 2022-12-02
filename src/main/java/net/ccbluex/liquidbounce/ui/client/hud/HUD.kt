@@ -38,7 +38,6 @@ open class HUD : MinecraftInstance() {
                 Text::class.java,
                 ScoreboardElement::class.java,
                 Target::class.java,
-                TargetHUD::class.java,
                 Inventory::class.java,
                 SpeedGraph::class.java,
                 PlayerList::class.java,

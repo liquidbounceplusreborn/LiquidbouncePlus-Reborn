@@ -4,27 +4,18 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
-import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.RenderUtils;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.Stencil;
 
 import java.awt.*;
 import java.util.ArrayList;
-
-import static net.ccbluex.liquidbounce.utils.render.GLUtils.glDisable;
-import static net.ccbluex.liquidbounce.utils.render.GLUtils.glEnable;
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.glPopMatrix;
 
 public class Window {
     public ModuleCategory moduleCategory;

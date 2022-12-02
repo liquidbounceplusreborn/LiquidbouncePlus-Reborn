@@ -1,0 +1,51 @@
+package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
+
+import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
+import net.ccbluex.liquidbounce.ui.client.hud.element.Border
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Target
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
+import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.extensions.skin
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
+import net.minecraft.entity.player.EntityPlayer
+import java.awt.Color
+import kotlin.math.pow
+
+class Novoline(inst: Target): TargetStyle("Novoline", inst, false) {
+    override fun drawTarget(entity: EntityPlayer) {
+        val mainColor = targetInstance.barColor
+        val percent = entity.health.toInt()
+        val nameLength = (Fonts.minecraftFont.getStringWidth(entity.name)).coerceAtLeast(
+            Fonts.minecraftFont.getStringWidth(
+                "${
+                    decimalFormat.format(percent)
+                }"
+            )
+        ).toFloat() + 20F
+        val barWidth = (entity.health / entity.maxHealth).coerceIn(0F, entity.maxHealth) * (nameLength - 2F)
+        RenderUtils.drawRect(-2F, -2F, 3F + nameLength + 36F, 2F + 36F, Color(50, 50, 50, 150).rgb)
+        RenderUtils.drawRect(-1F, -1F, 2F + nameLength + 36F, 1F + 36F, Color(0, 0, 0, 100).rgb)
+        drawPlayerHead(entity.skin, 0, 0, 36, 36)
+        Fonts.minecraftFont.drawStringWithShadow(entity.name, 2F + 36F, 2F, -1)
+        RenderUtils.drawRect(37F, 14F, 37F + nameLength, 24F, Color(0, 0, 0, 200).rgb)
+        easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
+        val animateThingy =
+            (easingHealth.coerceIn(entity.health, entity.maxHealth) / entity.maxHealth) * (nameLength - 2F)
+        if (easingHealth > entity.health)
+            RenderUtils.drawRect(38F, 15F, 38F + animateThingy, 23F, mainColor.darker().rgb)
+        RenderUtils.drawRect(38F, 15F, 38F + barWidth, 23F, mainColor.rgb)
+        Fonts.minecraftFont.drawStringWithShadow("${decimalFormat.format(percent)}", 38F, 26F, Color.WHITE.rgb)
+        Fonts.fontSFUI35.drawStringWithShadow(
+            "❤",
+            Fonts.minecraftFont.getStringWidth("${decimalFormat.format(percent)}") + 40F,
+            27F,
+            Color(targetInstance.redValue.get(), targetInstance.greenValue.get(), targetInstance.blueValue.get()).rgb
+        )
+    }
+
+    override fun getBorder(entity: EntityPlayer?): Border? {
+        return Border(-1F, -2F, 108F, 38F)
+    }
+}

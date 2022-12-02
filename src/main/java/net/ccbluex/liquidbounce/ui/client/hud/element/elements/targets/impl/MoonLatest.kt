@@ -24,7 +24,7 @@ import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-class MoonLatest(inst: Target): TargetStyle("MoonLatest", inst, true) {
+class MoonTwo(inst: Target): TargetStyle("Moon2", inst, true) {
     val borderColorMode = ListValue("Border-Color", arrayOf("Custom", "MatchBar", "None"), "None", { targetInstance.styleValue.get().equals("liquidbounce", true) })
 
     private var lastTarget: EntityPlayer? = null

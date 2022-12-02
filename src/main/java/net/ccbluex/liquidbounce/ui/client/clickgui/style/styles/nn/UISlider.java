@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nn;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.Colors;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.minecraft.client.Minecraft;
@@ -61,13 +62,13 @@ public class UISlider {
             this.ani = (float) ((double) (x + 250.0F) - (370.0D - 370.0D * (double) n));
         }
 
-        this.ani = (float) RenderUtil.getAnimationState((double) this.ani, (double) ((float) ((double) (x + 250.0F) - (370.0D - 370.0D * (double) n))), (double) ((float) Math.max(10.0D, Math.abs((double) this.ani - ((double) (x + 120.0F) - (370.0D - 370.0D * (double) n))) * 30.0D * 0.3D)));
+        this.ani = (float) RenderUtils.getAnimationState((double) this.ani, (double) ((float) ((double) (x + 250.0F) - (370.0D - 370.0D * (double) n))), (double) ((float) Math.max(10.0D, Math.abs((double) this.ani - ((double) (x + 120.0F) - (370.0D - 370.0D * (double) n))) * 30.0D * 0.3D)));
         if (this.showValue) {
             ;
         }
 
-        RenderUtil.drawRect(x - 75.0F, y + 3.0F + 11.0F, x + 250.0F, y + 4.0F + 11.0F, (new Color(60, 60, 60)).getRGB());
-        RenderUtil.drawGradientRect2((double) (x - 75.0F), (double) (y + 3.0F + 11.0F), (double) this.ani, (double) (y + 4.0F + 11.0F), Ranbow, (new Color(4555775)).getRGB());
+        RenderUtils.drawRect(x - 75.0F, y + 3.0F + 11.0F, x + 250.0F, y + 4.0F + 11.0F, (new Color(60, 60, 60)).getRGB());
+        RenderUtils.drawGradientRect2((double) (x - 75.0F), (double) (y + 3.0F + 11.0F), (double) this.ani, (double) (y + 4.0F + 11.0F), Ranbow, (new Color(4555775)).getRGB());
     }
 
     public void draww(float x, float y) {
@@ -86,13 +87,13 @@ public class UISlider {
             this.ani = (float) ((double) (x + 250.0F) - (370.0D - 370.0D * (double) n));
         }
 
-        this.ani = (float) RenderUtil.getAnimationState((double) this.ani, (double) ((float) ((double) (x + 250.0F) - (370.0D - 370.0D * (double) n))), (double) ((float) Math.max(10.0D, Math.abs((double) this.ani - ((double) (x + 120.0F) - (370.0D - 370.0D * (double) n))) * 30.0D * 0.3D)));
+        this.ani = (float) RenderUtils.getAnimationState((double) this.ani, (double) ((float) ((double) (x + 250.0F) - (370.0D - 370.0D * (double) n))), (double) ((float) Math.max(10.0D, Math.abs((double) this.ani - ((double) (x + 120.0F) - (370.0D - 370.0D * (double) n))) * 30.0D * 0.3D)));
         if (this.showValue) {
             ;
         }
 
-        RenderUtil.drawRect(x - 75.0F, y + 3.0F + 11.0F, x + 250.0F, y + 4.0F + 11.0F, (new Color(60, 60, 60)).getRGB());
-        RenderUtil.drawGradientRect2((double) (x - 75.0F), (double) (y + 3.0F + 11.0F), (double) this.ani, (double) (y + 4.0F + 11.0F), Ranbow, (new Color(4555775)).getRGB());
+        RenderUtils.drawRect(x - 75.0F, y + 3.0F + 11.0F, x + 250.0F, y + 4.0F + 11.0F, (new Color(60, 60, 60)).getRGB());
+        RenderUtils.drawGradientRect2((double) (x - 75.0F), (double) (y + 3.0F + 11.0F), (double) this.ani, (double) (y + 4.0F + 11.0F), Ranbow, (new Color(4555775)).getRGB());
     }
 
     public void drawAll(float x, float y, int tx, int ty) {

@@ -15,10 +15,13 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl.*
+import net.ccbluex.liquidbounce.utils.TargetHudParticles
 import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -66,6 +69,21 @@ class Target : Element() {
     val bgBlueValue = IntegerValue("Background-Blue", 0, 0, 255)
     val bgAlphaValue = IntegerValue("Background-Alpha", 160, 0, 255)
 
+    val bordercolor = Color(redValue.get(), greenValue.get(), blueValue.get())
+
+    var target = (LiquidBounce.moduleManager[KillAura::class.java] as KillAura).target
+
+    var healthBarWidth2 = 0.0
+    var hudHeight = 0.0
+    var healthBarWidth = 0.0
+
+    val counter1 = intArrayOf(50)
+    val counter2 = intArrayOf(80)
+    val particles = mutableListOf<TargetHudParticles>()
+    val Stringparticles = mutableListOf<TargetHudParticles>()
+    var lastTarget: Entity? = null
+    val addTimer = MSTimer()
+
     override val values: List<Value<*>>
         get() {
             val valueList = mutableListOf<Value<*>>()
@@ -75,14 +93,27 @@ class Target : Element() {
     //
     init {
         styleValue = ListValue("Style", addStyles(
-            LiquidBounce(this),
+            Astolfo(this),
+            AsuidBounce(this),
             Chill(this),
-            Rice(this),
             Exhibition(this),
-            Remix(this),
-            Slowly(this),
+            ExhibitionTwo(this),
+            ExhibitionThree(this),
+            Flux(this),
+            Hanabi(this),
+            LiquidBounce(this),
+            LiquidBounceTwo(this),
+            Lnk(this),
             Moon(this),
-            MoonLatest(this)
+            MoonTwo(this),
+            Novoline(this),
+            NovolineTwo(this),
+            NovolineThree(this),
+            Remix(this),
+            Rice(this),
+            Style(this),
+            Slowly(this),
+            Simplicity(this),
         ).toTypedArray(), "LiquidBounce")
     }
 

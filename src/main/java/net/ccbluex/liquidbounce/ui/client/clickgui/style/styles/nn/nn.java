@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.Colors;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TimerUtil;
 import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.Minecraft;
@@ -94,7 +95,7 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
             scale = 0.8F;
         }
 
-        RenderUtil.drawImage(new ResourceLocation("liquidbounce+/ui/background.png"), 0, 0, (int) ((float) sr.getScaledWidth() * (1.0F / scale)), (int) ((float) sr.getScaledHeight() * (1.0F / scale)));
+        RenderUtils.drawImage(new ResourceLocation("liquidbounce+/ui/background.png"), 0, 0, (int) ((float) sr.getScaledWidth() * (1.0F / scale)), (int) ((float) sr.getScaledHeight() * (1.0F / scale)));
         this.opacity.interpolate((float) this.opacityx);
         boolean countMod = false;
         int[] counter = new int[1];
@@ -103,9 +104,9 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
         int Ranbow = (new Color(0, col.getGreen() / 3 + 40, col.getGreen() / 2 + 100)).getRGB();
         int Ranbow1 = (new Color(0, col.getGreen() / 4 + 20, col.getGreen() / 2 + 100)).getRGB();
 
-        RenderUtil.drawDimRect((double) (startX - 40.0F), (double) (startY - 10.0F), (double) (startX + 300.0F), (double) (startY + 260.0F), Colors.getColor(32, 32, 32));
-        RenderUtil.drawGradientRect2((double) (startX - 40.0F), (double) (startY - 12.0F), (double) (startX + 300.0F), (double) (startY - 10.0F), Ranbow, (new Color(4555775)).getRGB());
-        RenderUtil.drawRect(startX + 65.0F, startY + 25.0F, startX + 165.0F, startY + 30.0F, (new Color(25, 145, 220)).getRGB());
+        RenderUtils.drawDimRect((double) (startX - 40.0F), (double) (startY - 10.0F), (double) (startX + 300.0F), (double) (startY + 260.0F), Colors.getColor(32, 32, 32));
+        RenderUtils.drawGradientRect2((double) (startX - 40.0F), (double) (startY - 12.0F), (double) (startX + 300.0F), (double) (startY - 10.0F), Ranbow, (new Color(4555775)).getRGB());
+        RenderUtils.drawRect(startX + 65.0F, startY + 25.0F, startX + 165.0F, startY + 30.0F, (new Color(25, 145, 220)).getRGB());
 
         int m;
 
@@ -114,15 +115,15 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
 
             if (mY[m] == currentModuleType) {
                 this.finheight = m * 30;
-                RenderUtil.drawGradientRect2((double) (startX - 30.0F), (double) (startY + 30.0F + this.animheight), (double) (startX - 29.0F), (double) (startY + 40.0F + this.animheight), Ranbow, (new Color(4555775)).getRGB());
-                this.animheight = (float) RenderUtil.getAnimationState((double) this.animheight, (double) this.finheight, (double) Math.max(100.0F, Math.abs((float) this.finheight - this.animheight) * 10.0F));
+                RenderUtils.drawGradientRect2((double) (startX - 30.0F), (double) (startY + 30.0F + this.animheight), (double) (startX - 29.0F), (double) (startY + 40.0F + this.animheight), Ranbow, (new Color(4555775)).getRGB());
+                this.animheight = (float) RenderUtils.getAnimationState((double) this.animheight, (double) this.finheight, (double) Math.max(100.0F, Math.abs((float) this.finheight - this.animheight) * 10.0F));
                 if (this.animheight == (float) this.finheight) {
                     Fonts.fontSFUI35.drawString(mY[m].name(), startX - 25.0F, startY + 30.0F + (float) (m * 30), (new Color(255, 255, 255)).getRGB());
                 } else {
                     Fonts.fontSFUI35.drawString(mY[m].name(), startX - 25.0F, startY + 30.0F + (float) (m * 30), (new Color(196, 196, 196)).getRGB());
                 }
             } else {
-                RenderUtil.drawRect(startX - 25.0F, startY + 50.0F + (float) (m * 30), startX + 60.0F, startY + 75.0F + (float) (m * 30), (new Color(255, 255, 255, 0)).getRGB());
+                RenderUtils.drawRect(startX - 25.0F, startY + 50.0F + (float) (m * 30), startX + 60.0F, startY + 75.0F + (float) (m * 30), (new Color(255, 255, 255, 0)).getRGB());
                 Fonts.fontSFUI35.drawString(mY[m].name(), startX - 25.0F, startY + 30.0F + (float) (m * 30), (new Color(196, 196, 196)).getRGB());
             }
 
@@ -141,13 +142,13 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
         if (this.isCategoryHovered(startX + 60.0F, startY, startX + 200.0F, startY + 235.0F, mouseX, mouseY) && !this.MIND) {
             if (m < 0 && this.moduleStart < (float) (LiquidBounce.moduleManager.getModuleInCategory(currentModuleType).size() - 1)) {
                 ++this.moduleStart;
-                this.animationDWheel = (float) RenderUtil.getAnimationState((double) this.animationDWheel, 1.0D, 50.0D);
+                this.animationDWheel = (float) RenderUtils.getAnimationState((double) this.animationDWheel, 1.0D, 50.0D);
                 Minecraft.getMinecraft().thePlayer.playSound("random.click", 0.2F, 2.0F);
             }
 
             if (m > 0 && this.moduleStart > 0.0F) {
                 --this.moduleStart;
-                this.moduleStart = (float) RenderUtil.getAnimationState((double) this.moduleStart, -1.0D, 50.0D);
+                this.moduleStart = (float) RenderUtils.getAnimationState((double) this.moduleStart, -1.0D, 50.0D);
                 Minecraft.getMinecraft().thePlayer.playSound("random.click", 0.2F, 2.0F);
             }
         } else {
@@ -181,30 +182,30 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
                 }
 
                 if ((float) font >= this.moduleStart) {
-                    RenderUtil.drawRect(startX + 75.0F, f, startX + 185.0F, f + 2.0F, (new Color(246, 246, 246, 100)).getRGB());
+                    RenderUtils.drawRect(startX + 75.0F, f, startX + 185.0F, f + 2.0F, (new Color(246, 246, 246, 100)).getRGB());
                     if (!value.getState()) {
-                        RenderUtil.drawDimRect((double) (startX + 50.0F), (double) (f - 5.0F), (double) (startX + 285.0F), (double) (f + 20.0F), (new Color(38, 38, 37)).getRGB());
+                        RenderUtils.drawDimRect((double) (startX + 50.0F), (double) (f - 5.0F), (double) (startX + 285.0F), (double) (f + 20.0F), (new Color(38, 38, 37)).getRGB());
                         if (nn.currentModule.getValues().size() > 0) {
-                            RenderUtil.drawDimRect((double) (startX + 270.0F), (double) (f - 5.0F), (double) (startX + 285.0F), (double) (f + 20.0F), (new Color(44, 44, 45)).getRGB());
-                            RenderUtil.circle(startX + 277.0F, f + 2.0F, 0.7F, new Color(95, 95, 95));
-                            RenderUtil.circle(startX + 277.0F, f + 7.0F, 0.7F, new Color(95, 95, 95));
-                            RenderUtil.circle(startX + 277.0F, f + 12.0F, 0.7F, new Color(95, 95, 95));
+                            RenderUtils.drawDimRect((double) (startX + 270.0F), (double) (f - 5.0F), (double) (startX + 285.0F), (double) (f + 20.0F), (new Color(44, 44, 45)).getRGB());
+                            RenderUtils.circle(startX + 277.0F, f + 2.0F, 0.7F, new Color(95, 95, 95));
+                            RenderUtils.circle(startX + 277.0F, f + 7.0F, 0.7F, new Color(95, 95, 95));
+                            RenderUtils.circle(startX + 277.0F, f + 12.0F, 0.7F, new Color(95, 95, 95));
                         }
                     } else {
-                        RenderUtil.drawDimRect((double) (startX + 50.0F), (double) (f - 5.0F), (double) (startX + 285.0F), (double) (f + 20.0F), (new Color(55, 55, 55)).getRGB());
+                        RenderUtils.drawDimRect((double) (startX + 50.0F), (double) (f - 5.0F), (double) (startX + 285.0F), (double) (f + 20.0F), (new Color(55, 55, 55)).getRGB());
                     }
 
                     if (this.isSettingsButtonHovered(startX + 65.0F, f, startX + 285.0F, f + 8.0F + (float) Fonts.fontSFUI35.getStringWidth(""), mouseX, mouseY) && !this.MIND) {
-                        this.animationopacity = (float) RenderUtil.getAnimationState((double) this.animationopacity, 0.30000001192092896D, 20.0D);
-                        this.animationMN = (float) RenderUtil.getAnimationState((double) this.animationMN, 10.0D, 100.0D);
+                        this.animationopacity = (float) RenderUtils.getAnimationState((double) this.animationopacity, 0.30000001192092896D, 20.0D);
+                        this.animationMN = (float) RenderUtils.getAnimationState((double) this.animationMN, 10.0D, 100.0D);
                         if (!value.getState()) {
                             Fonts.fontSFUI35.drawString(value.getName(), startX + 70.0F + this.animationMN, f + 4.0F, (new Color(240, 240, 240)).getRGB(), false);
                         } else {
                             Fonts.fontSFUI35.drawString(value.getName(), startX + 70.0F + this.animationMN, f + 4.0F, (new Color(255, 255, 255)).getRGB(), false);
                         }
                     } else {
-                        this.animationopacity = (float) RenderUtil.getAnimationState((double) this.animationopacity, 0.0D, 20.0D);
-                        this.animationMN = (float) RenderUtil.getAnimationState((double) this.animationMN, 0.0D, 100.0D);
+                        this.animationopacity = (float) RenderUtils.getAnimationState((double) this.animationopacity, 0.0D, 20.0D);
+                        this.animationMN = (float) RenderUtils.getAnimationState((double) this.animationMN, 0.0D, 100.0D);
                         if (value.getState()) {
                             Fonts.fontSFUI35.drawString(value.getName(), startX + 70.0F + this.animationMN, f + 4.0F, (new Color(200, 200, 200)).getRGB(), false);
                         } else {
@@ -212,9 +213,9 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
                         }
                     }
 
-                    RenderUtil.drawRect(startX + 50.0F, f - 5.0F, startX + 285.0F, f + 20.0F, RenderUtil.reAlpha(Colors.WHITE.c, this.animationopacity));
+                    RenderUtils.drawRect(startX + 50.0F, f - 5.0F, startX + 285.0F, f + 20.0F, RenderUtils.reAlpha(Colors.WHITE.c, this.animationopacity));
                     if (value.getState()) {
-                        RenderUtil.drawGradientRect2((double) (startX + 50.0F), (double) (f - 5.0F), (double) (startX + 51.0F), (double) (f + 20.0F), Ranbow, (new Color(4555775)).getRGB());
+                        RenderUtils.drawGradientRect2((double) (startX + 50.0F), (double) (f - 5.0F), (double) (startX + 51.0F), (double) (f + 20.0F), Ranbow, (new Color(4555775)).getRGB());
                     }
 
                     if (this.isSettingsButtonHovered(startX + 65.0F, f, startX + 285.0F, f + 8.0F + (float) Fonts.fontSFUI35.getStringWidth(""), mouseX, mouseY) && !this.MIND) {
@@ -286,14 +287,14 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
                     ;
                 }
 
-                this.animationX = (float) RenderUtil.getAnimationState((double) this.animationX, 390.0D, 600.0D);
-                this.animationY = (float) RenderUtil.getAnimationState((double) this.animationY, 120.0D, 800.0D);
+                this.animationX = (float) RenderUtils.getAnimationState((double) this.animationX, 390.0D, 600.0D);
+                this.animationY = (float) RenderUtils.getAnimationState((double) this.animationY, 120.0D, 800.0D);
                 GL11.glPushMatrix();
                 GL11.glEnable(3089);
-                RenderUtil.doGlScissor((int) (startX - 40.0F), 0, (int) this.animationX, RenderUtil.height());
-                RenderUtil.drawDimRect((double) (startX - 40.0F), (double) (startY - 10.0F), (double) (startX + 300.0F), (double) (startY + 8.0F), Colors.getColor(44, 44, 45));
-                RenderUtil.drawDimRect((double) (startX - 40.0F), (double) (startY + 8.0F), (double) (startX + 300.0F), (double) (startY + 260.0F), Colors.getColor(37, 37, 38));
-                RenderUtil.circle(startX + 292.0F, startY - 4.0F, 4.0F, (new Color(-14848033)).brighter());
+                RenderUtils.doGlScissor((int) (startX - 40.0F), 0, (int) this.animationX, RenderUtils.height());
+                RenderUtils.drawDimRect((double) (startX - 40.0F), (double) (startY - 10.0F), (double) (startX + 300.0F), (double) (startY + 8.0F), Colors.getColor(44, 44, 45));
+                RenderUtils.drawDimRect((double) (startX - 40.0F), (double) (startY + 8.0F), (double) (startX + 300.0F), (double) (startY + 260.0F), Colors.getColor(37, 37, 38));
+                RenderUtils.circle(startX + 292.0F, startY - 4.0F, 4.0F, (new Color(-14848033)).brighter());
                 if (this.isSettingsButtonHovered(startX + 288.0F, startY - 6.0F, startX + 344.0F, startY + 2.0F, mouseX, mouseY) && Mouse.isButtonDown(0)) {
                     this.MIND = false;
                 }
@@ -303,7 +304,7 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
                 Fonts.fontSFUI35.drawString(currentModule.getName(), startX - 35.0F, startY - 8.0F, -1);
                 GL11.glPushMatrix();
                 if (this.animationX == 390.0F) {
-                    RenderUtil.doGlScissor((int) startX - 40, (int) startY + 8, (int) startX + 300, RenderUtil.height());
+                    RenderUtils.doGlScissor((int) startX - 40, (int) startY + 8, (int) startX + 300, RenderUtils.height());
                 }
 
                 float x;
@@ -325,7 +326,7 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
                         this.buttonColor = new Color(80, 80, 80);
                     }
 
-                    RenderUtil.circle(x + 35.0F, f - (float) this.valueStart + 2.0F, 4.0F, this.buttonColor.getRGB());
+                    RenderUtils.circle(x + 35.0F, f - (float) this.valueStart + 2.0F, 4.0F, this.buttonColor.getRGB());
                     if (this.isCheckBoxHovered(x + 30.0F, f - (float) this.valueStart, x + 38.0F, f - (float) this.valueStart + 9.0F, mouseX, mouseY)) {
                         if (!this.previousmouse && Mouse.isButtonDown(0)) {
                             this.previousmouse = true;
@@ -387,7 +388,7 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
                     }
 
                     x = startX + 250.0F;
-                    RenderUtil.drawRect(x - 40.0F, f - (float) this.valueStart - 1.0F, x + 40.0F, f - (float) this.valueStart + 12.0F, (new Color(60, 60, 60)).getRGB());
+                    RenderUtils.drawRect(x - 40.0F, f - (float) this.valueStart - 1.0F, x + 40.0F, f - (float) this.valueStart + 12.0F, (new Color(60, 60, 60)).getRGB());
                     Fonts.fontSFUI35.drawString(listvalue.getName(), startX - 30.0F, f - (float) this.valueStart, (new Color(255, 255, 255)).getRGB());
                     Fonts.fontSFUI35.drawCenteredString((String) listvalue.getValue(), x - 2.0F, f - (float) this.valueStart + 2.0F, -1);
                     if (this.isStringHovered(x - 40.0F, f - (float) this.valueStart - 1.0F, x + 40.0F, f - (float) this.valueStart + 12.0F, mouseX, mouseY)) {
@@ -408,8 +409,8 @@ public class nn extends GuiScreen implements GuiYesNoCallback {
                 GL11.glDisable(3089);
                 GL11.glPopMatrix();
             } else {
-                this.animationX = (float) RenderUtil.getAnimationState((double) this.animationX, 0.0D, 800.0D);
-                this.animationY = (float) RenderUtil.getAnimationState((double) this.animationY, 0.0D, 800.0D);
+                this.animationX = (float) RenderUtils.getAnimationState((double) this.animationX, 0.0D, 800.0D);
+                this.animationY = (float) RenderUtils.getAnimationState((double) this.animationY, 0.0D, 800.0D);
             }
         }
 
