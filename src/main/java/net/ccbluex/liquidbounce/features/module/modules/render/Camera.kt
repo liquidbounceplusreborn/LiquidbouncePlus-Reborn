@@ -9,18 +9,12 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "Camera", description = "Allows you to see through walls in third person view.", category = ModuleCategory.RENDER)
 class Camera : Module(){
     val cameraClipValue = BoolValue("CameraClip", true)
     val antiBlindValue = BoolValue("AntiBlind", true)
-    val wordlColorValue = BoolValue("WorldColor", true)
-    //
-    val wordlColorrValue = IntegerValue("Red", 252, 0, 255) { wordlColorValue.get() }
-    val wordlColorgValue = IntegerValue("Green", 96, 0, 255) { wordlColorValue.get() }
-    val wordlColorbValue = IntegerValue("Blue", 66, 0, 255) { wordlColorValue.get() }
 
     //AntiBlind
     val confusionEffect = BoolValue("Confusion", true) { antiBlindValue.get() }
