@@ -91,4 +91,7 @@ public final class EntityUtils extends MinecraftInstance {
 
         return networkPlayerInfo == null ? 0 : networkPlayerInfo.getResponseTime();
     }
+    public static boolean isRendered(Entity entityToCheck){
+        return mc.theWorld != null && mc.theWorld.getLoadedEntityList().contains(entityToCheck);
+    }
 }

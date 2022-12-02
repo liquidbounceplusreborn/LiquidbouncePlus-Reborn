@@ -18,7 +18,7 @@ import java.io.File
 @ModuleInfo(name = "Cape", description = "LiquidBounce+ capes.", category = ModuleCategory.RENDER)
 class Cape : Module() {
 
-    val styleValue = ListValue("Style", arrayOf("Dark", "Darker", "Light", "Special1", "Special2","Dark2"), "Dark")
+    val styleValue = ListValue("Style", arrayOf("Sunny","Rainbow","Astolfo","Chicken","Chick","Hatch","Cry","Dark", "Darker", "Light", "Special1", "Special2","Dark2"), "Dark")
 
     private val capeCache = hashMapOf<String, CapeStyle>()
 
@@ -27,13 +27,20 @@ class Cape : Module() {
             try {
                 capeCache[value.toUpperCase()] = CapeStyle.valueOf(value.toUpperCase())
             } catch (e: Exception) {
-                capeCache[value.toUpperCase()] = CapeStyle.DARK
+                capeCache[value.toUpperCase()] = CapeStyle.CRY
             }
         }
         return capeCache[value.toUpperCase()]!!.location
     }
 
     enum class CapeStyle(val location: ResourceLocation) {
+        SUNNY(ResourceLocation("liquidbounce+/cape/Sunny.png")),
+        RAINBOW(ResourceLocation("liquidbounce+/cape/Rainbow.png")),
+        ASTOLFO(ResourceLocation("liquidbounce+/cape/Astolfo.png")),
+        CHICKEN(ResourceLocation("liquidbounce+/cape/Chicken.png")),
+        CHICK(ResourceLocation("liquidbounce+/cape/Chick.png")),
+        HATCH(ResourceLocation("liquidbounce+/cape/Hatch.png")),
+        CRY(ResourceLocation("liquidbounce+/cape/Cry.png")),
         DARK(ResourceLocation("liquidbounce+/cape/dark.png")),
         DARKER(ResourceLocation("liquidbounce+/cape/darker.png")),
         DARK2(ResourceLocation("liquidbounce+/cape/dark2.png")),

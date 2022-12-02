@@ -121,6 +121,7 @@ class ModuleManager : Listenable {
                 SuperKnockback::class.java,
                 Reach::class.java,
                 Rotations::class.java,
+                BackTrack::class.java,
                 NoJumpDelay::class.java,
                 HUD::class.java,
                 TNTESP::class.java,
