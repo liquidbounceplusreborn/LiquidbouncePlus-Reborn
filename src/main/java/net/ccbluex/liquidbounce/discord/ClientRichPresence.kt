@@ -91,8 +91,8 @@ class ClientRichPresence : MinecraftInstance() {
         builder.setStartTimestamp(timestamp)
 
         // Check assets contains logo and set logo
-        if (assets.containsKey("new"))
-            builder.setLargeImage(assets["new"], "build ${LiquidBounce.CLIENT_VERSION}")
+        if (assets.containsKey("big"))
+            builder.setLargeImage(assets["big"], "build ${LiquidBounce.CLIENT_VERSION}")
 
         val serverData = mc.currentServerData
 
@@ -100,10 +100,10 @@ class ClientRichPresence : MinecraftInstance() {
         builder.setDetails(if (Display.isActive()) (if (mc.isIntegratedServerRunning || serverData != null) "Playing" else "Idle...") else "AFK")
         builder.setState("Name: ${mc.session.username}")
 
-        if (mc.isIntegratedServerRunning || serverData != null) 
-            builder.setSmallImage(assets["astolfo"], "${if (mc.isIntegratedServerRunning || serverData == null) "Singleplayer" else serverData.serverIP} - Enabled ${LiquidBounce.moduleManager.modules.count { it.state }}/${LiquidBounce.moduleManager.modules.size}.")
+        if (mc.isIntegratedServerRunning || serverData != null)
+            builder.setSmallImage(assets["chick"], "${if (mc.isIntegratedServerRunning || serverData == null) "Singleplayer" else serverData.serverIP} - Enabled ${LiquidBounce.moduleManager.modules.count { it.state }}/${LiquidBounce.moduleManager.modules.size}.")
         else
-            builder.setSmallImage(assets["astolfo"], "Enabled ${LiquidBounce.moduleManager.modules.count { it.state }}/${LiquidBounce.moduleManager.modules.size}.")
+            builder.setSmallImage(assets["chick"], "Enabled ${LiquidBounce.moduleManager.modules.count { it.state }}/${LiquidBounce.moduleManager.modules.size}.")
 
         // Check ipc client is connected and send rpc
         if (ipcClient?.status == PipeStatus.CONNECTED)
@@ -117,7 +117,7 @@ class ClientRichPresence : MinecraftInstance() {
         if (ipcClient?.status != PipeStatus.CONNECTED) {
             return
         }
-        
+
         try {
             ipcClient?.close()
         } catch (e: Throwable) {
@@ -126,8 +126,8 @@ class ClientRichPresence : MinecraftInstance() {
     }
 
     private fun loadConfiguration() {
-        appID = 874149528486445106L
-        assets["new"] = "new"
-        assets["astolfo"] = "astolfo"
+        appID = 1048158379647959060
+        assets["big"] = "big"
+        assets["chick"] = "chick"
     }
 }
