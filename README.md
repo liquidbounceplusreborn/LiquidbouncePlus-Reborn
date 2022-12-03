@@ -1,6 +1,6 @@
 # LiquidBounce+ (Unofficially Reborn.)
 A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
-Discord:https://discord.com/invite/YHNeWawsP4
+Discord:https://discord.gg/3vx9evnguQ
 
 ### LiquidBounce's contact info
 Website: https://liquidbounce.net \
