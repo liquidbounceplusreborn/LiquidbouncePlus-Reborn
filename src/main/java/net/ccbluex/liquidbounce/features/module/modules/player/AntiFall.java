@@ -262,11 +262,6 @@ public class AntiFall extends Module {
         super.onEnable();
     }
 
-    @Override
-    public String getTag() {
-        return setBackModeValue.get();
-    }
-
     private void reset() {
         detectedLocation = null;
         lastX = lastY = lastZ = lastFound = 0;
