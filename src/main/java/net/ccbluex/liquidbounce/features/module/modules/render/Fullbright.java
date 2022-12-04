@@ -60,8 +60,4 @@ public class Fullbright extends Module {
         onDisable();
     }
 
-    @Override
-    public String getTag() {
-        return modeValue.get();
-    }
 }
