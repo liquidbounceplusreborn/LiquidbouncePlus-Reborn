@@ -211,7 +211,7 @@ public class Scaffold extends Module {
     private final BoolValue autoDisableSpeedValue = new BoolValue("AutoDisable-Speed", true);
 
     // Visuals
-    public final ListValue counterDisplayValue = new ListValue("Counter", new String[]{"Off", "Simple", "Advanced", "Sigma", "Novoline"}, "Simple");
+    public final ListValue counterDisplayValue = new ListValue("Counter", new String[]{"Off", "Simple", "Advanced", "Sigma", "Novoline","Exhibition"}, "Simple");
 
     private final BoolValue markValue = new BoolValue("Mark", false);
     private final IntegerValue redValue = new IntegerValue("Red", 0, 0, 255, () -> markValue.get());
@@ -1029,6 +1029,19 @@ public class Scaffold extends Module {
                 GlStateManager.popMatrix();
             }
         }
+        if (counterMode.equalsIgnoreCase("exhibition")) {
+            int c = Colors.getColor(255, 0, 0, 150);
+            if (getBlocksAmount() >= 64 && 128 > getBlocksAmount()) {
+                c = Colors.getColor(255, 255, 0, 150);
+            } else if (getBlocksAmount() >= 128) {
+                c = Colors.getColor(0, 255, 0, 150);
+            }
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 36, 0xff000000, false);
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1, scaledResolution.getScaledHeight() / 2 - 36, 0xff000000, false);
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 35, 0xff000000, false);
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 37, 0xff000000, false);
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 36, c, false);
+        }
     }
     private int getBlockColor(int count) {
         float f = count;
@@ -1227,4 +1240,3 @@ public class Scaffold extends Module {
         return (towerActivation()) ? "" + rotationModeValue.get() : rotationModeValue.get();
     }
 }
-
