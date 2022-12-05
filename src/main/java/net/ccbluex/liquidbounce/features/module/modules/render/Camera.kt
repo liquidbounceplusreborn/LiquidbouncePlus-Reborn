@@ -18,9 +18,9 @@ class Camera : Module(){
     val antiBlindValue = BoolValue("AntiBlind", true)
     val wordlColorValue = BoolValue("WorldColor", true)
     //
-    val wordlColorrValue = IntegerValue("Red", 252, 0, 255) { wordlColorValue.get() }
-    val wordlColorgValue = IntegerValue("Green", 96, 0, 255) { wordlColorValue.get() }
-    val wordlColorbValue = IntegerValue("Blue", 66, 0, 255) { wordlColorValue.get() }
+    val wordlColorrValue = IntegerValue("Red", 255, 0, 255) { wordlColorValue.get() }
+    val wordlColorgValue = IntegerValue("Green", 255, 0, 255) { wordlColorValue.get() }
+    val wordlColorbValue = IntegerValue("Blue", 255, 0, 255) { wordlColorValue.get() }
 
     //AntiBlind
     val confusionEffect = BoolValue("Confusion", true) { antiBlindValue.get() }
