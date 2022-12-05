@@ -52,7 +52,7 @@ class Target : Element() {
     val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F, { fadeValue.get() })
 
     val noAnimValue = BoolValue("No-Animation", false)
-    val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 9F, { !noAnimValue.get() })
+    val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 6.30F, { !noAnimValue.get() })
 
     val showWithChatOpen = BoolValue("Show-ChatOpen", true)
     val resetBar = BoolValue("ResetBarWhenHiding", false)

@@ -7,12 +7,14 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 import kotlin.math.pow
 
-class NovolineTwo(inst: Target): TargetStyle("Novoline2", inst, false) {
+class NovolineTwo(inst: Target): TargetStyle("Novoline2", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name)).coerceAtLeast(118).toFloat()
         RenderUtils.drawRect(0f, 0f, width + 14f, 44f, Color(0, 0, 0, targetInstance.bgAlphaValue.get()).rgb)
         drawPlayerHead(entity.skin, 3, 3, 30, 30)
@@ -37,7 +39,23 @@ class NovolineTwo(inst: Target): TargetStyle("Novoline2", inst, false) {
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
     }
 
+    override fun handleBlur(entity: EntityPlayer) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.quickDrawRect(0F, 0F, 132F, 43F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+        RenderUtils.newDrawRect(0F, 0F, 132F, 43F, shadowOpaque.rgb)
+    }
+
     override fun getBorder(entity: EntityPlayer?): Border? {
-        return Border(0F, 0F, 120F, 38F)
+        return Border(0F, 0F, 132F, 43F)
     }
 }

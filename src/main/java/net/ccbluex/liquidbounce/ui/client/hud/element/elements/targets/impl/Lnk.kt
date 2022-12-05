@@ -14,8 +14,9 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.pow
 
-class Lnk(inst: Target): TargetStyle("Lnk", inst, false){
+class Lnk(inst: Target): TargetStyle("Lnk", inst, true){
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         val width = (38 + Fonts.minecraftFont.getStringWidth(entity.name))
             .coerceAtLeast(118)
             .toFloat()
@@ -123,6 +124,22 @@ class Lnk(inst: Target): TargetStyle("Lnk", inst, false){
             GlStateManager.popMatrix()
             GL11.glPopMatrix()
         }
+    }
+
+    override fun handleBlur(entity: EntityPlayer) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.fastRoundedRect(0F, 0F, 124F, 44F, 7F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+
+        RenderUtils.originalRoundedRect(0F, 0F, 124F, 44F, 8F, shadowOpaque.rgb)
     }
 
     override fun getBorder(entity: EntityPlayer?): Border? {

@@ -11,13 +11,15 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.gui.Gui
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.MathHelper
 import java.awt.Color
 import kotlin.math.pow
 
-class Hanabi(inst: Target): TargetStyle("Hanabi", inst, false) {
+class Hanabi(inst: Target): TargetStyle("Hanabi", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         val blackcolor = Color(0, 0, 0, 180).rgb
         val blackcolor2 = Color(200, 200, 200).rgb
         val health: Float
@@ -65,7 +67,7 @@ class Hanabi(inst: Target): TargetStyle("Hanabi", inst, false) {
         // Health bar
         RenderUtils.drawGradientSideways(
             0.0, 37.0, ((entity.health / entity.maxHealth) * width).toDouble(),
-            40.0, Color(0, 126, 255).rgb, Color(0, 210, 255).rgb
+            40.0, targetInstance.barColor.rgb, targetInstance.barColor.rgb
         )
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
         Fonts.fontSFUI35.drawStringWithShadow("❤", 112F, 28F, hurt.rgb)
@@ -79,6 +81,22 @@ class Hanabi(inst: Target): TargetStyle("Hanabi", inst, false) {
         Fonts.font40.drawString(entity.getName(), 38.0f, 4.0f, blackcolor2)
         mc.textureManager.bindTexture((entity as AbstractClientPlayer).locationSkin)
         Gui.drawScaledCustomSizeModalRect(3, 3, 8.0f, 8.0f, 8, 8, 32, 32, 64f, 64f)
+    }
+
+    override fun handleBlur(entity: EntityPlayer) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.fastRoundedRect(0F, 0F, 140F, 40F, 7F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+
+        RenderUtils.originalRoundedRect(0F, 0F, 140F, 40F, 8F, shadowOpaque.rgb)
     }
 
     override fun getBorder(entity: EntityPlayer?): Border? {

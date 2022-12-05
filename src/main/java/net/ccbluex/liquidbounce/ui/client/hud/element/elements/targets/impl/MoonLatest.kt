@@ -12,17 +12,12 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.darker
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.MathHelper
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.abs
-import kotlin.math.roundToInt
 
 class MoonTwo(inst: Target): TargetStyle("Moon2", inst, true) {
     val borderColorMode = ListValue("Border-Color", arrayOf("Custom", "MatchBar", "None"), "None", { targetInstance.styleValue.get().equals("liquidbounce", true) })
@@ -30,6 +25,7 @@ class MoonTwo(inst: Target): TargetStyle("Moon2", inst, true) {
     private var lastTarget: EntityPlayer? = null
 
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
 
         val font = Fonts.fontSFUI35
         val healthString = "${decimalFormat2.format(entity.health)} "

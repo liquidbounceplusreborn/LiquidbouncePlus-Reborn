@@ -17,8 +17,9 @@ import java.text.DecimalFormat
 import kotlin.math.abs
 import kotlin.math.pow
 
-class Style(inst: Target): TargetStyle("Style", inst, false) {
+class Style(inst: Target): TargetStyle("Style", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         var index = 0
         while (index < targetInstance.particles.size) {
             val update = targetInstance.particles[index]
@@ -160,7 +161,31 @@ class Style(inst: Target): TargetStyle("Style", inst, false) {
         }
     }
 
+    override fun handleBlur(entity: EntityPlayer) {
+        val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
+            .coerceAtLeast(118)
+            .toFloat()
+
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.quickDrawRect(2f, 2f, 140F, 48F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+        val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
+            .coerceAtLeast(118)
+            .toFloat()
+
+        RenderUtils.newDrawRect(2f, 2f, 140F, 48F, shadowOpaque.rgb)
+    }
+
     override fun getBorder(entity: EntityPlayer?): Border? {
-        return Border(2f, 0f, 140F, 48F)
+        return Border(2f, 2f, 140F, 48F)
     }
 }

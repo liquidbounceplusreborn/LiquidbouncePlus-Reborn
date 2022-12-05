@@ -9,16 +9,18 @@ import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 import java.math.BigDecimal
 import kotlin.math.pow
 
-class NovolineThree(inst: Target): TargetStyle("Novoline3", inst, false) {
+class NovolineThree(inst: Target): TargetStyle("Novoline3", inst, true) {
     private val gredValue = IntegerValue("GradientRed", 255, 0, 255, { targetInstance.styleValue.get().equals("Novoline3", true) })
     private val ggreenValue = IntegerValue("GradientGreen", 255, 0, 255, { targetInstance.styleValue.get().equals("Novoline3", true) })
     private val gblueValue = IntegerValue("GradientBlue", 255, 0, 255, { targetInstance.styleValue.get().equals("Novoline3", true) })
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         val width = (38 + Fonts.minecraftFont.getStringWidth(entity.name))
             .coerceAtLeast(118)
             .toFloat()
@@ -45,11 +47,35 @@ class NovolineThree(inst: Target): TargetStyle("Novoline3", inst, false) {
             BigDecimal((entity.health / entity.maxHealth * 100).toDouble()).setScale(
                 1,
                 BigDecimal.ROUND_HALF_UP
-            ).toString() + "%", width / 2F + 5.5F, 17F, Color.white.rgb
+            ).toString() + "%", width / 2F + 5.5F, 16F, Color.white.rgb
         )
     }
 
+    override fun handleBlur(entity: EntityPlayer) {
+        val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
+            .coerceAtLeast(118)
+            .toFloat()
+
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.quickDrawRect(0F, 0F, 118F, 34F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+        val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
+            .coerceAtLeast(118)
+            .toFloat()
+
+        RenderUtils.newDrawRect(0F, 0F, 118F, 34F, shadowOpaque.rgb)
+    }
+
     override fun getBorder(entity: EntityPlayer?): Border? {
-        return Border(0F, 0F, 120F, 38F)
+        return Border(0F, 0F, 118F, 34F)
     }
 }

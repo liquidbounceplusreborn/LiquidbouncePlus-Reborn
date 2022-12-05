@@ -5,19 +5,18 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Target
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 import kotlin.math.pow
 
-class Astolfo(inst: Target): TargetStyle("Astolfo", inst, false) {
+class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
-        val colors = Color(targetInstance.redValue.get(), targetInstance.greenValue.get(), targetInstance.blueValue.get(), 255).rgb
-        val colors1 = Color(targetInstance.redValue.get(), targetInstance.greenValue.get(), targetInstance.blueValue.get(), 150).rgb
-        val colors2 = Color(targetInstance.redValue.get(), targetInstance.greenValue.get(), targetInstance.blueValue.get(), 50).rgb
+        updateAnim(entity.health)
+        val colors = targetInstance.barColor.rgb
+        val colors1 = targetInstance.barColor.rgb
+        val colors2 = targetInstance.barColor.rgb
         val additionalWidth = Fonts.minecraftFont.getStringWidth("${entity.name}").coerceAtLeast(125)
         GlStateManager.pushMatrix()
         GlStateManager.translate((15).toFloat(), 55.toFloat(), 0.0f)
@@ -59,8 +58,24 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, false) {
         GlStateManager.popMatrix()
     }
 
+    override fun handleBlur(entity: EntityPlayer) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.fastRoundedRect(-23F, 41F, 148F, 107F, 7F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+
+        RenderUtils.originalRoundedRect(-23F, 41F, 148F, 107F, 8F, shadowOpaque.rgb)
+    }
+
     override fun getBorder(entity: EntityPlayer?): Border? {
-        return Border(-20F, 40F, 148F, 107F)
+        return Border(-23F, 41F, 148F, 107F)
     }
 
 

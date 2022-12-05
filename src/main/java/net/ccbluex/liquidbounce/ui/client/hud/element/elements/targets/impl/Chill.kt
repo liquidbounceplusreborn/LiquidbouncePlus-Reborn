@@ -15,11 +15,9 @@ import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
-import java.awt.Color
 
 class Chill(inst: Target): TargetStyle("Chill", inst, true) {
 

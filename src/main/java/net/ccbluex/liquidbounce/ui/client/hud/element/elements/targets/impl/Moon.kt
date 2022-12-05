@@ -5,27 +5,18 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 
-import codes.som.anthony.koffee.types.float
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Target
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 import kotlin.math.abs
-import kotlin.math.pow
-import kotlin.math.roundToInt
 
 class Moon(inst: Target): TargetStyle("Moon", inst, true) {
 
@@ -33,6 +24,7 @@ class Moon(inst: Target): TargetStyle("Moon", inst, true) {
     private var lastTarget: EntityPlayer? = null
 
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         if (entity != lastTarget || easingHealth < 0 || easingHealth > entity.maxHealth ||
             abs(easingHealth - entity.health) < 0.01) {
             easingHealth = entity.health
@@ -85,7 +77,7 @@ class Moon(inst: Target): TargetStyle("Moon", inst, true) {
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        RenderUtils.quickDrawRect(0F, 0F, width + + 40.5f, 51.5F)
+        RenderUtils.quickDrawRect(0F, 0F, width + 40.5f, 51.5F)
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
     }
@@ -97,7 +89,7 @@ class Moon(inst: Target): TargetStyle("Moon", inst, true) {
                         .coerceAtLeast(118)
                         .toFloat()
 
-        RenderUtils.newDrawRect(0F, 0F, width, 36F, shadowOpaque.rgb)
+        RenderUtils.newDrawRect(0F, 0F, width + 40.5f, 51.5F, shadowOpaque.rgb)
     }
 
     override fun getBorder(entity: EntityPlayer?): Border? {

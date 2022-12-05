@@ -13,8 +13,9 @@ import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class ExhibitionTwo(inst: Target): TargetStyle("Exhibition2", inst, false) {
+class ExhibitionTwo(inst: Target): TargetStyle("Exhibition2", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         val minWidth = 140F.coerceAtLeast(45F + Fonts.fontTahoma.getStringWidth(entity.name))
         RenderUtils.drawExhiRect(0F, 0F, minWidth, 45F)
         RenderUtils.drawRect(2.5F, 2.5F, 42.5F, 42.5F, Color(59, 59, 59).rgb)
@@ -79,7 +80,22 @@ class ExhibitionTwo(inst: Target): TargetStyle("Exhibition2", inst, false) {
         GL11.glPopMatrix()
     }
 
+    override fun handleBlur(entity: EntityPlayer) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.fastRoundedRect(-3F, -3F, 143F, 48F, 7F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+        RenderUtils.newDrawRect(-3F, -3F, 143F, 48F, shadowOpaque.rgb)
+    }
+
     override fun getBorder(entity: EntityPlayer?): Border? {
-        return Border(0F, 3F, 140F, 48F)
+        return Border(-3F, -3F, 143F, 48F)
     }
 }

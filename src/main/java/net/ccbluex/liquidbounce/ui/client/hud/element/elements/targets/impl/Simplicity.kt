@@ -12,8 +12,9 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import kotlin.math.pow
 
-class Simplicity(inst: Target): TargetStyle("Simplicity", inst, false) {
+class Simplicity(inst: Target): TargetStyle("Simplicity", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         GlStateManager.pushMatrix()
         var width = 100.0
         width = PlayerUtils.getIncremental(width, -50.0)
@@ -44,6 +45,20 @@ class Simplicity(inst: Target): TargetStyle("Simplicity", inst, false) {
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
+    }
+
+    override fun handleBlur(entity: EntityPlayer) {
+        val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
+            .coerceAtLeast(118)
+            .toFloat()
+
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.quickDrawRect(0F, 0F, width, 32F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+
     }
 
     override fun getBorder(entity: EntityPlayer?): Border? {

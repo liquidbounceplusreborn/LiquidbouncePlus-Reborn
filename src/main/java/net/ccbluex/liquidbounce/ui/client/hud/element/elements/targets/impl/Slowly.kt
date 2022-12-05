@@ -12,12 +12,11 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
-import org.lwjgl.opengl.GL11
-import java.awt.Color
 
 class Slowly(inst: Target): TargetStyle("Slowly", inst, true) {
 
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         val font = Fonts.minecraftFont
         val healthString = "${decimalFormat2.format(entity.health)} ❤"
         val length = 60.coerceAtLeast(font.getStringWidth(entity.name)).coerceAtLeast(font.getStringWidth(healthString)).toFloat() + 10F

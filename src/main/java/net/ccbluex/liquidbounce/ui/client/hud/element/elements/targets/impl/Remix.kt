@@ -9,8 +9,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Target
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
-import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
@@ -19,7 +17,7 @@ import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class Remix(inst: Target): TargetStyle("Remix", inst, false) {
+class Remix(inst: Target): TargetStyle("Remix", inst, true) {
 
     override fun drawTarget(entity: EntityPlayer) {
         updateAnim(entity.health)
@@ -115,6 +113,30 @@ class Remix(inst: Target): TargetStyle("Remix", inst, false) {
         GlStateManager.disableLighting()
         GlStateManager.disableCull()
         GL11.glPopMatrix()
+    }
+
+    override fun handleBlur(entity: EntityPlayer) {
+        val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
+            .coerceAtLeast(118)
+            .toFloat()
+
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.quickDrawRect(0F, 0F, 146F, 49F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+        val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
+            .coerceAtLeast(118)
+            .toFloat()
+
+        RenderUtils.newDrawRect(0F, 0F, 146F, 49F, shadowOpaque.rgb)
     }
 
     override fun getBorder(entity: EntityPlayer?): Border? {

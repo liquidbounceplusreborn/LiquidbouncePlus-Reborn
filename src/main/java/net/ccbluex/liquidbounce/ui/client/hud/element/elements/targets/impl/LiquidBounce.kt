@@ -17,11 +17,9 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 import kotlin.math.abs
-import kotlin.math.pow
 
 class LiquidBounce(inst: Target): TargetStyle("LiquidBounce", inst, true) {
 

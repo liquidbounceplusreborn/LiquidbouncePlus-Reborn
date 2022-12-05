@@ -19,8 +19,9 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.ArrayList
 
-class ExhibitionThree(inst: Target): TargetStyle("Exhibition3", inst, false) {
+class ExhibitionThree(inst: Target): TargetStyle("Exhibition3", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         if (entity == null || entity !is EntityPlayer || mc.theWorld.getEntityByID(entity.getEntityId()) == null || mc.theWorld.getEntityByID(entity.getEntityId()).getDistanceSqToEntity(mc.thePlayer) > 100) {
             return
         }
@@ -134,7 +135,22 @@ class ExhibitionThree(inst: Target): TargetStyle("Exhibition3", inst, false) {
         GL11.glPopMatrix()
     }
 
+    override fun handleBlur(entity: EntityPlayer) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.fastRoundedRect(0F, -6F, 125F, 39F, 7F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+        RenderUtils.newDrawRect(0F, -6F, 125F, 39F, shadowOpaque.rgb)
+    }
+
     override fun getBorder(entity: EntityPlayer?): Border? {
-        return Border(0f, -2f, 124f, 38f)
+        return Border(0F, -6F, 125F, 39F)
     }
 }

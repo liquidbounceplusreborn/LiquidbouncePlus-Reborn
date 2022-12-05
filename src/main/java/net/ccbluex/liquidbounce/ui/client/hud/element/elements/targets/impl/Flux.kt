@@ -8,12 +8,14 @@ import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 import kotlin.math.pow
 
-class Flux(inst: Target): TargetStyle("Flux", inst, false) {
+class Flux(inst: Target): TargetStyle("Flux", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         val hp = decimalFormat.format(easingHealth)
         val additionalWidth = Fonts.minecraftFont.getStringWidth("${entity.name}  ${hp} hp").coerceAtLeast(75)
         RenderUtils.drawCircleRect(
@@ -74,7 +76,26 @@ class Flux(inst: Target): TargetStyle("Flux", inst, false) {
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
     }
 
+    override fun handleBlur(entity: EntityPlayer) {
+        val additionalWidth = Fonts.minecraftFont.getStringWidth(entity?.name).coerceAtLeast(75)
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.fastRoundedRect(0F, 0F, additionalWidth.toFloat() + 54, 34F, 7F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+        val additionalWidth = Fonts.minecraftFont.getStringWidth(entity?.name).coerceAtLeast(75)
+
+        RenderUtils.originalRoundedRect(0F, 0F, additionalWidth.toFloat() + 54, 34F, 8F, shadowOpaque.rgb)
+    }
+
     override fun getBorder(entity: EntityPlayer?): Border? {
-        return Border(0F, 0F, 135F, 32F)
+        val additionalWidth = Fonts.minecraftFont.getStringWidth(entity?.name).coerceAtLeast(75)
+        return Border(0F, 0F, additionalWidth.toFloat() + 54, 34F)
     }
 }

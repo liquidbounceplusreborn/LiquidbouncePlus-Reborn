@@ -19,9 +19,10 @@ import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class Exhibition(inst: Target): TargetStyle("Exhibition", inst, false) {
+class Exhibition(inst: Target): TargetStyle("Exhibition", inst, true) {
 
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         val font = Fonts.fontTahoma
         val minWidth = 140F.coerceAtLeast(47F + font.getStringWidth(entity.name))
 
@@ -86,13 +87,33 @@ class Exhibition(inst: Target): TargetStyle("Exhibition", inst, false) {
         GL11.glPopMatrix()
     }
 
+    override fun handleBlur(entity: EntityPlayer) {
+        val font = Fonts.fontTahoma
+        val minWidth = 143F.coerceAtLeast(47F + font.getStringWidth(entity.name))
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.fastRoundedRect(-3F, -3F, minWidth, 48F, 7F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+        val font = Fonts.fontTahoma
+        val minWidth = 143F.coerceAtLeast(47F + font.getStringWidth(entity.name))
+
+        RenderUtils.newDrawRect(-3F, -3F, minWidth, 48F, shadowOpaque.rgb)
+    }
+
     override fun getBorder(entity: EntityPlayer?): Border? {
-        entity ?: return Border(0F, 0F, 126F, 45F)
+        entity ?: return Border(-3F, -3F, 143F, 48F)
 
         val font = Fonts.fontTahoma
-        val minWidth = 126F.coerceAtLeast(47F + font.getStringWidth(entity.name))
+        val minWidth = 143F.coerceAtLeast(47F + font.getStringWidth(entity.name))
 
-        return Border(0F, 0F, minWidth, 45F)
+        return Border(-3F, -3F, minWidth, 48F)
     }
 
 }

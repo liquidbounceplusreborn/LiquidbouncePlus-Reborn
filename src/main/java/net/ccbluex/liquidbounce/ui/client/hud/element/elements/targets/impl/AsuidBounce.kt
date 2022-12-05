@@ -7,14 +7,16 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.min
 import kotlin.math.pow
 
-class AsuidBounce(inst: Target): TargetStyle("AsuidBounce", inst, false) {
+class AsuidBounce(inst: Target): TargetStyle("AsuidBounce", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
+        updateAnim(entity.health)
         GL11.glPushMatrix()
         RenderUtils.drawBorderedRect(0F, 0F, 120F, 38f, 2f, Color(5, 5, 5, 255).rgb, Color(25, 25, 25, 255).rgb)
         RenderUtils.drawRect(1f, 34f, 119f, 37f, Color(50, 50, 50, 255).rgb)
@@ -55,6 +57,21 @@ class AsuidBounce(inst: Target): TargetStyle("AsuidBounce", inst, false) {
         RenderUtils.drawOutlinedRect(74.5f, 15f, 115.5f, 20f, 0.5f, Color(0, 0, 0, 255).rgb)
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
         GL11.glPopMatrix()
+    }
+
+    override fun handleBlur(entity: EntityPlayer) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderUtils.fastRoundedRect(0F, 0F, 120F, 38F, 7F)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
+
+    override fun handleShadow(entity: EntityPlayer) {
+        RenderUtils.newDrawRect(0F, 0F, 120F, 38F, shadowOpaque.rgb)
     }
 
     override fun getBorder(entity: EntityPlayer?): Border? {
