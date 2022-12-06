@@ -99,6 +99,7 @@ class Target : Element() {
             Exhibition(this),
             ExhibitionTwo(this),
             ExhibitionThree(this),
+            ExhibitionFour(this),
             Flux(this),
             Hanabi(this),
             LiquidBounce(this),
