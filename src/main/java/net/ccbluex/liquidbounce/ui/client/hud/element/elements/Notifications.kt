@@ -33,7 +33,7 @@ class Notifications(
      */
     private val exampleNotification = Notification("Notification", "This is an example notification.", NotifyType.INFO)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "IntelliJIDEA","TenacityOld"), "Classic")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "IntelliJIDEA","TenacityOld","New"), "Classic")
     }
 
     /**
@@ -62,7 +62,7 @@ class Notifications(
             exampleNotification.displayTime = System.currentTimeMillis()
 //            exampleNotification.x = exampleNotification.textLength + 8F
 
-            return if (styleValue.get().equals("IntelliJIDEA", true)) Border(160F, -59F, -22F, -29F) else if (styleValue.get().equals("TenacityOld", true)) Border (-exampleNotification.width.toFloat(), -exampleNotification.height.toFloat(), 0F, 0F) else
+            return if (styleValue.get().equals("IntelliJIDEA", true)) Border(160F, -59F, -22F, -29F) else if (styleValue.get().equals("New", true)) Border(-exampleNotification.width.toFloat(), -exampleNotification.height.toFloat(), 0F, 0F) else if (styleValue.get().equals("TenacityOld", true)) Border (-exampleNotification.width.toFloat(), -exampleNotification.height.toFloat(), 0F, 0F) else
                 Border(-exampleNotification.width.toFloat() - 22, -exampleNotification.height.toFloat(), 0F, 0F)
 
         }
@@ -377,6 +377,78 @@ class Notification(
 
             return false
         }
+        if (style.equals("New")) {
+            val pn = ResourceLocation(
+                when (type.name) {
+                    "SUCCESS" -> "liquidbounce+/noti/SUCCESS.png"
+                    "ERROR" -> "liquidbounce+/noti/ERROR.png"
+                    "WARNING" -> "liquidbounce+/noti/WARNING.png"
+                    "INFO" -> "liquidbounce+/noti/INFO.png"
+                    else -> "liquidbounce+/error/error1.png"
+                }
+            )
+            var width = 100.coerceAtLeast((Fonts.fontSFUI35.getStringWidth(this.content))+22)
+            val realY = -(index+1) * height
+            val nowTime = System.currentTimeMillis()
+            var transY = nowY.toDouble()
+
+            // Y-Axis Animation
+            if (nowY != realY) {
+                var pct = (nowTime - animeYTime) / animeTime.toDouble()
+                if (pct> 1) {
+                    nowY = realY
+                    pct = 1.0
+                } else {
+                    pct = EaseUtils.easeOutExpo(pct)
+                }
+                transY += (realY - nowY) * pct
+            } else {
+                animeYTime = nowTime
+            }
+
+            // X-Axis Animation
+            var pct = (nowTime - animeXTime) / animeTime.toDouble()
+            when (fadeState) {
+                FadeState.IN -> {
+                    if (pct> 1) {
+                        fadeState = FadeState.STAY
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = EaseUtils.easeOutExpo(pct)
+                }
+
+                FadeState.STAY -> {
+                    pct = 1.0
+                    if ((nowTime - animeXTime)> time) {
+                        fadeState = FadeState.OUT
+                        animeXTime = nowTime
+                    }
+                }
+
+                FadeState.OUT -> {
+                    if (pct> 1) {
+                        fadeState = FadeState.END
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = 1 - EaseUtils.easeInExpo(pct)
+                }
+
+                FadeState.END -> {
+                    return true
+                }
+            }
+            val transX = width - (width * pct) - width
+            GL11.glTranslated(transX, transY, 0.0)
+
+            RenderUtils.drawRect(0f,-1f,width.toFloat(),height.toFloat()-10f,Color(0,0,0,120).rgb)
+            RenderUtils.drawShadow(0f,-1f,width.toFloat(),height.toFloat() - 9f)
+            RenderUtils.drawImage(pn, 2, 1, 16, 16)
+            Fonts.fontSFUI35.drawString(content, 20.0f, Fonts.fontSFUI35.FONT_HEIGHT/2f, Color.WHITE.rgb, false)
+            return false
+        }
+
         return false
     }
 }
@@ -391,6 +463,3 @@ enum class NotifyType(var renderColor: Color) {
 
 
 enum class FadeState { IN, STAY, OUT, END }
-
-
- 
