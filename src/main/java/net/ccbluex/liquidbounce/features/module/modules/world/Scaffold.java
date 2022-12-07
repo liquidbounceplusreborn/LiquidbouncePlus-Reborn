@@ -64,7 +64,7 @@ public class Scaffold extends Module {
     // Global settings
     private final BoolValue towerEnabled = new BoolValue("EnableTower", false);
     private final ListValue towerModeValue = new ListValue("TowerMode", new String[]{
-            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus"
+            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus","Hypixel"
     }, "Motion", () -> towerEnabled.get());
     private final ListValue towerPlaceModeValue = new ListValue("Tower-PlaceTiming", new String[]{"Pre", "Post"}, "Post");
     private final BoolValue stopWhenBlockAbove = new BoolValue("StopWhenBlockAbove", false, () -> towerEnabled.get());
@@ -268,6 +268,7 @@ public class Scaffold extends Module {
     private double jumpGround = 0;
     private int verusState = 0;
     private boolean verusJumped = false;
+    private int ticks, towerTicks;
 
     public boolean isTowerOnly() {
         return (towerEnabled.get() && !onJumpValue.get());
@@ -360,6 +361,18 @@ public class Scaffold extends Module {
                     towerDelayTimer.reset();
                 }
                 break;
+            case"Hypixel":
+                        event.setY(0.41999998688698);
+                        mc.thePlayer.motionY = 0.42;
+                        towerTicks = 0;
+                        if(towerTicks == 2) {
+                        mc.thePlayer.setPosition(mc.thePlayer.posX, Math.round(mc.thePlayer.posY), mc.thePlayer.posZ);
+                        event.setY(mc.thePlayer.motionY = 0);
+                        mc.thePlayer.onGround = true;
+                    }
+                towerTicks++;
+
+                    break;
             case "constantmotion":
                 if (mc.thePlayer.onGround) {
                     fakeJump();
@@ -927,6 +940,21 @@ public class Scaffold extends Module {
 
         if (airSafeValue.get() || mc.thePlayer.onGround)
             event.setSafeWalk(true);
+
+        if(towerModeValue.get().equalsIgnoreCase("Hypixel")) {
+            if(mc.gameSettings.keyBindJump.isKeyDown()) {
+                if(mc.thePlayer.onGround) {
+                    event.setY(0.41999998688698);
+                    mc.thePlayer.motionY = 0.42;
+                    towerTicks = 0;
+                } else if(towerTicks == 2) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, Math.round(mc.thePlayer.posY), mc.thePlayer.posZ);
+                    event.setY(mc.thePlayer.motionY = 0);
+                    mc.thePlayer.onGround = true;
+                }
+            }
+            towerTicks++;
+        }
     }
 
     @EventTarget
