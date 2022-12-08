@@ -143,8 +143,8 @@ class NameTags : Module() {
             ""
         }
 
-        val healthText = if (healthValue.get()) "§a" + entity.health.toInt() + "" else ""
-        val distanceText = if (distanceValue.get()) "§a[§f" + mc.thePlayer.getDistanceToEntity(entity).toInt() + "§a]" else ""
+        val healthText = if (healthValue.get()) " §a" + entity.health.toInt() + "" else ""
+        val distanceText = if (distanceValue.get()) "§a[§f" + mc.thePlayer.getDistanceToEntity(entity).toInt() + "§a] " else ""
         val HEALTH: Int = entity.health.toInt()
         val COLOR1: String
         COLOR1 = if (HEALTH > 20.0) {
