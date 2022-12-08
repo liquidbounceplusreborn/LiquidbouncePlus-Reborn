@@ -189,7 +189,7 @@ class TargetStrafe : Module() {
             for (i in 0..360 step 60 - accuracyValue.get()) { // You can change circle accuracy  (60 - accuracy)
                 when (colorType.get()) {
                     "Custom" -> GL11.glColor3f(redValue.get() / 255.0f, greenValue.get() / 255.0f, blueValue.get() / 255.0f)
-                    "Dynamic" -> if (canStrafe) GL11.glColor4f(0.25f, 1f, 0.25f, 1f) else GL11.glColor4f(1f, 1f, 1f, 1f)
+                    "Dynamic" -> if (canStrafe) GL11.glColor4f(redValue.get() / 255.0f, greenValue.get() / 255.0f, blueValue.get() / 255.0f else GL11.glColor4f(1f, 1f, 1f, 1f)
                     "Rainbow" -> {
                         val rainbow = Color(RenderUtils.getNormalRainbow(i, saturationValue.get(), brightnessValue.get()))
                         GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
@@ -216,4 +216,3 @@ class TargetStrafe : Module() {
         }
     }
 }
-
