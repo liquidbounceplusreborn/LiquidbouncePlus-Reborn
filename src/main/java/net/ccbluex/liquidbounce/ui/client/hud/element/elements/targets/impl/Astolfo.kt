@@ -4,6 +4,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Target
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.extensions.darker
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
@@ -15,8 +16,8 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
         updateAnim(entity.health)
         val colors = targetInstance.barColor.rgb
-        val colors1 = targetInstance.barColor.rgb
-        val colors2 = targetInstance.barColor.rgb
+        val colors1 = targetInstance.barColor.darker(1.0f).rgb
+        val colors2 = targetInstance.barColor.darker(0.5f).rgb
         val additionalWidth = Fonts.minecraftFont.getStringWidth("${entity.name}").coerceAtLeast(125)
         GlStateManager.pushMatrix()
         GlStateManager.translate((15).toFloat(), 55.toFloat(), 0.0f)
