@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
@@ -40,6 +41,7 @@ class NameTags : Module() {
     //2DTags
     private val armorValue = BoolValue("Armor", true)
     private val healthValue = BoolValue("Health", true)
+    private val distanceValue = BoolValue("Distance", true)
     private val outlineValue = BoolValue("Outline", true)
     private val background = BoolValue("Background", true, { !typeValue.get().equals("3dtag", true) })
     private val scaleValue = FloatValue("Scale", 1.0F, 0.5F, 2.0F)
@@ -47,7 +49,6 @@ class NameTags : Module() {
     private val healthBarValue = BoolValue("Bar", true, { !typeValue.get().equals("2dtag", true) })
     private val pingValue = BoolValue("Ping", true, { !typeValue.get().equals("2dtag", true) })
     private val translateY = FloatValue("TranslateY", 0.55F, -2F, 2F, { !typeValue.get().equals("2dtag", true) })
-    private val distanceValue = BoolValue("Distance", false, { !typeValue.get().equals("2dtag", true) })
     private val enchantValue = BoolValue("Enchant", false) { armorValue.get() && !typeValue.get().equals("2dtag", true)}
     private val potionValue = BoolValue("Potions", true, { !typeValue.get().equals("2dtag", true) })
     private val clearNamesValue = BoolValue("ClearNames", false, { !typeValue.get().equals("2dtag", true) })
@@ -142,8 +143,8 @@ class NameTags : Module() {
             ""
         }
 
-        val healthText = if (healthValue.get()) " §a" + entity.health.toInt() + " " else ""
-
+        val healthText = if (healthValue.get()) "§a" + entity.health.toInt() + "" else ""
+        val distanceText = if (distanceValue.get()) "§a[§f" + mc.thePlayer.getDistanceToEntity(entity).toInt() + "§a]" else ""
         val HEALTH: Int = entity.health.toInt()
         val COLOR1: String
         COLOR1 = if (HEALTH > 20.0) {
@@ -170,7 +171,7 @@ class NameTags : Module() {
         GLUtils.setGLCap(3042, true)
         glBlendFunc(770, 771)
         val lol = entity.displayName.formattedText
-        val USERNAME = bot + lol + healthText
+        val USERNAME = distanceText + bot + lol + healthText
         val STRING_WIDTH = fr.getStringWidth(USERNAME) / 2
         if(background.get()){
         Gui.drawRect((-STRING_WIDTH - 1).toInt(), -14, (STRING_WIDTH + 1).toInt(), -4, Integer.MIN_VALUE)
@@ -554,4 +555,3 @@ class NameTags : Module() {
         }
     }
 }
-
