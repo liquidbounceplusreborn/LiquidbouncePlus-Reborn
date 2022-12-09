@@ -77,7 +77,6 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Shadow
     protected abstract <T extends EntityLivingBase> boolean setDoRenderBrightness(T entityLivingBaseIn, float partialTicks);
 
-    @Shadow
     private static final DynamicTexture field_177096_e = new DynamicTexture(16, 16);
 
     @Shadow
@@ -269,8 +268,8 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 GL11.glDisable(2896);
                 GL11.glPolygonMode(1032,6914);
                 GL11.glColor4f(rotations.getR().get()/255,rotations.getG().get()/255,rotations.getB().get(),rotations.getAlpha().get()/255);
-                GL11.glRotatef(renderyaw - f,0,0.001f,0);
-                this.mainModel.render(Minecraft.getMinecraft().thePlayer,f6, f5, renderpitch, renderyaw - f, renderpitch,0.0625F);
+                GL11.glRotatef(renderyaw - f, 0, 0.001f, 0);
+                this.mainModel.render(entity, f6, f5, f7, f2, f7, f4);
                 GL11.glEnable(2896);
                 GL11.glDisable(3042);
                 GL11.glEnable(3553);
