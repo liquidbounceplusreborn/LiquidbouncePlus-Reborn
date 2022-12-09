@@ -1073,7 +1073,6 @@ public class Scaffold extends Module {
         }
         if (modeDisplay.get()) {
             Speed speed = LiquidBounce.moduleManager.getModule(Speed.class);
-            if (counterMode.equalsIgnoreCase("simple")) {
                 if (autoJumpValue.get() || smartSpeedValue.get() && speed.getState()) {
                     Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
                     Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
@@ -1103,7 +1102,7 @@ public class Scaffold extends Module {
                         }
                     }
                 }
-            }
+
             if (counterMode.equalsIgnoreCase("exhibition")) {
                 if (autoJumpValue.get() || smartSpeedValue.get() && speed.getState()) {
                     Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
