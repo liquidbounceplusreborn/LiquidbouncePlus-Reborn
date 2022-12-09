@@ -213,7 +213,7 @@ public class Scaffold extends Module {
 
     // Visuals
     public final ListValue counterDisplayValue = new ListValue("Counter", new String[]{"Off", "Simple", "Advanced", "Sigma", "Novoline","Exhibition"}, "Simple");
-
+    private final BoolValue modeDisplay = new BoolValue("ModeDisplay",true);
     private final BoolValue markValue = new BoolValue("Mark", false);
     private final IntegerValue redValue = new IntegerValue("Red", 0, 0, 255, () -> markValue.get());
     private final IntegerValue greenValue = new IntegerValue("Green", 120, 0, 255, () -> markValue.get());
@@ -1059,20 +1059,26 @@ public class Scaffold extends Module {
             }
         }
         if (counterMode.equalsIgnoreCase("exhibition")) {
-            Speed speed = LiquidBounce.moduleManager.getModule(Speed.class);
             int c = Colors.getColor(255, 0, 0, 150);
             if (getBlocksAmount() >= 64 && 128 > getBlocksAmount()) {
                 c = Colors.getColor(255, 255, 0, 150);
             } else if (getBlocksAmount() >= 128) {
                 c = Colors.getColor(0, 255, 0, 150);
             }
-            if (autoJumpValue.get() || smartSpeedValue.get() && speed.getState()){
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 36, 0xff000000, false);
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1, scaledResolution.getScaledHeight() / 2 - 36, 0xff000000, false);
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 35, 0xff000000, false);
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 37, 0xff000000, false);
+            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 36, c, false);
+        }
+        if(modeDisplay.get()) {
+            Speed speed = LiquidBounce.moduleManager.getModule(Speed.class);
+            if (autoJumpValue.get() || smartSpeedValue.get() && speed.getState()) {
                 Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
                 Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
                 Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 25, 0xff000000, false);
                 Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 27, 0xff000000, false);
                 Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 26, Color.WHITE.getRGB(), false);
-
             } else {
                 if (towerActivation()) {
                     Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
@@ -1096,11 +1102,6 @@ public class Scaffold extends Module {
                     }
                 }
             }
-            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 36, 0xff000000, false);
-            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1, scaledResolution.getScaledHeight() / 2 - 36, 0xff000000, false);
-            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 35, 0xff000000, false);
-            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 37, 0xff000000, false);
-            Fonts.minecraftFont.drawString(getBlocksAmount() + "", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 36, c, false);
         }
     }
     private int getBlockColor(int count) {
