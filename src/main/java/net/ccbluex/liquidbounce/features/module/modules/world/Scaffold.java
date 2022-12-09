@@ -1102,38 +1102,6 @@ public class Scaffold extends Module {
                         }
                     }
                 }
-
-            if (counterMode.equalsIgnoreCase("exhibition")) {
-                if (autoJumpValue.get() || smartSpeedValue.get() && speed.getState()) {
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 25, 0xff000000, false);
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 27, 0xff000000, false);
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 26, Color.WHITE.getRGB(), false);
-                } else {
-                    if (towerActivation()) {
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 25, 0xff000000, false);
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 27, 0xff000000, false);
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 26, Color.WHITE.getRGB(), false);
-                    } else {
-                        if (placeModeValue.isMode("Pre")) {
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 25, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 27, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 26, Color.WHITE.getRGB(), false);
-                        } else {
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1, scaledResolution.getScaledHeight() / 2 - 26, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 25, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 27, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2), scaledResolution.getScaledHeight() / 2 - 26, Color.WHITE.getRGB(), false);
-                        }
-                    }
-                }
-            }
         }
     }
     private int getBlockColor(int count) {
