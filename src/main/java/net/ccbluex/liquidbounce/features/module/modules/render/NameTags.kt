@@ -20,7 +20,6 @@ import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.enchantment.EnchantmentHelper
-import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
@@ -180,11 +179,7 @@ class NameTags : Module() {
 
         }
         if (outlineValue.get()) {
-            fr.drawString(USERNAME, (-STRING_WIDTH)- 1, (fr.FONT_HEIGHT - 22), Color.BLACK.rgb)
-            fr.drawString(USERNAME, (-STRING_WIDTH) + 1, (fr.FONT_HEIGHT - 22), Color.BLACK.rgb)
-            fr.drawString(USERNAME, (-STRING_WIDTH), (fr.FONT_HEIGHT - 22 - 1), Color.BLACK.rgb)
-            fr.drawString(USERNAME, (-STRING_WIDTH), (fr.FONT_HEIGHT - 22 + 1), Color.BLACK.rgb)
-            fr.drawString(USERNAME, (-STRING_WIDTH), (fr.FONT_HEIGHT - 22), 16777215)
+            drawOutlineStringWithoutGL(USERNAME, (-STRING_WIDTH), (fr.FONT_HEIGHT - 22), 16777215, font = fr)
         }else{
             fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22).toFloat(), 16777215)
         }
@@ -303,11 +298,7 @@ class NameTags : Module() {
 
         glEnable(GL_TEXTURE_2D)
         if (outlineValue.get()) {
-            fontRenderer.drawString(text, 1F + -width - 1, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, Color.BLACK.rgb, fontShadowValue.get())
-            fontRenderer.drawString(text, 1F + -width + 1, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, Color.BLACK.rgb, fontShadowValue.get())
-            fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F - 1 else 1.5F - 1, Color.BLACK.rgb, fontShadowValue.get())
-            fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F + 1 else 1.5F + 1, Color.BLACK.rgb, fontShadowValue.get())
-            fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, fontShadowValue.get())
+            drawOutlineStringWithoutGL(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF,font = fontRenderer )
                     }else{
             fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, fontShadowValue.get())
         }
@@ -554,4 +545,13 @@ class NameTags : Module() {
     }
         }
     }
+    fun drawOutlineStringWithoutGL(s: String, x: Int, y: Int, color: Int, font: FontRenderer) {
+
+        font.drawString(ColorUtils.stripColor(s), (x * 2 - 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        font.drawString(ColorUtils.stripColor(s), (x * 2 + 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 - 1).toInt(), Color.BLACK.rgb)
+        font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 + 1).toInt(), Color.BLACK.rgb)
+        font.drawString(s, (x * 2).toInt(), (y * 2).toInt(), color)
+    }
 }
+

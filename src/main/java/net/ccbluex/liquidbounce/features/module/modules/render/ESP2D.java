@@ -2,7 +2,7 @@
  * LiquidBounce+ Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/WYSI-Foundation/LiquidBouncePlus/
- * 
+ *
  * This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
  */
 package net.ccbluex.liquidbounce.features.module.modules.render;
@@ -73,12 +73,12 @@ public final class ESP2D extends Module {
     public final BoolValue localPlayer = new BoolValue("Local-Player", true);
     public final BoolValue droppedItems = new BoolValue("Dropped-Items", false);
     private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
-	private final IntegerValue colorRedValue = new IntegerValue("Red", 255, 0, 255);
-	private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
-	private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
-	private final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
-	private final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
-	private final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
+    private final IntegerValue colorRedValue = new IntegerValue("Red", 255, 0, 255);
+    private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
+    private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
+    private final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
+    private final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
+    private final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
     private final FloatValue fontScaleValue = new FloatValue("Font-Scale", 0.5F, 0F, 1F, "x");
     private final BoolValue colorTeam = new BoolValue("Team", false);
     public static List collectedEntities = new ArrayList();
@@ -101,48 +101,48 @@ public final class ESP2D extends Module {
     }
 
     public final Color getColor(final Entity entity) {
-		if (entity instanceof EntityLivingBase) {
-			final EntityLivingBase entityLivingBase = (EntityLivingBase) entity;
+        if (entity instanceof EntityLivingBase) {
+            final EntityLivingBase entityLivingBase = (EntityLivingBase) entity;
 
-			if (EntityUtils.isFriend(entityLivingBase))
-				return Color.BLUE;
+            if (EntityUtils.isFriend(entityLivingBase))
+                return Color.BLUE;
 
-			if (colorTeam.get()) {
-				final char[] chars = entityLivingBase.getDisplayName().getFormattedText().toCharArray();
-				int color = Integer.MAX_VALUE;
+            if (colorTeam.get()) {
+                final char[] chars = entityLivingBase.getDisplayName().getFormattedText().toCharArray();
+                int color = Integer.MAX_VALUE;
 
-				for (int i = 0; i < chars.length; i++) {
-					if (chars[i] != '§' || i + 1 >= chars.length)
-						continue;
+                for (int i = 0; i < chars.length; i++) {
+                    if (chars[i] != '§' || i + 1 >= chars.length)
+                        continue;
 
-					final int index = GameFontRenderer.getColorIndex(chars[i + 1]);
+                    final int index = GameFontRenderer.getColorIndex(chars[i + 1]);
 
-					if (index < 0 || index > 15)
-						continue;
+                    if (index < 0 || index > 15)
+                        continue;
 
-					color = ColorUtils.hexColors[index];
-					break;
-				}
+                    color = ColorUtils.hexColors[index];
+                    break;
+                }
 
-				return new Color(color);
-			}
-		}
+                return new Color(color);
+            }
+        }
 
-		switch (colorModeValue.get()) {
-			case "Custom":
-				return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
+        switch (colorModeValue.get()) {
+            case "Custom":
+                return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
             case "Rainbow":
                 return new Color(RenderUtils.getRainbowOpaque(mixerSecondsValue.get(), saturationValue.get(), brightnessValue.get(), 0));
-			case "Sky":
-				return RenderUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get());
-			case "LiquidSlowly":
-				return ColorUtils.LiquidSlowly(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get());
-			case "Mixer":
-				return ColorMixer.getMixedColor(0, mixerSecondsValue.get());
-			default:
-				return ColorUtils.fade(new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), 0, 100);
-		}
-	}
+            case "Sky":
+                return RenderUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get());
+            case "LiquidSlowly":
+                return ColorUtils.LiquidSlowly(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get());
+            case "Mixer":
+                return ColorMixer.getMixedColor(0, mixerSecondsValue.get());
+            default:
+                return ColorUtils.fade(new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), 0, 100);
+        }
+    }
 
     public static boolean shouldCancelNameTag(EntityLivingBase entity) {
         return LiquidBounce.moduleManager.getModule(ESP2D.class) != null && LiquidBounce.moduleManager.getModule(ESP2D.class).getState() && LiquidBounce.moduleManager.getModule(ESP2D.class).tagsValue.get() && collectedEntities.contains(entity);
@@ -257,7 +257,7 @@ public final class ESP2D extends Module {
                                 armorValue = itemDurability;
 
                             durabilityWidth = (double)(armorValue / itemDurability);
-                            textWidth = (endPosY - posY) * durabilityWidth; 
+                            textWidth = (endPosY - posY) * durabilityWidth;
                             String healthDisplay = dFormat.format(entityLivingBase.getHealth()) + " §c❤";
                             String healthPercent = ((int) ((entityLivingBase.getHealth() / itemDurability) * 100F)) + "%";
                             if (healthNumber.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution)))
@@ -292,10 +292,10 @@ public final class ESP2D extends Module {
                                     double theHeight = constHeight + 0.25D;
                                     if (armorStack != null && armorStack.getItem() != null) {
                                         RenderUtils.newDrawRect(endPosX + 1.5D, endPosY + 0.5D - theHeight * m, endPosX + 3.5D, endPosY + 0.5D - theHeight * (m - 1), background);
-                                        RenderUtils.newDrawRect(endPosX + 2.0D, 
-                                                                endPosY + 0.5D - theHeight * (m - 1) - 0.25D, 
-                                                                endPosX + 3.0D, 
-                                                                endPosY + 0.5D - theHeight * (m - 1) - 0.25D - (constHeight - 0.25D) * MathHelper.clamp_double((double)ItemUtils.getItemDurability(armorStack) / (double) armorStack.getMaxDamage(), 0D, 1D), new Color(0, 255, 255).getRGB());
+                                        RenderUtils.newDrawRect(endPosX + 2.0D,
+                                                endPosY + 0.5D - theHeight * (m - 1) - 0.25D,
+                                                endPosX + 3.0D,
+                                                endPosY + 0.5D - theHeight * (m - 1) - 0.25D - (constHeight - 0.25D) * MathHelper.clamp_double((double)ItemUtils.getItemDurability(armorStack) / (double) armorStack.getMaxDamage(), 0D, 1D), new Color(0, 255, 255).getRGB());
                                     }
                                 }
                             } else {
@@ -311,14 +311,14 @@ public final class ESP2D extends Module {
                                 int maxDamage = itemStack.getMaxDamage();
                                 itemDurability = (float)(maxDamage - itemStack.getItemDamage());
                                 durabilityWidth = (endPosY - posY) * (double)itemDurability / (double)maxDamage;
-                                if (armorNumber.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution))) 
+                                if (armorNumber.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution)))
                                     drawScaledString(((int) itemDurability) + "", endPosX + 4.0, (endPosY - durabilityWidth) - Fonts.minecraftFont.FONT_HEIGHT / 2F * fontScaleValue.get(), fontScaleValue.get(), -1);
                                 RenderUtils.newDrawRect(endPosX + 1.5D, posY - 0.5D, endPosX + 3.5D, endPosY + 0.5D, background);
                                 RenderUtils.newDrawRect(endPosX + 2.0D, endPosY, endPosX + 3.0D, endPosY - durabilityWidth, new Color(0, 255, 255).getRGB());
                             }
                         }
                     }
-                    
+
                     if (living && armorItems.get() && (!hoverValue.get() || entity == mc.thePlayer || isHovering(posX, endPosX, posY, endPosY, scaledResolution))) {
                         entityLivingBase = (EntityLivingBase) entity;
                         double yDist = (double)(endPosY - posY) / 4.0D;
@@ -369,17 +369,20 @@ public final class ESP2D extends Module {
     private boolean isHovering(double minX, double maxX, double minY, double maxY, ScaledResolution sc) {
         return sc.getScaledWidth() / 2 >= minX && sc.getScaledWidth() / 2 < maxX && sc.getScaledHeight() / 2 >= minY && sc.getScaledHeight() / 2 < maxY;
     }
+    public void drawOutlineStringWithoutGL(String s,float x , float y, int color,FontRenderer fontRenderer) {
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 - 1), (int) (y * 2), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 + 1), (int) (y * 2), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 - 1), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 + 1), Color.BLACK.getRGB());
+        fontRenderer.drawString(s, (int) (x * 2), (int) (y * 2), color);
+    }
 
     private void drawScaledString(String text, double x, double y, double scale, int color) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, x);
         GlStateManager.scale(scale, scale, scale);
         if(outlineFont.get()) {
-            Fonts.minecraftFont.drawString(text, 0 - 1, 0, Color.black.getRGB());
-            Fonts.minecraftFont.drawString(text, 0 + 1, 0, Color.black.getRGB());
-            Fonts.minecraftFont.drawString(text, 0, 0 - 1, Color.black.getRGB());
-            Fonts.minecraftFont.drawString(text, 0, 0 + 1, Color.black.getRGB());
-            Fonts.minecraftFont.drawString(text, 0, 0, color);
+            drawOutlineStringWithoutGL(text, 0, 0, color,mc.fontRendererObj);
         }else{
             Fonts.minecraftFont.drawStringWithShadow(text, 0, 0, color);
 

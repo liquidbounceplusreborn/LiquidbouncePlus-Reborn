@@ -1,5 +1,7 @@
 package net.ccbluex.liquidbounce.ui.font;
 
+import net.ccbluex.liquidbounce.utils.render.ColorUtils;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 import org.lwjgl.BufferUtils;
@@ -237,6 +239,14 @@ public class TTFFontRenderer {
         renderString(text, x, y, color, true);
         GL11.glTranslated(-0.5, -0.5, 0);
         renderString(text, x, y, color, false);
+    }
+
+    public void drawOutlineStringWithoutGL(String s,float x , float y, int color,FontRenderer fontRenderer) {
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 - 1), (int) (y * 2), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 + 1), (int) (y * 2), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 - 1), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 + 1), Color.BLACK.getRGB());
+        fontRenderer.drawString(s, (int) (x * 2), (int) (y * 2), color);
     }
 
     /**

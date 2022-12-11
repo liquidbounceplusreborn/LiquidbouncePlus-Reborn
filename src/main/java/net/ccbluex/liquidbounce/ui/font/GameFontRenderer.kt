@@ -170,6 +170,15 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         return (x + getStringWidth(text)).toInt()
     }
 
+    fun drawOutlineStringWithoutGL(s: String, x: Float, y: Float, color: Int,font: FontRenderer) {
+
+        font.drawString(ColorUtils.stripColor(s), (x * 2 - 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        font.drawString(ColorUtils.stripColor(s), (x * 2 + 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 - 1).toInt(), Color.BLACK.rgb)
+        font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 + 1).toInt(), Color.BLACK.rgb)
+        font.drawString(s, (x * 2).toInt(), (y * 2).toInt(), color)
+    }
+
 
     override fun getColorCode(charCode: Char) =
             ColorUtils.hexColors[getColorIndex(charCode)]
