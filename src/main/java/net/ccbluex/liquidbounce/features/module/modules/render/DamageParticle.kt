@@ -14,11 +14,10 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
@@ -89,11 +88,11 @@ class DamageParticle : Module() {
                 GlStateManager.rotate(renderManager.playerViewX, textY, 0.0f, 0.0f)
                 GlStateManager.scale(-size, -size, size)
                 GL11.glDepthMask(false)
-                drawOutlineStringWithoutGL(
+                GameFontRenderer.drawOutlineStringWithoutGL(
                     particle.str,
                     (-(mc.fontRendererObj.getStringWidth(particle.str) / 2)).toFloat(),
                     (-(mc.fontRendererObj.FONT_HEIGHT - 1)).toFloat(),
-                    if (customColor.get()) Color(red.get(), green.get(), blue.get()).rgb else 0, font = mc.fontRendererObj
+                    if (customColor.get()) Color(red.get(), green.get(), blue.get()).rgb else 0, fontRenderer = mc.fontRendererObj
                 )
                 GL11.glColor4f(187.0f, 255.0f, 255.0f, 1.0f)
                 GL11.glDepthMask(true)
@@ -113,13 +112,4 @@ class DamageParticle : Module() {
 
 class SingleParticle(val str: String, val posX: Double, val posY: Double, val posZ: Double) {
     var ticks = 0
-}
-
-fun drawOutlineStringWithoutGL(s: String, x: Float, y: Float, color: Int,font: FontRenderer) {
-
-    font.drawString(ColorUtils.stripColor(s), (x * 2 - 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
-    font.drawString(ColorUtils.stripColor(s), (x * 2 + 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
-    font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 - 1).toInt(), Color.BLACK.rgb)
-    font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 + 1).toInt(), Color.BLACK.rgb)
-    font.drawString(s, (x * 2).toInt(), (y * 2).toInt(), color)
 }

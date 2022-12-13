@@ -241,7 +241,7 @@ public class TTFFontRenderer {
         renderString(text, x, y, color, false);
     }
 
-    public void drawOutlineStringWithoutGL(String s,float x , float y, int color,FontRenderer fontRenderer) {
+    public static void drawOutlineStringWithoutGL(String s, float x, float y, int color, FontRenderer fontRenderer) {
         fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 - 1), (int) (y * 2), Color.BLACK.getRGB());
         fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 + 1), (int) (y * 2), Color.BLACK.getRGB());
         fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 - 1), Color.BLACK.getRGB());

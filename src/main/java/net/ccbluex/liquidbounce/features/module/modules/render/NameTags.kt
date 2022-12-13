@@ -7,6 +7,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.world.AntiBot
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.GLUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -179,9 +180,9 @@ class NameTags : Module() {
 
         }
         if (outlineValue.get()) {
-            drawOutlineStringWithoutGL(USERNAME, (-STRING_WIDTH), (fr.FONT_HEIGHT - 22), 16777215, font = fr)
+            GameFontRenderer.drawOutlineStringWithoutGL(USERNAME, ((-STRING_WIDTH).toFloat()), ((fr.FONT_HEIGHT - 22).toFloat()), 16777215, fontRenderer = fr)
         }else{
-            fr.drawStringWithShadow(USERNAME, (-STRING_WIDTH.toInt()).toFloat(), (fr.FONT_HEIGHT - 22).toFloat(), 16777215)
+            mc.fontRendererObj.drawString(USERNAME, (-STRING_WIDTH).toFloat(), (fr.FONT_HEIGHT - 22).toFloat(), 16777215,fontShadowValue.get())
         }
         glColor3f(1f, 1f, 1f)
         glScaled(0.5, 0.5, 0.5)
@@ -298,7 +299,7 @@ class NameTags : Module() {
 
         glEnable(GL_TEXTURE_2D)
         if (outlineValue.get()) {
-            drawOutlineStringWithoutGL(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF,font = fontRenderer )
+            GameFontRenderer.drawOutlineStringWithoutGL(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF,fontRenderer = fontRenderer )
                     }else{
             fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, fontShadowValue.get())
         }
@@ -544,14 +545,6 @@ class NameTags : Module() {
         }
     }
         }
-    }
-    fun drawOutlineStringWithoutGL(s: String, x: Int, y: Int, color: Int, font: FontRenderer) {
-
-        font.drawString(ColorUtils.stripColor(s), (x * 2 - 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
-        font.drawString(ColorUtils.stripColor(s), (x * 2 + 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
-        font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 - 1).toInt(), Color.BLACK.rgb)
-        font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 + 1).toInt(), Color.BLACK.rgb)
-        font.drawString(s, (x * 2).toInt(), (y * 2).toInt(), color)
     }
 }
 

@@ -22,6 +22,7 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.ui.font.TTFFontRenderer;
 import net.ccbluex.liquidbounce.value.*;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
@@ -369,20 +370,13 @@ public final class ESP2D extends Module {
     private boolean isHovering(double minX, double maxX, double minY, double maxY, ScaledResolution sc) {
         return sc.getScaledWidth() / 2 >= minX && sc.getScaledWidth() / 2 < maxX && sc.getScaledHeight() / 2 >= minY && sc.getScaledHeight() / 2 < maxY;
     }
-    public void drawOutlineStringWithoutGL(String s,float x , float y, int color,FontRenderer fontRenderer) {
-        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 - 1), (int) (y * 2), Color.BLACK.getRGB());
-        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 + 1), (int) (y * 2), Color.BLACK.getRGB());
-        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 - 1), Color.BLACK.getRGB());
-        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 + 1), Color.BLACK.getRGB());
-        fontRenderer.drawString(s, (int) (x * 2), (int) (y * 2), color);
-    }
 
     private void drawScaledString(String text, double x, double y, double scale, int color) {
         GlStateManager.pushMatrix();
         GlStateManager.translate(x, y, x);
         GlStateManager.scale(scale, scale, scale);
         if(outlineFont.get()) {
-            drawOutlineStringWithoutGL(text, 0, 0, color,mc.fontRendererObj);
+            TTFFontRenderer.drawOutlineStringWithoutGL(text, 0, 0, color,mc.fontRendererObj);
         }else{
             Fonts.minecraftFont.drawStringWithShadow(text, 0, 0, color);
 
