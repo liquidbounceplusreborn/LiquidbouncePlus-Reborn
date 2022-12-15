@@ -89,7 +89,10 @@ class Velocity : Module() {
     private var jump = false
 
     override val tag: String
-        get() = modeValue.get()
+        get() = if (modeValue.get() == "Simple")
+            "${horizontalValue.get()}% ${verticalValue.get()}%"
+        else
+            modeValue.get()
 
     override fun onDisable() {
         mc.thePlayer?.speedInAir = 0.02F
