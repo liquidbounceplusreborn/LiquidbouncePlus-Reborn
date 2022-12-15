@@ -30,18 +30,19 @@ class JumpCircle : Module() {
     val start = FloatValue("Start", 0.5f, 0f,1f)
     val end = FloatValue("End", 0.3f, 0f,1f)
     //
-    var  r = IntegerValue("Red",255,0,255)
-    var  g = IntegerValue("green",255,0,255)
-    var  b = IntegerValue("blue",255,0,255)
+    var r = IntegerValue("Red",255,0,255)
+    var g = IntegerValue("green",255,0,255)
+    var b = IntegerValue("blue",255,0,255)
     private val astolfoRainbowOffset = IntegerValue("AstolfoOffset", 5, 1, 20)
     private val astolfoRainbowIndex = IntegerValue("AstolfoIndex", 109, 1, 300)
-    /*   var  radius = FloatValue("radius",0.5f,0.1f,10f)
-       var  b = IntegerValue("blue",255,0,255)*/
 
     private val points = mutableMapOf<Int, MutableList<Render>>()
     var jump=false;
     var entityjump=false;
     val circles = mutableListOf<Circle>()
+    var red = r.get()
+    var green = g.get()
+    var blue = b.get()
 
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
@@ -134,6 +135,9 @@ class JumpCircle : Module() {
 
     class Circle(val time: Long, val x: Double, val y: Double, val z: Double){
         val jumpModule = LiquidBounce.moduleManager.getModule(JumpCircle::class.java) as JumpCircle
+        var red = jumpModule.r.get()
+        var green = jumpModule.g.get()
+        var blue = jumpModule.b.get()
 
         fun draw() {
             if(jumpModule == null) {
@@ -154,7 +158,7 @@ class JumpCircle : Module() {
             GL11.glBegin(GL11.GL_TRIANGLE_STRIP)
             for (i in 0..360) {
                 val color = if (jumpModule.rainbow.get()) Color.getHSBColor(i / 360f, 1f, 1f)
-                else ColorUtils.hsbTransition(jumpModule.start.get(), jumpModule.end.get(), i)
+                else Color(red,green,blue)
 
                 val x = (dif * jumpModule.radius.get() * 0.001 * sin(i.toDouble().toRadians()))
                 val z = (dif * jumpModule.radius.get() * 0.001 * cos(i.toDouble().toRadians()))
