@@ -121,9 +121,10 @@ class TargetStrafe : Module() {
             event.setZ(moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
                 .toFloat()))
         } else {
-            event.setX(moveSpeed * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(target!!.posX + target.posX, target.posY, target.posZ + target.posY)[0].toDouble())
-                .toFloat()))
-            event.setZ(moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(target.posX + target.posX, target.posY, target.posZ + target.posY)[0].toDouble()).toFloat()))
+            if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
+                MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 0.0)
+            else
+                MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 1.0)
         }
 
     }
