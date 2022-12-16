@@ -125,6 +125,14 @@ class MoveEvent(var x: Double, var y: Double, var z: Double) : CancellableEvent(
         x = 0.0
         z = 0.0
     }
+    @JvmName("setX1")
+    fun setX(x: Double) {
+        this.x = x
+    }
+    @JvmName("setZ1")
+    fun setZ(z: Double) {
+        this.z = z
+    }
 }
 
 /**

@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
+import net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -25,11 +25,13 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.MathHelper
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @ModuleInfo(name = "TargetStrafe", description = "Strafe around your target. (Require Fly or Speed to be enabled)", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
+    val behind = BoolValue("Behind",false)
     val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
     private val render = BoolValue("Render", true)
     private val alwaysRender = BoolValue("Always-Render", true, { render.get() })
@@ -93,21 +95,36 @@ class TargetStrafe : Module() {
         if (canStrafe) {
             strafe(event, MovementUtils.getSpeed(event.x, event.z))
 
-            if (safewalk.get() && checkVoid())
+            if (safewalk.get() && checkVoid()) {
                 event.isSafeWalk = true
+            }
+            }
         }
-    }
+
 
     fun strafe(event: MoveEvent, moveSpeed: Double) {
         if (killAura.target == null) return
-
         val target = killAura.target
-        val rotYaw = RotationUtils.getRotationsEntity(target).yaw
+
+        val rotYaw = RotationUtils.getRotationsEntity(killAura.target).yaw
 
         if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
             MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 0.0)
         else
             MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 1.0)
+
+        if (behind.get()) {
+            val xPos: Double = target!!.posX + -Math.sin(Math.toRadians(target.rotationYaw.toDouble())) * -2
+            val zPos: Double = target!!.posZ + Math.cos(Math.toRadians(target.rotationYaw.toDouble())) * -2
+            event.setX(moveSpeed * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+                .toFloat()))
+            event.setZ(moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+                .toFloat()))
+        } else {
+            event.setX(moveSpeed * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(target!!.posX + target.posX, target.posY, target.posZ + target.posY)[0].toDouble())
+                .toFloat()))
+            event.setZ(moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(target.posX + target.posX, target.posY, target.posZ + target.posY)[0].toDouble()).toFloat()))
+        }
 
     }
 
