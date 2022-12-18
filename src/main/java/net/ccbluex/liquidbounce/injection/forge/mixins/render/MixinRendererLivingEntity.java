@@ -146,7 +146,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         }
     }
 
-    @Inject(method = "canRenderName(Lnet/minecraft/entity/EntityLivingBase;)Z", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "canRenderName", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void canRenderName(T entity, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
 

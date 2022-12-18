@@ -173,6 +173,7 @@ class NameTags : Module() {
         val lol = entity.displayName.formattedText
         val USERNAME = distanceText + bot + lol + healthText
         val STRING_WIDTH = fr.getStringWidth(USERNAME) / 2
+        val STRING_WIDTHz = fr.getStringWidth(USERNAME) / 4
         if(background.get()){
         Gui.drawRect((-STRING_WIDTH - 1).toInt(), -14, (STRING_WIDTH + 1).toInt(), -4, Integer.MIN_VALUE)
     }
@@ -180,7 +181,7 @@ class NameTags : Module() {
 
         }
         if (outlineValue.get()) {
-            GameFontRenderer.drawOutlineStringWithoutGL(USERNAME, ((-STRING_WIDTH).toFloat()), ((fr.FONT_HEIGHT - 22).toFloat()), 16777215, fontRenderer = fr)
+            GameFontRenderer.drawOutlineStringWithoutGL(USERNAME, ((-STRING_WIDTHz).toFloat()), ((fr.FONT_HEIGHT - 15.5).toFloat()), 16777215, fontRenderer = fr)
         }else{
             mc.fontRendererObj.drawString(USERNAME, (-STRING_WIDTH).toFloat(), (fr.FONT_HEIGHT - 22).toFloat(), 16777215,fontShadowValue.get())
         }
@@ -273,6 +274,7 @@ class NameTags : Module() {
 
         // Draw NameTag
         val width = fontRenderer.getStringWidth(text) * 0.5f
+        val widths = fontRenderer.getStringWidth(text) / 3.8f
 
         val dist = width + 4F - (-width - 2F)
 
@@ -283,7 +285,7 @@ class NameTags : Module() {
         val borderColor = Color(borderColorRedValue.get(), borderColorGreenValue.get(), borderColorBlueValue.get(), borderColorAlphaValue.get())
 
         if (borderValue.get())
-            RenderUtils.quickDrawBorderedRect(-width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F + if (healthBarValue.get()) 2F else 0F, 2F, borderColor.rgb, bgColor.rgb)
+            RenderUtils.quickDrawBorderedRect(-width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F + if (healthBarValue.get()) 2F else 0F, 2F, borderColor.rgb,  bgColor.rgb)
         else
             RenderUtils.quickDrawRect(-width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F + if (healthBarValue.get()) 2F else 0F, bgColor.rgb)
 
@@ -299,9 +301,9 @@ class NameTags : Module() {
 
         glEnable(GL_TEXTURE_2D)
         if (outlineValue.get()) {
-            GameFontRenderer.drawOutlineStringWithoutGL(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF,fontRenderer = fontRenderer )
+            GameFontRenderer.drawOutlineStringWithoutGL(text, 1f + -widths, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF,fontRenderer = fontRenderer )
                     }else{
-            fontRenderer.drawString(text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, fontShadowValue.get())
+            fontRenderer.drawString(text, 1f + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, 0xFFFFFF, fontShadowValue.get())
         }
 
         //AWTFontRenderer.assumeNonVolatile = false
