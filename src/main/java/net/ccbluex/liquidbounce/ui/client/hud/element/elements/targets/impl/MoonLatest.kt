@@ -47,7 +47,7 @@ class MoonTwo(inst: Target): TargetStyle("Moon2", inst, true) {
         RenderUtils.drawRect(37F, 25.5F, 45F + barLength, 26.5F, getColor(BlendUtils.getHealthColor(entity.health, entity.maxHealth)).rgb)
 
         // Draw rect 1
-        RenderUtils.drawRect(0F, 0F, width, 1F, RenderUtils.skyRainbow(0, 1f,1f))
+        RenderUtils.drawRect(0F, 0F, width, 1F, targetInstance.barColor.rgb)
 
         // Armor bar
         if (entity.totalArmorValue != 0) {
