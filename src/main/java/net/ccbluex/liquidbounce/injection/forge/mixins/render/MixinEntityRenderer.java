@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import com.google.common.base.Predicates;
+import javafx.animation.Interpolator;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
@@ -55,8 +56,6 @@ import java.util.Set;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
-
-    private javafx.animation.Interpolator Interpolator;
 
     protected MixinEntityRenderer(int[] lightmapColors, DynamicTexture lightmapTexture, float torchFlickerX, float bossColorModifier, float bossColorModifierPrev, Minecraft mc, float thirdPersonDistanceTemp, float thirdPersonDistance) {
         this.lightmapColors = lightmapColors;
