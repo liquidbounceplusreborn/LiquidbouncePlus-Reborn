@@ -19,6 +19,7 @@ class Camera : Module(){
     val worldColorValue = BoolValue("WorldColor", true)
     val fogColorValue = BoolValue("FogColor", true)
     val hitColorValue = BoolValue("HitColor", true)
+    val cameraPositionValue = BoolValue("CameraPosition", true)
     //WorldColor
     val worldColorRValue = IntegerValue("Red", 255, 0, 255) { worldColorValue.get() }
     val worldColorGValue = IntegerValue("Green", 255, 0, 255) { worldColorValue.get() }
@@ -33,6 +34,10 @@ class Camera : Module(){
     val hitColorGValue = IntegerValue("Green", 255, 0, 255) { hitColorValue.get() }
     val hitColorBValue = IntegerValue("Blue", 255, 0, 255) { hitColorValue.get() }
     val hitColorAlphaValue = IntegerValue("Aplha", 255, 0, 255) { hitColorValue.get() }
+    //CameraPosition
+    val cameraPositionYawValue = IntegerValue("Yaw", 10, -50, 50) { cameraPositionValue.get() }
+    val cameraPositionPitchValue = IntegerValue("Pitch", 10, -50, 50) { cameraPositionValue.get() }
+    val cameraPositionFovValue = IntegerValue("DistanceFov", 4, 1, 50) { cameraPositionValue.get() }
     //AntiBlind
     val confusionEffect = BoolValue("Confusion", true) { antiBlindValue.get() }
     val pumpkinEffect = BoolValue("Pumpkin", true) { antiBlindValue.get() }

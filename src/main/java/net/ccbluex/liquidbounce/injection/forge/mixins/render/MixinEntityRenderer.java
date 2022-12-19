@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import com.google.common.base.Predicates;
+import com.sun.javafx.geom.Vec3d;
+import javafx.animation.Interpolator;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
@@ -16,6 +18,7 @@ import net.ccbluex.liquidbounce.features.module.modules.render.NoHurtCam;
 import net.ccbluex.liquidbounce.features.module.modules.render.TargetMark;
 import net.ccbluex.liquidbounce.features.module.modules.render.Tracers;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -32,6 +35,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -70,7 +74,7 @@ public abstract class MixinEntityRenderer {
 
     @Shadow
     private FloatBuffer fogColorBuffer = GLAllocation.createDirectFloatBuffer(16);
-@Shadow
+    @Shadow
     private float farPlaneDistance;
 
     @Shadow
@@ -115,6 +119,8 @@ public abstract class MixinEntityRenderer {
     @Shadow
     private Minecraft mc;
 
+    float d3 = 0.0f;
+
     @Shadow
     private float thirdPersonDistanceTemp;
 
@@ -130,13 +136,13 @@ public abstract class MixinEntityRenderer {
     }
 
     @Inject(
-        method = "renderWorldPass",
-        slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/util/EnumWorldBlockLayer;TRANSLUCENT:Lnet/minecraft/util/EnumWorldBlockLayer;")),
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/RenderGlobal;renderBlockLayer(Lnet/minecraft/util/EnumWorldBlockLayer;DILnet/minecraft/entity/Entity;)I",
-            ordinal = 0
-        )
+            method = "renderWorldPass",
+            slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/util/EnumWorldBlockLayer;TRANSLUCENT:Lnet/minecraft/util/EnumWorldBlockLayer;")),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/RenderGlobal;renderBlockLayer(Lnet/minecraft/util/EnumWorldBlockLayer;DILnet/minecraft/entity/Entity;)I",
+                    ordinal = 0
+            )
     )
     private void enablePolygonOffset(CallbackInfo ci) {
         GlStateManager.enablePolygonOffset();
@@ -144,14 +150,14 @@ public abstract class MixinEntityRenderer {
     }
 
     @Inject(
-        method = "renderWorldPass",
-        slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/util/EnumWorldBlockLayer;TRANSLUCENT:Lnet/minecraft/util/EnumWorldBlockLayer;")),
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/RenderGlobal;renderBlockLayer(Lnet/minecraft/util/EnumWorldBlockLayer;DILnet/minecraft/entity/Entity;)I",
-            ordinal = 0,
-            shift = At.Shift.AFTER
-        )
+            method = "renderWorldPass",
+            slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/util/EnumWorldBlockLayer;TRANSLUCENT:Lnet/minecraft/util/EnumWorldBlockLayer;")),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/RenderGlobal;renderBlockLayer(Lnet/minecraft/util/EnumWorldBlockLayer;DILnet/minecraft/entity/Entity;)I",
+                    ordinal = 0,
+                    shift = At.Shift.AFTER
+            )
     )
     private void disablePolygonOffset(CallbackInfo ci) {
         GlStateManager.disablePolygonOffset();
@@ -273,6 +279,120 @@ public abstract class MixinEntityRenderer {
                 this.mc.mcProfiler.endSection();
             }
         }
+    }
+
+    /**
+     * @author
+     * @reason
+     */
+    @Overwrite
+    private void orientCamera(float partialTicks) {
+        Camera camera = LiquidBounce.moduleManager.getModule(Camera.class);
+        Entity entity = this.mc.getRenderViewEntity();
+        float f = entity.getEyeHeight();
+        double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
+        double d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks + (double)f;
+        double d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
+        if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPlayerSleeping()) {
+            f = (float)((double)f + 1.0);
+            GlStateManager.translate(0.0f, 0.3f, 0.0f);
+            if (!this.mc.gameSettings.debugCamEnable) {
+                BlockPos blockpos = new BlockPos(entity);
+                IBlockState iblockstate = this.mc.theWorld.getBlockState(blockpos);
+                ForgeHooksClient.orientBedCamera(this.mc.theWorld, blockpos, iblockstate, entity);
+                GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F, 0.0F, -1.0F, 0.0F);
+                GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
+            }
+        } else if (this.mc.gameSettings.thirdPersonView > 0) {
+            float f2 = this.d3 = camera.getState() && camera.getCameraPositionValue().get() ? (float) Interpolator.LINEAR.interpolate((double)this.d3, (double)camera.getCameraPositionFovValue().get(), 5.0 / (double)Minecraft.getDebugFPS()) : (float)Interpolator.LINEAR.interpolate((double)this.d3, 4.0, 5.0 / (double)Minecraft.getDebugFPS());
+            if (Double.isNaN(this.d3)) {
+                this.d3 = 0.01f;
+            }
+            this.d3 = (float)MathHelper.clamp_float((float) this.d3, 0.01F, (float) (camera.getState() && camera.getCameraPositionValue().get() ? (double)camera.getCameraPositionFovValue().get() : 4.0));
+            if (this.mc.gameSettings.debugCamEnable) {
+                GlStateManager.translate(0.0f, 0.0f, -this.d3);
+            } else {
+                float f22;
+                float f1;
+                if (camera.getState() && camera.getCameraPositionValue().get()) {
+                    f1 = entity.rotationYaw + camera.getCameraPositionYawValue().get();
+                    f22 = entity.rotationPitch + camera.getCameraPositionPitchValue().get();
+                } else {
+                    f1 = entity.rotationYaw;
+                    f22 = entity.rotationPitch;
+                }
+                if (this.mc.gameSettings.thirdPersonView == 2) {
+                    f22 += 180.0f;
+                }
+                double d4 = (double)(-MathHelper.sin(f1 * ((float)Math.PI / 180)) * MathHelper.cos(f22 * ((float)Math.PI / 180))) * (double)this.d3;
+                double d5 = (double)(MathHelper.cos(f1 * ((float)Math.PI / 180)) * MathHelper.cos(f22 * ((float)Math.PI / 180))) * (double)this.d3;
+                double d6 = (double)(-MathHelper.sin(f22 * ((float)Math.PI / 180))) * (double)this.d3;
+                for (int i = 0; i < 8; ++i) {
+                    double d7;
+                    MovingObjectPosition movingobjectposition = this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double)d4, d1 + (double)d5, d2 + (double)d6), new Vec3(d0 - d4 + (double)d4 + (double)d6, d1 - d6 + (double)d5, d2 - d5 + (double)d6));
+                    float f3 = (i & 1) * 2 - 1;
+                    float f4 = (i >> 1 & 1) * 2 - 1;
+                    float f5 = (i >> 2 & 1) * 2 - 1;
+                    if (camera.getState() || (movingobjectposition = this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double)(f3 *= 0.1f), d1 + (double)(f4 *= 0.1f), d2 + (double)(f5 *= 0.1f)), new Vec3(d0 - d4 + (double)f3 + (double)f5, d1 - d6 + (double)f4, d2 - d5 + (double)f5))) == null || !((d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2))) < (double)this.d3)) continue;
+                    this.d3 = (float)d7;
+                }
+                if (this.mc.gameSettings.thirdPersonView == 2) {
+                    GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f);
+                }
+                GlStateManager.rotate(entity.rotationPitch - f22, 1.0f, 0.0f, 0.0f);
+                GlStateManager.rotate(entity.rotationYaw - f1, 0.0f, 1.0f, 0.0f);
+                GlStateManager.translate(0.0f, 0.0f, -this.d3);
+                GlStateManager.rotate(f1 - entity.rotationYaw, 0.0f, 1.0f, 0.0f);
+                GlStateManager.rotate(f22 - entity.rotationPitch, 1.0f, 0.0f, 0.0f);
+            }
+        } else {
+            GlStateManager.translate(0.0f, 0.0f, 0.05f);
+            this.d3 = 0.01f;
+        }
+        if (!this.mc.gameSettings.debugCamEnable) {
+            float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F;
+            float pitch = entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks;
+            float f8 = 0.0F;
+            if (entity instanceof EntityAnimal) {
+                EntityAnimal entityanimal = (EntityAnimal)entity;
+                yaw = entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0F;
+            }
+
+            Block block = ActiveRenderInfo.getBlockAtEntityViewpoint(this.mc.theWorld, entity, partialTicks);
+            EntityViewRenderEvent.CameraSetup event = new EntityViewRenderEvent.CameraSetup(new EntityRenderer(Minecraft.getMinecraft(), new IResourceManager() {
+                @Override
+                public Set<String> getResourceDomains() {
+                    return null;
+                }
+
+                @Override
+                public IResource getResource(ResourceLocation resourceLocation) throws IOException {
+                    return null;
+                }
+
+                @Override
+                public List<IResource> getAllResources(ResourceLocation resourceLocation) throws IOException {
+                    return null;
+                }
+            }), entity, block, (double)partialTicks, yaw, pitch, f8);
+            MinecraftForge.EVENT_BUS.post(event);
+            GlStateManager.rotate(event.roll, 0.0F, 0.0F, 1.0F);
+            GlStateManager.rotate(event.pitch, 1.0F, 0.0F, 0.0F);
+            GlStateManager.rotate(event.yaw, 0.0F, 1.0F, 0.0F);
+        } else if (!this.mc.gameSettings.debugCamEnable) {
+            GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0f, 0.0f, 0.0f);
+            if (entity instanceof EntityAnimal) {
+                EntityAnimal entityanimal = (EntityAnimal)entity;
+                GlStateManager.rotate(entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0f, 0.0f, 1.0f, 0.0f);
+            } else {
+                GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0f, 0.0f, 1.0f, 0.0f);
+            }
+        }
+        GlStateManager.translate(0.0f, -f, 0.0f);
+        d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double)partialTicks;
+        d1 = entity.prevPosY + (entity.posY - entity.prevPosY) * (double)partialTicks + (double)f;
+        d2 = entity.prevPosZ + (entity.posZ - entity.prevPosZ) * (double)partialTicks;
+        this.cloudFog = this.mc.renderGlobal.hasCloudFog(d0, d1, d2, partialTicks);
     }
 
     /**
