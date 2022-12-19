@@ -305,6 +305,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Overwrite
     protected <T extends EntityLivingBase> boolean setBrightness(T entitylivingbaseIn, float partialTicks, boolean combineTextures)
     {
+        Camera camera = (Camera)LiquidBounce.moduleManager.getModule(Camera.class);
         float f = entitylivingbaseIn.getBrightness(partialTicks);
         int i = this.getColorMultiplier(entitylivingbaseIn, f, partialTicks);
         boolean flag = (i >> 24 & 255) > 0;
@@ -346,12 +347,23 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA);
             this.brightnessBuffer.position(0);
 
-            if (flag1)
-            {
+            if (flag1) {
+                if (camera.getState() && camera.getHitColorValue().get()) {
+                    int color = new Color(camera.getHitColorRValue().get(), camera.getHitColorGValue().get(), camera.getHitColorBValue().get(), camera.getHitColorAlphaValue().get()).getRGB();
+                    float red = (float) (color >> 16 & 0xFF) / 255.0f;
+                    float green = (float) (color >> 8 & 0xFF) / 255.0f;
+                    float blue = (float) (color & 0xFF) / 255.0f;
+                    float alpha = (float) (color >> 24 & 0xFF) / 255.0f;
+                    this.brightnessBuffer.put(red);
+                    this.brightnessBuffer.put(green);
+                    this.brightnessBuffer.put(blue);
+                    this.brightnessBuffer.put(alpha);
+                } else {
                     this.brightnessBuffer.put(1.0F);
                     this.brightnessBuffer.put(0.0F);
                     this.brightnessBuffer.put(0.0F);
                     this.brightnessBuffer.put(0.3F);
+                }
             }
             else
             {

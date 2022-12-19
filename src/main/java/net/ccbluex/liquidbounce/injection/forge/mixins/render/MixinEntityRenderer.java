@@ -266,7 +266,7 @@ public abstract class MixinEntityRenderer {
                     int n2 = (int)(f13 * 255.0f);
                     int n3 = (int)(f14 * 255.0f);
                     int n4 = (int)(f15 * 255.0f);
-                    this.lightmapColors[i2] = camera.getState() && camera.getWordlColorValue().get() ? new Color(camera.getWordlColorrValue().get(),camera.getWordlColorgValue().get(),camera.getWordlColorbValue().get()).getRGB() : 0xFF000000 | n2 << 16 | n3 << 8 | n4;
+                    this.lightmapColors[i2] = camera.getState() && camera.getWorldColorValue().get() ? new Color(camera.getWorldColorRValue().get(),camera.getWorldColorGValue().get(),camera.getWorldColorBValue().get()).getRGB() : 0xFF000000 | n2 << 16 | n3 << 8 | n4;
                 }
                 this.lightmapTexture.updateDynamicTexture();
                 this.lightmapUpdateNeeded = false;
@@ -549,9 +549,9 @@ public abstract class MixinEntityRenderer {
         }
 
         if (camera.getState() && camera.getFogColorValue().get()) {
-            this.fogColorRed = camera.getFogColorrValue().get() / 255.0f;
-            this.fogColorGreen = camera.getFogColorgValue().get() / 255.0f;
-            this.fogColorBlue = camera.getFogColorbValue().get() / 255.0f;
+            this.fogColorRed = camera.getFogColorRValue().get() / 255.0f;
+            this.fogColorGreen = camera.getFogColorGValue().get() / 255.0f;
+            this.fogColorBlue = camera.getFogColorBValue().get() / 255.0f;
         }else{
             this.fogColorRed = this.fogColorRed;
             this.fogColorGreen = this.fogColorGreen;

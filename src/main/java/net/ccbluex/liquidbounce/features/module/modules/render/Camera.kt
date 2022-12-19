@@ -16,18 +16,23 @@ import java.awt.Color
 class Camera : Module(){
     val cameraClipValue = BoolValue("CameraClip", true)
     val antiBlindValue = BoolValue("AntiBlind", true)
-    val wordlColorValue = BoolValue("WorldColor", true)
+    val worldColorValue = BoolValue("WorldColor", true)
     val fogColorValue = BoolValue("FogColor", true)
+    val hitColorValue = BoolValue("HitColor", true)
     //WorldColor
-    val wordlColorrValue = IntegerValue("Red", 255, 0, 255) { wordlColorValue.get() }
-    val wordlColorgValue = IntegerValue("Green", 255, 0, 255) { wordlColorValue.get() }
-    val wordlColorbValue = IntegerValue("Blue", 255, 0, 255) { wordlColorValue.get() }
+    val worldColorRValue = IntegerValue("Red", 255, 0, 255) { worldColorValue.get() }
+    val worldColorGValue = IntegerValue("Green", 255, 0, 255) { worldColorValue.get() }
+    val worldColorBValue = IntegerValue("Blue", 255, 0, 255) { worldColorValue.get() }
     //FogColor
-    val fogColorrValue = IntegerValue("Red", 255, 0, 255) { fogColorValue.get() }
-    val fogColorgValue = IntegerValue("Green", 255, 0, 255) { fogColorValue.get() }
-    val fogColorbValue = IntegerValue("Blue", 255, 0, 255) { fogColorValue.get() }
+    val fogColorRValue = IntegerValue("Red", 255, 0, 255) { fogColorValue.get() }
+    val fogColorGValue = IntegerValue("Green", 255, 0, 255) { fogColorValue.get() }
+    val fogColorBValue = IntegerValue("Blue", 255, 0, 255) { fogColorValue.get() }
     val fogDistance = FloatValue("DistanceFog", 0.7f, 0.1f, 2f) { fogColorValue.get() }
-
+    //HitColor
+    val hitColorRValue = IntegerValue("Red", 255, 0, 255) { hitColorValue.get() }
+    val hitColorGValue = IntegerValue("Green", 255, 0, 255) { hitColorValue.get() }
+    val hitColorBValue = IntegerValue("Blue", 255, 0, 255) { hitColorValue.get() }
+    val hitColorAlphaValue = IntegerValue("Aplha", 255, 0, 255) { hitColorValue.get() }
     //AntiBlind
     val confusionEffect = BoolValue("Confusion", true) { antiBlindValue.get() }
     val pumpkinEffect = BoolValue("Pumpkin", true) { antiBlindValue.get() }
