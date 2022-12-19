@@ -6,9 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import com.google.common.base.Predicates;
-import javafx.animation.Interpolator;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.player.Reach;
@@ -17,7 +15,6 @@ import net.ccbluex.liquidbounce.features.module.modules.render.NoHurtCam;
 import net.ccbluex.liquidbounce.features.module.modules.render.TargetMark;
 import net.ccbluex.liquidbounce.features.module.modules.render.Tracers;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockBed;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -34,7 +31,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -59,6 +55,8 @@ import java.util.Set;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
+
+    private javafx.animation.Interpolator Interpolator;
 
     protected MixinEntityRenderer(int[] lightmapColors, DynamicTexture lightmapTexture, float torchFlickerX, float bossColorModifier, float bossColorModifierPrev, Minecraft mc, float thirdPersonDistanceTemp, float thirdPersonDistance) {
         this.lightmapColors = lightmapColors;
