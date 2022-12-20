@@ -1,19 +1,25 @@
 package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.utils.Colors
-import net.ccbluex.liquidbounce.utils.render.Render
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.Colors
 import net.ccbluex.liquidbounce.utils.math.toRadians
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.LiquidSlowly
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
+import net.ccbluex.liquidbounce.utils.render.Render
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.VisualUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -26,13 +32,16 @@ class JumpCircle : Module() {
     //NewCircle
     val disappearTime = IntegerValue("Time", 1000, 1000,3000)
     val radius = FloatValue("Radius", 2f, 1f,5f)
-    val rainbow = BoolValue("Rainbow", false)
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"), "Custom")
+    private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f)
+    private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
+    private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10)
     val start = FloatValue("Start", 0.5f, 0f,1f)
     val end = FloatValue("End", 0.3f, 0f,1f)
     //
-    var r = IntegerValue("Red",255,0,255)
-    var g = IntegerValue("green",255,0,255)
-    var b = IntegerValue("blue",255,0,255)
+    private val colorRedValue: IntegerValue = IntegerValue("Red", 255, 0, 255)
+    private val colorGreenValue = IntegerValue("Green", 255, 0, 255)
+    private val colorBlueValue = IntegerValue("Blue", 255, 0, 255)
     private val astolfoRainbowOffset = IntegerValue("AstolfoOffset", 5, 1, 20)
     private val astolfoRainbowIndex = IntegerValue("AstolfoIndex", 109, 1, 300)
 
@@ -40,9 +49,9 @@ class JumpCircle : Module() {
     var jump=false;
     var entityjump=false;
     val circles = mutableListOf<Circle>()
-    var red = r.get()
-    var green = g.get()
-    var blue = b.get()
+    var red = colorRedValue.get()
+    var green = colorGreenValue.get()
+    var blue = colorBlueValue.get()
 
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
@@ -134,10 +143,15 @@ class JumpCircle : Module() {
     }
 
     class Circle(val time: Long, val x: Double, val y: Double, val z: Double){
+        var entity: EntityLivingBase = mc.thePlayer
         val jumpModule = LiquidBounce.moduleManager.getModule(JumpCircle::class.java) as JumpCircle
-        var red = jumpModule.r.get()
-        var green = jumpModule.g.get()
-        var blue = jumpModule.b.get()
+        var colorModeValue = jumpModule.colorModeValue.get()
+        var colorRedValue = jumpModule.colorRedValue.get()
+        var colorGreenValue = jumpModule.colorGreenValue.get()
+        var colorBlueValue = jumpModule.colorBlueValue.get()
+        var mixerSecondsValue = jumpModule.mixerSecondsValue.get()
+        var saturationValue = jumpModule.saturationValue.get()
+        var brightnessValue = jumpModule.brightnessValue.get()
 
         fun draw() {
             if(jumpModule == null) {
@@ -157,8 +171,7 @@ class JumpCircle : Module() {
 
             GL11.glBegin(GL11.GL_TRIANGLE_STRIP)
             for (i in 0..360) {
-                val color = if (jumpModule.rainbow.get()) Color.getHSBColor(i / 360f, 1f, 1f)
-                else Color(red,green,blue)
+                val color = getColor(entity, 0);
 
                 val x = (dif * jumpModule.radius.get() * 0.001 * sin(i.toDouble().toRadians()))
                 val z = (dif * jumpModule.radius.get() * 0.001 * cos(i.toDouble().toRadians()))
@@ -172,6 +185,24 @@ class JumpCircle : Module() {
             GL11.glEnd()
 
             GL11.glPopMatrix()
+        }
+        fun getColor(ent: Entity?, index: Int): Color {
+            return when (colorModeValue) {
+                "Custom" -> Color(colorRedValue, colorGreenValue, colorBlueValue)
+                "Rainbow" -> Color(
+                    RenderUtils.getRainbowOpaque(
+                        mixerSecondsValue,
+                        saturationValue,
+                        brightnessValue,
+                        index
+                    )
+                )
+
+                "Sky" -> RenderUtils.skyRainbow(index, saturationValue, brightnessValue)
+                "LiquidSlowly" -> LiquidSlowly(System.nanoTime(), index, saturationValue, brightnessValue)!!
+                "Mixer" -> ColorMixer.getMixedColor(index, mixerSecondsValue)
+                else -> fade(Color(colorRedValue, colorGreenValue, colorBlueValue), index, 100)
+            }
         }
     }
 }
