@@ -10,10 +10,10 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url = "https://maven.minecraftforge.net/" }
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
 }
-
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
