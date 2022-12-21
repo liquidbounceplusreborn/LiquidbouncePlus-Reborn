@@ -46,7 +46,7 @@ class Velocity : Module() {
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
     private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple", "AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero",
-        "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine", "StopMove"), "Cancel") // later
+        "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine", "StopMove","Herobrine"), "Cancel") // later
 
     private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
@@ -263,6 +263,15 @@ class Velocity : Module() {
                     mc.thePlayer.motionY -= 0.095
                 }
             }
+            "herobrine" -> {
+                if (mc.thePlayer.hurtTime>0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(80L)){
+                    mc.thePlayer.motionX *= 0.8
+                    mc.thePlayer.motionZ *= 0.8
+                }
+                if(velocityInput && (mc.thePlayer.hurtTime<4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
+                    velocityInput = false
+                }
+            }
         }
     }
 
@@ -293,6 +302,11 @@ class Velocity : Module() {
                     velocityInput = true
                     packet.motionX = (packet.getMotionX() * 0.6).toInt()
                     packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
+                }
+                "herobrine" -> {
+                    velocityInput = true
+                    packet.motionX = (packet.getMotionX() * 0.8).toInt()
+                    packet.motionZ = (packet.getMotionZ() * 0.8).toInt()
                 }
 
                 "aac", "aac5reduce", "reverse", "aacv4", "smoothreverse", "aaczero" -> velocityInput = true
