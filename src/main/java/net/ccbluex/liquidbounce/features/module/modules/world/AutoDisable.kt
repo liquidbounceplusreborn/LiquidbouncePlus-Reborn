@@ -14,13 +14,14 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 @ModuleInfo(name = "AutoDisable", spacedName = "Auto Disable", description = "Automatically disable modules for you on flag or world respawn.", category = ModuleCategory.WORLD, array = false)
 class AutoDisable : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (event.packet is S08PacketPlayerPosLook) disableModules(DisableEvent.FLAG)
+        if (event.packet is S08PacketPlayerPosLook || event.packet is C04PacketPlayerPosition) disableModules(DisableEvent.FLAG)
     }
 
     @EventTarget
