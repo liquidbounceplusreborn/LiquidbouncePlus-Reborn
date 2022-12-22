@@ -10,11 +10,9 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.minecraft.client.model.ModelBase;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,6 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
 import java.nio.FloatBuffer;
+import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -110,7 +109,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             GlStateManager.rotate(f * this.getDeathMaxRotation(p_rotateCorpse_1_), 0.0F, 0.0F, 1.0F);
         } else {
             String s = EnumChatFormatting.getTextWithoutFormattingCodes(p_rotateCorpse_1_.getName());
-            if (s != null && (PlayerEdit.rotatePlayer.get() && p_rotateCorpse_1_.equals(Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.get(PlayerEdit.class).getState()) && (!(p_rotateCorpse_1_ instanceof EntityPlayer) || ((EntityPlayer)p_rotateCorpse_1_).isWearing(EnumPlayerModelParts.CAPE))) {
+            if (s != null && (PlayerEdit.rotatePlayer.get() && p_rotateCorpse_1_.equals(Minecraft.getMinecraft().thePlayer) && Objects.requireNonNull(LiquidBounce.moduleManager.get(PlayerEdit.class)).getState()) && (!(p_rotateCorpse_1_ instanceof EntityPlayer) || ((EntityPlayer)p_rotateCorpse_1_).isWearing(EnumPlayerModelParts.CAPE))) {
                 GlStateManager.translate(0.0F, p_rotateCorpse_1_.height + 0.1F, 0.0F);
                 GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
             }
@@ -123,11 +122,13 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
         final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
 
+        assert noRender != null;
         if (noRender.getState() && noRender.shouldStopRender(entity)) {
             callbackInfo.cancel();
             return;
         }
 
+        assert chams != null;
         if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || EntityUtils.isSelected(entity, false))) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
             GL11.glPolygonOffset(1.0F, -1000000F);
@@ -139,10 +140,14 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
         final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
 
-        if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || EntityUtils.isSelected(entity, false))
-                && !(noRender.getState() && noRender.shouldStopRender(entity))) {
-            GL11.glPolygonOffset(1.0F, 1000000F);
-            GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
+
+        assert chams != null;
+        if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || EntityUtils.isSelected(entity, false))) {
+            assert noRender != null;
+            if (!(noRender.getState() && noRender.shouldStopRender(entity))) {
+                GL11.glPolygonOffset(1.0F, 1000000F);
+                GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
+            }
         }
     }
 
@@ -151,9 +156,9 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         final NoRender noRender = LiquidBounce.moduleManager.getModule(NoRender.class);
 
         if (!ESP.renderNameTags
-                || (LiquidBounce.moduleManager.getModule(NameTags.class).getState() && ((LiquidBounce.moduleManager.getModule(NameTags.class).getLocalValue().get() && entity == Minecraft.getMinecraft().thePlayer && (!LiquidBounce.moduleManager.getModule(NameTags.class).getNfpValue().get() || Minecraft.getMinecraft().gameSettings.thirdPersonView != 0)) || EntityUtils.isSelected(entity, false)))
+                || (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NameTags.class)).getState() && ((Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NameTags.class)).getLocalValue().get() && entity == Minecraft.getMinecraft().thePlayer && (!Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NameTags.class)).getNfpValue().get() || Minecraft.getMinecraft().gameSettings.thirdPersonView != 0)) || EntityUtils.isSelected(entity, false)))
                 || ESP2D.shouldCancelNameTag(entity)
-                || (noRender.getState() && noRender.getNameTagsValue().get()))
+                || (Objects.requireNonNull(noRender).getState() && noRender.getNameTagsValue().get()))
             callbackInfoReturnable.setReturnValue(false);
     }
 
@@ -256,6 +261,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             Rotations rotations = (Rotations)LiquidBounce.moduleManager.getModule(Rotations.class);
             float renderpitch = (Minecraft.getMinecraft().gameSettings.thirdPersonView != 0 && rotations.getState() && rotations.getFakeValue().get() && entity == Minecraft.getMinecraft().thePlayer) ? (entity.prevRotationPitch + (((RotationUtils.serverRotation.getPitch() != 0.0f) ? RotationUtils.serverRotation.getPitch() : entity.rotationPitch) - entity.prevRotationPitch)) : (entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks);
             float renderyaw = (Minecraft.getMinecraft().gameSettings.thirdPersonView != 0 && rotations.getState() && rotations.getFakeValue().get() && entity == Minecraft.getMinecraft().thePlayer) ? (entity.prevRotationYaw + (((RotationUtils.serverRotation.getYaw() != 0.0f) ? RotationUtils.serverRotation.getYaw() : entity.rotationYaw) - entity.prevRotationYaw)) : (entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks);
+            assert rotations != null;
             if(rotations.getState() && rotations.getFakeValue().get()&&entity.equals(Minecraft.getMinecraft().thePlayer) && rotations.shouldRotate()) {
                 //假身绘制 :/
                 glPushMatrix();
@@ -348,6 +354,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             this.brightnessBuffer.position(0);
 
             if (flag1) {
+                assert camera != null;
                 if (camera.getState() && camera.getHitColorValue().get()) {
                     int color = new Color(camera.getHitColorRValue().get(), camera.getHitColorGValue().get(), camera.getHitColorBValue().get(), camera.getHitColorAlphaValue().get()).getRGB();
                     float red = (float) (color >> 16 & 0xFF) / 255.0f;
@@ -404,8 +411,9 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         boolean visible = !entitylivingbaseIn.isInvisible();
         final TrueSight trueSight = (TrueSight) LiquidBounce.moduleManager.getModule(TrueSight.class);
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
+        assert chams != null;
         boolean chamsFlag = (chams.getState() && chams.getTargetsValue().get() && !chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entitylivingbaseIn == Minecraft.getMinecraft().thePlayer) || EntityUtils.isSelected(entitylivingbaseIn, false)));
-        boolean semiVisible = !visible && (!entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) || (trueSight.getState() && trueSight.getEntitiesValue().get()));
+        boolean semiVisible = !visible && (!entitylivingbaseIn.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) || (Objects.requireNonNull(trueSight).getState() && trueSight.getEntitiesValue().get()));
         if(visible || semiVisible) {
             if(!this.bindEntityTexture(entitylivingbaseIn))
                 return;
@@ -420,6 +428,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             }
 
             final ESP esp = LiquidBounce.moduleManager.getModule(ESP.class);
+            assert esp != null;
             if(esp.getState() && EntityUtils.isSelected(entitylivingbaseIn, false)) {
                 Minecraft mc = Minecraft.getMinecraft();
                 boolean fancyGraphics = mc.gameSettings.fancyGraphics;
