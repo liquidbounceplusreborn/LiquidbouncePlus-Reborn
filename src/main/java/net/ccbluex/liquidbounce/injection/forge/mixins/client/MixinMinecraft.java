@@ -264,7 +264,6 @@ public abstract class MixinMinecraft {
             final float yaw = RotationUtils.serverRotation.getYaw();
             if (killAura.getTarget() != null && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
-                entityLivingBase.prevRotationYawHead = yaw;
             }
             if (killAura.getTarget() != null && Rotations.getBodyValue().get() && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
@@ -272,7 +271,6 @@ public abstract class MixinMinecraft {
             }
             if (scaffold.getState() && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
-                entityLivingBase.prevRotationYawHead = yaw;
             }
             if (scaffold.getState() && Rotations.getBodyValue().get() && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
@@ -280,7 +278,6 @@ public abstract class MixinMinecraft {
             }
             if (disabler.getCanRenderInto3D() && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
-                entityLivingBase.prevRotationYawHead = yaw;
             }
             if (disabler.getCanRenderInto3D() && Rotations.getBodyValue().get() && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
@@ -288,7 +285,6 @@ public abstract class MixinMinecraft {
             }
             if (spinBot.getState() && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
-                entityLivingBase.prevRotationYawHead = yaw;
             }
             if (spinBot.getState() && Rotations.getBodyValue().get() && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
@@ -296,7 +292,6 @@ public abstract class MixinMinecraft {
             }
             if (chestAura.getState() && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
-                entityLivingBase.prevRotationYawHead = yaw;
             }
             if (chestAura.getState() && Rotations.getBodyValue().get() && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
@@ -304,7 +299,6 @@ public abstract class MixinMinecraft {
             }
             if (fly.getState() && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
-                entityLivingBase.prevRotationYawHead = yaw;
             }
             if (fly.getState() && Rotations.getBodyValue().get() && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
@@ -312,7 +306,6 @@ public abstract class MixinMinecraft {
             }
             if (bowAimbot.getState() && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
-                entityLivingBase.prevRotationYawHead = yaw;
             }
             if (bowAimbot.getState() && Rotations.getBodyValue().get() && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
@@ -320,7 +313,6 @@ public abstract class MixinMinecraft {
             }
             if (fucker.getState() && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
-                entityLivingBase.prevRotationYawHead = yaw;
             }
             if (fucker.getState() && Rotations.getBodyValue().get() && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
@@ -328,11 +320,10 @@ public abstract class MixinMinecraft {
             }
             if (nuker.getState() && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
-                entityLivingBase.prevRotationYawHead = yaw;
             }
             if (nuker.getState() && Rotations.getBodyValue().get() && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
-                entityLivingBase.prevRenderYawOffset = yaw;
+
             }
         }
     }
