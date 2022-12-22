@@ -472,15 +472,13 @@ public abstract class MixinItemRenderer {
                                         rotateItemAnim();
                                     break;
                                 }
-                                case"Swank": {
-                                    GL11.glTranslated((double) -0.1, (double) 0.15, (double) 0.);
-                                    this.transformFirstPersonItem(var2 / 0.15f, var4);
-                                    float cnmmm = MathHelper.sin((float) (MathHelper.sqrt_float((float) f1) * 3.1415927f));
-                                    GlStateManager.rotate((float) (cnmmm * 30.0f), (float) (2.0f), (float) -cnmmm, (float) 9.0f);
-                                    GlStateManager.rotate((float) (cnmmm * 35.0f), (float) 1.0f, (float) (-cnmmm), (float) -0.0f);
-                                    this.func_178103_d();
+                                case "Swank":
+                                    this.transformFirstPersonItem(f / 2.0F, f1);
+                                    float var151 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.14159265358979323846f);
+                                    GlStateManager.rotate(var151 * 30.0F, -var151, -0.0F, 9.0F);
+                                    GlStateManager.rotate(var151 * 40.0F, 1.0F, -var151, -0.0F);
+                                    this.func_178103_d(0.2F);
                                     break;
-                                }
                                 case "Exhibition1": {
                                     float var9 = MathHelper.sin(MathHelper.sqrt_float(this.mc.thePlayer.getSwingProgress(partialTicks)) * 3.1415927F);
                                     GL11.glTranslated(-0.03D, 0.23D, 0.0D);
