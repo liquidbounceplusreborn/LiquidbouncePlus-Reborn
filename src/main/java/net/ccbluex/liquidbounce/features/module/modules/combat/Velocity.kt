@@ -6,34 +6,24 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.JumpEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.event.StrafeEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
-import net.minecraft.util.MathHelper
 import net.minecraft.util.BlockPos
-
-import java.lang.Math
-import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.sin
+import net.minecraft.util.MathHelper
 import kotlin.math.cos
+import kotlin.math.sin
 
 @ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
@@ -45,8 +35,8 @@ class Velocity : Module() {
     private val verticalValue = FloatValue("Vertical", 0F, -1F, 1F, "x")
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
-    private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple", "AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero",
-        "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine", "StopMove","Herobrine"), "Cancel") // later
+    private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple", "AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero","Intave",
+        "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine", "StopMove"), "Cancel") // later
 
     private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
@@ -263,15 +253,6 @@ class Velocity : Module() {
                     mc.thePlayer.motionY -= 0.095
                 }
             }
-            "herobrine" -> {
-                if (mc.thePlayer.hurtTime>0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(80L)){
-                    mc.thePlayer.motionX *= 0.8
-                    mc.thePlayer.motionZ *= 0.8
-                }
-                if(velocityInput && (mc.thePlayer.hurtTime<4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
-                    velocityInput = false
-                }
-            }
         }
     }
 
@@ -302,11 +283,6 @@ class Velocity : Module() {
                     velocityInput = true
                     packet.motionX = (packet.getMotionX() * 0.6).toInt()
                     packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
-                }
-                "herobrine" -> {
-                    velocityInput = true
-                    packet.motionX = (packet.getMotionX() * 0.8).toInt()
-                    packet.motionZ = (packet.getMotionZ() * 0.8).toInt()
                 }
 
                 "aac", "aac5reduce", "reverse", "aacv4", "smoothreverse", "aaczero" -> velocityInput = true
@@ -410,6 +386,23 @@ class Velocity : Module() {
             }
             "aaczero" -> if (mc.thePlayer.hurtTime > 0)
                 event.cancelEvent()
+        }
+    }
+    fun onMotion(event: MotionEvent) {
+        when (modeValue.get().toLowerCase()) {
+            "intave" -> {
+            if (mc.thePlayer.hurtTime > 1 && mc.thePlayer.hurtTime < 10) {
+                mc.thePlayer.motionX *= 0.75
+                mc.thePlayer.motionZ *= 0.75
+                if (mc.thePlayer.hurtTime < 4) {
+                    if (mc.thePlayer.motionY > 0) {
+                        mc.thePlayer.motionY *= 0.9
+                    } else {
+                        mc.thePlayer.motionY *= 1.1
+                }
+                }
+            }
+            }
         }
     }
 }
