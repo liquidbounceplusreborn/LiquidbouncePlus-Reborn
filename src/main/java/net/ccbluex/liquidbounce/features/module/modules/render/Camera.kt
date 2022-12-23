@@ -5,16 +5,21 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.entity.Entity
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -25,13 +30,20 @@ class Camera : Module(){
     //
     val cameraClipValue = BoolValue("CameraClip", true)
     val antiBlindValue = BoolValue("AntiBlind", true)
-    private val fpsHurtCam = BoolValue("FPSHurtCam", true)
-    val noHurtCam = BoolValue("NoHurtCam", true)
     val noFov = BoolValue("NoFOV", true)
     val worldColorValue = BoolValue("WorldColor", true)
     val fogColorValue = BoolValue("FogColor", true)
     val hitColorValue = BoolValue("HitColor", true)
     val cameraPositionValue = BoolValue("CameraPosition", true)
+    val noHurtCam = BoolValue("NoHurtCam", true)
+    private val fpsHurtCam = BoolValue("FPSHurtCam", true)
+    val hurtcamColorRValue = IntegerValue("FogRed", 255, 0, 255) { noHurtCam.get() }
+    val hurtcamColorGValue = IntegerValue("FogGreen", 255, 0, 255) { noHurtCam.get() }
+    val hurtcamColorBValue = IntegerValue("FogBlue", 255, 0, 255) { noHurtCam.get() }
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"), "Custom"){ noHurtCam.get() }
+    private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f){ noHurtCam.get() }
+    private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f){ noHurtCam.get() }
+    private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10){ noHurtCam.get() }
     //WorldColor
     val worldColorRValue = IntegerValue("WorldRed", 255, 0, 255) { worldColorValue.get() }
     val worldColorGValue = IntegerValue("WorldGreen", 255, 0, 255) { worldColorValue.get() }
@@ -123,6 +135,31 @@ class Camera : Module(){
             GL11.glDisable(2848)
             GL11.glShadeModel(7424)
             Gui.drawRect(0, 0, 0, 0, 0)
+        }
+    }
+    fun getColor(ent: Entity?, index: Int): Color {
+        var colorModeValue = colorModeValue.get()
+        var colorRedValue = hurtcamColorRValue.get()
+        var colorGreenValue = hurtcamColorGValue.get()
+        var colorBlueValue = hurtcamColorBValue.get()
+        var mixerSecondsValue = mixerSecondsValue.get()
+        var saturationValue = saturationValue.get()
+        var brightnessValue = brightnessValue.get()
+        return when (colorModeValue) {
+            "Custom" -> Color(colorRedValue, colorGreenValue, colorBlueValue)
+            "Rainbow" -> Color(
+                RenderUtils.getRainbowOpaque(
+                    mixerSecondsValue,
+                    saturationValue,
+                    brightnessValue,
+                    index
+                )
+            )
+
+            "Sky" -> RenderUtils.skyRainbow(index, saturationValue, brightnessValue)
+            "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), index, saturationValue, brightnessValue)!!
+            "Mixer" -> ColorMixer.getMixedColor(index, mixerSecondsValue)
+            else -> ColorUtils.fade(Color(colorRedValue, colorGreenValue, colorBlueValue), index, 100)
         }
     }
 }
