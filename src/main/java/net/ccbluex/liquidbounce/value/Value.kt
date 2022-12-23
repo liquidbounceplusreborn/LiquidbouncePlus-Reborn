@@ -17,7 +17,7 @@ import net.minecraft.client.gui.FontRenderer
 import java.awt.Color
 import java.util.*
 
-abstract class Value<T>(val name: String, var value: T, var canDisplay: () -> Boolean) {
+abstract class Value<T>(val name: String,var value: T, var canDisplay: () -> Boolean) {
     var textHovered: Boolean = false
     fun set(newValue: T) {
         if (newValue == value) return
@@ -59,6 +59,7 @@ abstract class Value<T>(val name: String, var value: T, var canDisplay: () -> Bo
 open class BoolValue(name: String, value: Boolean, displayable: () -> Boolean) : Value<Boolean>(name, value, displayable) {
 
     constructor(name: String, value: Boolean): this(name, value, { true } )
+    var hide = false
 
     fun toggle() {
         value = !value
@@ -140,9 +141,9 @@ open class TextValue(name: String, value: String, displayable: () -> Boolean) : 
     }
 }
 
-open class ColorValue(name: String, value: Color, displayable: () -> Boolean) : Value<Color>(name, value, displayable) {
+open class ColorValue(name: String, value: Int, displayable: () -> Boolean) : Value<Int>(name, value, displayable) {
 
-    constructor(name: String, value: Color): this(name, value, { true } )
+    constructor(name: String, value: Int): this(name, value, { true } )
 
     private val Expanded = false
 
@@ -157,10 +158,11 @@ open class ColorValue(name: String, value: Color, displayable: () -> Boolean) : 
     fun setExpanded(set: Boolean): Boolean {
         return Expanded
     }
-    fun set(hue: Float, saturation: Float, brightness: Float, alpha: Float) = set(Color(Color.HSBtoRGB(hue, saturation, brightness)).setAlpha(alpha))
-
+    fun set(newValue: Number) {
+        set(newValue.toInt())
+    }
     open fun getValue(): Int {
-        return super.get().rgb
+        return super.get()
     }
 
     open fun getHSB(): FloatArray? {
@@ -197,17 +199,16 @@ open class ColorValue(name: String, value: Color, displayable: () -> Boolean) : 
 
     override fun toJson(): JsonElement? {
         val valueObject = JsonObject()
-        valueObject.addProperty("red", value.red)
-        valueObject.addProperty("green", value.green)
-        valueObject.addProperty("blue", value.blue)
-        valueObject.addProperty("alpha", value.alpha)
+        valueObject.addProperty("red", value)
+        valueObject.addProperty("green", value)
+        valueObject.addProperty("blue", value)
+        valueObject.addProperty("alpha", value)
         return valueObject
     }
 
     override fun fromJson(element: JsonElement) {
-        if (!element.isJsonObject) return
-        val valueObject = element.asJsonObject
-        value = Color(valueObject["red"].asInt, valueObject["green"].asInt, valueObject["blue"].asInt, valueObject["alpha"].asInt)
+        if(element.isJsonPrimitive)
+            value = element.asInt
     }
 
 }

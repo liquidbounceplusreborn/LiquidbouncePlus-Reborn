@@ -14,8 +14,6 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.LiquidSlowly
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.Render
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.VisualUtils
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -176,10 +174,10 @@ class JumpCircle : Module() {
                 val x = (dif * jumpModule.radius.get() * 0.001 * sin(i.toDouble().toRadians()))
                 val z = (dif * jumpModule.radius.get() * 0.001 * cos(i.toDouble().toRadians()))
 
-                VisualUtils.glColor(color.red, color.green, color.blue, 0)
+                RenderUtils.glColor(color.red, color.green, color.blue, 0)
                 GL11.glVertex3d(x / 2, 0.0, z / 2)
 
-                VisualUtils.glColor(color.red, color.green, color.blue, c.toInt())
+                RenderUtils.glColor(color.red, color.green, color.blue, c.toInt())
                 GL11.glVertex3d(x, 0.0, z)
             }
             GL11.glEnd()

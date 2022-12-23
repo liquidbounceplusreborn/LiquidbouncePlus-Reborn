@@ -13,14 +13,12 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.*;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nn.nn;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.akiren.ClickGuiScreen;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.OtcClickGUi;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.ClickUI;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.FloatValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
-import net.ccbluex.liquidbounce.value.ListValue;
+import net.ccbluex.liquidbounce.value.*;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
@@ -32,7 +30,7 @@ public class ClickGUI extends Module {
     public float animationHeight = 0;
 
     public String configName = "Basic";
-    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap","NoName"}, "Null") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap","NoName","Akiren"}, "Null") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -42,14 +40,13 @@ public class ClickGUI extends Module {
     public final FloatValue scaleValue = new FloatValue("Scale", 1F, 0.4F, 2F);
     public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
 
-    private static final ListValue colorModeValue = new ListValue("Color", new String[]{"Custom", "Sky", "Rainbow", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
+    public static final ListValue colorModeValue = new ListValue("Color", new String[]{"Custom", "Sky", "Rainbow", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
     public static final IntegerValue colorRedValue = new IntegerValue("Red", 0, 0, 255);
     public static final IntegerValue colorGreenValue = new IntegerValue("Green", 160, 0, 255);
     public static final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
-    private static final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
-    private static final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
-    private static final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
-
+    public static final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
+    public static final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
+    public static final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
     public final ListValue backgroundValue = new ListValue("Background", new String[]{"Default", "Gradient", "None"}, "Default");
 
     public final IntegerValue gradStartValue = new IntegerValue("GradientStartAlpha", 255, 0, 255, () -> backgroundValue.get().equalsIgnoreCase("gradient"));
@@ -109,6 +106,10 @@ public class ClickGUI extends Module {
                             } else {
                                 if (styleValue.get().contains("NoName")) {
                                     mc.displayGuiScreen(new nn());
+                                    this.setState(false);
+                                }
+                                if (styleValue.get().contains("Akiren")) {
+                                    mc.displayGuiScreen(new ClickGuiScreen());
                                     this.setState(false);
                                 } else {
                                     updateStyle();

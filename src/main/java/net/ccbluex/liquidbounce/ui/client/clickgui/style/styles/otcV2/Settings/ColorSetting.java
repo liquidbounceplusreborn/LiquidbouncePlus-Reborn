@@ -27,7 +27,7 @@ public class ColorSetting extends Downward<ColorValue>
     public ColorSetting(final ColorValue s, final float x, final float y, final int width, final int height, final ModuleRender moduleRender) {
         super(s, x, y, width, height, moduleRender);
         this.colorValue = s;
-        this.updateValue(s.get().getRGB());
+        this.updateValue(s.get());
     }
     
     @Override
@@ -43,7 +43,7 @@ public class ColorSetting extends Downward<ColorValue>
         final int black = RenderUtils.getColor(0);
         RenderUtils.drawRect(x2 - 0.5f, y2 - 0.5f, x2 + width + 0.5f, y2 + height + 0.5f, black);
         final int guiAlpha = 255;
-        final int color = this.colorValue.get().getRGB();
+        final int color = this.colorValue.get();
         final int colorAlpha = color >> 24 & 0xFF;
         final int minAlpha = Math.min(guiAlpha, colorAlpha);
         if (colorAlpha < 255) {
@@ -191,13 +191,12 @@ public class ColorSetting extends Downward<ColorValue>
             this.alphaSelectorDragging = false;
         }
     }
-    
-    public void updateColor(final int hex, final boolean hasAlpha) {
+
+    public void updateColor(int hex, boolean hasAlpha) {
         if (hasAlpha) {
-            this.colorValue.set(hue, saturation, brightness, alpha);
-        }
-        else {
-            this.colorValue.set(new Color(hex >> 16 & 0xFF, hex >> 8 & 0xFF, hex & 0xFF, (int)(this.alpha * 255.0f)));
+            colorValue.set(hex);
+        } else {
+            colorValue.set(new Color(hex >> 16 & 0xFF, hex >> 8 & 0xFF, hex & 0xFF, (int)(this.alpha * 255.0f)).getRGB());
         }
     }
     

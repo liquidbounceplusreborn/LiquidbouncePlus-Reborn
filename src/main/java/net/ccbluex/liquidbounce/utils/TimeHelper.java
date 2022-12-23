@@ -22,4 +22,8 @@ public class TimeHelper {
     public long getDelay() {
         return System.nanoTime();
     }
+
+    public boolean hasReached(double milliseconds) {
+        return ((System.currentTimeMillis() - System.currentTimeMillis()) > milliseconds);
+    }
 }

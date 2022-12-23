@@ -22,6 +22,7 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.enchantment.Enchantment;
@@ -40,6 +41,8 @@ import org.lwjgl.util.glu.GLU;
 
 import javax.vecmath.Vector3d;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.Kernel;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -54,11 +57,11 @@ import static net.ccbluex.liquidbounce.utils.render.GLUtils.glDisable;
 import static net.ccbluex.liquidbounce.utils.render.GLUtils.glEnable;
 import static net.minecraft.client.renderer.GlStateManager.disableBlend;
 import static net.minecraft.client.renderer.GlStateManager.enableTexture2D;
-import static net.minecraft.client.renderer.RenderGlobal.drawSelectionBoundingBox;
 import static org.lwjgl.opengl.GL11.*;
 
 public final class RenderUtils extends MinecraftInstance {
     private static final Map<Integer, Boolean> glCapMap = new HashMap<>();
+    private static final HashMap<Integer, Integer> shadowCache = new HashMap<>();
 
     public static int deltaTime;
     public static Minecraft mc = Minecraft.getMinecraft();
@@ -1778,6 +1781,27 @@ public final class RenderUtils extends MinecraftInstance {
         drawTexturedRect(x, y - 9, width, 9, "paneltop", sr);
         drawTexturedRect(x, y + height, width, 9, "panelbottom", sr);
     }
+    private static Framebuffer bloomFramebuffer = new Framebuffer(1, 1, false);
+    public static void drawShadow(float radius, float offset, Runnable data) {
+        bloomFramebuffer = RenderUtils.createFrameBuffer(bloomFramebuffer);
+        bloomFramebuffer.framebufferClear();
+        bloomFramebuffer.bindFramebuffer(true);
+        data.run();
+        bloomFramebuffer.unbindFramebuffer();
+    }
+    public static Framebuffer createFrameBuffer(Framebuffer framebuffer) {
+        if (framebuffer == null || framebuffer.framebufferWidth != mc.displayWidth
+                || framebuffer.framebufferHeight != mc.displayHeight) {
+            if (framebuffer != null) {
+                framebuffer.deleteFramebuffer();
+            }
+
+            return new Framebuffer(mc.displayWidth, mc.displayHeight, true);
+        }
+
+        return framebuffer;
+    }
+
 
     public static float[] getScissor() {
         if (isScissoring) {
@@ -2792,6 +2816,51 @@ public final class RenderUtils extends MinecraftInstance {
         drawTexturedRect(x + width, y, 9, height, "panelright");
         drawTexturedRect(x, y - 9, width, 9, "paneltop");
         drawTexturedRect(x, y + height, width, 9, "panelbottom");
+    }
+    public static void renderShadowVertical(Color c, float lineWidth, double startAlpha, int size, double posX, double posY1, double posY2, boolean right, boolean edges)
+    {
+        GlStateManager.resetColor();
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glDisable(GL11.GL_CULL_FACE);
+        renderShadowVertical(lineWidth, startAlpha, size, posX, posY1, posY2, right, edges, (float)c.getRed() / 255.0f, (float)c.getGreen() / 255.0f, (float)c.getBlue() / 255.0f);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_CULL_FACE);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
+    }
+    public static void renderShadowVertical(float lineWidth, double startAlpha, int size, double posX, double posY1, double posY2, boolean right, boolean edges, float red, float green, float blue)
+    {
+        double alpha = startAlpha;
+        GlStateManager.alphaFunc(516, 0.0f);
+        GL11.glLineWidth(lineWidth);
+
+        if (right)
+        {
+            for (double x = 0.5; x < (double)size; x += 0.5)
+            {
+                GL11.glColor4d(red, green, blue, alpha);
+                GL11.glBegin(GL11.GL_LINES);
+                GL11.glVertex2d(posX + x, posY1 - (edges ? x : 0.0));
+                GL11.glVertex2d(posX + x, posY2 + (edges ? x : 0.0));
+                GL11.glEnd();
+                alpha = startAlpha - x / (double)size;
+            }
+        }
+        else
+        {
+            for (double x = 0.0; x < (double)size; x += 0.5)
+            {
+                GL11.glColor4d(red, green, blue, alpha);
+                GL11.glBegin(GL11.GL_LINES);
+                GL11.glVertex2d(posX - x, posY1 - (edges ? x : 0.0));
+                GL11.glVertex2d(posX - x, posY2 + (edges ? x : 0.0));
+                GL11.glEnd();
+                alpha = startAlpha - x / (double)size;
+            }
+        }
     }
 
     public static void drawModel(final float yaw, final float pitch, final EntityLivingBase entityLivingBase) {
@@ -4183,6 +4252,18 @@ public final class RenderUtils extends MinecraftInstance {
     public static void drawRect(final float x, final float y, final float x2, final float y2, final Color color) {
         drawRect(x, y, x2, y2, color.getRGB());
     }
+    public static void drawSmoothRect(double left, double top, double right, double bottom, int color) {
+        GlStateManager.resetColor();
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_LINE_SMOOTH);
+        drawRect(left, top, right, bottom, color);
+        GL11.glScalef(0.5f, 0.5f, 0.5f);
+        drawRect(left * 2.0f - 1.0f, top * 2.0f, left * 2.0f, bottom * 2.0f - 1.0f, color);
+        drawRect(left * 2.0f, top * 2.0f - 1.0f, right * 2.0f, top * 2.0f, color);
+        drawRect(right * 2.0f, top * 2.0f, right * 2.0f + 1.0f, bottom * 2.0f - 1.0f, color);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glScalef(2.0f, 2.0f, 2.0f);
+    }
 
     public static void drawBorderedRect(final float x, final float y, final float x2, final float y2, final float width,
                                         final int color1, final int color2) {
@@ -4882,6 +4963,26 @@ public final class RenderUtils extends MinecraftInstance {
         final float blue = (hex & 0xFF) / 255F;
 
         GlStateManager.color(red, green, blue, alpha);
+    }
+    public static Color injectAlpha(Color color, int alpha) {
+        alpha = MathHelper.clamp_int(alpha, 0, 255);
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+    }
+    public static void readStencilBuffer(int ref) {
+        glColorMask(true, true, true, true);
+        glStencilFunc(GL_EQUAL, ref, 1);
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    }
+    public static void initStencilToWrite() {
+        //init
+        mc.getFramebuffer().bindFramebuffer(false);
+        checkSetupFBO();
+        glClear(GL_STENCIL_BUFFER_BIT);
+        GL11.glEnable(GL_STENCIL_TEST);
+
+        glStencilFunc(GL_ALWAYS, 1, 1);
+        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+        glColorMask(false, false, false, false);
     }
 
     public static void draw2D(final EntityLivingBase entity, final double posX, final double posY, final double posZ, final int color, final int backgroundColor) {
