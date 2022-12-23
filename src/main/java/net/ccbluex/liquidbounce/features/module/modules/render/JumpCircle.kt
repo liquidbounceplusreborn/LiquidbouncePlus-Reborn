@@ -34,8 +34,6 @@ class JumpCircle : Module() {
     private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f)
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
     private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10)
-    val start = FloatValue("Start", 0.5f, 0f,1f)
-    val end = FloatValue("End", 0.3f, 0f,1f)
     //
     private val colorRedValue: IntegerValue = IntegerValue("Red", 255, 0, 255)
     private val colorGreenValue = IntegerValue("Green", 255, 0, 255)
