@@ -21,7 +21,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 class AutoDisable : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (event.packet is S08PacketPlayerPosLook || event.packet is C04PacketPlayerPosition) disableModules(DisableEvent.FLAG)
+        if (event.packet is S08PacketPlayerPosLook) disableModules(DisableEvent.FLAG)
     }
 
     @EventTarget
