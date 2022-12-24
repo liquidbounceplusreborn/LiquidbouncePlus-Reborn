@@ -70,6 +70,7 @@ class Camera : Module(){
     @EventTarget
     private fun renderHud(event: Render2DEvent) {
         if (fpsHurtCam.get()) {
+            val color = getColor( 0);
             run {
                 val sr = ScaledResolution(mc)
                 if (mc.thePlayer.hurtTime >= 1) {
@@ -86,16 +87,16 @@ class Camera : Module(){
                     0.0,
                     sr.scaledWidth.toDouble(),
                     25.0,
-                    Color(255, 0, 0, 0).rgb,
-                    Color(255, 0, 0, alpha2).rgb
+                    Color(color.red,color.green,color.blue,0).rgb,
+                    Color(color.red,color.green,color.blue, alpha2).rgb
                 )
                 this.drawGradientSidewaysV(
                     0.0,
                     (sr.scaledHeight - 25).toDouble(),
                     sr.scaledWidth.toDouble(),
                     sr.scaledHeight.toDouble(),
-                    Color(255, 0, 0, alpha2).rgb,
-                    Color(255, 0, 0, 0).rgb
+                    Color(color.red,color.green,color.blue, alpha2).rgb,
+                    Color(color.red,color.green,color.blue, 0).rgb
                 )
             }
         }
@@ -133,7 +134,7 @@ class Camera : Module(){
             Gui.drawRect(0, 0, 0, 0, 0)
         }
     }
-    fun getColor(ent: Entity?, index: Int): Color {
+    fun getColor(index: Int): Color {
         var colorModeValue = colorModeValue.get()
         var colorRedValue = hurtcamColorRValue.get()
         var colorGreenValue = hurtcamColorGValue.get()
