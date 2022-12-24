@@ -29,6 +29,7 @@ class Camera : Module(){
     val worldColorValue = BoolValue("WorldColor", true)
     val fogColorValue = BoolValue("FogColor", true)
     val hitColorValue = BoolValue("HitColor", true)
+    val smoothCamera = BoolValue("Smooth", true)
     val cameraPositionValue = BoolValue("CameraPosition", true)
     val noHurtCam = BoolValue("NoHurtCam", true)
     //FPSHurtCam

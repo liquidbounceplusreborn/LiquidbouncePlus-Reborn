@@ -304,7 +304,12 @@ public abstract class MixinEntityRenderer {
             }
         } else if (this.mc.gameSettings.thirdPersonView > 0) {
             assert camera != null;
-            float f2 = this.d3 = camera.getState() && camera.getCameraPositionValue().get() ? (float) Interpolator.LINEAR.interpolate((double) this.d3, (double) camera.getCameraPositionFovValue().get(), 5.0 / (double) Minecraft.getDebugFPS()) : (float) Interpolator.LINEAR.interpolate((double) this.d3, 4.0, 5.0 / (double) Minecraft.getDebugFPS());
+            float f2;
+            if (camera.getSmoothCamera().get() && camera.getState()) {
+                f2 = this.d3 = camera.getState() && camera.getCameraPositionValue().get() ? (float) Interpolator.LINEAR.interpolate((double) this.d3, (double) camera.getCameraPositionFovValue().get(), 5.0 / (double) Minecraft.getDebugFPS()) : (float) Interpolator.LINEAR.interpolate((double) this.d3, 4.0, 5.0 / (double) Minecraft.getDebugFPS());
+            }else{
+                f2 = this.d3 = (float) (this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks);
+            }
             if (Double.isNaN(this.d3)) {
                 this.d3 = 0.01f;
             }
