@@ -59,6 +59,7 @@ class ModuleManager : Listenable {
                 Sprint::class.java,
 		        ClickGUI::class.java,
                 Teams::class.java,
+                LegitSpeed::class.java,
                 NoRotate::class.java,
                 AntiBot::class.java,
                 ChestStealer::class.java,
