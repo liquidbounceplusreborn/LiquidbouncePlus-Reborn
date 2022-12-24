@@ -113,13 +113,10 @@ class Disabler : Module() {
 	private val testDelay = IntegerValue("Delay", 400, 0, 1000, "ms", { modeValue.get().equals("watchdog", true) && testFeature.get() })
 	private val checkValid = BoolValue("InvValidate", false, { modeValue.get().equals("watchdog", true) && testFeature.get() })
 	private val testTimer = BoolValue("Timer", false, { modeValue.get().equals("watchdog", true) })
+	private val testTimer2 = BoolValue("Timer2", false, { modeValue.get().equals("watchdog", true) })
 
 	// debug
 	private val debugValue = BoolValue("Debug", false)
-
-	// sus
-	private val susImage = ResourceLocation("liquidbounce+/sus.png")
-	private var rotatingSpeed = 0F
 
 	// variables
 	private val keepAlives = arrayListOf<C00PacketKeepAlive>()
@@ -127,6 +124,7 @@ class Disabler : Module() {
 	private val packetQueue = LinkedList<C0FPacketConfirmTransaction>()
 	private val anotherQueue = LinkedList<C00PacketKeepAlive>()
 	private val playerQueue = LinkedList<C03PacketPlayer>()
+	private val packets = LinkedList<C03PacketPlayer>()
 
 	private val packetBus = hashMapOf<Long, Packet<INetHandlerPlayServer>>()
 	private val queueBus = LinkedList<Packet<INetHandlerPlayServer>>()
@@ -211,7 +209,6 @@ class Disabler : Module() {
 		shouldModifyRotation = false
 		benHittingLean = false
 
-		rotatingSpeed = 0F
 	}
 
 	override fun onDisable() {
@@ -276,7 +273,6 @@ class Disabler : Module() {
 		lastUid = 0
 		posLookInstance.reset()
 
-		rotatingSpeed = 0F
 	}
 
 	@EventTarget
@@ -744,9 +740,8 @@ class Disabler : Module() {
 					debug("flagged")
 				}
 			}
-			"watchdog" ->{
-				if (mc.isSingleplayer()) return
-				if(testTimer.get())
+			"watchdog" -> {
+				if (testTimer.get()) {
 					if (confirmTransactionQueue!!.isEmpty()) {
 						msTimer.reset()
 					} else if (confirmTransactionQueue!!.size >= 6) {
@@ -756,6 +751,10 @@ class Disabler : Module() {
 						}
 					}
 				}
+				if (testTimer2.get()) {
+					packets.clear()
+				}
+			}
 		}
 	}
 }
