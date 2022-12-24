@@ -14,15 +14,18 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
+import org.json.XMLTokener
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.math.BigDecimal
 import java.util.*
 import kotlin.math.abs
 
+
 @ModuleInfo(name = "DamageParticle", spacedName = "Damage Particle", description = "Allows you to see targets damage.", category = ModuleCategory.RENDER)
 class DamageParticle : Module() {
-    private var heart = String();
+
+    var colorHeart = String()
 
     private val healthData = HashMap<Int, Float>()
     private val particles = ArrayList<SingleParticle>()
@@ -45,13 +48,16 @@ class DamageParticle : Module() {
                     healthData[entity.entityId] = entity.health
                     if (lastHealth == entity.health) continue
 
-                    val prefix = if (!customColor.get()) (if (lastHealth > entity.health) "§c" else "§a") else (if (lastHealth > entity.health) "" else "")
-                        if (heartValue.get()) {
-                            heart = if (!customColor.get()) (if (lastHealth > entity.health) "§c❤" else "§a❤") else (if (lastHealth > entity.health) "❤" else "❤")
-                        } else{
-                            heart = if (!customColor.get()) (if (lastHealth > entity.health) "" else "") else (if (lastHealth > entity.health) "" else "")
-                        }
-                    particles.add(SingleParticle(prefix + BigDecimal(abs(lastHealth - entity.health).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP).toDouble() + heart,
+                    val prefix = lastHealth > entity.health
+                    val criticalHit = entity.hurtResistantTime < 18 || mc.thePlayer.motionY < 0 && !mc.thePlayer.onGround
+                    val heart = lastHealth > entity.health
+                    val colorHit = if (!customColor.get()) if (prefix) (if (criticalHit) "§c" else "§e") else "§a" else ""
+                    if (heartValue.get()) {
+                        colorHeart = if (!customColor.get()) if (heart) (if (criticalHit) "§c❤" else "§e❤") else "§a❤" else ""
+                    } else {
+                        colorHeart = ""
+                    }
+                    particles.add(SingleParticle(colorHit + BigDecimal(abs(lastHealth - entity.health).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP).toDouble() + colorHeart,
                         entity.posX - 0.5 + Random(System.currentTimeMillis()).nextInt(5).toDouble() * 0.1,
                         entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0,
                         entity.posZ - 0.5 + Random(System.currentTimeMillis() + 1L).nextInt(5).toDouble() * 0.1)
