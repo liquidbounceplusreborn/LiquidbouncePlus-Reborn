@@ -1,8 +1,3 @@
-/*
- * LiquidBounce+ Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/WYSI-Foundation/LiquidBouncePlus/
- */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -36,14 +31,15 @@ class Camera : Module(){
     val hitColorValue = BoolValue("HitColor", true)
     val cameraPositionValue = BoolValue("CameraPosition", true)
     val noHurtCam = BoolValue("NoHurtCam", true)
+    //FPSHurtCam
     private val fpsHurtCam = BoolValue("FPSHurtCam", true)
-    val hurtcamColorRValue = IntegerValue("FogRed", 255, 0, 255) { noHurtCam.get() }
-    val hurtcamColorGValue = IntegerValue("FogGreen", 255, 0, 255) { noHurtCam.get() }
-    val hurtcamColorBValue = IntegerValue("FogBlue", 255, 0, 255) { noHurtCam.get() }
-    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"), "Custom"){ noHurtCam.get() }
-    private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f){ noHurtCam.get() }
-    private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f){ noHurtCam.get() }
-    private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10){ noHurtCam.get() }
+    val hurtcamColorRValue = IntegerValue("HurtColorRed", 255, 0, 255) { fpsHurtCam.get() }
+    val hurtcamColorGValue = IntegerValue("HurtColorGreen", 255, 0, 255) { fpsHurtCam.get() }
+    val hurtcamColorBValue = IntegerValue("HurtColorBlue", 255, 0, 255) { fpsHurtCam.get() }
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"), "Custom"){ fpsHurtCam.get() }
+    private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f){ fpsHurtCam.get() }
+    private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f){ fpsHurtCam.get() }
+    private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10){ fpsHurtCam.get() }
     //WorldColor
     val worldColorRValue = IntegerValue("WorldRed", 255, 0, 255) { worldColorValue.get() }
     val worldColorGValue = IntegerValue("WorldGreen", 255, 0, 255) { worldColorValue.get() }
