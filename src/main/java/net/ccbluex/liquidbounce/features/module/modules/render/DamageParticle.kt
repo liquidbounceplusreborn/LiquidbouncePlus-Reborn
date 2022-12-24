@@ -22,12 +22,15 @@ import kotlin.math.abs
 
 @ModuleInfo(name = "DamageParticle", spacedName = "Damage Particle", description = "Allows you to see targets damage.", category = ModuleCategory.RENDER)
 class DamageParticle : Module() {
+    private var heart = String();
+
     private val healthData = HashMap<Int, Float>()
     private val particles = ArrayList<SingleParticle>()
 
     private val aliveTicks = IntegerValue("AliveTicks", 20, 10, 50)
     private val sizeValue = IntegerValue("Size", 3, 1, 7)
     private val customColor = BoolValue("CustomColor", false)
+    private val heartValue = BoolValue("Heart", false)
     private val outlineFont = BoolValue("OutlineFont", false)
     private val red = IntegerValue("Red", 255, 0, 255, { customColor.get() })
     private val green = IntegerValue("Green", 255, 0, 255, { customColor.get() })
@@ -43,7 +46,11 @@ class DamageParticle : Module() {
                     if (lastHealth == entity.health) continue
 
                     val prefix = if (!customColor.get()) (if (lastHealth > entity.health) "§c" else "§a") else (if (lastHealth > entity.health) "" else "")
-                    val heart = if (!customColor.get()) (if (lastHealth > entity.health) "§c❤" else "§a❤") else (if (lastHealth > entity.health) "❤" else "❤")
+                        if (heartValue.get()) {
+                            heart = if (!customColor.get()) (if (lastHealth > entity.health) "§c❤" else "§a❤") else (if (lastHealth > entity.health) "❤" else "❤")
+                        } else{
+                            heart = if (!customColor.get()) (if (lastHealth > entity.health) "" else "") else (if (lastHealth > entity.health) "" else "")
+                        }
                     particles.add(SingleParticle(prefix + BigDecimal(abs(lastHealth - entity.health).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP).toDouble() + heart,
                         entity.posX - 0.5 + Random(System.currentTimeMillis()).nextInt(5).toDouble() * 0.1,
                         entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0,
