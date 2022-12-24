@@ -14,8 +14,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
-import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+import net.ccbluex.liquidbounce.features.module.modules.movement.*
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -24,31 +23,24 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.utils.timer.MovementUtilsFix
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.entity.player.PlayerCapabilities
-import net.minecraft.init.Items
-import net.minecraft.item.ItemSword
+import net.minecraft.init.*
 import net.minecraft.network.Packet
 import net.minecraft.network.PacketBuffer
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.*
-import net.minecraft.network.play.server.S02PacketChat
-import net.minecraft.network.play.server.S07PacketRespawn
-import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.network.play.server.S3EPacketTeams
+import net.minecraft.network.play.server.*
 import net.minecraft.util.BlockPos
+import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.round
 import kotlin.math.sqrt
 
@@ -56,63 +48,40 @@ import kotlin.math.sqrt
 @ModuleInfo(name = "Disabler", description = "Disable some anticheats' checks.", category = ModuleCategory.WORLD)
 class Disabler : Module() {
 
-	val modeValue = ListValue(
-		"Mode",
+	val modeValue = ListValue("Mode",
 		arrayOf(
-			"BlockDropCombat", // blockdrop combat disabler
+			"SpartanCombat", // old spartan combat disabler
 			"MatrixGeyser", // work with old matrix, around 5.2.x (with badly configured geysermc)
-			"MineplexCombat", // mineplex combat disabler
-			"Hycraft", // lb++
-			"Intave", // forum
-			"Flying", // As
-			"OldBlocksMC", // Dort
 			"OldVerus", // Dort
 			"LatestVerus", // FDP
 			"PingSpoof", // ping spoof
 			"Flag", // flag
 			"Matrix", // re
 			"Watchdog", // $100k anticheat
-			"WatchdogTest", // $100K anticheat
-			"VanillaDesync" // Dort, again.
-		), "VanillaDesync"
-	)
-
-	override val tag: String
-		get() = modeValue.get()
-
-	private val linkedQueue: Queue<Packet<*>> = LinkedBlockingQueue()
-	private val timer = TimeHelper()
+			"RotDesync" // Dort, again.
+		), "SpartanCombat")
 
 	// PingSpoof (idfk what's this purpose but i will keep it here.)
-	private val minpsf: IntegerValue = object :
-		IntegerValue("PingSpoof-MinDelay", 200, 0, 10000, "ms", { modeValue.get().equals("pingspoof", true) }) {
+	private val minpsf: IntegerValue = object : IntegerValue("PingSpoof-MinDelay", 0, 0, 10000, "ms", { modeValue.get().equals("pingspoof", true) }) {
 		override fun onChanged(oldValue: Int, newValue: Int) {
 			val v = maxpsf.get()
 			if (v < newValue) set(v)
 		}
 	}
-	private val maxpsf: IntegerValue = object :
-		IntegerValue("PingSpoof-MaxDelay", 250, 0, 10000, "ms", { modeValue.get().equals("pingspoof", true) }) {
+	private val maxpsf: IntegerValue = object : IntegerValue("PingSpoof-MaxDelay", 0, 0, 10000, "ms", { modeValue.get().equals("pingspoof", true) }) {
 		override fun onChanged(oldValue: Int, newValue: Int) {
 			val v = minpsf.get()
 			if (v > newValue) set(v)
 		}
 	}
-	private val psfStartSendMode = ListValue(
-		"PingSpoof-StartSendMode",
-		arrayOf("All", "First"),
-		"All",
-		{ modeValue.get().equals("pingspoof", true) })
-	private val psfSendMode =
-		ListValue("PingSpoof-SendMode", arrayOf("All", "First"), "All", { modeValue.get().equals("pingspoof", true) })
-	private val psfWorldDelay =
-		IntegerValue("PingSpoof-WorldDelay", 15000, 0, 30000, "ms", { modeValue.get().equals("pingspoof", true) })
+	private val psfStartSendMode = ListValue("PingSpoof-StartSendMode", arrayOf("All", "First"), "All", { modeValue.get().equals("pingspoof", true) })
+	private val psfSendMode = ListValue("PingSpoof-SendMode", arrayOf("All", "First"), "All", { modeValue.get().equals("pingspoof", true) })
+	private val psfWorldDelay = IntegerValue("PingSpoof-WorldDelay", 15000, 0, 30000, "ms", { modeValue.get().equals("pingspoof", true) })
 
 	// flag
-	private val flagMode =
-		ListValue("Flag-Mode", arrayOf("Edit", "Packet"), "Edit", { modeValue.get().equals("flag", true) })
+	private val flagMode = ListValue("Flag-Mode", arrayOf("Edit", "Packet"), "Edit", { modeValue.get().equals("flag", true) })
 	private val flagTick = IntegerValue("Flag-TickDelay", 25, 1, 200, { modeValue.get().equals("flag", true) })
-	private val flagSilent = BoolValue("Flag-SilentMode", false, { modeValue.get().equals("flag", true) })
+	private val flagSilent = BoolValue("Flag-SilentMode", true, { modeValue.get().equals("flag", true) })
 
 	// matrix
 	private val matrixNoCheck = BoolValue("Matrix-NoModuleCheck", false, { modeValue.get().equals("matrix", true) })
@@ -122,69 +91,34 @@ class Disabler : Module() {
 	private val matrixHotbarChange = BoolValue("Matrix-HotbarChange", true, { modeValue.get().equals("matrix", true) })
 
 	// verus
-	private val verusLobbyValue = BoolValue(
-		"LobbyCheck",
-		true,
-		{ modeValue.get().equals("latestverus", true) || modeValue.get().equals("blocksmc", true) })
+	private val verusLobbyValue = BoolValue("LobbyCheck", true, { modeValue.get().equals("latestverus", true) || modeValue.get().equals("blocksmc", true) })
 	private val verusFlagValue = BoolValue("Verus-Flag", true, { modeValue.get().equals("latestverus", true) })
-	private val verusSlientFlagApplyValue =
-		BoolValue("Verus-SlientFlagApply", false, { modeValue.get().equals("latestverus", true) })
-	private val verusBufferSizeValue =
-		IntegerValue("Verus-QueueActiveSize", 300, 0, 1000, { modeValue.get().equals("latestverus", true) })
-	private val verusPurseDelayValue =
-		IntegerValue("Verus-PurseDelay", 490, 0, 2000, "ms", { modeValue.get().equals("latestverus", true) })
-	private val verusFlagDelayValue =
-		IntegerValue("Verus-FlagDelay", 40, 40, 120, " tick", { modeValue.get().equals("latestverus", true) })
+	private val verusSlientFlagApplyValue = BoolValue("Verus-SlientFlagApply", false, { modeValue.get().equals("latestverus", true) })
+	private val verusBufferSizeValue = IntegerValue("Verus-QueueActiveSize", 300, 0, 1000, { modeValue.get().equals("latestverus", true) })
+	private val verusPurseDelayValue = IntegerValue("Verus-PurseDelay", 490, 0, 2000, "ms", { modeValue.get().equals("latestverus", true) })
+	private val verusFlagDelayValue = IntegerValue("Verus-FlagDelay", 40, 40, 120, " tick", { modeValue.get().equals("latestverus", true) })
 	private val verusAntiFlyCheck = BoolValue("Verus-AntiFly", true, { modeValue.get().equals("latestverus", true) })
 	private val verusFakeInput = BoolValue("Verus-FakeInput", true, { modeValue.get().equals("latestverus", true) })
 	private val verusValidPos = BoolValue("Verus-ValidPosition", true, { modeValue.get().equals("latestverus", true) })
 
-	// watchdogold
-	private val waitingDisplayMode = ListValue(
-		"Waiting-Display",
-		arrayOf("Top", "Middle", "Notification", "Chat", "None"),
-		"Top",
-		{ modeValue.get().equals("Watchdog", true) })
+	// watchdog
+	private val waitingDisplayMode = ListValue("Waiting-Display", arrayOf("Top", "Middle", "Notification", "Chat", "None"), "Top", { modeValue.get().equals("watchdog", true) })
 	val renderServer = BoolValue("Render-ServerSide", false, { modeValue.get().equals("watchdog", true) })
 	private val autoAlert = BoolValue("BanAlert", false, { modeValue.get().equals("watchdog", true) })
 	private val rotModify = BoolValue("RotationModifier", false, { modeValue.get().equals("watchdog", true) })
-	private val tifality90 =
-		BoolValue("Tifality", false, { modeValue.get().equals("watchdog", true) && rotModify.get() })
-	private val noMoveKeepRot =
-		BoolValue("NoMoveKeepRot", true, { modeValue.get().equals("watchdog", true) && rotModify.get() })
+	private val tifality90 = BoolValue("Tifality", false, { modeValue.get().equals("watchdog", true) && rotModify.get() })
+	private val noMoveKeepRot = BoolValue("NoMoveKeepRot", true, { modeValue.get().equals("watchdog", true) && rotModify.get() })
 	private val noC03s = BoolValue("NoC03s", true, { modeValue.get().equals("watchdog", true) })
-	private val testFeature = BoolValue("PingSpoof", true, { modeValue.get().equals("watchdog", true) })
-	private val testDelay =
-		IntegerValue("Delay", 400, 0, 1000, "ms", { modeValue.get().equals("watchdog", true) && testFeature.get() })
-	private val checkValid =
-		BoolValue("InvValidate", true, { modeValue.get().equals("watchdog", true) && testFeature.get() })
-
-	// watchdognew
-	private val rotationChanger = BoolValue("RotationDisabler", true, { modeValue.get().equals("WatchdogTest", true) })
-	private val c00Disabler = BoolValue("KeepAliveDisabler", false, { modeValue.get().equals("WatchdogTest", true) })
-	private val c0BDisabler = BoolValue("C0BDisabler", true, { modeValue.get().equals("WatchdogTest", true) })
-	private val watchDogAntiBan = BoolValue("LessFlag", false, { modeValue.get().equals("WatchdogTest", true) })
-	private val noC03 = BoolValue("NoC03Packet", true, { modeValue.get().equals("WatchdogTest", true) })
-	private val strafeDisabler = BoolValue("StrafeDisabler", true, { modeValue.get().equals("WatchdogTest", true) })
-	private val strafePackets =
-		IntegerValue("StrafeDisablerPacketAmount", 70, 60, 120, { modeValue.get().equals("WatchdogTest", true) })
-	private val timerA = BoolValue("Timer1", true, { modeValue.get().equals("WatchdogTest", true) })
-	private val timerB = BoolValue("Timer2", false, { modeValue.get().equals("WatchdogTest", true) })
-	private val testBlink = BoolValue("TestBlink", false, { modeValue.get().equals("WatchdogTest", true) })
-	private var x = 0.0
-	private var y = 0.0
-	private var z = 0.0
-	private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
-	private val timerCancelDelay = MSTimer()
-	private val timerCancelTimer = MSTimer()
-	private var timerShouldCancel = true
-	private var inCage = true
-	private var canBlink = true
+	private val testFeature = BoolValue("PingSpoof", false, { modeValue.get().equals("watchdog", true) })
+	private val testDelay = IntegerValue("Delay", 400, 0, 1000, "ms", { modeValue.get().equals("watchdog", true) && testFeature.get() })
+	private val checkValid = BoolValue("InvValidate", false, { modeValue.get().equals("watchdog", true) && testFeature.get() })
+	private val testTimer = BoolValue("Timer", false, { modeValue.get().equals("watchdog", true) })
 
 	// debug
 	private val debugValue = BoolValue("Debug", false)
 
 	// sus
+	private val susImage = ResourceLocation("liquidbounce+/sus.png")
 	private var rotatingSpeed = 0F
 
 	// variables
@@ -198,6 +132,7 @@ class Disabler : Module() {
 	private val queueBus = LinkedList<Packet<INetHandlerPlayServer>>()
 
 	private val posLookInstance = PosLookInstance()
+	var confirmTransactionQueue: Queue<C0FPacketConfirmTransaction>? = null
 
 	private val msTimer = MSTimer()
 	private val wdTimer = MSTimer()
@@ -235,37 +170,20 @@ class Disabler : Module() {
 	val canRenderInto3D: Boolean
 		get() = (state && modeValue.get().equals("watchdog", true) && renderServer.get() && shouldModifyRotation)
 
-	fun isMoving(): Boolean =
-		(mc.thePlayer != null && (mc.thePlayer.movementInput.moveForward != 0F || mc.thePlayer.movementInput.moveStrafe != 0F || mc.thePlayer.movementInput.sneak || mc.thePlayer.movementInput.jump))
+	fun isMoving(): Boolean = (mc.thePlayer != null && (mc.thePlayer.movementInput.moveForward != 0F || mc.thePlayer.movementInput.moveStrafe != 0F || mc.thePlayer.movementInput.sneak || mc.thePlayer.movementInput.jump))
 
 	fun debug(s: String, force: Boolean = false) {
 		if (debugValue.get() || force)
-			ClientUtils.displayChatMessage("§c>>§f $s")
+			ClientUtils.displayChatMessage("§7[§3§lDisabler§7]§f $s")
 	}
 
-	fun shouldRun(): Boolean =
-		mc.thePlayer != null && mc.thePlayer.inventory != null && (!verusLobbyValue.get() || !mc.thePlayer.inventory.hasItem(
-			Items.compass
-		)) && mc.thePlayer.ticksExisted > 5
-
+	fun shouldRun(): Boolean = mc.thePlayer != null && mc.thePlayer.inventory != null && (!verusLobbyValue.get() || !mc.thePlayer.inventory.hasItem(Items.compass)) && mc.thePlayer.ticksExisted > 5
 	fun isInventory(action: Short): Boolean = action > 0 && action < 100
 
+	override val tag: String
+		get() = modeValue.get()
+
 	override fun onEnable() {
-		if (modeValue.get().equals("WatchdogTest", true)) {
-			counter = 0
-			inCage = true
-			x = 0.0
-			y = 0.0
-			z = 0.0
-			timerCancelDelay.reset()
-			timerCancelTimer.reset()
-		}
-
-		if (modeValue.get().equals("intave", true)) {
-			this.timer.reset();
-			this.linkedQueue.clear();
-		}
-
 		keepAlives.clear()
 		transactions.clear()
 		packetQueue.clear()
@@ -333,10 +251,6 @@ class Disabler : Module() {
 
 	@EventTarget
 	fun onWorld(event: WorldEvent) {
-		if (modeValue.get().equals("WatchdogTest", true)) {
-			counter = 0
-			inCage = true
-		}
 		transactions.clear()
 		keepAlives.clear()
 		packetQueue.clear()
@@ -367,119 +281,34 @@ class Disabler : Module() {
 
 	@EventTarget
 	fun onRender2D(event: Render2DEvent) {
-		if (!shouldActive) {
+		if (!shouldActive)
+		{
 			val sc = ScaledResolution(mc)
-			val strength =
-				(msTimer.hasTimeLeft(psfWorldDelay.get().toLong()).toFloat() / psfWorldDelay.get().toFloat()).coerceIn(
-					0F,
-					1F
-				)
+			val strength = (msTimer.hasTimeLeft(psfWorldDelay.get().toLong()).toFloat() / psfWorldDelay.get().toFloat()).coerceIn(0F, 1F)
 
 			if (modeValue.get().equals("pingspoof", true)) {
 				Stencil.write(true)
-				RenderUtils.drawRoundedRect(
-					sc.scaledWidth / 2F - 50F,
-					35F,
-					sc.scaledWidth / 2F + 50F,
-					55F,
-					10F,
-					Color(0, 0, 0, 140).rgb
-				)
+				RenderUtils.drawRoundedRect(sc.scaledWidth / 2F - 50F, 35F, sc.scaledWidth / 2F + 50F, 55F, 10F, Color(0, 0, 0, 140).rgb)
 				Stencil.erase(true)
-				RenderUtils.drawRect(
-					sc.scaledWidth / 2F - 50F,
-					35F,
-					sc.scaledWidth / 2F - 50F + 100F * strength,
-					55F,
-					Color(0, 111, 255, 70).rgb
-				)
+				RenderUtils.drawRect(sc.scaledWidth / 2F - 50F, 35F, sc.scaledWidth / 2F - 50F + 100F * strength, 55F, Color(0, 111, 255, 70).rgb)
 				Stencil.dispose()
-				Fonts.font40.drawCenteredString(
-					"${
-						(msTimer.hasTimeLeft(psfWorldDelay.get().toLong()).toFloat() / 1000F).toInt()
-					}s left...", sc.scaledWidth / 2F, 41F, -1
-				)
+				Fonts.font40.drawCenteredString("${(msTimer.hasTimeLeft(psfWorldDelay.get().toLong()).toFloat() / 1000F).toInt()}s left...", sc.scaledWidth / 2F, 41F, -1)
 			}
-			if ((modeValue.get().equals(
-					"watchdog",
-					true
-				) && testFeature.get()) && !ServerUtils.isHypixelLobby() && !mc.isSingleplayer
-			) {
-				when (waitingDisplayMode.get().lowercase(Locale.getDefault())) {
+			if ((modeValue.get().equals("watchdog", true) && testFeature.get()) && !ServerUtils.isHypixelLobby() && !mc.isSingleplayer()) {
+				when (waitingDisplayMode.get().toLowerCase()) {
 					"top" -> {
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F,
-							61.5F,
-							Color(0, 0, 0).rgb,
-							false
-						)
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F,
-							62.5F,
-							Color(0, 0, 0).rgb,
-							false
-						)
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F - 0.5F,
-							62F,
-							Color(0, 0, 0).rgb,
-							false
-						)
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F + 0.5F,
-							62F,
-							Color(0, 0, 0).rgb,
-							false
-						)
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F,
-							62F,
-							Color(220, 220, 60).rgb,
-							false
-						)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F, 61.5F, Color(0, 0, 0).rgb, false)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F, 62.5F, Color(0, 0, 0).rgb, false)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F - 0.5F, 62F, Color(0, 0, 0).rgb, false)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F + 0.5F, 62F, Color(0, 0, 0).rgb, false)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F, 62F, Color(220, 220, 60).rgb, false)
 					}
-
 					"middle" -> {
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F,
-							sc.scaledHeight / 2F + 14.5F,
-							Color(0, 0, 0).rgb,
-							false
-						)
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F,
-							sc.scaledHeight / 2F + 15.5F,
-							Color(0, 0, 0).rgb,
-							false
-						)
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F - 0.5F,
-							sc.scaledHeight / 2F + 15F,
-							Color(0, 0, 0).rgb,
-							false
-						)
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F + 0.5F,
-							sc.scaledHeight / 2F + 15F,
-							Color(0, 0, 0).rgb,
-							false
-						)
-						Fonts.minecraftFont.drawString(
-							"Disabling Watchdog...",
-							sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Disabling watchdog...") / 2F,
-							sc.scaledHeight / 2F + 15F,
-							Color(220, 220, 60).rgb,
-							false
-						)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F, sc.scaledHeight / 2F + 14.5F, Color(0, 0, 0).rgb, false)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F, sc.scaledHeight / 2F + 15.5F, Color(0, 0, 0).rgb, false)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F - 0.5F, sc.scaledHeight / 2F + 15F, Color(0, 0, 0).rgb, false)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F + 0.5F, sc.scaledHeight / 2F + 15F, Color(0, 0, 0).rgb, false)
+						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F, sc.scaledHeight / 2F + 15F, Color(220, 220, 60).rgb, false)
 					}
 				}
 			}
@@ -490,186 +319,12 @@ class Disabler : Module() {
 	fun onPacket(event: PacketEvent) {
 		val packet = event.packet
 
-		when (modeValue.get().lowercase(Locale.getDefault())) {
-			"WatchdogTest" -> {
-				canBlink = true
-
-				if (mc.thePlayer.ticksExisted > 200f)
-					inCage = false
-
-				//timerA
-				if (timerA.get() && inCage == false) {
-					if (packet is C02PacketUseEntity || packet is C03PacketPlayer || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement ||
-						packet is C0APacketAnimation || packet is C0BPacketEntityAction && mc.thePlayer.ticksExisted > strafePackets.get()
-					) {
-						if (timerShouldCancel) {
-							if (!timerCancelTimer.hasTimePassed(350)) {
-								packets.add(packet as Packet<INetHandlerPlayServer>)
-								event.cancelEvent()
-								canBlink = false
-							} else {
-								debug("Timer 1 release packets")
-								debug("Size " + packets.size.toString())
-								timerShouldCancel = false
-								while (!packets.isEmpty()) {
-									PacketUtils.sendPacketNoEvent(packets.take())
-								}
-							}
-							if ((mc.thePlayer.isUsingItem || LiquidBounce.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
-								debug("Timer 1 release packets")
-								debug("Size " + packets.size.toString())
-								timerShouldCancel = false
-								while (!packets.isEmpty()) {
-									PacketUtils.sendPacketNoEvent(packets.take())
-								}
-							}
-						}
-					}
-				}
-
-				//timerB
-				if (timerB.get() && inCage == false) {
-					if (packet is C02PacketUseEntity || packet is C03PacketPlayer || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement ||
-						packet is C0APacketAnimation || packet is C0BPacketEntityAction && mc.thePlayer.ticksExisted > strafePackets.get()
-					) {
-						if (timerShouldCancel) {
-							if (!timerCancelTimer.hasTimePassed(250)) {
-								packets.add(packet as Packet<INetHandlerPlayServer>)
-								event.cancelEvent()
-								canBlink = false
-							} else {
-								debug("Timer 2 release packets")
-								debug("Size " + packets.size.toString())
-								timerShouldCancel = false
-								while (!packets.isEmpty()) {
-									PacketUtils.sendPacketNoEvent(packets.take())
-								}
-							}
-							if ((mc.thePlayer.isUsingItem || LiquidBounce.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
-								debug("Timer 2 release packets")
-								debug("Size " + packets.size.toString())
-								timerShouldCancel = false
-								while (!packets.isEmpty()) {
-									PacketUtils.sendPacketNoEvent(packets.take())
-								}
-							}
-						}
-					}
-				}
-
-
-				// noC03
-				if (packet is C03PacketPlayer && !(packet is C03PacketPlayer.C05PacketPlayerLook || packet is C03PacketPlayer.C06PacketPlayerPosLook || packet is C03PacketPlayer.C04PacketPlayerPosition) && noC03.get()) {
-					event.cancelEvent()
-					canBlink = false
-				}
-
-				// strafe disabler
-				if (strafeDisabler.get() && (mc.thePlayer.ticksExisted < strafePackets.get()) && packet is C03PacketPlayer && (mc.thePlayer.ticksExisted % 15 != 0)) {
-					event.cancelEvent()
-					canBlink = false
-				}
-
-				// anti ban
-				if (watchDogAntiBan.get() || (strafeDisabler.get() && (mc.thePlayer.ticksExisted < strafePackets.get()))) {
-					if (event.packet is C03PacketPlayer.C06PacketPlayerPosLook && mc.thePlayer.onGround && mc.thePlayer.fallDistance > 10) {
-						if (counter > 0) {
-							if (event.packet.x == x && event.packet.y == y && event.packet.z == z) {
-								mc.netHandler.networkManager.sendPacket(
-									C03PacketPlayer.C04PacketPlayerPosition(
-										event.packet.x,
-										event.packet.y,
-										event.packet.z,
-										event.packet.onGround
-									)
-								)
-								debug("Packet C04")
-								event.cancelEvent()
-							}
-						}
-						counter += 1
-
-						if (event.packet is C03PacketPlayer.C05PacketPlayerLook && mc.thePlayer.isRiding) {
-							mc.netHandler.addToSendQueue(
-								C0BPacketEntityAction(
-									mc.thePlayer,
-									C0BPacketEntityAction.Action.START_SPRINTING
-								)
-							)
-							debug("Packet C0B")
-						} else if (event.packet is C0CPacketInput && mc.thePlayer.isRiding) {
-							mc.netHandler.networkManager.sendPacket(event.packet)
-							mc.netHandler.addToSendQueue(
-								C0BPacketEntityAction(
-									mc.thePlayer,
-									C0BPacketEntityAction.Action.STOP_SNEAKING
-								)
-							)
-							debug("Packet C0B")
-							event.cancelEvent()
-						}
-					}
-
-					if (event.packet is S08PacketPlayerPosLook) {
-						val s08 = event.packet
-						x = s08.x
-						y = s08.y
-						z = s08.z
-						debug("Receive S08")
-					}
-
-					if (event.packet is S07PacketRespawn) {
-						counter = 0
-					}
-				}
-
-				//test
-				if (testBlink.get()) {
-					if (packet is C02PacketUseEntity || packet is C03PacketPlayer || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement ||
-						packet is C0APacketAnimation || packet is C0BPacketEntityAction
-					) {
-						debug("Size " + packets.size.toString())
-						while (!packets.isEmpty()) {
-							PacketUtils.sendPacketNoEvent(packets.take())
-						}
-					} else {
-						if (canBlink) {
-							packets.add(packet as Packet<INetHandlerPlayServer>)
-							event.cancelEvent()
-						}
-					}
-				}
-			}
-
-			"intave" -> {
-				if (packet is C00PacketKeepAlive) {
-					event.cancelEvent();
-
-					this.linkedQueue.add(event.packet);
-				}
-
-				if (packet is C0FPacketConfirmTransaction) {
-
-					if (packet.getUid() > 0 && packet.getUid() < 75) {
-						debug("funny intave moment")
-						return;
-					}
-
-					this.linkedQueue.add(event.packet);
-					event.cancelEvent();
-				}
-
-				if (mc.thePlayer != null && mc.thePlayer.ticksExisted < 8) {
-					this.linkedQueue.clear();
-					this.timer.reset();
-				}
-			}
-
+		when (modeValue.get().toLowerCase()) {
 			"matrixgeyser" -> if (packet is C03PacketPlayer && mc.thePlayer.ticksExisted % 15 == 0) {
 				try {
 					val b = ByteArrayOutputStream()
 					val _out = DataOutputStream(b)
-					_out.writeUTF(mc.thePlayer.gameProfile.name)
+					_out.writeUTF(mc.thePlayer.gameProfile.getName())
 					val buf = PacketBuffer(Unpooled.buffer())
 					buf.writeBytes(b.toByteArray())
 					mc.netHandler.addToSendQueue(C17PacketCustomPayload("matrix:geyser", buf))
@@ -679,8 +334,7 @@ class Disabler : Module() {
 					debug("Error occurred.")
 				}
 			}
-
-			"blockdropcombat" -> {
+			"spartancombat" -> {
 				if (packet is C00PacketKeepAlive && (keepAlives.size <= 0 || packet != keepAlives[keepAlives.size - 1])) {
 					debug("c00 added")
 					keepAlives.add(packet)
@@ -692,36 +346,6 @@ class Disabler : Module() {
 					event.cancelEvent()
 				}
 			}
-
-			"flying" -> {
-				val packet = event.packet
-				if (packet is C03PacketPlayer) {
-					val capabilities = PlayerCapabilities()
-					capabilities.disableDamage = false
-					capabilities.isFlying = true
-					capabilities.allowFlying = false
-					capabilities.isCreativeMode = false
-					mc.netHandler.addToSendQueue(C13PacketPlayerAbilities(capabilities))
-					debug("c13 added")
-				}
-			}
-
-			"mineplexcombat" -> {
-				val packet = event.packet
-				if (packet is C00PacketKeepAlive) {
-					event.cancelEvent()
-					PacketUtils.sendPacketNoEvent(
-						C00PacketKeepAlive(
-							packet.key - RandomUtils.nextInt(
-								1000,
-								2147483647
-							)
-						)
-					)
-					debug("cancel c00")
-				}
-			}
-
 			"latestverus" -> { // liulihaocai
 				if (!shouldRun()) {
 					msTimer.reset()
@@ -732,15 +356,10 @@ class Disabler : Module() {
 				if (packet is C0FPacketConfirmTransaction && !isInventory(packet.uid)) {
 					packetQueue.add(packet)
 					event.cancelEvent()
-					if (packetQueue.size > verusBufferSizeValue.get()) {
-						if (!shouldActive) {
+					if(packetQueue.size > verusBufferSizeValue.get()) {
+						if(!shouldActive) {
 							shouldActive = true
-							LiquidBounce.hud.addNotification(
-								Notification("Disabler",
-									"Successfully put Verus into sleep.",
-									NotifyType.SUCCESS
-								)
-							)
+							LiquidBounce.hud.addNotification(Notification("Disabler","Successfully put Verus into sleep.",NotifyType.SUCCESS))
 						}
 						PacketUtils.sendPacketNoEvent(packetQueue.poll())
 					}
@@ -753,7 +372,7 @@ class Disabler : Module() {
 				}
 
 				if (packet is C03PacketPlayer) {
-					if (verusFlagValue.get() && mc.thePlayer.ticksExisted % verusFlagDelayValue.get() == 0) {
+					if(verusFlagValue.get() && mc.thePlayer.ticksExisted % verusFlagDelayValue.get() == 0) {
 						debug("modified c03")
 						packet.y -= 11.015625 // just phase into ground instead (minimum to flag)
 						packet.onGround = false
@@ -776,20 +395,10 @@ class Disabler : Module() {
 						event.cancelEvent()
 						// verus, why
 						debug("flag silent accept")
-						PacketUtils.sendPacketNoEvent(
-							C06PacketPlayerPosLook(
-								packet.x,
-								packet.y,
-								packet.z,
-								packet.getYaw(),
-								packet.getPitch(),
-								false
-							)
-						)
+						PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.getYaw(), packet.getPitch(), false))
 					}
 				}
 			}
-
 			"oldverus" -> {
 				if (packet is C03PacketPlayer) {
 					val yPos = round(mc.thePlayer.posY / 0.015625) * 0.015625
@@ -797,30 +406,9 @@ class Disabler : Module() {
 
 					if (mc.thePlayer.ticksExisted % 45 == 0) {
 						debug("flag")
-						PacketUtils.sendPacketNoEvent(
-							C04PacketPlayerPosition(
-								mc.thePlayer.posX,
-								mc.thePlayer.posY,
-								mc.thePlayer.posZ,
-								true
-							)
-						)
-						PacketUtils.sendPacketNoEvent(
-							C04PacketPlayerPosition(
-								mc.thePlayer.posX,
-								mc.thePlayer.posY - 11.725,
-								mc.thePlayer.posZ,
-								false
-							)
-						)
-						PacketUtils.sendPacketNoEvent(
-							C04PacketPlayerPosition(
-								mc.thePlayer.posX,
-								mc.thePlayer.posY,
-								mc.thePlayer.posZ,
-								true
-							)
-						)
+						PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+						PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 11.725, mc.thePlayer.posZ, false))
+						PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
 					}
 				}
 
@@ -833,31 +421,21 @@ class Disabler : Module() {
 					var diff = sqrt(x * x + y * y + z * z)
 					if (diff <= 8) {
 						event.cancelEvent()
-						PacketUtils.sendPacketNoEvent(
-							C06PacketPlayerPosLook(
-								packet.getX(),
-								packet.getY(),
-								packet.getZ(),
-								packet.getYaw(),
-								packet.getPitch(),
-								true
-							)
-						)
+						PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch(), true))
 
 						debug("silent s08 accept")
 					}
 				}
 
 				if (packet is C0FPacketConfirmTransaction && !isInventory(packet.uid)) {
-					repeat(4) {
+					repeat (4) {
 						packetQueue.add(packet)
 					}
 					event.cancelEvent()
 					debug("c0f dupe: 4x")
 				}
 			}
-
-			"oldblocksmc" -> {
+			"blocksmc" -> {
 				if (!shouldRun()) {
 					queueBus.clear()
 					return
@@ -870,16 +448,7 @@ class Disabler : Module() {
 
 				if (packet is S08PacketPlayerPosLook) {
 					if (mc.thePlayer.getDistance(packet.x, packet.y, packet.z) < 8) {
-						PacketUtils.sendPacketNoEvent(
-							C06PacketPlayerPosLook(
-								packet.x,
-								packet.y,
-								packet.z,
-								packet.yaw,
-								packet.pitch,
-								false
-							)
-						)
+						PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.yaw, packet.pitch, false))
 						event.cancelEvent()
 						debug("silent flag")
 					}
@@ -911,13 +480,9 @@ class Disabler : Module() {
 					}
 				}
 			}
-
 			"flag" -> {
-				if (packet is C03PacketPlayer && flagMode.get().equals(
-						"edit",
-						true
-					) && mc.thePlayer.ticksExisted > 0 && mc.thePlayer.ticksExisted % flagTick.get() == 0
-				) {
+				if (packet is C03PacketPlayer && flagMode.get().equals("edit", true) && mc.thePlayer.ticksExisted > 0 && mc.thePlayer.ticksExisted % flagTick.get() == 0)
+				{
 					packet.isMoving = false
 					packet.onGround = false
 					packet.y = -0.08
@@ -933,22 +498,12 @@ class Disabler : Module() {
 					var diff = sqrt(x * x + y * y + z * z)
 					if (diff <= 8) {
 						event.cancelEvent()
-						PacketUtils.sendPacketNoEvent(
-							C06PacketPlayerPosLook(
-								packet.getX(),
-								packet.getY(),
-								packet.getZ(),
-								packet.getYaw(),
-								packet.getPitch(),
-								true
-							)
-						)
+						PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch(), true))
 
 						debug("silent s08 accept")
 					}
 				}
 			}
-
 			"pingspoof" -> {
 				if (packet is C0FPacketConfirmTransaction && !isInventory(packet.uid)) {
 					queueBus.add(packet)
@@ -963,14 +518,10 @@ class Disabler : Module() {
 					debug("c00 added, key ${packet.key}")
 				}
 			}
-
 			"matrix" -> {
-				if (matrixNoCheck.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state || LiquidBounce.moduleManager.getModule(
-						Fly::class.java
-					)!!.state
-				) {
+				if (matrixNoCheck.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state || LiquidBounce.moduleManager.getModule(Fly::class.java)!!.state) {
 					if (packet is C03PacketPlayer) {
-						if (matrixNoMovePacket.get() && !packet.isMoving) {
+						if (matrixNoMovePacket.get() && !packet.isMoving()) {
 							event.cancelEvent()
 							debug("no move, cancelled")
 							return
@@ -987,20 +538,11 @@ class Disabler : Module() {
 					}
 				}
 			}
-
 			"watchdog" -> {
-				if (mc.isSingleplayer) return
+				if (mc.isSingleplayer()) return
 
-				if (autoAlert.get() && packet is S02PacketChat && packet.chatComponent.unformattedText
-						.contains("Cages opened!", true)
-				)
-					LiquidBounce.hud.addNotification(
-						Notification("Disabler",
-							"Speed is bannable until this notification disappears.",
-							NotifyType.WARNING,
-							20000
-						)
-					)
+				if (autoAlert.get() && packet is S02PacketChat && packet.getChatComponent().getUnformattedText().contains("Cages opened!", true))
+					LiquidBounce.hud.addNotification(Notification("Disabler","Speed is bannable until this notification disappears.",NotifyType.SUCCESS, 20000))
 
 				if (testFeature.get() && !ServerUtils.isHypixelLobby()) {
 					if (packet is C0FPacketConfirmTransaction && (!checkValid.get() || !isInventory(packet.uid))) {
@@ -1012,15 +554,8 @@ class Disabler : Module() {
 						if (!shouldActive) {
 							shouldActive = true
 							debug("activated")
-							when (waitingDisplayMode.get().lowercase(Locale.getDefault())) {
-								"notification" -> LiquidBounce.hud.addNotification(
-									Notification("Disabler",
-										"Activated Disabler.",
-										NotifyType.SUCCESS,
-										2000
-									)
-								)
-
+							when (waitingDisplayMode.get().toLowerCase()) {
+								"notification" -> LiquidBounce.hud.addNotification(Notification("Disabler","Activated Disabler.", NotifyType.SUCCESS, 2000))
 								"chat" -> debug("Activated Disabler.", true)
 							}
 						}
@@ -1052,38 +587,7 @@ class Disabler : Module() {
 					if (packet !is C04PacketPlayerPosition && packet !is C05PacketPlayerLook && packet !is C06PacketPlayerPosLook)
 						event.cancelEvent()
 			}
-
-			"hycraft" -> {
-				if (packet is S3EPacketTeams) {
-					debug("S3E Teams Cancelled")
-					event.cancelEvent()
-				}
-				if (packet is S08PacketPlayerPosLook) {
-					val x = packet.x
-					val y = packet.y
-					val z = packet.z
-
-					if (x >= 200000 || x <= -200000 ||
-						y >= 200000 || y <= -200000 ||
-						z >= 200000 || z <= -200000
-					) {
-						mc.netHandler.networkManager.sendPacket(
-							C03PacketPlayer.C06PacketPlayerPosLook(
-								x,
-								y,
-								z,
-								packet.getYaw(),
-								packet.getPitch(),
-								false
-							)
-						)
-						debug("Invalid S08 TP")
-						event.cancelEvent()
-					}
-				}
-			}
-
-			"vanilladesync" -> {
+			"rotdesync" -> {
 				if (packet is S08PacketPlayerPosLook) {
 					if (!mc.netHandler.doneLoadingTerrain) {
 						debug("not loaded terrain yet")
@@ -1109,26 +613,21 @@ class Disabler : Module() {
 
 	@EventTarget(priority = 2)
 	fun onMotion(event: MotionEvent) {
-		val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)!!
-		val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!!
-		val fly = LiquidBounce.moduleManager.getModule(Fly::class.java)!!
+		val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)!! as KillAura
+		val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!! as Speed
+		val fly = LiquidBounce.moduleManager.getModule(Fly::class.java)!! as Fly
+		val targetStrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java)!! as TargetStrafe
 
 		if (event.eventState == EventState.PRE)
 			shouldModifyRotation = false
-
-		if (modeValue.get().equals("WatchdogTest", true)) {
-			if (rotationChanger.get() && !LiquidBounce.moduleManager[Scaffold::class.java]!!.state && !LiquidBounce.moduleManager[KillAura::class.java]!!.state) {
-				val cYaw = MovementUtilsFix.movingYaw
-				RotationUtils.setTargetRotation(Rotation(cYaw, mc.thePlayer.rotationPitch), 10)
-			}
-		}
 
 		if (modeValue.get().equals("watchdog", true)) {
 			if (event.eventState == EventState.PRE) {
 				if ((speed.state || fly.state) && rotModify.get()) {
 					shouldModifyRotation = true
 					if (MovementUtils.isMoving()) {
-						val cYaw = MovementUtils.getPredictionYaw(event.x, event.z) - 90F
+						val cYaw = if (targetStrafe.canStrafe) MovementUtils.getPredictionYaw(event.x, event.z) - 90F
+						else MovementUtils.getRawDirection(event.yaw)
 
 						lastYaw = cYaw
 						event.yaw = cYaw
@@ -1137,15 +636,10 @@ class Disabler : Module() {
 					} else if (noMoveKeepRot.get()) {
 						event.yaw = lastYaw
 						if (tifality90.get()) event.pitch = 90F
-						RotationUtils.setTargetRotation(
-							Rotation(
-								lastYaw,
-								if (tifality90.get()) 90F else event.pitch
-							)
-						)
+						RotationUtils.setTargetRotation(Rotation(lastYaw, if (tifality90.get()) 90F else event.pitch))
 					}
 				}
-				if (mc.isSingleplayer) return
+				if (mc.isSingleplayer()) return
 				if (testFeature.get() && !ServerUtils.isHypixelLobby()) {
 					if (shouldActive && wdTimer.hasTimePassed(testDelay.get().toLong())) {
 						while (!anotherQueue.isEmpty()) {
@@ -1163,14 +657,11 @@ class Disabler : Module() {
 
 		if (event.eventState == EventState.POST && (!matrixMoveOnly.get() || isMoving())) // check post event
 			if (modeValue.get().equals("matrix", true)) {
-				if (matrixNoCheck.get() || LiquidBounce.moduleManager.getModule(Fly::class.java)!!.state || LiquidBounce.moduleManager.getModule(
-						Speed::class.java
-					)!!.state
-				) {
+				if (matrixNoCheck.get() || LiquidBounce.moduleManager.getModule(Fly::class.java)!!.state || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state) {
 					var changed = false
 					if (matrixHotbarChange.get()) for (i in 0..8) {
 						// find a empty inventory slot
-						if (mc.thePlayer.inventory.mainInventory[i] == null && i != mc.thePlayer.inventory.currentItem) {
+						if(mc.thePlayer.inventory.mainInventory[i] == null && i != mc.thePlayer.inventory.currentItem) {
 							PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(i))
 							changed = true
 							debug("found empty slot $i, switching")
@@ -1178,26 +669,8 @@ class Disabler : Module() {
 						}
 					}
 
-					PacketUtils.sendPacketNoEvent(
-						C06PacketPlayerPosLook(
-							mc.thePlayer.posX,
-							mc.thePlayer.posY,
-							mc.thePlayer.posZ,
-							RotationUtils.serverRotation.yaw,
-							RotationUtils.serverRotation.pitch,
-							mc.thePlayer.onGround
-						)
-					)
-					mc.netHandler.addToSendQueue(
-						C08PacketPlayerBlockPlacement(
-							BlockPos(-1, -1, -1),
-							-1,
-							null,
-							0f,
-							0f,
-							0f
-						)
-					)
+					PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, RotationUtils.serverRotation.yaw, RotationUtils.serverRotation.pitch, mc.thePlayer.onGround))
+					mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), -1, null, 0f, 0f, 0f))
 					debug("sent placement")
 
 					if (changed) {
@@ -1210,77 +683,8 @@ class Disabler : Module() {
 
 	@EventTarget
 	fun onUpdate(event: UpdateEvent) {
-		when (modeValue.get().lowercase(Locale.getDefault())) {
-			"WatchdogTest" -> {
-				// timer1
-				if (timerA.get()) {
-					if (timerCancelDelay.hasTimePassed(5000)) {
-						timerShouldCancel = true
-						timerCancelTimer.reset()
-						timerCancelDelay.reset()
-					}
-				}
-
-				// timer2
-				if (timerB.get()) {
-					if (timerCancelDelay.hasTimePassed(2000)) {
-						timerShouldCancel = true
-						timerCancelTimer.reset()
-						timerCancelDelay.reset()
-					}
-				}
-
-
-				//Hypixel Disabler C00
-				if (c00Disabler.get()) {
-					if (mc.thePlayer.onGround && mc.thePlayer.fallDistance > 10) {
-						mc.netHandler.addToSendQueue(C00PacketKeepAlive(RandomUtils.nextInt(0, 1000)))
-						debug("Hypixel Disabler C00")
-					}
-				}
-
-				//Hypixel Disabler C0B & Hypixel Disabler C03
-				if (c0BDisabler.get()) {
-					if (mc.thePlayer.ticksExisted % 180 == 90) {
-						if (mc.thePlayer.fallDistance > 10) {
-							mc.netHandler.addToSendQueue(C00PacketKeepAlive(RandomUtils.nextInt(0, 1000)))
-							debug("Hypixel Disabler C0B")
-							mc.timer.timerSpeed = 0.8f;
-						} else {
-							if (mc.thePlayer.fallDistance < 10) {
-								if (mc.thePlayer.posY == mc.thePlayer.fallDistance.toDouble()) {
-									mc.netHandler.addToSendQueue(C03PacketPlayer(false))
-									if (mc.thePlayer.onGround) mc.timer.timerSpeed = 0.4f;
-									if (mc.thePlayer.fallDistance == 0f) mc.netHandler.addToSendQueue(
-										C03PacketPlayer(true)
-									)
-									debug("Hypixel Disabler C03")
-								}
-							}
-						}
-					}
-				}
-			}
-
-			"intave" -> {
-				if (mc.thePlayer == null) {
-					return;
-				}
-
-				if (mc.thePlayer.ticksExisted < 3) {
-					this.linkedQueue.clear();
-					this.timer.reset();
-				}
-
-				if (!this.linkedQueue.isEmpty()) {
-					this.linkedQueue.poll();
-
-				}
-
-				this.timer.reset();
-			}
-
-			"blockdropcombat" -> {
+		when (modeValue.get().toLowerCase()) {
+			"spartancombat" -> {
 				if (msTimer.hasTimePassed(3000L) && keepAlives.size > 0 && transactions.size > 0) {
 					PacketUtils.sendPacketNoEvent(keepAlives[keepAlives.size - 1])
 					PacketUtils.sendPacketNoEvent(transactions[transactions.size - 1])
@@ -1292,7 +696,6 @@ class Disabler : Module() {
 					msTimer.reset()
 				}
 			}
-
 			"oldverus" -> {
 				if (mc.thePlayer.ticksExisted % 180 == 0) {
 					while (packetQueue.size > 22) {
@@ -1301,36 +704,22 @@ class Disabler : Module() {
 					debug("pushed queue until size < 22.")
 				}
 			}
-
 			"latestverus" -> {
 				if (verusAntiFlyCheck.get() && !shouldActive) {
 					val flyMod = LiquidBounce.moduleManager[Fly::class.java]!!
 					if (flyMod.state) {
 						flyMod.state = false
-						LiquidBounce.hud.addNotification(
-							Notification("Disabler",
-								"You can't fly before successful activation.",
-								NotifyType.WARNING
-							)
-						)
+						LiquidBounce.hud.addNotification(Notification("Disabler","You can't fly before successful activation.", NotifyType.ERROR))
 						debug("no fly allowed")
 					}
 				}
 				if (mc.thePlayer.ticksExisted % 15 == 0 && shouldRun()) {
 					if (verusFakeInput.get()) {
-						mc.netHandler.addToSendQueue(
-							C0CPacketInput(
-								mc.thePlayer.moveStrafing.coerceAtMost(0.98F),
-								mc.thePlayer.moveForward.coerceAtMost(0.98F),
-								mc.thePlayer.movementInput.jump,
-								mc.thePlayer.movementInput.sneak
-							)
-						)
+						mc.netHandler.addToSendQueue(C0CPacketInput(mc.thePlayer.moveStrafing.coerceAtMost(0.98F), mc.thePlayer.moveForward.coerceAtMost(0.98F), mc.thePlayer.movementInput.jump, mc.thePlayer.movementInput.sneak))
 						debug("c0c")
 					}
 				}
 			}
-
 			"pingspoof" -> {
 				if (msTimer.hasTimePassed(psfWorldDelay.get().toLong()) && !shouldActive) {
 					shouldActive = true
@@ -1349,24 +738,24 @@ class Disabler : Module() {
 					}
 				}
 			}
-
 			"flag" -> {
-				if (flagMode.get().equals(
-						"packet",
-						true
-					) && mc.thePlayer.ticksExisted > 0 && mc.thePlayer.ticksExisted % flagTick.get() == 0
-				) {
-					PacketUtils.sendPacketNoEvent(
-						C04PacketPlayerPosition(
-							mc.thePlayer.posX,
-							-0.08,
-							mc.thePlayer.posZ,
-							mc.thePlayer.onGround
-						)
-					)
+				if (flagMode.get().equals("packet", true) && mc.thePlayer.ticksExisted > 0 && mc.thePlayer.ticksExisted % flagTick.get() == 0) {
+					PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, -0.08, mc.thePlayer.posZ, mc.thePlayer.onGround))
 					debug("flagged")
 				}
 			}
+			"watchdog" ->{
+				if (mc.isSingleplayer()) return
+				if(testTimer.get())
+					if (confirmTransactionQueue!!.isEmpty()) {
+						msTimer.reset()
+					} else if (confirmTransactionQueue!!.size >= 6) {
+						while (!confirmTransactionQueue!!.isEmpty()) {
+							val poll = confirmTransactionQueue!!.poll() as C0FPacketConfirmTransaction
+							PacketUtils.sendPacketNoEvent(poll)
+						}
+					}
+				}
 		}
 	}
 }
