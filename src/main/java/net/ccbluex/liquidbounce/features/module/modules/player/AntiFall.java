@@ -2,7 +2,7 @@
  * LiquidBounce+ Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/WYSI-Foundation/LiquidBouncePlus/
- * 
+ *
  * This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
  */
 package net.ccbluex.liquidbounce.features.module.modules.player;
@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
+import net.ccbluex.liquidbounce.utils.misc.FallingPlayer;
 import net.ccbluex.liquidbounce.utils.misc.NewFallingPlayer;
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
 import net.ccbluex.liquidbounce.value.*;
@@ -27,6 +28,7 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -35,7 +37,10 @@ import static org.lwjgl.opengl.GL11.*;
 public class AntiFall extends Module {
 
     public final ListValue voidDetectionAlgorithm = new ListValue("Detect-Method", new String[]{"Collision", "Predict"}, "Collision");
-    public final ListValue setBackModeValue = new ListValue("SetBack-Mode", new String[]{"Teleport", "FlyFlag", "IllegalPacket", "IllegalTeleport", "StopMotion", "Position", "Edit", "SpoofBack"}, "Teleport");
+    public final ListValue setBackModeValue = new ListValue("SetBack-Mode", new String[]{"Teleport", "FlyFlag", "IllegalPacket", "IllegalTeleport", "StopMotion", "Position", "Edit", "SpoofBack", "Blink"}, "Teleport");
+    private final BoolValue resetMotionValue = new BoolValue("ResetMotion", false, () -> setBackModeValue.get().toLowerCase().contains("blink"));
+    private final FloatValue startFallDistValue = new FloatValue("BlinkStartFallDistance", 2F, 0F, 5F, () -> setBackModeValue.get().toLowerCase().contains("blink"));
+    private final BoolValue autoScaffoldValue = new BoolValue("BlinkAutoScaffold", true, () -> setBackModeValue.get().toLowerCase().contains("blink"));
     public final IntegerValue maxFallDistSimulateValue = new IntegerValue("Predict-CheckFallDistance", 255, 0, 255, "m", () -> voidDetectionAlgorithm.get().equalsIgnoreCase("predict"));
     public final IntegerValue maxFindRangeValue = new IntegerValue("Predict-MaxFindRange", 60, 0, 255, "m", () -> voidDetectionAlgorithm.get().equalsIgnoreCase("predict"));
     public final IntegerValue illegalDupeValue = new IntegerValue("Illegal-Dupe", 1, 1, 5, "x", () -> setBackModeValue.get().toLowerCase().contains("illegal"));
@@ -46,13 +51,23 @@ public class AntiFall extends Module {
     public final BoolValue noFlyValue = new BoolValue("NoFly", true);
 
     private BlockPos detectedLocation = BlockPos.ORIGIN;
-    private double lastX = 0; 
-    private double lastY = 0; 
+    private boolean blink = false;
+    private double posX = 0.0;
+    private double posY = 0.0;
+    private double posZ = 0.0;
+    private double motionX = 0.0;
+    private double motionY = 0.0;
+    private double motionZ = 0.0;
+    private boolean canBlink = false;
+    private double lastX = 0;
+    private double lastY = 0;
     private double lastZ = 0;
     private double lastFound = 0;
     private boolean shouldRender, shouldStopMotion, shouldEdit = false;
 
     private final LinkedList<double[]> positions = new LinkedList<>();
+
+    private final ArrayList<C03PacketPlayer> packetCache = new ArrayList<>();
 
     @EventTarget
     public void onUpdate(UpdateEvent event) {
@@ -60,6 +75,57 @@ public class AntiFall extends Module {
             return;
 
         detectedLocation = null;
+
+        if (setBackModeValue.get().toLowerCase().equalsIgnoreCase("blink")){
+
+            if (!blink) {
+                BlockPos collide = new NewFallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, 0.0, 0.0, 0.0, 0F, 0F, 0F, 0F).findCollision(60);
+                if (canBlink && (collide == null || (mc.thePlayer.posY - collide.getY())> startFallDistValue.get())) {
+                    posX = mc.thePlayer.posX;
+                    posY = mc.thePlayer.posY;
+                    posZ = mc.thePlayer.posZ;
+                    motionX = mc.thePlayer.motionX;
+                    motionY = mc.thePlayer.motionY;
+                    motionZ = mc.thePlayer.motionZ;
+
+                    packetCache.clear();
+                    blink = true;
+                }
+
+                if (mc.thePlayer.onGround) {
+                    canBlink = true;
+                }
+            } else {
+                if (mc.thePlayer.fallDistance> setBackFallDistValue.get()) {
+                    mc.thePlayer.setPositionAndUpdate(posX, posY, posZ);
+                    if (resetMotionValue.get()) {
+                        mc.thePlayer.motionX = 0.0;
+                        mc.thePlayer.motionY = 0.0;
+                        mc.thePlayer.motionZ = 0.0;
+                        mc.thePlayer.jumpMovementFactor = 0.00f;
+                    } else {
+                        mc.thePlayer.motionX = motionX;
+                        mc.thePlayer.motionY = motionY;
+                        mc.thePlayer.motionZ = motionZ;
+                        mc.thePlayer.jumpMovementFactor = 0.00f;
+                    }
+
+                    if (autoScaffoldValue.get()) {
+                        LiquidBounce.moduleManager.getModule(Scaffold.class).setState(true);
+                    }
+
+                    packetCache.clear();
+                    blink = false;
+                    canBlink = false;
+                } else if (mc.thePlayer.onGround) {
+                    blink = false;
+
+                    for (final C03PacketPlayer packet : packetCache) {
+                        mc.getNetHandler().addToSendQueue(packet);
+                    }
+                }
+            }
+        }
 
         if (voidDetectionAlgorithm.get().equalsIgnoreCase("collision")) {
             if (mc.thePlayer.onGround && !(BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)) instanceof BlockAir)) {
@@ -76,29 +142,29 @@ public class AntiFall extends Module {
                 if (mc.thePlayer.fallDistance >= setBackFallDistValue.get()) {
                     shouldStopMotion = true;
                     switch (setBackModeValue.get()) {
-                    case "IllegalTeleport":
-                        mc.thePlayer.setPositionAndUpdate(lastX, lastY, lastZ);
-                    case "IllegalPacket":
-                        for (int i = 0; i < illegalDupeValue.get(); i++) PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1E+159, mc.thePlayer.posZ, false));
-                        break;
-                    case "Teleport":
-                        mc.thePlayer.setPositionAndUpdate(lastX, lastY, lastZ);
-                        break;
-                    case "FlyFlag":
-                        mc.thePlayer.motionY = 0F;
-                        break;
-                    case "StopMotion":
-                        float oldFallDist = mc.thePlayer.fallDistance;
-                        mc.thePlayer.motionY = 0F;
-                        mc.thePlayer.fallDistance = oldFallDist;
-                        break;
-                    case "Position":
-                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY + RandomUtils.nextDouble(6D, 10D), mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, false));
-                        break;
-                    case "Edit":
-                    case "SpoofBack":
-                        shouldEdit = true;
-                        break;
+                        case "IllegalTeleport":
+                            mc.thePlayer.setPositionAndUpdate(lastX, lastY, lastZ);
+                        case "IllegalPacket":
+                            for (int i = 0; i < illegalDupeValue.get(); i++) PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1E+159, mc.thePlayer.posZ, false));
+                            break;
+                        case "Teleport":
+                            mc.thePlayer.setPositionAndUpdate(lastX, lastY, lastZ);
+                            break;
+                        case "FlyFlag":
+                            mc.thePlayer.motionY = 0F;
+                            break;
+                        case "StopMotion":
+                            float oldFallDist = mc.thePlayer.fallDistance;
+                            mc.thePlayer.motionY = 0F;
+                            mc.thePlayer.fallDistance = oldFallDist;
+                            break;
+                        case "Position":
+                            PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY + RandomUtils.nextDouble(6D, 10D), mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, false));
+                            break;
+                        case "Edit":
+                        case "SpoofBack":
+                            shouldEdit = true;
+                            break;
                     }
                     if (resetFallDistanceValue.get() && !setBackModeValue.get().equalsIgnoreCase("StopMotion")) mc.thePlayer.fallDistance = 0;
 
@@ -130,7 +196,7 @@ public class AntiFall extends Module {
                 }
 
                 if (detectedLocation != null && Math.abs(mc.thePlayer.posY - detectedLocation.getY()) +
-                    mc.thePlayer.fallDistance <= maxFallDistSimulateValue.get()) {
+                        mc.thePlayer.fallDistance <= maxFallDistSimulateValue.get()) {
                     lastFound = mc.thePlayer.fallDistance;
                 }
 
@@ -139,29 +205,29 @@ public class AntiFall extends Module {
                 if (mc.thePlayer.fallDistance - lastFound > setBackFallDistValue.get()) {
                     shouldStopMotion = true;
                     switch (setBackModeValue.get()) {
-                    case "IllegalTeleport":
-                        mc.thePlayer.setPositionAndUpdate(lastX, lastY, lastZ);
-                    case "IllegalPacket":
-                        for (int i = 0; i < illegalDupeValue.get(); i++) PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1E+159, mc.thePlayer.posZ, false));
-                        break;
-                    case "Teleport":
-                        mc.thePlayer.setPositionAndUpdate(lastX, lastY, lastZ);
-                        break;
-                    case "FlyFlag":
-                        mc.thePlayer.motionY = 0F;
-                        break;
-                    case "StopMotion":
-                        float oldFallDist = mc.thePlayer.fallDistance;
-                        mc.thePlayer.motionY = 0F;
-                        mc.thePlayer.fallDistance = oldFallDist;
-                        break;
-                    case "Position":
-                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY + RandomUtils.nextDouble(6D, 10D), mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, false));
-                        break;
-                    case "Edit":
-                    case "SpoofBack":
-                        shouldEdit = true;
-                        break;
+                        case "IllegalTeleport":
+                            mc.thePlayer.setPositionAndUpdate(lastX, lastY, lastZ);
+                        case "IllegalPacket":
+                            for (int i = 0; i < illegalDupeValue.get(); i++) PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 1E+159, mc.thePlayer.posZ, false));
+                            break;
+                        case "Teleport":
+                            mc.thePlayer.setPositionAndUpdate(lastX, lastY, lastZ);
+                            break;
+                        case "FlyFlag":
+                            mc.thePlayer.motionY = 0F;
+                            break;
+                        case "StopMotion":
+                            float oldFallDist = mc.thePlayer.fallDistance;
+                            mc.thePlayer.motionY = 0F;
+                            mc.thePlayer.fallDistance = oldFallDist;
+                            break;
+                        case "Position":
+                            PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY + RandomUtils.nextDouble(6D, 10D), mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, false));
+                            break;
+                        case "Edit":
+                        case "SpoofBack":
+                            shouldEdit = true;
+                            break;
                     }
                     if (resetFallDistanceValue.get() && !setBackModeValue.get().equalsIgnoreCase("StopMotion")) mc.thePlayer.fallDistance = 0;
 
@@ -186,7 +252,13 @@ public class AntiFall extends Module {
     public void onPacket(PacketEvent event) {
         if (noFlyValue.get() && LiquidBounce.moduleManager.getModule(Fly.class).getState())
             return;
-            
+
+        if (setBackModeValue.get().equalsIgnoreCase("Blink") && blink && event.getPacket() instanceof  C03PacketPlayer){
+            final C03PacketPlayer packet = (C03PacketPlayer) event.getPacket();
+            packetCache.add(packet);
+            event.cancelEvent();
+        }
+
         if (setBackModeValue.get().equalsIgnoreCase("StopMotion") && event.getPacket() instanceof S08PacketPlayerPosLook)
             mc.thePlayer.fallDistance = 0;
 
@@ -220,7 +292,7 @@ public class AntiFall extends Module {
     public void onRender3D(Render3DEvent event) {
         if (noFlyValue.get() && LiquidBounce.moduleManager.getModule(Fly.class).getState())
             return;
-            
+
         if (shouldRender) synchronized (positions) {
             glPushMatrix();
 
@@ -263,6 +335,8 @@ public class AntiFall extends Module {
     }
 
     private void reset() {
+        canBlink = false;
+        blink = false;
         detectedLocation = null;
         lastX = lastY = lastZ = lastFound = 0;
         shouldStopMotion = shouldRender = false;
