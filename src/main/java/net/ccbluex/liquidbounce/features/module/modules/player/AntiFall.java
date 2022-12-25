@@ -40,7 +40,6 @@ public class AntiFall extends Module {
     public final ListValue setBackModeValue = new ListValue("SetBack-Mode", new String[]{"Teleport", "FlyFlag", "IllegalPacket", "IllegalTeleport", "StopMotion", "Position", "Edit", "SpoofBack", "Blink"}, "Teleport");
     private final BoolValue resetMotionValue = new BoolValue("ResetMotion", false, () -> setBackModeValue.get().toLowerCase().contains("blink"));
     private final FloatValue startFallDistValue = new FloatValue("BlinkStartFallDistance", 2F, 0F, 5F, () -> setBackModeValue.get().toLowerCase().contains("blink"));
-    private final BoolValue autoScaffoldValue = new BoolValue("BlinkAutoScaffold", true, () -> setBackModeValue.get().toLowerCase().contains("blink"));
     public final IntegerValue maxFallDistSimulateValue = new IntegerValue("Predict-CheckFallDistance", 255, 0, 255, "m", () -> voidDetectionAlgorithm.get().equalsIgnoreCase("predict"));
     public final IntegerValue maxFindRangeValue = new IntegerValue("Predict-MaxFindRange", 60, 0, 255, "m", () -> voidDetectionAlgorithm.get().equalsIgnoreCase("predict"));
     public final IntegerValue illegalDupeValue = new IntegerValue("Illegal-Dupe", 1, 1, 5, "x", () -> setBackModeValue.get().toLowerCase().contains("illegal"));
@@ -110,7 +109,7 @@ public class AntiFall extends Module {
                         mc.thePlayer.jumpMovementFactor = 0.00f;
                     }
 
-                    if (autoScaffoldValue.get()) {
+                    if (scaffoldValue.get()) {
                         LiquidBounce.moduleManager.getModule(Scaffold.class).setState(true);
                     }
 
