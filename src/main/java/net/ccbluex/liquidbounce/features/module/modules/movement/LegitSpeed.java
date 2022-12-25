@@ -11,8 +11,8 @@ import net.minecraft.potion.Potion;
 
 @ModuleInfo(name = "LegitSpeed", description = "Allows you to move faster.", category = ModuleCategory.MOVEMENT)
 public class LegitSpeed extends Module {
-    public final FloatValue Boost1 = new FloatValue("Boost1", 0.03F, 0F, 0.1);
-    public final FloatValue Boost2 = new FloatValue("Boost2", 0.07, 0F, 0.2);
+    public final FloatValue Boost1 = new FloatValue("Effect2", 0.03F, 0F, 0.1f);
+    public final FloatValue Boost2 = new FloatValue("Effect3", 0.07f, 0F, 0.2f);
 
     @EventTarget
     public void onJump(JumpEvent event) {
