@@ -94,6 +94,7 @@ class ModuleManager : Listenable {
                 MidClick::class.java,
                 XRay::class.java,
                 GameSpeed::class.java,
+                MemoryFix::class.java,
                 FreeCam::class.java,     
                 HitBox::class.java,
                 Plugins::class.java,
