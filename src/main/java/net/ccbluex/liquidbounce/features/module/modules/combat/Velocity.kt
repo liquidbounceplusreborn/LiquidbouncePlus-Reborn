@@ -35,8 +35,8 @@ class Velocity : Module() {
     private val verticalValue = FloatValue("Vertical", 0F, -1F, 1F, "x")
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
-    private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple", "AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero","Intave",
-        "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine", "StopMove"), "Cancel") // later
+    private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple", "Hypixel","AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero","Intave",
+        "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine"), "Cancel") // later
 
     private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
@@ -278,6 +278,14 @@ class Velocity : Module() {
                     packet.motionY = (packet.getMotionY() * vertical).toInt()
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
+                "Hypixel" -> {
+                    if (packet is S12PacketEntityVelocity) {
+                        val packet = event.packet as S12PacketEntityVelocity
+                        if (packet.entityID == mc.thePlayer.entityId) {
+                            event.cancelEvent()
+                    }
+                }
+            }
 
                 "aac4reduce" -> {
                     velocityInput = true
@@ -304,12 +312,6 @@ class Velocity : Module() {
 
                 "legit" -> {
                     pos = BlockPos(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
-                }
-
-                "stopmove" -> {
-                    packet.motionX = 0
-                    packet.motionY = 0
-                    packet.motionZ = 0
                 }
             }
         }
