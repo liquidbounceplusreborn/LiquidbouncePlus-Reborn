@@ -14,7 +14,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.features.module.modules.movement.*
+import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -23,24 +25,26 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.init.*
+import net.minecraft.init.Items
 import net.minecraft.network.Packet
 import net.minecraft.network.PacketBuffer
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.*
-import net.minecraft.network.play.server.*
+import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
-import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
-import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.round
 import kotlin.math.sqrt
 
@@ -112,8 +116,8 @@ class Disabler : Module() {
 	private val testFeature = BoolValue("PingSpoof", false, { modeValue.get().equals("watchdog", true) })
 	private val testDelay = IntegerValue("Delay", 400, 0, 1000, "ms", { modeValue.get().equals("watchdog", true) && testFeature.get() })
 	private val checkValid = BoolValue("InvValidate", false, { modeValue.get().equals("watchdog", true) && testFeature.get() })
-	private val testTimer = BoolValue("Timer", false, { modeValue.get().equals("watchdog", true) })
-	private val testTimer2 = BoolValue("Timer2", false, { modeValue.get().equals("watchdog", true) })
+	private val timerA = BoolValue("TimerA", false, { modeValue.get().equals("watchdog", true) })
+	private val timerB = BoolValue("TimerB", false, { modeValue.get().equals("watchdog", true) })
 
 	// debug
 	private val debugValue = BoolValue("Debug", false)
@@ -124,17 +128,20 @@ class Disabler : Module() {
 	private val packetQueue = LinkedList<C0FPacketConfirmTransaction>()
 	private val anotherQueue = LinkedList<C00PacketKeepAlive>()
 	private val playerQueue = LinkedList<C03PacketPlayer>()
-	private val packets = LinkedList<C03PacketPlayer>()
+	private val packets: LinkedBlockingQueue<Any?> = LinkedBlockingQueue<Any?>()
 
 	private val packetBus = hashMapOf<Long, Packet<INetHandlerPlayServer>>()
 	private val queueBus = LinkedList<Packet<INetHandlerPlayServer>>()
 
 	private val posLookInstance = PosLookInstance()
-	var confirmTransactionQueue: Queue<C0FPacketConfirmTransaction>? = null
 
 	private val msTimer = MSTimer()
 	private val wdTimer = MSTimer()
 	private val benTimer = MSTimer()
+	private val timerCancelDelay = MSTimer()
+	private val timerCancelTimer = MSTimer()
+	private var timerShouldCancel = true
+	private var canBlink = true
 
 	private var alrSendY = false
 	private var alrSprint = false
@@ -579,9 +586,26 @@ class Disabler : Module() {
 					}
 				}
 
-				if (noC03s.get() && packet is C03PacketPlayer)
+				if (noC03s.get() && packet is C03PacketPlayer) {
 					if (packet !is C04PacketPlayerPosition && packet !is C05PacketPlayerLook && packet !is C06PacketPlayerPosLook)
 						event.cancelEvent()
+				}
+				if (timerA.get() && (packet is C02PacketUseEntity || packet is C03PacketPlayer || packet is C05PacketPlayerLook || packet is C06PacketPlayerPosLook || packet is C04PacketPlayerPosition) && timerShouldCancel) {
+					if (!timerCancelTimer.hasTimePassed(450L)) {
+						packets.add(packet)
+						event.cancelEvent()
+						canBlink = false
+					} else {
+						timerShouldCancel = false
+						while (!packets.isEmpty()) {
+							try {
+								PacketUtils.sendPacketNoEvent(packets.take() as Packet<INetHandlerPlayServer>?)
+							} catch (e: InterruptedException) {
+								e.printStackTrace()
+							}
+						}
+					}
+				}
 			}
 			"rotdesync" -> {
 				if (packet is S08PacketPlayerPosLook) {
@@ -648,6 +672,11 @@ class Disabler : Module() {
 						}
 					}
 				}
+			}
+			if (timerB.get() && timerCancelDelay.hasTimePassed(10000L)) {
+				timerShouldCancel = true
+				timerCancelTimer.reset()
+				timerCancelDelay.reset()
 			}
 		}
 
@@ -738,21 +767,6 @@ class Disabler : Module() {
 				if (flagMode.get().equals("packet", true) && mc.thePlayer.ticksExisted > 0 && mc.thePlayer.ticksExisted % flagTick.get() == 0) {
 					PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, -0.08, mc.thePlayer.posZ, mc.thePlayer.onGround))
 					debug("flagged")
-				}
-			}
-			"watchdog" -> {
-				if (testTimer.get()) {
-					if (confirmTransactionQueue!!.isEmpty()) {
-						msTimer.reset()
-					} else if (confirmTransactionQueue!!.size >= 6) {
-						while (!confirmTransactionQueue!!.isEmpty()) {
-							val poll = confirmTransactionQueue!!.poll() as C0FPacketConfirmTransaction
-							PacketUtils.sendPacketNoEvent(poll)
-						}
-					}
-				}
-				if (testTimer2.get()) {
-					packets.clear()
 				}
 			}
 		}
