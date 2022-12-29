@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.*;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nn.nn;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.akiren.ClickGuiScreen;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.OtcClickGUi;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.ClickUI;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -30,7 +29,7 @@ public class ClickGUI extends Module {
     public float animationHeight = 0;
 
     public String configName = "Basic";
-    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap","NoName","Akiren"}, "Null") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap","NoName"}, "Null") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -107,11 +106,7 @@ public class ClickGUI extends Module {
                                 if (styleValue.get().contains("NoName")) {
                                     mc.displayGuiScreen(new nn());
                                     this.setState(false);
-                                }
-                                if (styleValue.get().contains("Akiren")) {
-                                    mc.displayGuiScreen(new ClickGuiScreen());
-                                    this.setState(false);
-                                } else {
+                                }else {
                                     updateStyle();
                                     mc.displayGuiScreen(LiquidBounce.clickGui);
                                     LiquidBounce.clickGui.progress = 0;
