@@ -19,7 +19,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.ArrayList
 
-class ExhibitionFour(inst: Target): TargetStyle("Exhibition4", inst, false) {
+class OldExhibition(inst: Target): TargetStyle("OldExhibition", inst, false) {
     override fun drawTarget(entity: EntityPlayer) {
         updateAnim(entity.health)
         GlStateManager.pushMatrix()

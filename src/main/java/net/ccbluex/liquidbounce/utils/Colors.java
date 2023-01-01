@@ -55,6 +55,11 @@ public class Colors
         return blend(colorRange[0], colorRange[1], (1.0F - weight));
     }
 
+    public static double getIncremental(double val, double inc) {
+        double one = 1.0D / inc;
+        return Math.round(val * one) / one;
+    }
+
 
 
     public static int[] getFractionIndicies(float[] fractions, float progress) {

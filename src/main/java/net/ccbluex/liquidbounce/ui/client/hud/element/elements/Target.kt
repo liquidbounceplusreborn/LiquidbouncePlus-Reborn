@@ -97,9 +97,7 @@ class Target : Element() {
             AsuidBounce(this),
             Chill(this),
             Exhibition(this),
-            ExhibitionTwo(this),
-            ExhibitionThree(this),
-            ExhibitionFour(this),
+            OldExhibition(this),
             Flux(this),
             Hanabi(this),
             LiquidBounce(this),
@@ -116,6 +114,7 @@ class Target : Element() {
             Style(this),
             Slowly(this),
             Simplicity(this),
+            Tifality(this),
         ).toTypedArray(), "LiquidBounce")
     }
 

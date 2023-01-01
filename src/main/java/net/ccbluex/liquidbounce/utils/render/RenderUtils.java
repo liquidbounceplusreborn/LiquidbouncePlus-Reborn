@@ -51,6 +51,7 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.*;
 import static net.ccbluex.liquidbounce.utils.render.GLUtils.glDisable;
@@ -62,6 +63,8 @@ import static org.lwjgl.opengl.GL11.*;
 public final class RenderUtils extends MinecraftInstance {
     private static final Map<Integer, Boolean> glCapMap = new HashMap<>();
     private static final HashMap<Integer, Integer> shadowCache = new HashMap<>();
+
+    public static final Pattern COLOR_PATTERN = Pattern.compile("(?i)");
 
     public static int deltaTime;
     public static Minecraft mc = Minecraft.getMinecraft();
@@ -121,6 +124,18 @@ public final class RenderUtils extends MinecraftInstance {
 
     public static void drawRectWH(float x, float y, float w, float h, int color) {
         drawRect(x, y, w + x, h + y, color);
+    }
+
+    public static void targetHudRect(double x, double y, double x1, double y1, double size) {
+        rectangleBordered(x, y + -4.0D, x1 + size, y1 + size, 0.5D, (new Color(60, 60, 60)).getRGB(), (new Color(10, 10, 10)).getRGB());
+        rectangleBordered(x + 1.0D, y + -3.0D, x1 + size - 1.0D, y1 + size - 1.0D, 1.0D, (new Color(40, 40, 40)).getRGB(), (new Color(40, 40, 40)).getRGB());
+        rectangleBordered(x + 2.5D, y + -1.5D, x1 + size - 2.5D, y1 + size - 2.5D, 0.5D, (new Color(40, 40, 40)).getRGB(), (new Color(60, 60, 60)).getRGB());
+        rectangleBordered(x + 2.5D, y + -1.5D, x1 + size - 2.5D, y1 + size - 2.5D, 0.5D, (new Color(22, 22, 22)).getRGB(), (new Color(255, 255, 255, 0)).getRGB());
+    }
+
+    public static void targetHudRect1(double x, double y, double x1, double y1, double size) {
+        rectangleBordered(x + 4.35D, y + 0.5D, x1 + size - 84.5D, y1 + size - 4.35D, 0.5D, (new Color(48, 48, 48)).getRGB(), (new Color(10, 10, 10)).getRGB());
+        rectangleBordered(x + 5.0D, y + 1.0D, x1 + size - 85.0D, y1 + size - 5.0D, 0.5D, (new Color(17, 17, 17)).getRGB(), (new Color(255, 255, 255, 0)).getRGB());
     }
 
     public static void drawFastRoundedRect(float x0, float y0, float x1, float y1, float radius, int color) {
@@ -4397,6 +4412,93 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.popMatrix();
     }
 
+    public static void renderEnchantText2(ItemStack stack, int x, int y) {
+        RenderHelper.disableStandardItemLighting();
+        int enchantmentY = y + 24;
+        if (stack.getItem() instanceof net.minecraft.item.ItemArmor) {
+            int protectionLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.protection.effectId, stack);
+            int unbreakingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
+            int thornLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack);
+            if (protectionLevel > 0) {
+                drawEnchantTag("P" + getColor(protectionLevel) + protectionLevel, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+            if (unbreakingLevel > 0) {
+                drawEnchantTag("U" + getColor(unbreakingLevel) + unbreakingLevel, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+            if (thornLevel > 0) {
+                drawEnchantTag("T" + getColor(thornLevel) + thornLevel, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+        }
+        if (stack.getItem() instanceof net.minecraft.item.ItemBow) {
+            int powerLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, stack);
+            int punchLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, stack);
+            int flameLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, stack);
+            int unbreakingLevel2 = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
+            if (powerLevel > 0) {
+                drawEnchantTag("Pow" + getColor(powerLevel) + powerLevel, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+            if (punchLevel > 0) {
+                drawEnchantTag("Pun" + getColor(punchLevel) + punchLevel, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+            if (flameLevel > 0) {
+                drawEnchantTag("F" + getColor(flameLevel) + flameLevel, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+            if (unbreakingLevel2 > 0) {
+                drawEnchantTag("U" + getColor(unbreakingLevel2) + unbreakingLevel2, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+        }
+        if (stack.getItem() instanceof net.minecraft.item.ItemSword) {
+            int sharpnessLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.sharpness.effectId, stack);
+            int knockbackLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.knockback.effectId, stack);
+            int fireAspectLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId, stack);
+            int unbreakingLevel2 = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
+            if (sharpnessLevel > 0) {
+                drawEnchantTag("S" + getColor(sharpnessLevel) + sharpnessLevel, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+            if (knockbackLevel > 0) {
+                drawEnchantTag("K" + getColor(knockbackLevel) + knockbackLevel, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+            if (fireAspectLevel > 0) {
+                drawEnchantTag("F" + getColor(fireAspectLevel) + fireAspectLevel, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+            if (unbreakingLevel2 > 0) {
+                drawEnchantTag("U" + getColor(unbreakingLevel2) + unbreakingLevel2, x * 2, enchantmentY);
+                enchantmentY += 8;
+            }
+        }
+        if (stack.getRarity() == EnumRarity.EPIC) {
+            GlStateManager.pushMatrix();
+            GlStateManager.disableDepth();
+            GL11.glScalef(0.5F, 0.5F, 0.5F);
+            drawOutlinedString((FontRenderer)(Minecraft.getMinecraft()).fontRendererObj, "God", (x * 2), enchantmentY, (new Color(255, 255, 0)).getRGB(), (new Color(100, 100, 0, 200)).getRGB());
+            GL11.glScalef(1.0F, 1.0F, 1.0F);
+            GlStateManager.enableDepth();
+            GlStateManager.popMatrix();
+        }
+    }
+
+    public static void drawOutlinedString(FontRenderer fr, String s, float x, float y, int color, int outlineColor) {
+        fr.drawString(stripColor(s), (int) (x - 1.0F), (int) y, outlineColor);
+        fr.drawString(stripColor(s), (int)(x), (int)(y - 1.0F), outlineColor);
+        fr.drawString(stripColor(s), (int)(x + 1.0F), (int)(y), outlineColor);
+        fr.drawString(stripColor(s), (int)(x), (int)(y + 1.0F), outlineColor);
+        fr.drawString(s, (int) x, (int) y, color);
+    }
+
+    public static String stripColor(String input) {
+        return COLOR_PATTERN.matcher(input).replaceAll("");
+    }
+
     public static void renderEnchantText(ItemStack stack, int x, float y) {
         RenderHelper.disableStandardItemLighting();
         float enchantmentY = y + 24f;
@@ -4585,6 +4687,14 @@ public final class RenderUtils extends MinecraftInstance {
         if (!blend) {
             GL11.glDisable((int) 3042);
         }
+    }
+
+    public static void drawRectBordered(double x, double y, double x1, double y1, double width, int internalColor, int borderColor) {
+        rectangle(x + width, y + width, x1 - width, y1 - width, internalColor);
+        rectangle(x + width, y, x1 - width, y + width, borderColor);
+        rectangle(x, y, x + width, y1, borderColor);
+        rectangle(x1 - width, y, x1, y1, borderColor);
+        rectangle(x + width, y1 - width, x1 - width, y1, borderColor);
     }
 
     public static void rectangle(double x, double y, double x2, double y2, int color) {
