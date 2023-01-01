@@ -27,10 +27,7 @@ class Camera : Module(){
     val antiBlindValue = BoolValue("AntiBlind", true)
     val noFov = BoolValue("NoFOV", true)
     val worldColorValue = BoolValue("WorldColor", true)
-    val fogColorValue = BoolValue("FogColor", true)
     val hitColorValue = BoolValue("HitColor", true)
-    val smoothCamera = BoolValue("Smooth", true)
-    val cameraPositionValue = BoolValue("CameraPosition", true)
     val noHurtCam = BoolValue("NoHurtCam", true)
     //FPSHurtCam
     private val fpsHurtCam = BoolValue("FPSHurtCam", true)
@@ -45,20 +42,11 @@ class Camera : Module(){
     val worldColorRValue = IntegerValue("WorldRed", 255, 0, 255) { worldColorValue.get() }
     val worldColorGValue = IntegerValue("WorldGreen", 255, 0, 255) { worldColorValue.get() }
     val worldColorBValue = IntegerValue("WorldBlue", 255, 0, 255) { worldColorValue.get() }
-    //FogColor
-    val fogColorRValue = IntegerValue("FogRed", 255, 0, 255) { fogColorValue.get() }
-    val fogColorGValue = IntegerValue("FogGreen", 255, 0, 255) { fogColorValue.get() }
-    val fogColorBValue = IntegerValue("FogBlue", 255, 0, 255) { fogColorValue.get() }
-    val fogDistance = FloatValue("DistanceFog", 0.7f, 0.1f, 2f) { fogColorValue.get() }
     //HitColor
     val hitColorRValue = IntegerValue("HitRed", 255, 0, 255) { hitColorValue.get() }
     val hitColorGValue = IntegerValue("HitGreen", 255, 0, 255) { hitColorValue.get() }
     val hitColorBValue = IntegerValue("HitBlue", 255, 0, 255) { hitColorValue.get() }
     val hitColorAlphaValue = IntegerValue("HitAlpha", 255, 0, 255) { hitColorValue.get() }
-    //CameraPosition
-    val cameraPositionYawValue = IntegerValue("Yaw", 10, -50, 50) { cameraPositionValue.get() }
-    val cameraPositionPitchValue = IntegerValue("Pitch", 10, -50, 50) { cameraPositionValue.get() }
-    val cameraPositionFovValue = IntegerValue("DistanceFov", 4, 1, 50) { cameraPositionValue.get() }
     //AntiBlind
     val confusionEffect = BoolValue("Confusion", true) { antiBlindValue.get() }
     val pumpkinEffect = BoolValue("Pumpkin", true) { antiBlindValue.get() }
