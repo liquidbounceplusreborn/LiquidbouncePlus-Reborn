@@ -159,7 +159,7 @@ class Tifality(inst: Target): TargetStyle("Tifality", inst, true) {
             mc.renderItem.zLevel = -150.0f
             mc.renderItem.renderItemIntoGUI(everything, split + x, y)
             mc.renderItem.renderItemOverlays(mc.fontRendererObj, everything, split + x, y)
-            RenderUtils.renderEnchantText2(everything, split + x, y)
+            RenderUtils.drawExhiEnchants(everything, (split + x).toFloat(), y.toFloat())
             mc.renderItem.zLevel = 0.0f
             GlStateManager.disableBlend()
             GlStateManager.scale(0.5, 0.5, 0.5)
