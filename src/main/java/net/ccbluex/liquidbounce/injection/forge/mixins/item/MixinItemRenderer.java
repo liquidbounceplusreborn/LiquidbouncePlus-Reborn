@@ -849,9 +849,8 @@ public abstract class MixinItemRenderer {
                             rotateItemAnim();
                 }
             } else {
-                if (Animations.swing.get()) {
+                if (!Animations.swing.get())
                     this.doItemUsedTransformations(f1);
-                }
                 this.transformFirstPersonItem(f, f1);
                 if (LiquidBounce.moduleManager.getModule(Animations.class).getState() && Animations.RotateItems.get())
                     rotateItemAnim();
