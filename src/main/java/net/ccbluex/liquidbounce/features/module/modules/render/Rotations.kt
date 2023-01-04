@@ -14,14 +14,14 @@ import net.ccbluex.liquidbounce.features.module.modules.world.Breaker
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "Rotations", description = "Allows you to see server-sided head and body rotations.", category = ModuleCategory.RENDER)
 class Rotations : Module() {
 
     val headValue = BoolValue("Head", true)
-    val bodyValue = BoolValue("Body", true)
+    val bodyValue = ListValue("Body-Mode", arrayOf("Normal", "Legit"), "Normal")
     val fakeValue = BoolValue("FakeBody", true)
-//    var mode = ListValue("Mode", arrayOf("No","FakeBody"),"FakeBody")
     var R = FloatValue("R", 255f, 0f, 255f)
     var G = FloatValue("G", 255f, 0f, 255f)
     var B = FloatValue("B", 255f, 0f, 255f)

@@ -40,6 +40,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
 
+import javax.vecmath.Vector2f;
 import java.awt.*;
 import java.util.ArrayList;
 import java.math.BigDecimal;
@@ -75,7 +76,7 @@ public class Fly extends Module {
             "Rewinside",
             "TeleportRewinside",
             "FunCraft",
-            "Mineplex", 
+            "Mineplex",
             "NeruxVace",
             "Minesucht",
 
@@ -99,7 +100,8 @@ public class Fly extends Module {
             "HAC",
             "WatchCat",
             "Watchdog",
-            
+            "BlockDrop",
+
             // Other exploit-based stuffs.
             "Jetpack",
             "KeepAlive",
@@ -110,14 +112,14 @@ public class Fly extends Module {
             "Collide"
     }, "Motion");
 
-    private final FloatValue vanillaSpeedValue = new FloatValue("Speed", 2F, 0F, 5F, () -> { 
-        return (modeValue.get().equalsIgnoreCase("motion") || modeValue.get().equalsIgnoreCase("damage") || modeValue.get().equalsIgnoreCase("pearl") || modeValue.get().equalsIgnoreCase("aac5-vanilla") || modeValue.get().equalsIgnoreCase("bugspartan") || modeValue.get().equalsIgnoreCase("keepalive") || modeValue.get().equalsIgnoreCase("derp"));
+    private final FloatValue vanillaSpeedValue = new FloatValue("Speed", 2F, 0F, 5F, () -> {
+        return (modeValue.get().equalsIgnoreCase("motion")|| modeValue.get().equalsIgnoreCase("blockdrop") || modeValue.get().equalsIgnoreCase("damage") || modeValue.get().equalsIgnoreCase("pearl") || modeValue.get().equalsIgnoreCase("aac5-vanilla") || modeValue.get().equalsIgnoreCase("bugspartan") || modeValue.get().equalsIgnoreCase("keepalive") || modeValue.get().equalsIgnoreCase("derp"));
     });
-    private final FloatValue vanillaVSpeedValue = new FloatValue("V-Speed", 2F, 0F, 5F, () -> modeValue.get().equalsIgnoreCase("motion"));
-    private final FloatValue vanillaMotionYValue = new FloatValue("Y-Motion", 0F, -1F, 1F, () -> modeValue.get().equalsIgnoreCase("motion"));
-    private final BoolValue vanillaKickBypassValue = new BoolValue("KickBypass", false, () -> modeValue.get().equalsIgnoreCase("motion") || modeValue.get().equalsIgnoreCase("creative"));
+    private final FloatValue vanillaVSpeedValue = new FloatValue("V-Speed", 2F, 0F, 5F, () -> modeValue.get().equalsIgnoreCase("motion") || modeValue.get().equalsIgnoreCase("blockdrop"));
+    private final FloatValue vanillaMotionYValue = new FloatValue("Y-Motion", 0F, -1F, 1F, () -> modeValue.get().equalsIgnoreCase("motion") || modeValue.get().equalsIgnoreCase("blockdrop"));
+    private final BoolValue vanillaKickBypassValue = new BoolValue("KickBypass", false, () -> modeValue.get().equalsIgnoreCase("motion") || modeValue.get().equalsIgnoreCase("creative") || modeValue.get().equalsIgnoreCase("blockdrop"));
 
-    private final BoolValue groundSpoofValue = new BoolValue("GroundSpoof", false, () -> modeValue.get().equalsIgnoreCase("motion") || modeValue.get().equalsIgnoreCase("creative"));
+    private final BoolValue groundSpoofValue = new BoolValue("GroundSpoof", false, () -> modeValue.get().equalsIgnoreCase("motion") || modeValue.get().equalsIgnoreCase("creative") || modeValue.get().equalsIgnoreCase("blockdrop"));
 
     private final FloatValue ncpMotionValue = new FloatValue("NCPMotion", 0F, 0F, 1F, () -> modeValue.get().equalsIgnoreCase("ncp"));
 
@@ -189,7 +191,7 @@ public class Fly extends Module {
     private final MSTimer wdTimer = new MSTimer();
     private final MSTimer mineSecureVClipTimer = new MSTimer();
     private final MSTimer mineplexTimer = new MSTimer();
-    
+
     private final TickTimer spartanTimer = new TickTimer();
     private final TickTimer verusTimer = new TickTimer();
     private final TickTimer hypixelTimer = new TickTimer();
@@ -203,6 +205,9 @@ public class Fly extends Module {
 
     private boolean noFlag;
     private int pearlState = 0;
+
+    private Vec3 startVec;
+    private Vector2f rotationVec;
 
     private boolean wasDead;
 
@@ -227,7 +232,7 @@ public class Fly extends Module {
     private int boostHypixelState = 1;
     private double lastDistance;
     private boolean failedStart = false;
-    
+
     private float freeHypixelYaw;
     private float freeHypixelPitch;
 
@@ -270,7 +275,7 @@ public class Fly extends Module {
 
         return new double[] { expectedX, expectedY, expectedZ };
     }
-    
+
     @Override
     public void onEnable() {
         if(mc.thePlayer == null)
@@ -280,7 +285,7 @@ public class Fly extends Module {
 
         verusTimer.reset();
         flyTimer.reset();
-        
+
         shouldFakeJump = false;
         shouldActive = true;
         isBoostActive = false;
@@ -314,6 +319,10 @@ public class Fly extends Module {
                 if(mc.gameSettings.keyBindSneak.isKeyDown())
                     mc.thePlayer.motionY = -0.5D;
                 MovementUtils.strafe();
+                break;
+            case "blockdrop":
+                startVec = new Vec3(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ);
+                rotationVec = new Vector2f(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
                 break;
             case "oldncp":
                 if(startY > mc.thePlayer.posY)
@@ -387,7 +396,7 @@ public class Fly extends Module {
 
                 if (hypixelC04.get()) for (int i = 0; i < 10; i++) //Imagine flagging to NCP.
                     mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
-                
+
                 if (hypixelBoostMode.get().equalsIgnoreCase("ncp")) {
                     for (int i = 0; i < 65; i++) {
                         mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.049, mc.thePlayer.posZ, false));
@@ -404,12 +413,12 @@ public class Fly extends Module {
                     }
                 }
                 mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true));
-                
+
                 if (hypixelVisualY.get()) {
                     mc.thePlayer.jump();
                     mc.thePlayer.posY += 0.42F; // Visual
                 }
-                
+
                 boostHypixelState = 1;
                 moveSpeed = 0.1D;
                 lastDistance = 0D;
@@ -429,8 +438,8 @@ public class Fly extends Module {
         }
 
         if (!mode.equalsIgnoreCase("watchdog")
-            && !mode.equalsIgnoreCase("bugspartan") && !mode.equalsIgnoreCase("verus") && !mode.equalsIgnoreCase("damage") && !mode.toLowerCase().contains("hypixel")
-            && fakeDmgValue.get()) {
+                && !mode.equalsIgnoreCase("bugspartan") && !mode.equalsIgnoreCase("verus") && !mode.equalsIgnoreCase("damage") && !mode.toLowerCase().contains("hypixel")
+                && fakeDmgValue.get()) {
             mc.thePlayer.handleStatusUpdate((byte) 2);
         }
 
@@ -481,6 +490,7 @@ public class Fly extends Module {
 
         switch (modeValue.get().toLowerCase()) {
             case "motion":
+            case "blockdrop":
                 mc.thePlayer.capabilities.isFlying = false;
                 mc.thePlayer.motionY = vanillaMotionYValue.get();
                 mc.thePlayer.motionX = 0;
@@ -555,7 +565,7 @@ public class Fly extends Module {
                 }
 
                 if (shouldActiveDmg) {
-                    if (dmgCooldown > 0) 
+                    if (dmgCooldown > 0)
                         dmgCooldown--;
                     else if (verusDmged) {
                         verusDmged = false;
@@ -587,7 +597,7 @@ public class Fly extends Module {
                 if (boostTicks > 0) {
                     mc.timer.timerSpeed = verusTimerValue.get();
                     float motion = 0F;
-                    
+
                     if (verusBoostModeValue.get().equalsIgnoreCase("static")) motion = verusSpeedValue.get(); else motion = ((float)boostTicks / (float)verusDmgTickValue.get()) * verusSpeedValue.get();
                     boostTicks--;
 
@@ -867,10 +877,10 @@ public class Fly extends Module {
                     if (enderPearlSlot != mc.thePlayer.inventory.currentItem) {
                         mc.thePlayer.sendQueue.addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
                     }
-                    pearlState = 1;    
+                    pearlState = 1;
                 }
 
-                if (pearlActivateCheck.get().equalsIgnoreCase("damage") && pearlState == 1 && mc.thePlayer.hurtTime > 0) 
+                if (pearlActivateCheck.get().equalsIgnoreCase("damage") && pearlState == 1 && mc.thePlayer.hurtTime > 0)
                     pearlState = 2;
 
                 if (pearlState == 2) {
@@ -951,6 +961,21 @@ public class Fly extends Module {
                     break;
             }
         }
+        if (modeValue.get().equalsIgnoreCase("blockdrop")) {
+            switch (event.getEventState()) {
+                case PRE:
+                    mc.thePlayer.motionY = mc.gameSettings.keyBindJump.isKeyDown() ? 2.0 : (mc.gameSettings.keyBindJump.isKeyDown() ? -2.0 : 0.0);
+                    for (int var10_8 = 0; var10_8 < 3; ++var10_8) {
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(this.startVec.xCoord, this.startVec.yCoord, this.startVec.zCoord, this.rotationVec.getX(), this.rotationVec.getY(), false));
+                    }
+                    break;
+                case POST:
+                    for (int i2 = 0; i2 < 1; ++i2) {
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, this.rotationVec.getX(), this.rotationVec.getY(), false));
+                    }
+                    break;
+            }
+        }
 
         switch (modeValue.get().toLowerCase()) {
             case "funcraft":
@@ -1001,17 +1026,17 @@ public class Fly extends Module {
                         event.setY(event.getY() - 0.08);
                 } else if (wdState == 2) {
                     if (mc.playerController.onPlayerRightClick(
-                        mc.thePlayer, mc.theWorld, 
-                        mc.thePlayer.inventoryContainer.getSlot(expectItemStack).getStack(), 
-                        new BlockPos(mc.thePlayer.posX, (int)mc.thePlayer.posY - 2, mc.thePlayer.posZ), 
-                        EnumFacing.UP, 
-                        RotationUtils.getVectorForRotation(RotationUtils.getRotationFromPosition(mc.thePlayer.posX, mc.thePlayer.posZ, (int)mc.thePlayer.posY - 1))))
+                            mc.thePlayer, mc.theWorld,
+                            mc.thePlayer.inventoryContainer.getSlot(expectItemStack).getStack(),
+                            new BlockPos(mc.thePlayer.posX, (int)mc.thePlayer.posY - 2, mc.thePlayer.posZ),
+                            EnumFacing.UP,
+                            RotationUtils.getVectorForRotation(RotationUtils.getRotationFromPosition(mc.thePlayer.posX, mc.thePlayer.posZ, (int)mc.thePlayer.posY - 1))))
                         mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
-                    
+
                     wdState = 3;
                 }
                 break;
-        }  
+        }
     }
 
     public float coerceAtMost(double value, double max) {
@@ -1022,7 +1047,7 @@ public class Fly extends Module {
     public void onRender3D(final Render3DEvent event) {
         final String mode = modeValue.get();
 
-        if (!markValue.get() || mode.equalsIgnoreCase("Motion") || mode.equalsIgnoreCase("Creative") || mode.equalsIgnoreCase("Damage") || mode.equalsIgnoreCase("AAC5-Vanilla") || mode.equalsIgnoreCase("Derp") || mode.equalsIgnoreCase("KeepAlive"))
+        if (!markValue.get() || mode.equalsIgnoreCase("Motion")|| modeValue.get().equalsIgnoreCase("blockdrop") || mode.equalsIgnoreCase("Creative") || mode.equalsIgnoreCase("Damage") || mode.equalsIgnoreCase("AAC5-Vanilla") || mode.equalsIgnoreCase("Derp") || mode.equalsIgnoreCase("KeepAlive"))
             return;
 
         double y = startY + 2D;
@@ -1081,6 +1106,22 @@ public class Fly extends Module {
                 ClientUtils.displayChatMessage("§8[§c§lBoostHypixel-§a§lFly§8] §cSetback detected.");
             }
         }
+        if (mode.equalsIgnoreCase("blockdrop")) {
+            if (packet instanceof S08PacketPlayerPosLook) {
+                if (mc.thePlayer.ticksExisted <= 20) return;
+                final S08PacketPlayerPosLook i2 = (S08PacketPlayerPosLook) event.getPacket();
+                event.cancelEvent();
+                this.startVec = new Vec3(i2.getX(), i2.getY(), i2.getZ());
+                this.rotationVec = new Vector2f(i2.getYaw(), i2.getPitch());
+            }
+
+            if (packet instanceof C03PacketPlayer) {
+                event.cancelEvent();
+                return;
+            }
+            if (!(packet instanceof C02PacketUseEntity)) return;
+            PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, false));
+        }
 
         if (packet instanceof C03PacketPlayer) {
             final C03PacketPlayer packetPlayer = (C03PacketPlayer) packet;
@@ -1110,7 +1151,7 @@ public class Fly extends Module {
             if (mode.equalsIgnoreCase("clip") && clipGroundSpoof.get())
                 packetPlayer.onGround = true;
 
-            if ((mode.equalsIgnoreCase("motion") || mode.equalsIgnoreCase("creative")) && groundSpoofValue.get())
+            if ((mode.equalsIgnoreCase("motion") || modeValue.get().equalsIgnoreCase("blockdrop") || mode.equalsIgnoreCase("creative")) && groundSpoofValue.get())
                 packetPlayer.onGround = true;
 
             if (verusDmgModeValue.get().equalsIgnoreCase("Jump") && verusJumpTimes < 5 && mode.equalsIgnoreCase("Verus")) {
@@ -1160,7 +1201,7 @@ public class Fly extends Module {
                         }
                         break;
                 }
-                
+
             }
         }
         aac5C03List.clear();
@@ -1174,7 +1215,7 @@ public class Fly extends Module {
                     event.cancelEvent();
                 }
                 break;
-            case "verus": 
+            case "verus":
                 if (!verusDmged)
                     if (verusDmgModeValue.get().equalsIgnoreCase("Jump"))
                         event.zeroXZ();
@@ -1278,9 +1319,9 @@ public class Fly extends Module {
 
         if (event.getBlock() instanceof BlockAir && (mode.equalsIgnoreCase("Hypixel") ||
                 mode.equalsIgnoreCase("BoostHypixel") || mode.equalsIgnoreCase("Rewinside") ||
-                (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null) || (mode.equalsIgnoreCase("Verus") && 
+                (mode.equalsIgnoreCase("Mineplex") && mc.thePlayer.inventory.getCurrentItem() == null) || (mode.equalsIgnoreCase("Verus") &&
                 (verusDmgModeValue.get().equalsIgnoreCase("none") || verusDmged)))
-            && event.getY() < mc.thePlayer.posY)
+                && event.getY() < mc.thePlayer.posY)
             event.setBoundingBox(AxisAlignedBB.fromBounds(event.getX(), event.getY(), event.getZ(), event.getX() + 1, mc.thePlayer.posY, event.getZ() + 1));
     }
 
