@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 class Rotations : Module() {
 
     val headValue = BoolValue("Head", true)
-    val bodyValue = ListValue("Body-Mode", arrayOf("Normal", "Legit"), "Normal")
+    val bodyValue = ListValue("Body-Mode", arrayOf("Normal", "Legit","None"), "Normal")
     val fakeValue = BoolValue("FakeBody", true)
     var R = FloatValue("R", 255f, 0f, 255f)
     var G = FloatValue("G", 255f, 0f, 255f)
