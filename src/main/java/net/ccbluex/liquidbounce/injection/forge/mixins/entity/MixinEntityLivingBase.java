@@ -112,7 +112,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             if (Patcher.jumpPatch.get())
                 if (auraMod.getState() && auraMod.getRotationStrafeValue().get().equalsIgnoreCase("strict") && auraMod.getTarget() != null)
                     yaw = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getYaw() : (RotationUtils.serverRotation != null ? RotationUtils.serverRotation.getYaw() : yaw);
-                else if (sprintMod.getState() && sprintMod.getAllDirectionsValue().get() && sprintMod.getMoveDirPatchValue().get())
+                                else if (sprintMod.getState() && sprintMod.getAllDirectionsValue().get() && sprintMod.getMoveDirPatchValue().get())
                     yaw = MovementUtils.getRawDirection();
             float f = yaw * 0.017453292F;
             this.motionX -= (double) (MathHelper.sin(f) * 0.2F);
