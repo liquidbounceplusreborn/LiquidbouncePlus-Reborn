@@ -116,8 +116,6 @@ class Disabler : Module() {
 	private val testFeature = BoolValue("PingSpoof", false, { modeValue.get().equals("watchdog", true) })
 	private val testDelay = IntegerValue("Delay", 400, 0, 1000, "ms", { modeValue.get().equals("watchdog", true) && testFeature.get() })
 	private val checkValid = BoolValue("InvValidate", false, { modeValue.get().equals("watchdog", true) && testFeature.get() })
-	private val timerA = BoolValue("TimerA", false, { modeValue.get().equals("watchdog", true) })
-	private val timerB = BoolValue("TimerB", false, { modeValue.get().equals("watchdog", true) })
 
 	// debug
 	private val debugValue = BoolValue("Debug", false)
@@ -590,22 +588,6 @@ class Disabler : Module() {
 					if (packet !is C04PacketPlayerPosition && packet !is C05PacketPlayerLook && packet !is C06PacketPlayerPosLook)
 						event.cancelEvent()
 				}
-				if (timerA.get() && (packet is C02PacketUseEntity || packet is C03PacketPlayer || packet is C05PacketPlayerLook || packet is C06PacketPlayerPosLook || packet is C04PacketPlayerPosition) && timerShouldCancel) {
-					if (!timerCancelTimer.hasTimePassed(450L)) {
-						packets.add(packet)
-						event.cancelEvent()
-						canBlink = false
-					} else {
-						timerShouldCancel = false
-						while (!packets.isEmpty()) {
-							try {
-								PacketUtils.sendPacketNoEvent(packets.take() as Packet<INetHandlerPlayServer>?)
-							} catch (e: InterruptedException) {
-								e.printStackTrace()
-							}
-						}
-					}
-				}
 			}
 			"rotdesync" -> {
 				if (packet is S08PacketPlayerPosLook) {
@@ -672,11 +654,6 @@ class Disabler : Module() {
 						}
 					}
 				}
-			}
-			if (timerB.get() && timerCancelDelay.hasTimePassed(10000L)) {
-				timerShouldCancel = true
-				timerCancelTimer.reset()
-				timerCancelDelay.reset()
 			}
 		}
 
