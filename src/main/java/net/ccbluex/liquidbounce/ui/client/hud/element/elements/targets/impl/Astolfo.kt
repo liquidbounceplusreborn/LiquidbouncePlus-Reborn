@@ -51,7 +51,7 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
         GlStateManager.scale(3f, 3f, 3f)
         mc.fontRendererObj.drawStringWithShadow(
-            "${decimalFormat.format(entity.health)}" + " \u2764",
+            "${entity.health.toInt()}\u2764",
             0.0f,
             2.5f,
             colors
@@ -78,6 +78,4 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
     override fun getBorder(entity: EntityPlayer?): Border? {
         return Border(-23F, 41F, 148F, 107F)
     }
-
-
 }
