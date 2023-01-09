@@ -362,18 +362,6 @@ public class Scaffold extends Module {
                     towerDelayTimer.reset();
                 }
                 break;
-            case"Hypixel":
-                        event.setY(0.41999998688698);
-                        mc.thePlayer.motionY = 0.42;
-                        towerTicks = 0;
-                        if(towerTicks == 2) {
-                        mc.thePlayer.setPosition(mc.thePlayer.posX, Math.round(mc.thePlayer.posY), mc.thePlayer.posZ);
-                        event.setY(mc.thePlayer.motionY = 0);
-                        mc.thePlayer.onGround = true;
-                    }
-                towerTicks++;
-
-                    break;
             case "constantmotion":
                 if (mc.thePlayer.onGround) {
                     fakeJump();
@@ -945,21 +933,6 @@ public class Scaffold extends Module {
 
         if (airSafeValue.get() || mc.thePlayer.onGround)
             event.setSafeWalk(true);
-
-        if(towerModeValue.get().equalsIgnoreCase("Hypixel")) {
-            if(mc.gameSettings.keyBindJump.isKeyDown()) {
-                if(mc.thePlayer.onGround) {
-                    event.setY(0.41999998688698);
-                    mc.thePlayer.motionY = 0.42;
-                    towerTicks = 0;
-                } else if(towerTicks == 2) {
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, Math.round(mc.thePlayer.posY), mc.thePlayer.posZ);
-                    event.setY(mc.thePlayer.motionY = 0);
-                    mc.thePlayer.onGround = true;
-                }
-            }
-            towerTicks++;
-        }
     }
 
     @EventTarget
