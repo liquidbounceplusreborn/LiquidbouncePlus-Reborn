@@ -65,7 +65,7 @@ public class Scaffold extends Module {
     // Global settings
     private final BoolValue towerEnabled = new BoolValue("EnableTower", false);
     private final ListValue towerModeValue = new ListValue("TowerMode", new String[]{
-            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus","Hypixel"
+            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus","NCP"
     }, "Motion", () -> towerEnabled.get());
     private final ListValue towerPlaceModeValue = new ListValue("Tower-PlaceTiming", new String[]{"Pre", "Post"}, "Post");
     private final BoolValue stopWhenBlockAbove = new BoolValue("StopWhenBlockAbove", false, () -> towerEnabled.get());
@@ -428,6 +428,24 @@ public class Scaffold extends Module {
                     verusJumped = false;
                 }
                 verusJumped = true;
+                break;
+            case "ncp":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    towerTicks = 0;
+                }
+                int IntPosY = (int) mc.thePlayer.posY;
+                if (mc.thePlayer.posY - IntPosY < 0.05) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, IntPosY, mc.thePlayer.posZ);
+                    mc.thePlayer.motionY = 0.42;
+                    towerTicks = 1;
+                } else if (towerTicks == 1) {
+                    mc.thePlayer.motionY = 0.34;
+                    towerTicks++;
+                } else if (towerTicks == 2) {
+                    mc.thePlayer.motionY = 0.25;
+                    towerTicks++;
+                }
                 break;
         }
     }
