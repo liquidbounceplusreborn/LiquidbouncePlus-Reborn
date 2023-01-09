@@ -877,8 +877,8 @@ public class Scaffold extends Module {
                 mc.thePlayer.motionZ *= modifier;
             }
             if (sprintModeValue.get().equalsIgnoreCase("Hypixel") && mc.thePlayer.onGround ) {
-                mc.thePlayer.motionX *= 0.47;
-                mc.thePlayer.motionZ *= 0.47;
+                mc.thePlayer.motionX *= 0.3;
+                mc.thePlayer.motionZ *= 0.3;
             }
 
             if (swingValue.get())
