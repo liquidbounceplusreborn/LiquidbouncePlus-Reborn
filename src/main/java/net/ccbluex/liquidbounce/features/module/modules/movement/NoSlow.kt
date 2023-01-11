@@ -212,7 +212,7 @@ class NoSlow : Module() {
                     }
                 }
             }
-            "Intave" -> {
+            "intave" -> {
                 if ((mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking) && timer.hasTimePassed(placeDelay)) {
                     mc.playerController.syncCurrentPlayItem()
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
