@@ -130,7 +130,7 @@ public class Scaffold extends Module {
     private final BoolValue stayAutoBlock = new BoolValue("StayAutoBlock", false, () -> !autoBlockMode.get().equalsIgnoreCase("off"));
 
     //make sprint compatible with tower.add sprint tricks
-    public final ListValue sprintModeValue = new ListValue("SprintMode", new String[]{"Same", "Ground", "Air", "PlaceOff","Hypixel","Off"}, "Off");
+    public final ListValue sprintModeValue = new ListValue("SprintMode", new String[]{"Same", "Ground", "Air", "PlaceOff","Hypixel","Hypixel2","Off"}, "Off");
     // Basic stuff
     private final BoolValue swingValue = new BoolValue("Swing", true);
     private final BoolValue downValue = new BoolValue("Down", false);
@@ -457,6 +457,12 @@ public class Scaffold extends Module {
      */
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
+
+        if (sprintModeValue.get().equalsIgnoreCase("Hypixel2") && mc.thePlayer.onGround ) {
+            mc.thePlayer.motionX = 0.9;
+            mc.thePlayer.motionZ = 0.9;
+        }
+        
         if (towerActivation()) {
             shouldGoDown = false;
             mc.gameSettings.keyBindSneak.pressed = false;
