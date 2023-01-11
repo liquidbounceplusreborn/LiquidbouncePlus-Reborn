@@ -80,7 +80,7 @@ class Velocity : Module() {
 
     override val tag: String
         get() = if (modeValue.get() == "Simple")
-            "${horizontalValue.get()}% ${verticalValue.get()}%"
+            String.format("%.2f%% %.2f%%",horizontalValue.get(), verticalValue.get())
         else
             modeValue.get()
 
