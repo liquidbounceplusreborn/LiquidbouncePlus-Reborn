@@ -459,8 +459,8 @@ public class Scaffold extends Module {
     public void onUpdate(final UpdateEvent event) {
 
         if (sprintModeValue.get().equalsIgnoreCase("Hypixel2") && mc.thePlayer.onGround ) {
-            mc.thePlayer.motionX = 0.9;
-            mc.thePlayer.motionZ = 0.9;
+            mc.thePlayer.motionX *= 0.9;
+            mc.thePlayer.motionZ *= 0.9;
         }
         
         if (towerActivation()) {
