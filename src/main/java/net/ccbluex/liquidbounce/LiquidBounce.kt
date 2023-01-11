@@ -78,6 +78,7 @@ object LiquidBounce {
 
         ClientUtils.getLogger().info("Starting $CLIENT_NAME build $CLIENT_VERSION")
         lastTick = System.currentTimeMillis()
+        playTimeStart = System.currentTimeMillis()
 
         // Create file manager
         fileManager = FileManager()
