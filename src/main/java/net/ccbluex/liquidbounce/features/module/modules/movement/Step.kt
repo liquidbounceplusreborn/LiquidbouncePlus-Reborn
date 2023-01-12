@@ -30,7 +30,7 @@ class Step : Module() {
      */
 
     private val modeValue = ListValue("Mode", arrayOf(
-        "Vanilla", "Jump","NCPPacket", "NCP", "MotionNCP", "OldNCP", "Vulcan","Verus","BlocksMC","AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside", "1.5Twillight",
+        "Vanilla", "Jump","NCPPacket", "NCP", "MotionNCP", "OldNCP", "Vulcan","Verus","NewNCP","AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside", "1.5Twillight",
     ), "NCP")
 
     private val heightValue = FloatValue("Height", 1F, 0.6F, 10F)
@@ -369,7 +369,7 @@ class Step : Module() {
                     }
                     timer.reset()
                 }
-                mode.equals("BlocksMC",true) -> {
+                mode.equals("NewNCP",true) -> {
                     fakeJump()
                     mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(stepX,
                         stepY + 0.41999998688698, stepZ, false))
