@@ -27,6 +27,7 @@ class PacketFixer : Module() {
 	private val fixInvalidPlace = BoolValue("Scaffold14E", true)
     private val fixGround = BoolValue("Fly4I", false)
     private val fixIdleFly = BoolValue("Fly4C", false)
+	private val fixTimer = BoolValue("Timer", false)
 
 	// local variables
 	private var x = 0.0
@@ -64,12 +65,16 @@ class PacketFixer : Module() {
 				packet.onGround = true
 		}
 
-		// some info things
 		if (packet is C04PacketPlayerPosition) {
 			x = packet.x
 			y = packet.y
 			z = packet.z
 			jam = 0
+		}
+
+		// timer disabler?
+		if (fixTimer.get() && packet is C0FPacketConfirmTransaction) {
+			event.cancelEvent()
 		}
 
 		if (packet is C05PacketPlayerLook) {
@@ -131,4 +136,3 @@ class PacketFixer : Module() {
 	}
 
 }
-
