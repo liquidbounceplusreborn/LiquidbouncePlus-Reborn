@@ -1,6 +1,7 @@
 # LiquidBounce+ Reborn's(Unofficial)
 
 Currently might discontinued!
+Pls tell me should i discontinued this client and make new client
 
 A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
 ### LiquidBounce+Reborn contact info
