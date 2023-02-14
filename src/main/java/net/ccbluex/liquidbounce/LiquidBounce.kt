@@ -38,7 +38,7 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "LiquidBounce+"
     const val CLIENT_VERSION = "reborn"
-    const val CLIENT_CREATOR = "CCBlueX,exit-scammed,Random,wxdbie"
+    const val CLIENT_CREATOR = "CCBlueX,exit-scammed,Randomguy,wxdbie,Et1rn1ty"
     const val CLIENT_CLOUD = "https://liquidbounceplusreborn.github.io/cloud/"
 
     var isStarting = false

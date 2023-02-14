@@ -7,7 +7,6 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.GuiMainMenu
 import net.minecraft.client.gui.GuiMultiplayer

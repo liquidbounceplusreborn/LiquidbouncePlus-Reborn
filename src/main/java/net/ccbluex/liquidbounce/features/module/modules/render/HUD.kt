@@ -24,14 +24,14 @@ import java.awt.Color
 @ModuleInfo(name = "HUD", description = "Toggles visibility of the HUD.", category = ModuleCategory.RENDER, array = false)
 class HUD : Module() {
     val tabHead = BoolValue("Tab-HeadOverlay", true)
-    val animHotbarValue = BoolValue("AnimatedHotbar", true)
-    val blackHotbarValue = BoolValue("BlackHotbar", true)
+    val animHotbarValue = BoolValue("AnimatedHotbar", false)
+    val blackHotbarValue = BoolValue("BlackHotbar", false)
     val inventoryParticle = BoolValue("InventoryParticle", false)
     val fontChatValue = BoolValue("FontChat", false)
-    val cmdBorderValue = BoolValue("CommandChatBorder", true)
+    val cmdBorderValue = BoolValue("CommandChatBorder", false)
     val fontType = FontValue("Font", Fonts.font40, { fontChatValue.get() })
     val chatRectValue = BoolValue("ChatRect", true)
-    val chatCombineValue = BoolValue("ChatCombine", true)
+    val chatCombineValue = BoolValue("ChatCombine", false)
     val chatAnimationValue = BoolValue("ChatAnimation", true)
     val chatAnimationSpeedValue = FloatValue("Chat-AnimationSpeed", 0.1F, 0.01F, 0.1F)
     val Hudcolor = IntegerValue("OTC-Color", 121,106,229)
@@ -40,11 +40,11 @@ class HUD : Module() {
     private val toggleMessageValue = BoolValue("DisplayToggleMessage", false)
     private val toggleSoundValue = ListValue("ToggleSound", arrayOf("None", "Default", "Custom"), "Default")
     private val toggleVolumeValue = IntegerValue("ToggleVolume", 100, 0, 100, { toggleSoundValue.get().equals("custom", true) })
-    val guiButtonStyle = ListValue("Button-Style", arrayOf("Minecraft", "LiquidBounce", "Rounded", "LiquidBounce+","Line"), "Minecraft")
+    val guiButtonStyle = ListValue("Button-Style", arrayOf("Minecraft", "LiquidBounce", "Rounded", "LiquidBounce+","Line"), "Line")
 
-    val containerBackground = BoolValue("Container-Background", false)
+    val containerBackground = BoolValue("Container-Background", true)
     val containerButton = ListValue("Container-Button", arrayOf("TopLeft", "TopRight", "Off"), "TopLeft")
-    val invEffectOffset = BoolValue("InvEffect-Offset", false)
+    val invEffectOffset = BoolValue("InvEffect-Offset", true)
     val domainValue = TextValue("Scoreboard-Domain", ".hud scoreboard-domain <your domain here>")
     private var hotBarX = 0F
 
