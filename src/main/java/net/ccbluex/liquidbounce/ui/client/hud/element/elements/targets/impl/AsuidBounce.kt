@@ -6,7 +6,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetSty
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
@@ -22,7 +21,7 @@ class AsuidBounce(inst: Target): TargetStyle("AsuidBounce", inst, true) {
         RenderUtils.drawRect(1f, 34f, 119f, 37f, Color(50, 50, 50, 255).rgb)
         RenderUtils.drawRect(75F, 25.5f, 115F, 29.5f, Color(35, 35, 35, 255).rgb)
         RenderUtils.drawRect(75F, 15.5f, 115F, 19.5f, Color(35, 35, 35, 255).rgb)
-        drawPlayerHead(entity.skin, 2, 2, 30, 30)
+        drawHead(entity.skin, 2, 2, 30, 30)
         RenderUtils.drawOutlinedRect(1f, 1f, 33f, 33f, 0.5f, Color(65, 65, 65, 255).rgb)
         Fonts.fontSFUI35.drawString(entity.getName(), 36F, 3f, Color.WHITE.rgb)
         Fonts.fontSFUI35.drawString("Distance", 36F, 14f, Color.WHITE.rgb)

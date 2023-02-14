@@ -7,7 +7,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
 import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.gui.Gui
@@ -55,7 +54,7 @@ class Hanabi(inst: Target): TargetStyle("Hanabi", inst, true) {
         )
         RenderUtils.drawRect(0f, 0f, 140.0f, 40.0f, blackcolor)
         RenderUtils.drawRect(0f, 37.0f, 140f, 40f, Color(0, 0, 0, 48).rgb)
-        drawPlayerHead(entity.skin, 2, 2, 33, 33)
+        drawHead(entity.skin, 2, 2, 33, 33)
         if (easingHealth > entity.health)
             RenderUtils.drawRect(
                 0F,

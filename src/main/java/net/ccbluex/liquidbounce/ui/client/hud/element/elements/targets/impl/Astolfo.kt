@@ -23,7 +23,7 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
         GlStateManager.translate((15).toFloat(), 55.toFloat(), 0.0f)
         GlStateManager.color(1f, 1f, 1f)
         GuiInventory.drawEntityOnScreen(-18, 47, 30, -180f, 0f, entity)
-        RenderUtils.MdrawRect(
+        RenderUtils.drawRect(
             -38.0,
             -14.0,
             133.0,
@@ -31,9 +31,9 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
             net.ccbluex.liquidbounce.utils.render.Colors.getColor(0, 0, 0, 180)
         )
         mc.fontRendererObj.drawStringWithShadow(entity.getName(), 0.0f, -8.0f, Color(255, 255, 255).rgb)
-        RenderUtils.MdrawRect(0.0, (8.0f + Math.round(40.0f)).toDouble(), 130.0, 40.0, colors2)
+        RenderUtils.drawRect(0.0, (8.0f + Math.round(40.0f)).toDouble(), 130.0, 40.0, colors2)
         if (entity.getHealth() / 2.0f + entity.getAbsorptionAmount() / 2.0f > 1.0) {
-            RenderUtils.MdrawRect(
+            RenderUtils.drawRect(
                 0.0,
                 (8.0f + Math.round(40.0f)).toDouble(),
                 ((entity.health / entity.maxHealth) * additionalWidth).toDouble() + 5f,
@@ -41,7 +41,7 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
                 colors1
             )
         }
-        RenderUtils.MdrawRect(
+        RenderUtils.drawRect(
             0.0,
             (8.0f + Math.round(40.0f)).toDouble(),
             ((easingHealth / entity.maxHealth) * additionalWidth).toDouble(),

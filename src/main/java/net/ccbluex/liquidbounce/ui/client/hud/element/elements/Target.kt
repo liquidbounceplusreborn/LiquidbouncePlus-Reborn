@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl.*
-import net.ccbluex.liquidbounce.utils.TargetHudParticles
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.*
@@ -79,8 +78,6 @@ class Target : Element() {
 
     val counter1 = intArrayOf(50)
     val counter2 = intArrayOf(80)
-    val particles = mutableListOf<TargetHudParticles>()
-    val Stringparticles = mutableListOf<TargetHudParticles>()
     var lastTarget: Entity? = null
     val addTimer = MSTimer()
 
@@ -101,7 +98,6 @@ class Target : Element() {
             Flux(this),
             Hanabi(this),
             LiquidBounce(this),
-            LiquidBounceTwo(this),
             Lnk(this),
             Moon(this),
             MoonTwo(this),
@@ -111,7 +107,6 @@ class Target : Element() {
             NovolineFour(this),
             Remix(this),
             Rice(this),
-            Style(this),
             Slowly(this),
             Simplicity(this),
             Tifality(this),

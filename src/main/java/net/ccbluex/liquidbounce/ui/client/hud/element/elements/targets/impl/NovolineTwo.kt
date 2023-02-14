@@ -6,7 +6,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetSty
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
@@ -17,7 +16,7 @@ class NovolineTwo(inst: Target): TargetStyle("Novoline2", inst, true) {
         updateAnim(entity.health)
         val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name)).coerceAtLeast(118).toFloat()
         RenderUtils.drawRect(0f, 0f, width + 14f, 44f, Color(0, 0, 0, targetInstance.bgAlphaValue.get()).rgb)
-        drawPlayerHead(entity.skin, 3, 3, 30, 30)
+        drawHead(entity.skin, 3, 3, 30, 30)
         Fonts.fontSFUI35.drawString(entity.name, 34.5f, 4f, Color.WHITE.rgb)
         Fonts.fontSFUI35.drawString("Health: ${decimalFormat.format(entity.health)}", 34.5f, 14f, Color.WHITE.rgb)
         Fonts.fontSFUI35.drawString(

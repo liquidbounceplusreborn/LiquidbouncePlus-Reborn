@@ -1,28 +1,24 @@
-//
-// Decompiled by Procyon v0.5.36
-// 
-
 package net.ccbluex.liquidbounce.utils.render;
 
-import net.ccbluex.liquidbounce.utils.TimerUtil;
 import net.ccbluex.liquidbounce.utils.misc.Direction;
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 
 public abstract class Animation
 {
-    public TimerUtil timerUtil;
+    public TimerUtils timerUtil;
     protected int duration;
     protected double endPoint;
     protected Direction direction;
     
     public Animation(final int ms, final double endPoint) {
-        this.timerUtil = new TimerUtil();
+        this.timerUtil = new TimerUtils();
         this.duration = ms;
         this.endPoint = endPoint;
         this.direction = Direction.FORWARDS;
     }
     
     public Animation(final int ms, final double endPoint, final Direction direction) {
-        this.timerUtil = new TimerUtil();
+        this.timerUtil = new TimerUtils();
         this.duration = ms;
         this.endPoint = endPoint;
         this.direction = direction;

@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.*;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nn.nn;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.OtcClickGUi;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.ClickUI;
@@ -29,7 +28,7 @@ public class ClickGUI extends Module {
     public float animationHeight = 0;
 
     public String configName = "Basic";
-    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap","NoName"}, "Null") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap"}, "Null") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -102,18 +101,13 @@ public class ClickGUI extends Module {
                         } else {
                             if (styleValue.get().equalsIgnoreCase("Chocolate")) {
                                 mc.displayGuiScreen(new SkeetStyle());
-                            } else {
-                                if (styleValue.get().contains("NoName")) {
-                                    mc.displayGuiScreen(new nn());
-                                    this.setState(false);
-                                }else {
+                            }else {
                                     updateStyle();
                                     mc.displayGuiScreen(LiquidBounce.clickGui);
                                     LiquidBounce.clickGui.progress = 0;
                                     LiquidBounce.clickGui.slide = 0;
                                     LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
                                     mc.displayGuiScreen(LiquidBounce.clickGui);
-                                }
                             }
                         }
                     }

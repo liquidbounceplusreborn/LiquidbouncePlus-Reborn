@@ -9,7 +9,9 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.AnimationUtils;
+import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -18,6 +20,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StringUtils;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -68,6 +71,8 @@ public abstract class MixinGuiButton extends Gui {
    private float moveX = 0F;
    private float cut;
    private float alpha;
+
+   public int cs;
 
    /**
     * @author CCBlueX
@@ -150,6 +155,25 @@ public abstract class MixinGuiButton extends Gui {
                RenderUtils.drawRoundedRect(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, 2.4F, new Color(0, 0, 0, 150).getRGB());
                RenderUtils.customRounded(this.xPosition, this.yPosition, this.xPosition + 2.4F + moveX, this.yPosition + this.height, 2.4F, roundCorner, roundCorner, 2.4F, (this.enabled ? new Color(0, 111, 255) : new Color(71, 71, 71)).getRGB());
                break;
+            case"line":
+               GameFontRenderer var4 = Fonts.fontSFUI35;
+               this.hovered = (mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height);
+               updatefade();
+               if (this.hovered) {
+                  if (cs >= 4)
+                     cs = 4;
+                  cs++;
+               } else {
+                  if (cs <= 0)
+                     cs = 0;
+                  cs--;
+               }
+               Gui.drawRect(this.xPosition + (int) this.cut, this.yPosition,
+                       this.xPosition + this.width - (int) this.cut, this.yPosition + this.height,
+                       this.enabled ? new Color(0F, 0F, 0F, this.alpha / 255F).getRGB() :
+                               new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB());
+               RenderUtils.drawRect((this.xPosition + this.cs), (this.yPosition + this.height - 1), (this.xPosition + this.width - this.cs), (this.yPosition + this.height), new Color(255,255,255,255).getRGB());
+               break;
          } 
 
          if (hud.getGuiButtonStyle().get().equalsIgnoreCase("minecraft")) return;
@@ -168,5 +192,10 @@ public abstract class MixinGuiButton extends Gui {
 
          GlStateManager.resetColor();
       }
+   }
+   private void updatefade() {
+      this.alpha += 25;
+      if (this.alpha >= 120)
+         this.alpha = 120;
    }
 }

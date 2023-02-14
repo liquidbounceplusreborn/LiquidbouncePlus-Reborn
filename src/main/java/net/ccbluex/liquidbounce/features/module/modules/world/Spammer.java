@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.UpdateEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
@@ -13,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
-import net.ccbluex.liquidbounce.utils.timer.TimeUtils;
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.TextValue;
@@ -30,7 +29,7 @@ public class Spammer extends Module {
 
             if(minDelayValueObject > newValue)
                 set(minDelayValueObject);
-            delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
+            delay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
         }
     };
 
@@ -42,7 +41,7 @@ public class Spammer extends Module {
 
             if(maxDelayValueObject < newValue)
                 set(maxDelayValueObject);
-            delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
+            delay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
         }
     };
 
@@ -56,14 +55,14 @@ public class Spammer extends Module {
     private final TextValue guideLongString = new TextValue("%ls", "Random long string (max length 16)", () -> customValue.get());
 
     private final MSTimer msTimer = new MSTimer();
-    private long delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
+    private long delay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
 
     @EventTarget
     public void onUpdate(UpdateEvent event) {
         if(msTimer.hasTimePassed(delay)) {
             mc.thePlayer.sendChatMessage(customValue.get() ? replace(messageValue.get()) : messageValue.get() + " >" + RandomUtils.randomString(5 + new Random().nextInt(5)) + "<");
             msTimer.reset();
-            delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
+            delay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get());
         }
     }
 

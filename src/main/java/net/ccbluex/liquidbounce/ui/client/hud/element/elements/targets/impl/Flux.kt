@@ -7,7 +7,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
@@ -26,7 +25,7 @@ class Flux(inst: Target): TargetStyle("Flux", inst, true) {
             5f,
             Color(0, 0, 0, targetInstance.bgAlphaValue.get()).rgb
         )
-        drawPlayerHead(entity.skin, 5, 3, 29, 28)
+        drawHead(entity.skin, 5, 3, 29, 28)
         RenderUtils.drawOutlinedRect(5f, 2f, 35f, 32f, 1f, targetInstance.bordercolor.rgb)
         // info text
         Fonts.minecraftFont.drawString(entity.name, 40, 5, Color.WHITE.rgb)

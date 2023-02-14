@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.InvManager
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.utils.timer.TimeUtils
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -41,7 +41,7 @@ class ChestStealer : Module() {
             if (i > newValue)
                 set(i)
 
-            nextDelay = TimeUtils.randomDelay(minDelayValue.get(), get())
+            nextDelay = TimerUtils.randomDelay(minDelayValue.get(), get())
         }
     }
 
@@ -52,7 +52,7 @@ class ChestStealer : Module() {
             if (i < newValue)
                 set(i)
 
-            nextDelay = TimeUtils.randomDelay(get(), maxDelayValue.get())
+            nextDelay = TimerUtils.randomDelay(get(), maxDelayValue.get())
         }
     }
 
@@ -71,7 +71,7 @@ class ChestStealer : Module() {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = autoCloseMinDelayValue.get()
             if (i > newValue) set(i)
-            nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), this.get())
+            nextCloseDelay = TimerUtils.randomDelay(autoCloseMinDelayValue.get(), this.get())
         }
     }
 
@@ -79,7 +79,7 @@ class ChestStealer : Module() {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = autoCloseMaxDelayValue.get()
             if (i < newValue) set(i)
-            nextCloseDelay = TimeUtils.randomDelay(this.get(), autoCloseMaxDelayValue.get())
+            nextCloseDelay = TimerUtils.randomDelay(this.get(), autoCloseMaxDelayValue.get())
         }
     }
 
@@ -91,10 +91,10 @@ class ChestStealer : Module() {
      */
 
     private val delayTimer = MSTimer()
-    private var nextDelay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+    private var nextDelay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
 
     private val autoCloseTimer = MSTimer()
-    private var nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
+    private var nextCloseDelay = TimerUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
 
     public var contentReceived = 0
 
@@ -191,7 +191,7 @@ class ChestStealer : Module() {
             mc.thePlayer.closeScreen()
 
             if (silenceValue.get() && !stillDisplayValue.get()) LiquidBounce.hud.addNotification(Notification("ChestStealer","Closed chest.", NotifyType.INFO))
-            nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
+            nextCloseDelay = TimerUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
 
             if (once) {
                 once = false
@@ -212,7 +212,7 @@ class ChestStealer : Module() {
     private fun move(screen: GuiChest, slot: Slot) {
         screen.handleMouseClick(slot, slot.slotNumber, 0, 1)
         delayTimer.reset()
-        nextDelay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+        nextDelay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
     }
 
     private fun isEmpty(chest: GuiChest): Boolean {

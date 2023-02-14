@@ -11,10 +11,6 @@ public class Translate {
         this.y = y;
         this.lastMS = System.currentTimeMillis();
     }
-    public final void interpolate2(float targetX, float targetY, double smoothing) {
-        this.x = targetX;
-        this.y = (float) AnimationHelper.animate(targetY, this.y, smoothing);
-    }
     public void interpolate(float targetX, float targetY, int xSpeed, int ySpeed) {
         long currentMS = System.currentTimeMillis();
         long delta = currentMS - lastMS;//16.66666

@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.timer.TimeUtils
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -60,7 +60,7 @@ class PingSpoof : Module() {
             event.cancelEvent()
             if (packetLossValue.get() == 0f || Math.random() > packetLossValue.get()) {
                 packetBuffer.add(packet as Packet<INetHandlerPlayServer>)
-                queuePacket(TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get()))
+                queuePacket(TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get()))
             }
         }
     }

@@ -7,15 +7,14 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element;
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.AnimationHelper;
-import net.ccbluex.liquidbounce.utils.TimerUtil;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
@@ -44,7 +43,7 @@ public class Indicators extends Element {
 
     public int x2 = indx.get(), y3 = indy.get();
 
-    TimerUtil timerHelper = new TimerUtil();
+    TimerUtils timerHelper = new TimerUtils();
 
     ScaledResolution sr = new ScaledResolution(mc);
     final float scaledWidth = sr.getScaledWidth();
@@ -60,14 +59,14 @@ public class Indicators extends Element {
 
         final float xX = scaledWidth / 2.0f -x2;
         final float yX = scaledHeight / 2.0f + y3;
-        RenderUtils.drawNewRect(xX + 4.5, yX  + 196.5 - 405, xX + 100.5, yX + 246.5 - 408, new Color(11, 11, 11, 255).getRGB());
-        RenderUtils.drawNewRect(xX + 5, yX + 198 - 405, xX + 100, yX + 246 - 408, new Color(28, 28, 28, 255).getRGB());
-        RenderUtils.drawNewRect(xX + 5, yX  + 198 - 405, xX + 100, yX + 208 - 408, new Color(21, 19, 20, 255).getRGB());
-        RenderUtils.drawNewRect(xX + 44, yX + 210 - 406, xX + 95, yX + 213.5 - 406, new Color(41, 41, 41, 255).getRGB());
-        RenderUtils.drawNewRect(xX + 44, yX + 219 - 406, xX + 95, yX + 222.5 - 406, new Color(41, 41, 41, 255).getRGB());
-        RenderUtils.drawNewRect(xX + 44, yX + 228 - 406, xX + 95, yX + 231.5 - 406, new Color(41, 41, 41, 255).getRGB());
-        RenderUtils.drawNewRect(xX + 44, yX + 237 - 406, xX + 95, yX + 240.5 - 406, new Color(41, 41, 41, 255).getRGB());
-        RenderUtils.drawNewRect(xX + 5, yX + 197 - 405, xX + 100, yX + 198 - 405, getColor().getRGB());
+        RenderUtils.drawRect(xX + 4.5, yX  + 196.5 - 405, xX + 100.5, yX + 246.5 - 408, new Color(11, 11, 11, 255).getRGB());
+        RenderUtils.drawRect(xX + 5, yX + 198 - 405, xX + 100, yX + 246 - 408, new Color(28, 28, 28, 255).getRGB());
+        RenderUtils.drawRect(xX + 5, yX  + 198 - 405, xX + 100, yX + 208 - 408, new Color(21, 19, 20, 255).getRGB());
+        RenderUtils.drawRect(xX + 44, yX + 210 - 406, xX + 95, yX + 213.5 - 406, new Color(41, 41, 41, 255).getRGB());
+        RenderUtils.drawRect(xX + 44, yX + 219 - 406, xX + 95, yX + 222.5 - 406, new Color(41, 41, 41, 255).getRGB());
+        RenderUtils.drawRect(xX + 44, yX + 228 - 406, xX + 95, yX + 231.5 - 406, new Color(41, 41, 41, 255).getRGB());
+        RenderUtils.drawRect(xX + 44, yX + 237 - 406, xX + 95, yX + 240.5 - 406, new Color(41, 41, 41, 255).getRGB());
+        RenderUtils.drawRect(xX + 5, yX + 197 - 405, xX + 100, yX + 198 - 405, getColor().getRGB());
 
         Fonts.fontSFUI35.drawString("Indicators", xX + 37, yX + 202 - 406, -1);
 

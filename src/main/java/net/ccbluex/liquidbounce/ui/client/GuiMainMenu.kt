@@ -79,12 +79,12 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         renderBar(mouseX, mouseY, partialTicks)
         GL11.glPopMatrix()
         super.drawScreen(mouseX, mouseY, partialTicks)
-        
+
         if (!LiquidBounce.mainMenuPrep) {
             val animProgress = ((System.currentTimeMillis() - lastAnimTick).toFloat() / 1500F).coerceIn(0F, 1F)
             RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(0F, 0F, 0F, 1F - animProgress))
             if (animProgress >= 1F)
-                LiquidBounce.mainMenuPrep = true    
+                LiquidBounce.mainMenuPrep = true
         }
     }
 
@@ -149,7 +149,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                     } else if (extendedModMode) extendedBackgroundMode = true else extendedModMode = true
                     5 -> mc.shutdown()
                 }
-            
+
             index++
         }
 
@@ -161,7 +161,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         val mY = mouseY - height / 2
         val xDelta = mX.toFloat() / (width / 2).toFloat()
         val yDelta = mY.toFloat() / (height / 2).toFloat()
-        
+
         GL11.glTranslatef(xDelta * strength, yDelta * strength, 0F)
     }
 
@@ -187,7 +187,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         val staticY = height / 2F + 20F
 
         RenderUtils.drawRoundedRect(staticX, staticY, staticX + 240F, staticY + 20F, 10F, (if (LiquidBounce.darkMode) Color(0, 0, 0, 100) else Color(255, 255, 255, 100)).rgb)
-        
+
         var index: Int = 0
         var shouldAnimate = false
         var displayString: String? = null
@@ -197,11 +197,11 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 for (icon in ExtendedBackgroundButton.values()) {
                     if (isMouseHover(staticX + 40F * index, staticY, staticX + 40F * (index + 1), staticY + 20F, mouseX, mouseY)) {
                         shouldAnimate = true
-                        displayString = if (icon == ExtendedBackgroundButton.Enabled) 
-                                            "Custom background: ${if (GuiBackground.enabled) "§aON" else "§cOFF"}" 
-                                        else if (icon == ExtendedBackgroundButton.Particles) 
-                                            "${icon.buttonName}: ${if (GuiBackground.particles) "§aON" else "§cOFF"}" 
-                                        else 
+                        displayString = if (icon == ExtendedBackgroundButton.Enabled)
+                                            "Custom background: ${if (GuiBackground.enabled) "§aON" else "§cOFF"}"
+                                        else if (icon == ExtendedBackgroundButton.Particles)
+                                            "${icon.buttonName}: ${if (GuiBackground.particles) "§aON" else "§cOFF"}"
+                                        else
                                             icon.buttonName
                         moveX = staticX + 40F * index
                     }

@@ -7,7 +7,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.Palette
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlayerHead
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
@@ -42,7 +41,7 @@ class NovolineThree(inst: Target): TargetStyle("Novoline3", inst, true) {
         )
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
         Fonts.minecraftFont.drawString(entity.name, 34, 4, Color(255, 255, 255, 255).rgb)
-        drawPlayerHead(entity.skin, 2, 2, 30, 30)
+        drawHead(entity.skin, 2, 2, 30, 30)
         Fonts.minecraftFont.drawStringWithShadow(
             BigDecimal((entity.health / entity.maxHealth * 100).toDouble()).setScale(
                 1,

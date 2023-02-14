@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.timer.TimeUtils
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.settings.KeyBinding
@@ -44,9 +44,9 @@ class AutoClicker : Module() {
     private val leftValue = BoolValue("Left", true)
     private val jitterValue = BoolValue("Jitter", false)
 
-    private var rightDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+    private var rightDelay = TimerUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
     private var rightLastSwing = 0L
-    private var leftDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+    private var leftDelay = TimerUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
     private var leftLastSwing = 0L
 
     @EventTarget
@@ -57,7 +57,7 @@ class AutoClicker : Module() {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
 
             leftLastSwing = System.currentTimeMillis()
-            leftDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+            leftDelay = TimerUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
         }
 
         // Right click
@@ -66,7 +66,7 @@ class AutoClicker : Module() {
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode) // Minecraft Click Handling
 
             rightLastSwing = System.currentTimeMillis()
-            rightDelay = TimeUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
+            rightDelay = TimerUtils.randomClickDelay(minCPSValue.get(), maxCPSValue.get())
         }
     }
 

@@ -14,8 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.injection.implementations.IItemStack
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.item.*
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.utils.timer.TimeUtils
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -27,11 +26,8 @@ import net.minecraft.item.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
-import net.minecraft.network.play.client.C0DPacketCloseWindow
-import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-import kotlin.concurrent.thread
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
@@ -216,7 +212,7 @@ class InvManager : Module() {
             if (openInventory)
                 InventoryHelper.closePacket()
 
-            delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+            delay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             if (delay == 0L || InventoryUtils.CLICK_TIMER.hasTimePassed(delay))
                 break // prevent infinite loop, resulting in frozen state
         }
@@ -245,7 +241,7 @@ class InvManager : Module() {
                 if (openInventory)
                     InventoryHelper.closePacket()
 
-                delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+                delay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
                 break
             }
         }
@@ -289,7 +285,7 @@ class InvManager : Module() {
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(item).getStack()))
             if (item != mc.thePlayer.inventory.currentItem) mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
 
-            delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+            delay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
 
             return true
         } else if (!(noMoveValue.get() && MovementUtils.isMoving()) && (!invOpenValue.get() || mc.currentScreen is GuiInventory) && item != -1) {
@@ -300,7 +296,7 @@ class InvManager : Module() {
 
             mc.playerController.windowClick(mc.thePlayer.inventoryContainer.windowId, (if (isArmorSlot) item else if (item < 9) item + 36 else item), 0, 1, mc.thePlayer)
 
-            delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+            delay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
 
             if (openInventory)
                 InventoryHelper.closePacket()
