@@ -279,12 +279,12 @@ class Velocity : Module() {
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
                 "hypixeltest"->{
-                    if(mc.thePlayer.fallDistance > 0){
-                        event.cancelEvent()
-                    }else{
+                    if(mc.thePlayer.onGround){
                         packet.motionX = 0
                         packet.motionY = 1
                         packet.motionZ = 0
+                    }else{
+                        event.cancelEvent()
                     }
                 }
                 "aac4reduce" -> {
