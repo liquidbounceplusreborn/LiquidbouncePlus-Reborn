@@ -479,40 +479,13 @@ public abstract class MixinItemRenderer {
                                     GlStateManager.rotate(var151 * 40.0F, 1.0F, -var151, -0.0F);
                                     this.func_178103_d(0.2F);
                                     break;
-                                case "Exhibition1": {
-                                    float var9 = MathHelper.sin(MathHelper.sqrt_float(this.mc.thePlayer.getSwingProgress(partialTicks)) * 3.1415927F);
-                                    GL11.glTranslated(-0.03D, 0.23D, 0.0D);
-                                    this.transformFirstPersonItem(f / 2.5F, 0.0f);
-                                    GlStateManager.rotate(-var9 * 25.0F /1.0F, var9 / 2.0F, 1.0F, 4.0F);
-                                    GlStateManager.rotate(-var9 * 45.0F, 1.0F, var9 / 3.0F, -0.0F);
+                                case "Exhibition": {
+                                    float f8 = MathHelper.sin(MathHelper.sqrt_float(this.mc.thePlayer.getSwingProgress(partialTicks)) * 3.1415927F);
+                                    func_178096_b(f, 0.0F);
+                                    GL11.glTranslated(0.0D, 0.5D, 0.0D);
+                                    GL11.glRotated((-f8 * 40F), (f8 / 2.0F), 0.0D, 9.0D);
+                                    GL11.glRotated((-f8 * 55F), 0.800000011920929D, (f8 / 2.0F), 0.0D);
                                     this.func_178103_d(-0.05F);
-                                    break;
-                                }
-                                case "Exhibition2": {
-                                    this.transformFirstPersonItem(f / 2.0F, 0.0F);
-                                    GL11.glTranslated(-0.07D, 0.58D, 0.0D);
-                                    float var9 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
-                                    GL11.glRotated(-var9 * 60.0F / 2.0F, -var9 / 2.0F, -0.0F, 9.0F);
-                                    GL11.glRotated(-var9 * 53.0F, 1.0F, var9 / 2.0F, -0.0F);
-                                    this.func_178103_d(-0.05F);
-                                    break;
-                                }
-                                case "Exhibition3": {
-                                    this.transformFirstPersonItem(f / 2.0F, 0.0F);
-                                    GL11.glTranslated(-0.07D, 0.29D, 0.0D);
-                                    float var9 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
-                                    GL11.glRotated(-var9 * 60.0F / 2.0F, -var9 / 2.0F, -0.0F, 9.0F);
-                                    GL11.glRotated(-var9 * 53.0F, 1.0F, var9 / 2.0F, -0.0F);
-                                    this.func_178103_d(0.2F);
-                                    break;
-                                }
-                                case "Exhibition4": {
-                                    float var9 = MathHelper.sin(MathHelper.sqrt_float(this.mc.thePlayer.getSwingProgress(partialTicks)) * 3.1415927F);
-                                    GL11.glTranslated(-0.03D, 0.125D, 0.0D);
-                                    this.transformFirstPersonItem(f / 2.5F, 0.0f);
-                                    GlStateManager.rotate(-var9 * 25.0F /1.0F, var9 / 2.0F, 1.0F, 4.0F);
-                                    GlStateManager.rotate(-var9 * 45.0F, 1.0F, var9 / 3.0F, -0.0F);
-                                    this.func_178103_d(0.2F);
                                     break;
                                 }
                                 case "OldExhibition": {
