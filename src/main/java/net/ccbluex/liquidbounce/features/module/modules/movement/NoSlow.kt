@@ -41,7 +41,7 @@ import net.minecraft.util.EnumFacing
 @ModuleInfo(name = "NoSlow", spacedName = "No Slow", category = ModuleCategory.MOVEMENT, description = "Prevent you from getting slowed down by items (swords, foods, etc.) and liquids.")
 class NoSlow : Module() {
     private val msTimer = MSTimer()
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "Watchdog", "Blink", "Intave", "NCP", "AAC", "AAC5", "Custom"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "Watchdog", "Blink", "Intave", "NCP", "AAC", "AAC5", "Custom","Test1","Test2"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
@@ -118,7 +118,7 @@ class NoSlow : Module() {
         val packet = event.packet
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
 
-        if (modeValue.get().equals("watchdog", true) && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
+        if ((modeValue.get().equals("watchdog", true) || modeValue.get().equals("test1", true) || modeValue.get().equals("test2", true)) && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
             event.cancelEvent()
             if (debugValue.get())
                 ClientUtils.displayChatMessage("detected reset item packet")
@@ -239,6 +239,18 @@ class NoSlow : Module() {
                     }
                     "ncp" -> sendPacket(event, true, true, false, 0, false)
                     "custom" -> sendPacket(event, customRelease.get(), customPlace.get(), customDelayValue.get() > 0, customDelayValue.get().toLong(), customOnGround.get())
+                    "test1" -> {
+                        if (mc.thePlayer.ticksExisted % 2 == 0)
+                            sendPacket(event, true, false, false, 50, true)
+                        else
+                            sendPacket(event, false, true, false, 0, true, true)
+                    }
+                    "test2" -> {
+                        if (event.eventState == EventState.PRE)
+                            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
+                        else
+                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0.0f, 0.0f, 0.0f))
+                    }
                 }
             }
         }
