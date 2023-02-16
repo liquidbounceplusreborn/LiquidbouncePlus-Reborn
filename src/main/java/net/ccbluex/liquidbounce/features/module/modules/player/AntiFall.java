@@ -14,12 +14,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
-//import net.ccbluex.liquidbounce.features.module.modules.world.Tower;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
-import net.ccbluex.liquidbounce.utils.misc.FallingPlayer;
 import net.ccbluex.liquidbounce.utils.misc.NewFallingPlayer;
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
@@ -46,7 +44,7 @@ public class AntiFall extends Module {
     public final IntegerValue maxFallDistSimulateValue = new IntegerValue("Predict-CheckFallDistance", 255, 0, 255, "m", () -> voidDetectionAlgorithm.get().equalsIgnoreCase("predict"));
     public final IntegerValue maxFindRangeValue = new IntegerValue("Predict-MaxFindRange", 60, 0, 255, "m", () -> voidDetectionAlgorithm.get().equalsIgnoreCase("predict"));
     public final IntegerValue illegalDupeValue = new IntegerValue("Illegal-Dupe", 1, 1, 5, "x", () -> setBackModeValue.get().toLowerCase().contains("illegal"));
-    public final FloatValue setBackFallDistValue = new FloatValue("Max-FallDistance", 5F, 0F, 255F, "m");
+    public final FloatValue setBackFallDistValue = new FloatValue("Max-FallDistance", 5F, 5F, 20F, "m");
     public final BoolValue resetFallDistanceValue = new BoolValue("Reset-FallDistance", true);
     public final BoolValue renderTraceValue = new BoolValue("Render-Trace", true);
     public final BoolValue scaffoldValue = new BoolValue("AutoScaffold", true);
@@ -293,7 +291,9 @@ public class AntiFall extends Module {
                 if (isInVoid()) {
                     event.cancelEvent();
                     packets.add(packet);
+                    if (mc.thePlayer.fallDistance >= setBackFallDistValue.get()) {
                         PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(lastGroundPos[0], lastGroundPos[1] - 1, lastGroundPos[2], true));
+                    }
                 } else {
                     lastGroundPos[0] = mc.thePlayer.posX;
                     lastGroundPos[1] = mc.thePlayer.posY;
@@ -377,5 +377,4 @@ public class AntiFall extends Module {
             positions.clear();
         }
     }
-
 }
