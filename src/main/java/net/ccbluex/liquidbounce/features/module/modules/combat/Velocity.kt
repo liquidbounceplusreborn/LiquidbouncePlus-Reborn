@@ -279,7 +279,7 @@ class Velocity : Module() {
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
                 "hypixeltest"->{
-                    if(mc.thePlayer.onGround){
+                    if(mc.thePlayer.onGround || mc.thePlayer.isInLava || mc.thePlayer.isInWater || mc.thePlayer.isInWeb){
                         packet.motionX = 0
                         packet.motionY = 1
                         packet.motionZ = 0
@@ -390,6 +390,7 @@ class Velocity : Module() {
                 event.cancelEvent()
         }
     }
+    @EventTarget
     fun onMotion(event: MotionEvent) {
         when (modeValue.get().toLowerCase()) {
             "intave" -> {
