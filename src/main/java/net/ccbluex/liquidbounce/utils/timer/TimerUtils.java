@@ -38,10 +38,6 @@ public final class TimerUtils {
         return false;
     }
 
-    public final long getElapsedTime() {
-        return this.getCurrentMS() - this.lastMS;
-    }
-
     public boolean delay(float milliSec) {
         if ((float)(this.getTime() - this.lastMS) >= milliSec) {
             return true;
@@ -57,11 +53,6 @@ public final class TimerUtils {
         return System.currentTimeMillis() - lastMS > time;
     }
 
-    public boolean isDelayComplete(long delay) {
-        if (System.currentTimeMillis() - this.lastMS > delay)
-            return true;
-        return false;
-    }
     public boolean check(float milliseconds) {
         return System.currentTimeMillis() - previousTime >= milliseconds;
     }
@@ -79,13 +70,6 @@ public final class TimerUtils {
         return System.nanoTime() / 1000000L - lastMS;
     }
 
-    public double getLastDelay () {
-        return getCurrentMS() - getLastMS();
-    }
-
-    public long getLastMS() {
-        return lastMS;
-    }
 
     public boolean delay(long nextDelay) {
         return System.currentTimeMillis() - lastMS >= nextDelay;

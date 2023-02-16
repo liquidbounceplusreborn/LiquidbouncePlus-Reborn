@@ -15,15 +15,18 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
 //import net.ccbluex.liquidbounce.features.module.modules.world.Tower;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer;
 import net.ccbluex.liquidbounce.utils.misc.NewFallingPlayer;
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 import net.ccbluex.liquidbounce.value.*;
 
 import net.minecraft.block.BlockAir;
+import net.minecraft.network.Packet;
 import net.minecraft.util.BlockPos;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
@@ -37,7 +40,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class AntiFall extends Module {
 
     public final ListValue voidDetectionAlgorithm = new ListValue("Detect-Method", new String[]{"Collision", "Predict"}, "Collision");
-    public final ListValue setBackModeValue = new ListValue("SetBack-Mode", new String[]{"Teleport", "FlyFlag", "IllegalPacket", "IllegalTeleport", "StopMotion", "Position", "Edit", "SpoofBack", "Blink"}, "Teleport");
+    public final ListValue setBackModeValue = new ListValue("SetBack-Mode", new String[]{"Teleport", "FlyFlag", "IllegalPacket", "IllegalTeleport", "StopMotion", "Position", "Edit", "SpoofBack", "Blink","HypixelTest"}, "Teleport");
     private final BoolValue resetMotionValue = new BoolValue("ResetMotion", false, () -> setBackModeValue.get().toLowerCase().contains("blink"));
     private final FloatValue startFallDistValue = new FloatValue("BlinkStartFallDistance", 2F, 0F, 5F, () -> setBackModeValue.get().toLowerCase().contains("blink"));
     public final IntegerValue maxFallDistSimulateValue = new IntegerValue("Predict-CheckFallDistance", 255, 0, 255, "m", () -> voidDetectionAlgorithm.get().equalsIgnoreCase("predict"));
@@ -61,12 +64,26 @@ public class AntiFall extends Module {
     private double lastX = 0;
     private double lastY = 0;
     private double lastZ = 0;
+    public double[] lastGroundPos = new double[3];
     private double lastFound = 0;
     private boolean shouldRender, shouldStopMotion, shouldEdit = false;
 
     private final LinkedList<double[]> positions = new LinkedList<>();
 
     private final ArrayList<C03PacketPlayer> packetCache = new ArrayList<>();
+
+    public static TimerUtils timer = new TimerUtils();
+
+    public static ArrayList<C03PacketPlayer> packets = new ArrayList<>();
+
+    public static boolean isInVoid() {
+        for (int i = 0; i <= 128; i++) {
+            if (MovementUtils.isOnGround(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     @EventTarget
     public void onUpdate(UpdateEvent event) {
@@ -169,9 +186,6 @@ public class AntiFall extends Module {
 
                     if (scaffoldValue.get() && !LiquidBounce.moduleManager.getModule(Scaffold.class).getState())
                         LiquidBounce.moduleManager.getModule(Scaffold.class).setState(true);
-
-                    /*if (towerValue.get() && !LiquidBounce.moduleManager.getModule(Tower.class).getState())
-                        LiquidBounce.moduleManager.getModule(Tower.class).setState(true);*/
                 }
             }
         } else {
@@ -233,8 +247,6 @@ public class AntiFall extends Module {
                     if (scaffoldValue.get() && !LiquidBounce.moduleManager.getModule(Scaffold.class).getState())
                         LiquidBounce.moduleManager.getModule(Scaffold.class).setState(true);
 
-                    /*if (towerValue.get() && !LiquidBounce.moduleManager.getModule(Tower.class).getState())
-                        LiquidBounce.moduleManager.getModule(Tower.class).setState(true);*/
                 }
             }
         }
@@ -252,7 +264,7 @@ public class AntiFall extends Module {
         if (noFlyValue.get() && LiquidBounce.moduleManager.getModule(Fly.class).getState())
             return;
 
-        if (setBackModeValue.get().equalsIgnoreCase("Blink") && blink && event.getPacket() instanceof  C03PacketPlayer){
+        if (setBackModeValue.get().equalsIgnoreCase("Blink") && blink && event.getPacket() instanceof C03PacketPlayer) {
             final C03PacketPlayer packet = (C03PacketPlayer) event.getPacket();
             packetCache.add(packet);
             event.cancelEvent();
@@ -274,6 +286,28 @@ public class AntiFall extends Module {
             packetPlayer.z = lastZ;
             packetPlayer.setMoving(false);
             shouldEdit = false;
+        }
+        if (setBackModeValue.get().equalsIgnoreCase("HypixelTest")) {
+            if (event.getPacket() instanceof C03PacketPlayer) {
+                C03PacketPlayer packet = ((C03PacketPlayer) event.getPacket());
+                if (isInVoid()) {
+                    event.cancelEvent();
+                    packets.add(packet);
+                        PacketUtils.sendPacketNoEvent(new C03PacketPlayer.C04PacketPlayerPosition(lastGroundPos[0], lastGroundPos[1] - 1, lastGroundPos[2], true));
+                } else {
+                    lastGroundPos[0] = mc.thePlayer.posX;
+                    lastGroundPos[1] = mc.thePlayer.posY;
+                    lastGroundPos[2] = mc.thePlayer.posZ;
+
+                    if (!packets.isEmpty()) {
+                        ClientUtils.displayChatMessage("Release Packets - " + packets.size());
+                        for (Packet p : packets)
+                            PacketUtils.sendPacketNoEvent(p);
+                        packets.clear();
+                    }
+                    timer.reset();
+                }
+            }
         }
     }
 
