@@ -282,4 +282,10 @@ public abstract class MixinNetHandlerPlayClient {
             callbackInfo.cancel();
         }
     }
+    @Inject(method = "handleRespawn",at = @At(value = "INVOKE",target = "Lnet/minecraft/client/Minecraft;displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"),cancellable = true)
+    public void handleRespawn(S07PacketRespawn p_handleRespawn1, CallbackInfo ci){
+        Minecraft.getMinecraft().setDimensionAndSpawnPlayer(p_handleRespawn1.getDimensionID());
+        Minecraft.getMinecraft().playerController.setGameType(p_handleRespawn1.getGameType());
+        ci.cancel();
+    }
 }
