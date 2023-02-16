@@ -52,10 +52,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         GlStateManager.scale(translate!!.x / width, translate!!.y / height, 1f)
 
         //ClientName
-        Fonts.fontSFUI40.drawStringWithShadow(LiquidBounce.CLIENT_NAME, defaultWidth.toFloat() + 34f, defaultHeight - 25f, Color(255,255,255).rgb)
-
-        //ClientVersion
-        Fonts.fontSFUI35.drawString(LiquidBounce.CLIENT_VERSION, 4f, height - 12f, Color(255, 255, 255, 200).rgb, true)
+        Fonts.fontSFUI40.drawStringWithShadow(LiquidBounce.CLIENT_NAME + "Reborn", defaultWidth.toFloat() + 34f, defaultHeight - 25f, Color(255,255,255).rgb)
 
         //ClientUpdate
         Fonts.fontSFUI35.drawStringWithShadow("Changelog:", 5f, 5f, Color(255, 255, 255, 220).rgb)
