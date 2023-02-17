@@ -281,7 +281,7 @@ class Velocity : Module() {
                 "hypixeltest"->{
                     if(mc.thePlayer.onGround || mc.thePlayer.isInLava || mc.thePlayer.isInWater || mc.thePlayer.isInWeb){
                         packet.motionX = 0
-                        packet.motionY = 1
+                        packet.motionY = packet.getMotionY()
                         packet.motionZ = 0
                     }else{
                         event.cancelEvent()
