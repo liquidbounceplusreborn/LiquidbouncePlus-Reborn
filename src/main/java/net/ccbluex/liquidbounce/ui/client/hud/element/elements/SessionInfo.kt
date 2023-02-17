@@ -58,28 +58,45 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
         if (modeValue.get().equals("1")) {
             RenderUtils.drawCircleRect(0f, 0f, 165f, 63f ,5f ,Color(0, 0, 0, 120).rgb)
             RenderUtils.drawRect(0f, 12f, 165f, 13f,
-                when {
-                colorMode.equals("Sky", ignoreCase = true) -> Sky
-                colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
-                colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
-                colorMode.equals("Fade", ignoreCase = true) -> FadeColor
-                colorMode.equals("Mixer", ignoreCase = true) -> mixerColor
+                when (colorMode){
+                "Sky" -> Sky
+                "CRainbow" -> CRainbow
+                "LiquidSlowly" -> LiquidSlowly
+                "Fade"-> FadeColor
+                "Mixer" -> mixerColor
                 else -> customColor
                 }
             )
             Fonts.fontTahoma.drawString("SessionInfo" , 165 / 2 - Fonts.fontTahoma.getStringWidth("SessionInfo") / 2F, 3F, Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("Playtime"  , 2F , 15F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString(SessionUtils.getFormatSessionTime() , 165 - Fonts.fontSFUI35.getStringWidth(SessionUtils.getFormatSessionTime()) - 3F , 15F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("Kills" , 2F , 27F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("${KillAura.CombatListener.killCounts}" , 165 - Fonts.fontSFUI35.getStringWidth("${KillAura.CombatListener.killCounts}") - 3F , 27F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("Name", 2F , 39F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString(convertedTarget.name , 165F - Fonts.fontSFUI35.getStringWidth(convertedTarget.name) - 3 , 39F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("Server"  , 2F , 51F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString(ServerUtils.getRemoteIp()  , 165 F- Fonts.fontSFUI35.getStringWidth(ServerUtils.getRemoteIp()) - 3 , 51F , Color(0xFFFFFF).rgb)
         }
         if (modeValue.get().equals("2")) {
             RenderUtils.drawRect(0f, 0f, 165f, 63f ,Color(0, 0, 0, 120).rgb)
-            RenderUtils.drawRect(0f, 0f, 165f, 1f,                 when {
-                colorMode.equals("Sky", ignoreCase = true) -> Sky
-                colorMode.equals("CRainbow", ignoreCase = true) -> CRainbow
-                colorMode.equals("LiquidSlowly", ignoreCase = true) -> LiquidSlowly
-                colorMode.equals("Fade", ignoreCase = true) -> FadeColor
-                colorMode.equals("Mixer", ignoreCase = true) -> mixerColor
+            RenderUtils.drawRect(0f, 0f, 165f, 1f,
+                when (colorMode){
+                    "Sky" -> Sky
+                    "CRainbow" -> CRainbow
+                    "LiquidSlowly" -> LiquidSlowly
+                    "Fade"-> FadeColor
+                    "Mixer" -> mixerColor
                 else -> customColor
             })
             Fonts.fontTahoma.drawString("SessionInfo" , 2F, 4F, Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("Playtime"  , 2F , 15F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString(SessionUtils.getFormatSessionTime() , 165 - Fonts.fontSFUI35.getStringWidth(SessionUtils.getFormatSessionTime()) - 3F , 15F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("Kills" , 2F , 27F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("${KillAura.CombatListener.killCounts}" , 165 - Fonts.fontSFUI35.getStringWidth("${KillAura.CombatListener.killCounts}") - 3F , 27F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("Name", 2F , 39F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString(convertedTarget.name , 165F - Fonts.fontSFUI35.getStringWidth(convertedTarget.name) - 3 , 39F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString("Server"  , 2F , 51F , Color(0xFFFFFF).rgb)
+            Fonts.fontSFUI35.drawString(ServerUtils.getRemoteIp()  , 165 F- Fonts.fontSFUI35.getStringWidth(ServerUtils.getRemoteIp()) - 3 , 51F , Color(0xFFFFFF).rgb)
         }
         if (modeValue.get().equals("3")){
             val fontRenderer = Fonts.font35
