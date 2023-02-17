@@ -15,14 +15,19 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
+import net.ccbluex.liquidbounce.features.module.modules.world.StaffChecker
+import net.ccbluex.liquidbounce.utils.render.BlurUtils
 
 @ElementInfo(name = "SessionInfo")
 class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Element(x, y, scale) {
     private val colorModeValue = ListValue("Color", arrayOf("Custom","Sky", "CRainbow", "LiquidSlowly", "Fade", "Mixer"), "Custom")
-    private val modeValue = ListValue("Mode", arrayOf("1", "2"), "1")
+    private val modeValue = ListValue("Mode", arrayOf("1", "2","3"), "1")
     val colorRedValue = IntegerValue("Red", 255,255, 255)
     val colorGreenValue = IntegerValue("Green", 255, 0, 255)
     val colorBlueValue = IntegerValue("Blue", 255, 0, 255)
+    private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
+    val lineValue = BoolValue("Line", true)
+    private val gradientAmountValue = IntegerValue("Gradient-Amount", 25, 1, 50)
     private val saturationValue = FloatValue("Saturation", 0.9f, 0f, 1f)
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
     private val skyDistanceValue = IntegerValue("Sky-Distance", 2, -4, 4)
@@ -32,6 +37,8 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
     private val mixerDistValue = IntegerValue("Mixer-Distance", 2, 0, 10)
     private val liquidSlowlyDistanceValue = IntegerValue("LiquidSlowly-Distance", 90, 1, 90)
     private val fadeDistanceValue = IntegerValue("Fade-Distance", 50, 1, 100)
+    private val blurValue = BoolValue("Blur",false)
+    private val blurStrength = IntegerValue ("BlurStrength",10,1,60,{blurValue.get()})
     
     val counter = intArrayOf(0)
 
@@ -83,5 +90,57 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
         Fonts.fontSFUI35.drawString("Server"  , 2 , 51 , Color(0xFFFFFF).rgb)
         Fonts.fontSFUI35.drawString(ServerUtils.getRemoteIp()  , 165 - Fonts.fontSFUI35.getStringWidth(ServerUtils.getRemoteIp()) - 3 , 51 , Color(0xFFFFFF).rgb)
         return Border(0f, 0f, 165f, 63f)
+    }
+    if (modeValue.get().equals("3")){
+        val y2 = Fonts.font35.FONT_HEIGHT * 4 + 11.0
+        val x2 = 140.0
+        val color = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), alphaValue.get()).rgb
+
+        var durationInMillis: Long = System.currentTimeMillis() - Liquidbounce.playTimeStart
+        var second = durationInMillis / 1000 % 60
+        var minute = durationInMillis / (1000 * 60) % 60
+        var hour = durationInMillis / (1000 * 60 * 60) % 24
+        var time: String
+        time = String.format("%02dh %02dm %02ds", hour, minute, second)
+
+        if (blurValue.get()){ BlurUtils.blurAreaRounded(-14f, -35f, x2.toFloat() + 4, y2.toFloat() - 10 + 10, radiusValue.get(), blurStrength.get().toFloat()) }
+        RenderUtils.drawRoundedRect(-6f, -15f, x2.toFloat() + 4, y2.toFloat() - 10 + 10, radiusValue.get(), Color(bgredValue.get(), bggreenValue.get(), bgblueValue.get(), bgalphaValue.get()).rgb)
+        if (lineValue.get()) {
+            val barLength = 142.toDouble()
+            val rainbowType = colorModeValue.get()
+            for (i in 0..(gradientAmountValue.get() - 1)) {
+                val barStart = i.toDouble() / gradientAmountValue.get().toDouble() * barLength
+                val barEnd = (i + 1).toDouble() / gradientAmountValue.get().toDouble() * barLength
+                RenderUtils.drawGradientSideways(-2.0 + barStart, -2.5, -2.0 + barEnd, -1.0,
+                        when (rainbowType) {
+                            "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), i * cRainbowDistValue.get())
+                            "Sky" -> RenderUtils.SkyRainbow(i * skyDistanceValue.get(), saturationValue.get(), brightnessValue.get())
+                            "Mixer" -> ColorMixer.getMixedColor(i * mixerDistValue.get(), mixerSecValue.get()).rgb
+                            "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), i * fadeDistanceValue.get(), 100).rgb
+                            else -> color
+                        },
+                        when (rainbowType) {
+                            "CRainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), (i + 1) * cRainbowDistValue.get())
+                            "Sky" -> RenderUtils.SkyRainbow((i + 1) * skyDistanceValue.get(), saturationValue.get(), brightnessValue.get())
+                            "Mixer" -> ColorMixer.getMixedColor((i + 1) * mixerDistValue.get(), mixerSecValue.get()).rgb
+                            "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), (i + 1) * fadeDistanceValue.get(), 100).rgb
+                            else -> color
+                        })
+            }
+        }
+
+            val watchdoglmbans = StaffChecker.WATCHDOG_BAN_LAST_MIN.toString()
+            val stafflmbans = StaffChecker.STAFF_BAN_LAST_MIN.toString()
+
+        Fonts.font35.drawStringWithShadow("Session Information", x2.toFloat() / 4f, -10f, Color.WHITE.rgb)
+        Fonts.font35.drawStringWithShadow("Play Time: ", 2f, fontRenderer.FONT_HEIGHT + -6f, Color.WHITE.rgb)
+        Fonts.font35.drawStringWithShadow(time, 92f, fontRenderer.FONT_HEIGHT + -6f, Color.WHITE.rgb)
+        Fonts.font35.drawStringWithShadow("Player Killed ", 2f, fontRenderer.FONT_HEIGHT * 2 + -4f, Color.WHITE.rgb)
+        Fonts.font35.drawStringWithShadow("" + KillAura.CombatListener.killCounts + "", 135f, fontRenderer.FONT_HEIGHT * 2 + -4f, Color.WHITE.rgb)
+        Fonts.font35.drawStringWithShadow("GameWons", 2f, fontRenderer.FONT_HEIGHT * 3 + -2f, Color.WHITE.rgb)
+        Fonts.font35.drawStringWithShadow("" + KillAura.CombatListener.win, 135f, fontRenderer.FONT_HEIGHT * 3 + -2f, Color.WHITE.rgb)
+        Fonts.font35.drawStringWithShadow("Staff/Watchdog Bans", 2f, fontRenderer.FONT_HEIGHT * 4 + 0f, Color.WHITE.rgb)
+        Fonts.font35.drawStringWithShadow(stafflmbans + "/" + watchdoglmbans, 127f, fontRenderer.FONT_HEIGHT * 4 + 0f, Color.WHITE.rgb)
+        return Border(-6f, -15f, x2.toFloat() + 4, y2.toFloat())
     }
 }
