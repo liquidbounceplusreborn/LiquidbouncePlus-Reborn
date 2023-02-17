@@ -81,15 +81,6 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
             })
             Fonts.fontTahoma.drawString("SessionInfo" , 2F, 4F, Color(0xFFFFFF).rgb)
         }
-        Fonts.fontSFUI35.drawString("Playtime"  , 2F , 15F , Color(0xFFFFFF).rgb)
-        Fonts.fontSFUI35.drawString(SessionUtils.getFormatSessionTime() , 165 - Fonts.fontSFUI35.getStringWidth(SessionUtils.getFormatSessionTime()) - 3F , 15F , Color(0xFFFFFF).rgb)
-        Fonts.fontSFUI35.drawString("Kills" , 2F , 27F , Color(0xFFFFFF).rgb)
-        Fonts.fontSFUI35.drawString("${KillAura.CombatListener.killCounts}" , 165 - Fonts.fontSFUI35.getStringWidth("${KillAura.CombatListener.killCounts}") - 3F , 27F , Color(0xFFFFFF).rgb)
-        Fonts.fontSFUI35.drawString("Name", 2F , 39F , Color(0xFFFFFF).rgb)
-        Fonts.fontSFUI35.drawString(convertedTarget.name , 165 - Fonts.fontSFUI35.getStringWidth(convertedTarget.name) - 3F , 39F , Color(0xFFFFFF).rgb)
-        Fonts.fontSFUI35.drawString("Server"  , 2F , 51F , Color(0xFFFFFF).rgb)
-        Fonts.fontSFUI35.drawString(ServerUtils.getRemoteIp()  , 165 - Fonts.fontSFUI35.getStringWidth(ServerUtils.getRemoteIp()) - 3F , 51F , Color(0xFFFFFF).rgb)
-        return Border(0f, 0f, 165f, 63f)
         if (modeValue.get().equals("3")){
             val fontRenderer = Fonts.font35
             val y2 = fontRenderer.height * 4 + 11.0
@@ -131,7 +122,6 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
 
             val watchdoglmbans = BanChecker.WATCHDOG_BAN_LAST_MIN.toString()
             val stafflmbans = BanChecker.STAFF_BAN_LAST_MIN.toString()
-
             Fonts.font35.drawStringWithShadow("Session Information", x2.toFloat() / 4f, -10f, Color.WHITE.rgb)
             Fonts.font35.drawStringWithShadow("Play Time: ", 2f, fontRenderer.height + -6f, Color.WHITE.rgb)
             Fonts.font35.drawStringWithShadow(time, 92f, fontRenderer.height + -6f, Color.WHITE.rgb)
@@ -140,9 +130,13 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
             Fonts.font35.drawStringWithShadow("GameWons", 2f, fontRenderer.height * 3 + -2f, Color.WHITE.rgb)
             Fonts.font35.drawStringWithShadow("" + KillAura.CombatListener.win, 135f, fontRenderer.height * 3 + -2f, Color.WHITE.rgb)
             Fonts.font35.drawStringWithShadow("Staff/Watchdog Bans", 2f, fontRenderer.height * 4 + 0f, Color.WHITE.rgb)
-            Fonts.font35.drawStringWithShadow(stafflmbans + "/" + watchdoglmbans, 127f, fontRenderer.height * 4 + 0f, Color.WHITE.rgb)
-            return Border(-6f, -15f, x2.toFloat() + 4, y2.toFloat())
+            Fonts.fontSFUI35.drawStringWithShadow(stafflmbans + "/" + watchdoglmbans, 127f, fontRenderer.height * 4 + 0f, Color.WHITE.rgb)
         }
+        return Border(0f, 0f, 165f, 63f)
+
+
+
+
     }
 
 }
