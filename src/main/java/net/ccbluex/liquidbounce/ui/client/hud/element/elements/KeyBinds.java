@@ -58,7 +58,7 @@ public class KeyBinds extends Element {
         Fonts.font35.drawString("KeyBinds", 28, 5.5f, -1, true);
 
         //draw Module Bind
-        for (Module module : Liquidbounce.moduleManager.getModules()) {
+        for (Module module : LiquidBounce.moduleManager.getModules()) {
             if (module.getKeyBind() == 0) continue;
             if(onlyState.get()) {
                 if (!module.getState()) continue;
@@ -75,7 +75,7 @@ public class KeyBinds extends Element {
 
     public int getmoduley(){
         int y=0;
-        for (Module module: Liquidbounce.moduleManager.getModules()) {
+        for (Module module: LiquidBounce.moduleManager.getModules()) {
             if (module.getKeyBind() == 0) continue;
             if(onlyState.get()) {
                 if (!module.getState()) continue;
