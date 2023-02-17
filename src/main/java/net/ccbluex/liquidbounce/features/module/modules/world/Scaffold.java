@@ -889,10 +889,7 @@ public class Scaffold extends Module {
         if (slot != mc.thePlayer.inventory.currentItem && autoBlockMode.get().equalsIgnoreCase("spoof"))
             mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
     }
-    @EventTarget
-    public void onJump(final JumpEvent event) {
-            event.cancelEvent();
-    }
+
     /**
      * Entity movement event
      *
