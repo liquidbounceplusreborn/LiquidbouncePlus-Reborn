@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.value.ListValue;
 import net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.minecraft.util.ResourceLocation;
-import sun.java2d.pipe.DrawImage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
