@@ -181,7 +181,7 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
             }
         }
         if (modeValue.get().equals("3")) {
-            val fontRenderer = Fonts.font35
+            val fontRenderer = Fonts.fontSFUI35
             val y2 = fontRenderer.height * 4 + 11.0
             val x2 = 140.0
 
@@ -208,7 +208,7 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 x2.toFloat() + 4,
                 y2.toFloat() - 10 + 10,
                 radiusValue.get(),
-                Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 120).rgb
+                Color(0, 0, 0, 120).rgb
             )
             if (lineValue.get()) {
                 val barLength = 142.toDouble()
@@ -275,24 +275,24 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
 
             val watchdoglmbans = BanChecker.WATCHDOG_BAN_LAST_MIN.toString()
             val stafflmbans = BanChecker.STAFF_BAN_LAST_MIN.toString()
-            Fonts.font35.drawStringWithShadow("Session Information", x2.toFloat() / 4f, -10f, Color.WHITE.rgb)
-            Fonts.font35.drawStringWithShadow("Play Time: ", 2f, fontRenderer.height + -6f, Color.WHITE.rgb)
-            Fonts.font35.drawStringWithShadow(time, 92f, fontRenderer.height + -6f, Color.WHITE.rgb)
-            Fonts.font35.drawStringWithShadow("Player Killed ", 2f, fontRenderer.height * 2 + -4f, Color.WHITE.rgb)
-            Fonts.font35.drawStringWithShadow(
+            Fonts.fontSFUI35.drawStringWithShadow("Session Information", x2.toFloat() / 4f, -10f, Color.WHITE.rgb)
+            Fonts.fontSFUI35.drawStringWithShadow("Play Time: ", 2f, fontRenderer.height + -6f, Color.WHITE.rgb)
+            Fonts.fontSFUI35.drawStringWithShadow(time, 92f, fontRenderer.height + -6f, Color.WHITE.rgb)
+            Fonts.fontSFUI35.drawStringWithShadow("Player Killed ", 2f, fontRenderer.height * 2 + -4f, Color.WHITE.rgb)
+            Fonts.fontSFUI35.drawStringWithShadow(
                 "" + KillAura.CombatListener.killCounts + "",
                 135f,
                 fontRenderer.height * 2 + -4f,
                 Color.WHITE.rgb
             )
-            Fonts.font35.drawStringWithShadow("GameWons", 2f, fontRenderer.height * 3 + -2f, Color.WHITE.rgb)
-            Fonts.font35.drawStringWithShadow(
+            Fonts.fontSFUI35.drawStringWithShadow("GameWons", 2f, fontRenderer.height * 3 + -2f, Color.WHITE.rgb)
+            Fonts.fontSFUI35.drawStringWithShadow(
                 "" + KillAura.CombatListener.win,
                 135f,
                 fontRenderer.height * 3 + -2f,
                 Color.WHITE.rgb
             )
-            Fonts.font35.drawStringWithShadow("Staff/Watchdog Bans", 2f, fontRenderer.height * 4 + 0f, Color.WHITE.rgb)
+            Fonts.fontSFUI35.drawStringWithShadow("Staff/Watchdog Bans", 2f, fontRenderer.height * 4 + 0f, Color.WHITE.rgb)
             Fonts.fontSFUI35.drawStringWithShadow(
                 stafflmbans + "/" + watchdoglmbans,
                 127f,
