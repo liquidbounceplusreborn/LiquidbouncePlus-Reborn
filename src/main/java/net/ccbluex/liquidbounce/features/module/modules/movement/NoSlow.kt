@@ -61,7 +61,7 @@ class NoSlow : Module() {
     // Soulsand
     val soulsandValue = BoolValue("Soulsand", true)
     val liquidPushValue = BoolValue("LiquidPush", true)
-
+    private var released = true
     private val blinkPackets = mutableListOf<Packet<INetHandlerPlayServer>>()
     private var lastX = 0.0
     private var lastY = 0.0
@@ -118,7 +118,7 @@ class NoSlow : Module() {
         val packet = event.packet
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
 
-        if ((modeValue.get().equals("watchdog", true) || modeValue.get().equals("test1", true) || modeValue.get().equals("test2", true)) && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
+        if ((modeValue.get().equals("watchdog", true) || modeValue.get().equals("test2", true)) && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
             event.cancelEvent()
             if (debugValue.get())
                 ClientUtils.displayChatMessage("detected reset item packet")
@@ -186,6 +186,47 @@ class NoSlow : Module() {
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
 
         when (modeValue.get().toLowerCase()) {
+                        "hypixel"->{
+                if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem != null && MovementUtils.isMoving()) {
+                    var st = 8
+                    for (i in 0..8) {
+                        if (mc.thePlayer.inventory.getStackInSlot(i) == null) {
+                            st = i
+                        }
+                    }
+                    if (mc.thePlayer.hurtTime == 0  && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
+                        if (!released) {
+                            mc.thePlayer.sendQueue.addToSendQueue(
+                                    C07PacketPlayerDigging(
+                                            C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                                            BlockPos.ORIGIN,
+                                            EnumFacing.DOWN
+                                    )
+                            )
+                            released = true
+                        }
+                        return
+                    } else {
+                        released = false
+                    }
+
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(st))
+
+//                for (i in 0..3) {
+                    mc.netHandler.addToSendQueue(
+                            C07PacketPlayerDigging(
+                                    C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,
+                                    BlockPos.ORIGIN,
+                                    EnumFacing.UP
+                            )
+                    )
+//                }
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }else{
+                    released = false
+                }
+            }
+
             "aac5" -> if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockingStatus)) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
             }
@@ -239,12 +280,6 @@ class NoSlow : Module() {
                     }
                     "ncp" -> sendPacket(event, true, true, false, 0, false)
                     "custom" -> sendPacket(event, customRelease.get(), customPlace.get(), customDelayValue.get() > 0, customDelayValue.get().toLong(), customOnGround.get())
-                    "test1" -> {
-                        if (mc.thePlayer.ticksExisted % 2 == 0)
-                            sendPacket(event, true, false, false, 50, true)
-                        else
-                            sendPacket(event, false, true, false, 0, true, true)
-                    }
                     "test2" -> {
                         if (event.eventState == EventState.PRE)
                             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
