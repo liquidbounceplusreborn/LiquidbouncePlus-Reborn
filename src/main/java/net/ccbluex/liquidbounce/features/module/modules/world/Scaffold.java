@@ -50,6 +50,8 @@ import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import static net.minecraft.util.MathHelper.wrapAngleTo180_float;
+
 @ModuleInfo(name = "Scaffold", description = "Automatically places blocks beneath your feet.", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_I)
 public class Scaffold extends Module {
 
@@ -136,7 +138,7 @@ public class Scaffold extends Module {
     // Rotations
     private final BoolValue rotationsValue = new BoolValue("Rotations", true);
     private final BoolValue noHitCheckValue = new BoolValue("NoHitCheck", false, () -> rotationsValue.get());
-    public final ListValue rotationModeValue = new ListValue("RotationMode", new String[]{"Normal", "AAC", "Static", "Static2", "Static3", "Spin", "Custom"}, "Normal"); // searching reason
+    public final ListValue rotationModeValue = new ListValue("RotationMode", new String[]{"Normal", "AAC","Backward","Static", "Static2", "Static3", "Spin", "Custom"}, "Normal"); // searching reason
     public final ListValue rotationLookupValue = new ListValue("RotationLookup", new String[]{"Normal", "AAC", "Same"}, "Normal");
 
     private final FloatValue maxTurnSpeed = new FloatValue("MaxTurnSpeed", 180F, 0F, 180F, "°", () -> rotationsValue.get()) {
@@ -162,7 +164,7 @@ public class Scaffold extends Module {
     private final FloatValue staticPitchValue = new FloatValue("Static-Pitch", 86F, 80F, 90F, "°", () -> rotationModeValue.get().toLowerCase().startsWith("static"));
 
     private final FloatValue customYawValue = new FloatValue("Custom-Yaw", 135F, -180F, 180F, "°", () -> rotationModeValue.get().equalsIgnoreCase("custom"));
-    private final FloatValue customPitchValue = new FloatValue("Custom-Pitch", 86F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("custom"));
+    private final FloatValue customPitchValue = new FloatValue("Custom-Pitch", 86F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("custom") || rotationModeValue.get().equalsIgnoreCase("bacjward"));
 
     private final FloatValue speenSpeedValue = new FloatValue("Spin-Speed", 5F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("spin"));
     private final FloatValue speenPitchValue = new FloatValue("Spin-Pitch", 90F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("spin"));
@@ -578,7 +580,7 @@ public class Scaffold extends Module {
     //took it from applyrotationstrafe XD. staticyaw comes from bestnub.
     public void onStrafe(final StrafeEvent event) {
         if (lookupRotation != null && rotationStrafeValue.get()) {
-            final int dif = (int) ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - lookupRotation.getYaw() - 23.5F - 135) + 180) / 45);
+            final int dif = (int) ((wrapAngleTo180_float(mc.thePlayer.rotationYaw - lookupRotation.getYaw() - 23.5F - 135) + 180) / 45);
 
             final float yaw = lookupRotation.getYaw();
             final float strafe = event.getStrafe();
@@ -699,7 +701,7 @@ public class Scaffold extends Module {
         if (rotationsValue.get() && keepRotationValue.get() && lockRotation != null) {
             if (rotationModeValue.get().equalsIgnoreCase("spin")) {
                 spinYaw += speenSpeedValue.get();
-                spinYaw = MathHelper.wrapAngleTo180_float(spinYaw);
+                spinYaw = wrapAngleTo180_float(spinYaw);
                 speenRotation = new Rotation(spinYaw, speenPitchValue.get());
                 RotationUtils.setTargetRotation(speenRotation);
             } else if (lockRotation != null)
@@ -1147,8 +1149,8 @@ public class Scaffold extends Module {
                             final double diffXZ = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
 
                             Rotation rotation = new Rotation(
-                                    MathHelper.wrapAngleTo180_float((float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F),
-                                    MathHelper.wrapAngleTo180_float((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)))
+                                    wrapAngleTo180_float((float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F),
+                                    wrapAngleTo180_float((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)))
                             );
 
                             lookupRotation = rotation;
@@ -1161,6 +1163,9 @@ public class Scaffold extends Module {
 
                             if (rotationModeValue.get().equalsIgnoreCase("custom") && (keepRotOnJumpValue.get() || !mc.gameSettings.keyBindJump.isKeyDown()))
                                 rotation = new Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), customPitchValue.get());
+
+                            if (rotationModeValue.get().equalsIgnoreCase("backward") && (keepRotOnJumpValue.get() || !mc.gameSettings.keyBindJump.isKeyDown()))
+                                rotation = new Rotation(this.getYawBackward(), customPitchValue.get());
 
                             if (rotationModeValue.get().equalsIgnoreCase("spin") && speenRotation != null && (keepRotOnJumpValue.get() || !mc.gameSettings.keyBindJump.isKeyDown()))
                                 rotation = speenRotation;
@@ -1185,8 +1190,8 @@ public class Scaffold extends Module {
         if (rotationsValue.get()) {
             if (minTurnSpeed.get() < 180) {
                 final Rotation limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, placeRotation.getRotation(), RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get()));
-                if ((int)(10 * MathHelper.wrapAngleTo180_float(limitedRotation.getYaw())) == (int)(10 * MathHelper.wrapAngleTo180_float(placeRotation.getRotation().getYaw()))
-                        && (int)(10 * MathHelper.wrapAngleTo180_float(limitedRotation.getPitch())) == (int)(10 * MathHelper.wrapAngleTo180_float(placeRotation.getRotation().getPitch()))) {
+                if ((int)(10 * wrapAngleTo180_float(limitedRotation.getYaw())) == (int)(10 * wrapAngleTo180_float(placeRotation.getRotation().getYaw()))
+                        && (int)(10 * wrapAngleTo180_float(limitedRotation.getPitch())) == (int)(10 * wrapAngleTo180_float(placeRotation.getRotation().getPitch()))) {
                     RotationUtils.setTargetRotation(placeRotation.getRotation(), keepLengthValue.get());
                     lockRotation = placeRotation.getRotation();
                     faceBlock = true;
@@ -1208,6 +1213,29 @@ public class Scaffold extends Module {
             targetPlace = placeRotation.getPlaceInfo();
 
         return true;
+    }
+
+    private float getYawBackward(){
+        float yaw = wrapAngleTo180_float(mc.thePlayer.rotationYaw);
+        MovementInput input = mc.thePlayer.movementInput;
+        float strafe = input.moveStrafe;
+        float forward = input.moveForward;
+        if (forward != 0f) {
+            if (strafe < 0) {
+                yaw += (forward < 0)? 135F : 45F;
+            } else if (strafe > 0) {
+                yaw -=  (forward < 0)? 135F : 45F;
+            } else if (strafe == 0f && forward < 0) {
+                yaw -= 180f;
+            }
+        } else {
+            if (strafe < 0) {
+                yaw += 90f;
+            } else if (strafe > 0) {
+                yaw -= 90f;
+            }
+        }
+        return wrapAngleTo180_float(yaw - 180);
     }
 
     /**
