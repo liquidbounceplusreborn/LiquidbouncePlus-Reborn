@@ -278,7 +278,6 @@ public class Speed extends Module {
     public final BoolValue doLaunchSpeedValue = new BoolValue("CustomDoLaunchSpeed", true, () -> typeValue.get().equalsIgnoreCase("custom"));
     public final BoolValue NoBob = new BoolValue("NoBob" , true);
     public final BoolValue jumpStrafe = new BoolValue("JumpStrafe", false, () -> typeValue.get().equalsIgnoreCase("other"));
-
     public final BoolValue sendJumpValue = new BoolValue("SendJump", true, () -> (typeValue.get().equalsIgnoreCase("hypixel") && !getModeName().equalsIgnoreCase("hypixelcustom")));
     public final BoolValue recalcValue = new BoolValue("ReCalculate", true, () -> (typeValue.get().equalsIgnoreCase("hypixel") && sendJumpValue.get() && !getModeName().equalsIgnoreCase("hypixelcustom")));
     public final FloatValue glideStrengthValue = new FloatValue("GlideStrength", 0.03F, 0F, 0.05F, () -> (typeValue.get().equalsIgnoreCase("hypixel") && !getModeName().equalsIgnoreCase("hypixelcustom")));
@@ -289,48 +288,20 @@ public class Speed extends Module {
     public final FloatValue baseMTimerValue = new FloatValue("BaseMultiplierTimer", 1F, 0F, 3F, () -> getModeName().equalsIgnoreCase("hypixelboost"));
     public final BoolValue bypassWarning = new BoolValue("BypassWarning", true, () -> (typeValue.get().equalsIgnoreCase("hypixel") && !getModeName().equalsIgnoreCase("hypixelcustom")));
     public final FloatValue customSpeedBoost = new FloatValue("SpeedPotJumpModifier", 0.1f, 0f, 0.4f, () -> hypixelModeValue.get().equalsIgnoreCase("yport"));
+    public final IntegerValue wdGroundStay = new IntegerValue("HardGroundStay", 0, 0, 10, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
+    public final FloatValue customSpeed2Boost = new FloatValue("HardSpeedPotJumpModifier", 0.1f, 0f, 0.4f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
+    public final FloatValue wdHAirTimerValue = new FloatValue("WdHardAirTimer", 1.2f, 0.1f, 3f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
+    public final FloatValue wdGroundTimer = new FloatValue("WdHardGroundTimer", 1.7f, 0.1f, 3f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
     public final FloatValue portMax = new FloatValue("AAC-PortLength", 1, 1, 20, () -> typeValue.get().equalsIgnoreCase("aac"));
     public final FloatValue aacGroundTimerValue = new FloatValue("AACGround-Timer", 3F, 1.1F, 10F, () -> typeValue.get().equalsIgnoreCase("aac"));
     public final FloatValue cubecraftPortLengthValue = new FloatValue("CubeCraft-PortLength", 1F, 0.1F, 2F, () -> getModeName().equalsIgnoreCase("teleportcubecraft"));
     public final FloatValue mineplexGroundSpeedValue = new FloatValue("MineplexGround-Speed", 0.5F, 0.1F, 1F, () -> getModeName().equalsIgnoreCase("mineplexground"));
-
     public final ListValue tagDisplay = new ListValue("Tag", new String[] { "Type", "FullName", "All" }, "Type");
-
-    private final BoolValue yPort = new BoolValue("SlightYPort", false, () -> typeValue.get().equalsIgnoreCase("hypixel"));
-    private final BoolValue yPort2 = new BoolValue("SlightYPort2", false, () -> typeValue.get().equalsIgnoreCase("hypixel"));
-    private final BoolValue yPort3 = new BoolValue("SlightYPort3", false, () -> typeValue.get().equalsIgnoreCase("hypixel"));
-    private final BoolValue yPort4 = new BoolValue("SlightYPort4", true, () -> typeValue.get().equalsIgnoreCase("hypixel"));
 
     private int offGroundTicks = 0;
 
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
-
-        if (yPort.get()) {
-            if (mc.thePlayer.motionY < 0.1 && mc.thePlayer.motionY > -0.21 && mc.thePlayer.motionY != 0.0 && !mc.thePlayer.onGround) {
-                mc.thePlayer.motionY -= 0.05;
-            }
-        }
-
-        if (yPort2.get()) {
-            if (offGroundTicks == 6) {
-                mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98;
-            }
-        }
-
-        if (yPort3.get()) {
-            if (offGroundTicks == 5) {
-                mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98;
-            }
-        }
-
-        if (yPort4.get()) {
-            if (offGroundTicks == 1) {
-                mc.thePlayer.motionY = mc.thePlayer.motionY - 0.02;
-                mc.thePlayer.motionX *= 0.98;
-                mc.thePlayer.motionZ *= 0.98;
-            }
-        }
 
         if(mc.thePlayer.isSneaking())
             return;

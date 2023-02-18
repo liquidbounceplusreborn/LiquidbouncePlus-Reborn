@@ -16,11 +16,12 @@ public class HypixelHard extends SpeedMode {
 
     @Override
     public void onUpdate(){
+        final Speed speed = LiquidBounce.moduleManager.getModule(Speed.class);
         if (MovementUtils.isMoving()) {
-            mc.timer.timerSpeed = 1.2f;
+            mc.timer.timerSpeed = speed.wdHAirTimerValue.get();
             if (mc.thePlayer.onGround) {
-                if (groundTick >= 1) {
-                    mc.timer.timerSpeed = 2.0f;
+                if (groundTick >= speed.wdGroundStay.get()) {
+                    mc.timer.timerSpeed = speed.wdGroundTimer.get();
                     MovementUtils.strafe(0.43f);
                     mc.thePlayer.motionY = MovementUtils.getJumpBoostModifier(0.41999998688698, true);
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
@@ -35,7 +36,7 @@ public class HypixelHard extends SpeedMode {
                 MovementUtils.strafe();
             }
             if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                mc.thePlayer.jumpMovementFactor = 0.026f;
+                mc.thePlayer.jumpMovementFactor = speed.customSpeed2Boost.get();
             }
         }
     }

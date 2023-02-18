@@ -118,11 +118,11 @@ class NoSlow : Module() {
         val packet = event.packet
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
 
-        if (modeValue.get().equals("watchdog", true) && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
-            event.cancelEvent()
-            if (debugValue.get())
-                ClientUtils.displayChatMessage("detected reset item packet")
-        }
+        //if (modeValue.get().equals("watchdog", true) && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
+            //event.cancelEvent()
+            //if (debugValue.get())
+                //ClientUtils.displayChatMessage("detected reset item packet")
+        //}
         if (modeValue.get().equals("blink", true) && !(killAura.state && killAura.blockingStatus) && mc.thePlayer.itemInUse != null && mc.thePlayer.itemInUse.item != null) {
             val item = mc.thePlayer.itemInUse.item
             if (mc.thePlayer.isUsingItem && (item is ItemFood || item is ItemBucketMilk || item is ItemPotion) && (!ciucValue.get() || mc.thePlayer.itemInUseCount >= 1)) {
