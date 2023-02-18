@@ -280,12 +280,6 @@ class NoSlow : Module() {
                     }
                     "ncp" -> sendPacket(event, true, true, false, 0, false)
                     "custom" -> sendPacket(event, customRelease.get(), customPlace.get(), customDelayValue.get() > 0, customDelayValue.get().toLong(), customOnGround.get())
-                    "test2" -> {
-                        if (event.eventState == EventState.PRE)
-                            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
-                        else
-                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0.0f, 0.0f, 0.0f))
-                    }
                 }
             }
         }
