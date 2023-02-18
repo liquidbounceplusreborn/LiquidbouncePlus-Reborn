@@ -22,6 +22,13 @@ import java.util.zip.ZipInputStream;
 
 public class Fonts {
 
+    @FontDetails(fontName = "MNTSB", fontSize = 28)
+    public static GameFontRenderer mntsb28;
+    @FontDetails(fontName = "MNTSB", fontSize = 24)
+    public static GameFontRenderer mntsb24;
+    @FontDetails(fontName = "MNTSB", fontSize = 32)
+    public static GameFontRenderer mntsb32;
+
     // in fact these "roboto medium" is product sans lol
     @FontDetails(fontName = "Roboto Medium", fontSize = 35)
     public static GameFontRenderer font35;
@@ -73,6 +80,9 @@ public class Fonts {
 
         downloadFonts();
 
+        mntsb24 = new GameFontRenderer(getFont("mntsb.ttf", 24));
+        mntsb28 = new GameFontRenderer(getFont("mntsb.ttf", 28));
+        mntsb32 = new GameFontRenderer(getFont("mntsb.ttf", 32));
         font35 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 35));
         font40 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 40));
         font72 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 72));
@@ -125,6 +135,7 @@ public class Fonts {
     private static void downloadFonts() {
         try {
             final File outputFile = new File(LiquidBounce.fileManager.fontsDir, "roboto.zip");
+            final File mntsbFile = new File(LiquidBounce.fileManager.fontsDir, "mntsb.ttf");
             final File sfuiFile = new File(LiquidBounce.fileManager.fontsDir, "sfui.ttf");
             final File prodSansFile = new File(LiquidBounce.fileManager.fontsDir, "Roboto-Medium.ttf");
             final File prodBoldFile = new File(LiquidBounce.fileManager.fontsDir, "Roboto-Bold.ttf");
@@ -132,9 +143,9 @@ public class Fonts {
             final File tahomaReFile = new File(LiquidBounce.fileManager.fontsDir, "Tahoma.ttf");
             final File bangersFile = new File(LiquidBounce.fileManager.fontsDir, "Bangers-Regular.ttf");
 
-            if (!outputFile.exists() || !sfuiFile.exists() || !prodSansFile.exists() || !prodBoldFile.exists() || !tahomaFile.exists() || !tahomaReFile.exists() || !bangersFile.exists()) {
+            if (!outputFile.exists() || !sfuiFile.exists() || !prodSansFile.exists() || !prodBoldFile.exists() || !tahomaFile.exists() || !tahomaReFile.exists() || !bangersFile.exists() || !mntsbFile.exists()) {
                 ClientUtils.getLogger().info("Downloading fonts...");
-                HttpUtils.download("https://wysi-foundation.github.io/LiquidCloud/LiquidBounce/fonts/fonts.zip", outputFile);
+                HttpUtils.download("https://liquidbounceplusreborn.github.io/cloud/fonts/fonts.zip", outputFile);
                 ClientUtils.getLogger().info("Extract fonts...");
                 extractZip(outputFile.getPath(), LiquidBounce.fileManager.fontsDir.getPath());
             }
