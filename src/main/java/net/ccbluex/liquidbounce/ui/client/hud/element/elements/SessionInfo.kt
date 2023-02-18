@@ -3,19 +3,21 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer
+import net.ccbluex.liquidbounce.features.module.modules.world.BanChecker
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.SessionUtils
+import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.LiquidSlowly
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
-import net.ccbluex.liquidbounce.features.module.modules.world.BanChecker
-import net.ccbluex.liquidbounce.utils.render.BlurUtils
 
 @ElementInfo(name = "SessionInfo")
 class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Element(x, y, scale) {
@@ -42,8 +44,6 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
     private val blurStrength = IntegerValue("BlurStrength", 10, 1, 60, { blurValue.get() })
 
     val counter = intArrayOf(0)
-    val rainbowType = colorModeValue.get()
-    val color = Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(),255).rgb
 
     override fun drawElement(): Border {
         val target: EntityPlayer? = mc.thePlayer
@@ -53,32 +53,7 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 RenderUtils.drawCircleRect(0f, 0f, 165f, 63f, 5f, Color(0, 0, 0, 120).rgb)
                 RenderUtils.drawRect(
                     0f, 12f, 165f, 13f,
-                    when (rainbowType) {
-                        "CRainbow" -> RenderUtils.getRainbowOpaque(
-                            cRainbowSecValue.get(),
-                            saturationValue.get(),
-                            brightnessValue.get(),
-                            i * cRainbowDistValue.get()
-                        )
-
-                        "Sky" -> RenderUtils.SkyRainbow(
-                            i * skyDistanceValue.get(),
-                            saturationValue.get(),
-                            brightnessValue.get()
-                        )
-
-                        "Mixer" -> ColorMixer.getMixedColor(i * mixerDistValue.get(), mixerSecValue.get()).rgb
-                        "Fade" -> ColorUtils.fade(
-                            Color(
-                                colorRedValue.get(),
-                                colorGreenValue.get(),
-                                colorBlueValue.get(),
-                                255
-                            ), i * fadeDistanceValue.get(), 100
-                        ).rgb
-                        "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), i * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())!!.rgb
-                        else -> color
-                    }
+                    getColor()
                 )
                 Fonts.fontTahoma.drawString(
                     "SessionInfo",
@@ -121,32 +96,7 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 RenderUtils.drawRect(0f, 0f, 165f, 63f, Color(0, 0, 0, 120).rgb)
                 RenderUtils.drawRect(
                     0f, 0f, 165f, 1f,
-                    when (rainbowType) {
-                        "CRainbow" -> RenderUtils.getRainbowOpaque(
-                            cRainbowSecValue.get(),
-                            saturationValue.get(),
-                            brightnessValue.get(),
-                            i * cRainbowDistValue.get()
-                        )
-
-                        "Sky" -> RenderUtils.SkyRainbow(
-                            i * skyDistanceValue.get(),
-                            saturationValue.get(),
-                            brightnessValue.get()
-                        )
-
-                        "Mixer" -> ColorMixer.getMixedColor(i * mixerDistValue.get(), mixerSecValue.get()).rgb
-                        "Fade" -> ColorUtils.fade(
-                            Color(
-                                colorRedValue.get(),
-                                colorGreenValue.get(),
-                                colorBlueValue.get(),
-                                255
-                            ), i * fadeDistanceValue.get(), 100
-                        ).rgb
-                        "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), i * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())!!.rgb
-                        else -> color
-                    }
+                    getColor()
                 )
                 Fonts.fontTahoma.drawString("SessionInfo", 2F, 4F, Color(0xFFFFFF).rgb)
                 Fonts.fontSFUI35.drawString("Playtime", 2F, 15F, Color(0xFFFFFF).rgb)
@@ -215,61 +165,13 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 for (i in 0..(gradientAmountValue.get() - 1)) {
                     val barStart = i.toDouble() / gradientAmountValue.get().toDouble() * barLength
                     val barEnd = (i + 1).toDouble() / gradientAmountValue.get().toDouble() * barLength
-                    RenderUtils.drawGradientSideways(
-                        -2.0 + barStart, -2.5, -2.0 + barEnd, -1.0,
-                        when (rainbowType) {
-                            "CRainbow" -> RenderUtils.getRainbowOpaque(
-                                cRainbowSecValue.get(),
-                                saturationValue.get(),
-                                brightnessValue.get(),
-                                i * cRainbowDistValue.get()
-                            )
-
-                            "Sky" -> RenderUtils.SkyRainbow(
-                                i * skyDistanceValue.get(),
-                                saturationValue.get(),
-                                brightnessValue.get()
-                            )
-
-                            "Mixer" -> ColorMixer.getMixedColor(i * mixerDistValue.get(), mixerSecValue.get()).rgb
-                            "Fade" -> ColorUtils.fade(
-                                Color(
-                                    colorRedValue.get(),
-                                    colorGreenValue.get(),
-                                    colorBlueValue.get(),
-                                    255
-                                ), i * fadeDistanceValue.get(), 100
-                            ).rgb
-                            "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), i * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())!!.rgb
-                            else -> color
-                        },
-                        when (rainbowType) {
-                            "CRainbow" -> RenderUtils.getRainbowOpaque(
-                                cRainbowSecValue.get(),
-                                saturationValue.get(),
-                                brightnessValue.get(),
-                                i * cRainbowDistValue.get()
-                            )
-
-                            "Sky" -> RenderUtils.SkyRainbow(
-                                i * skyDistanceValue.get(),
-                                saturationValue.get(),
-                                brightnessValue.get()
-                            )
-
-                            "Mixer" -> ColorMixer.getMixedColor(i * mixerDistValue.get(), mixerSecValue.get()).rgb
-                            "Fade" -> ColorUtils.fade(
-                                Color(
-                                    colorRedValue.get(),
-                                    colorGreenValue.get(),
-                                    colorBlueValue.get(),
-                                    255
-                                ), i * fadeDistanceValue.get(), 100
-                            ).rgb
-                            "LiquidSlowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), i * liquidSlowlyDistanceValue.get(), saturationValue.get(), brightnessValue.get())!!.rgb
-                            else -> color
-                        }
-                    )
+                    getColor()?.let {
+                        RenderUtils.drawGradientSideways(
+                            -2.0 + barStart, -2.5, -2.0 + barEnd, -1.0,
+                            it.rgb,
+                            it.rgb
+                        )
+                    }
                 }
             }
 
@@ -301,5 +203,25 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
             )
         }
         return Border(0f, 0f, 165f, 63f)
+    }
+
+    fun getColor(): Color? {
+        when (colorModeValue.get()) {
+            "Custom" -> return Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+            "Rainbow" -> return Color(
+                RenderUtils.getRainbowOpaque(
+                    cRainbowSecValue.get(),
+                    saturationValue.get(),
+                    brightnessValue.get(),
+                    0
+                )
+            )
+
+            "Sky" -> return RenderUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get())
+            "LiquidSlowly" -> return LiquidSlowly(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())
+            "Mixer" -> return ColorMixer.getMixedColor(0, mixerSecValue.get())
+            "Fade" -> return fade(Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), 0, 100)
+        }
+        return null
     }
 }
