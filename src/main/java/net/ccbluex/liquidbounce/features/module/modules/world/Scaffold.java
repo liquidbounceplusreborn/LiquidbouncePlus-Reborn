@@ -164,7 +164,7 @@ public class Scaffold extends Module {
     private final FloatValue staticPitchValue = new FloatValue("Static-Pitch", 86F, 80F, 90F, "°", () -> rotationModeValue.get().toLowerCase().startsWith("static"));
 
     private final FloatValue customYawValue = new FloatValue("Custom-Yaw", 135F, -180F, 180F, "°", () -> rotationModeValue.get().equalsIgnoreCase("custom"));
-    private final FloatValue customPitchValue = new FloatValue("Custom-Pitch", 86F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("custom") || rotationModeValue.get().equalsIgnoreCase("bacjward"));
+    private final FloatValue customPitchValue = new FloatValue("Custom-Pitch", 86F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("custom") || rotationModeValue.get().equalsIgnoreCase("backward"));
 
     private final FloatValue speenSpeedValue = new FloatValue("Spin-Speed", 5F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("spin"));
     private final FloatValue speenPitchValue = new FloatValue("Spin-Pitch", 90F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("spin"));
