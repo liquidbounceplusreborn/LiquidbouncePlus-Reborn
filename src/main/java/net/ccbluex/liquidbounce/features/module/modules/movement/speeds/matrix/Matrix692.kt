@@ -29,8 +29,10 @@ class Matrix692 : SpeedMode("Matrix6.9.2") {
             wasTimer = true
             mc.thePlayer.jump()
             MovementUtils.strafe()
-        }else if (MovementUtils.getSpeed() < 0.215) {
-            MovementUtils.strafe(0.215f)
+        }else if (mc.thePlayer.motionY > 0.003) {
+            mc.thePlayer.motionX *= 1.0010
+            mc.thePlayer.motionZ *= 1.0010
+            mc.timer.timerSpeed = 1.05f
         }
     }
 
