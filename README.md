@@ -1,5 +1,4 @@
 # LiquidBounce+ Reborn(Unofficial)
-Aksksksksksksksksk
 
 A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
 ### LiquidBounce+'sReborn contact info
