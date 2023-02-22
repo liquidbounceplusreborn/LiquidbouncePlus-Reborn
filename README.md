@@ -1,7 +1,7 @@
 # LiquidBounce+ Reborn(Unofficial)
 
 A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
-### LiquidBounce+Reborn contact info
+### LiquidBounce+'sReborn contact info
 Discord:get nuke by lb++ owner lmao
 Website:https://liquidbounceplusreborn.github.io/
 
