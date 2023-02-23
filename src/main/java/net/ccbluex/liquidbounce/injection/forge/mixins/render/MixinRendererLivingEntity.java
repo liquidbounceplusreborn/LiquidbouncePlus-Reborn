@@ -162,6 +162,10 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             callbackInfoReturnable.setReturnValue(false);
     }
 
+    /**
+     * @author Randomguy && wxdbie
+     * @reason FakeBode,Baby
+     */
     @Overwrite
     public<T extends EntityLivingBase> void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
@@ -169,7 +173,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         GlStateManager.disableCull();
         this.mainModel.swingProgress = this.getSwingProgress(entity, partialTicks);
         this.mainModel.isRiding = entity.isRiding();
-        this.mainModel.isChild = entity.isChild();
+        this.mainModel.isChild = PlayerEdit.baby.get() && (LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyMe.get() && entity == Minecraft.getMinecraft().thePlayer || LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyOther.get() && entity != Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState() ? true :entity.isChild();
 
         try
         {
@@ -308,6 +312,10 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         }
     }
 
+    /**
+     * @author Randomguy && wxdbie
+     * @reason for FakeBode
+     */
     @Overwrite
     protected <T extends EntityLivingBase> boolean setBrightness(T entitylivingbaseIn, float partialTicks, boolean combineTextures)
     {

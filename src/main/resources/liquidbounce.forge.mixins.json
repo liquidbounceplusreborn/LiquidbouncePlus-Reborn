@@ -82,6 +82,7 @@
     "render.MixinFontRenderer",
     "render.MixinInventoryEffectRenderer",
     "render.MixinLayerArrow",
+    "render.MixinLayerCape",
     "render.MixinLayerCreeperCharge",
     "render.MixinLayerHeldItem",
     "render.MixinLayerSpiderEyes",
