@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.render
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.FogColorEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.entity.Entity
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -29,6 +28,12 @@ class Camera : Module(){
     val worldColorValue = BoolValue("WorldColor", true)
     val hitColorValue = BoolValue("HitColor", true)
     val noHurtCam = BoolValue("NoHurtCam", true)
+    val customFog = BoolValue("CustomFog", true)
+    //CustomFog
+    val customFogDistance = FloatValue("FogDistance", 0.10f, 0.001f, 2.0f) { customFog.get() }
+    val customFogRValue = IntegerValue("FogRed", 255, 0, 255) { customFog.get() }
+    val customFogGValue = IntegerValue("FogGreen", 255, 0, 255) { customFog.get() }
+    val customFogBValue = IntegerValue("FogBlue", 255, 0, 255) { customFog.get() }
     //FPSHurtCam
     private val fpsHurtCam = BoolValue("FPSHurtCam", true)
     val hurtcamColorRValue = IntegerValue("HurtColorRed", 255, 0, 255) { fpsHurtCam.get() }
@@ -147,5 +152,12 @@ class Camera : Module(){
             "Mixer" -> ColorMixer.getMixedColor(index, mixerSecondsValue)
             else -> ColorUtils.fade(Color(colorRedValue, colorGreenValue, colorBlueValue), index, 100)
         }
+    }
+
+    @EventTarget
+    fun onFogColor(event: FogColorEvent) {
+        event.setRed(customFogRValue.get())
+        event.setGreen(customFogGValue.get())
+        event.setBlue(customFogBValue.get())
     }
 }

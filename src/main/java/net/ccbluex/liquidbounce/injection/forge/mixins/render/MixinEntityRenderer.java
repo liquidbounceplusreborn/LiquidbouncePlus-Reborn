@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import com.google.common.base.Predicates;
+import net.ccbluex.liquidbounce.event.FogColorEvent;
 import net.ccbluex.liquidbounce.utils.Interpolator;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
@@ -462,5 +463,104 @@ public abstract class MixinEntityRenderer {
         }
 
         ci.cancel();
+    }
+
+    @Shadow
+    private FloatBuffer setFogColorBuffer(float p_setFogColorBuffer_1_, float p_setFogColorBuffer_2_, float p_setFogColorBuffer_3_, float p_setFogColorBuffer_4_) {
+        this.fogColorBuffer.clear();
+        this.fogColorBuffer.put(p_setFogColorBuffer_1_).put(p_setFogColorBuffer_2_).put(p_setFogColorBuffer_3_).put(p_setFogColorBuffer_4_);
+        this.fogColorBuffer.flip();
+        return this.fogColorBuffer;
+    }
+
+    /**
+     * @author wxdbie
+     * @reason for Cute Fog
+     */
+    @Overwrite
+    private void setupFog(int p_setupFog_1_, float p_setupFog_2_) {
+        Entity entity = this.mc.getRenderViewEntity();
+        boolean flag = false;
+        if (entity instanceof EntityPlayer) {
+            flag = ((EntityPlayer)entity).capabilities.isCreativeMode;
+        }
+
+        GL11.glFog(2918, this.setFogColorBuffer(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 1.0F));
+        GL11.glNormal3f(0.0F, -1.0F, 0.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        Block block = ActiveRenderInfo.getBlockAtEntityViewpoint(this.mc.theWorld, entity, p_setupFog_2_);
+        float hook = ForgeHooksClient.getFogDensity(this.mc.entityRenderer, entity, block, p_setupFog_2_, 0.1F);
+        if (hook >= 0.0F) {
+            GlStateManager.setFogDensity(hook);
+        } else {
+            float f;
+            if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(Potion.blindness)) {
+                f = 5.0F;
+                int i = ((EntityLivingBase)entity).getActivePotionEffect(Potion.blindness).getDuration();
+                if (i < 20) {
+                    f = 5.0F + (this.farPlaneDistance - 5.0F) * (1.0F - (float)i / 20.0F);
+                }
+
+                GlStateManager.setFog(9729);
+                if (p_setupFog_1_ == -1) {
+                    GlStateManager.setFogStart(0.0F);
+                    GlStateManager.setFogEnd(f * 0.8F);
+                } else {
+                    GlStateManager.setFogStart(f * 0.25F);
+                    GlStateManager.setFogEnd(f);
+                }
+
+                if (GLContext.getCapabilities().GL_NV_fog_distance) {
+                    GL11.glFogi(34138, 34139);
+                }
+            } else if (this.cloudFog) {
+                GlStateManager.setFog(2048);
+                GlStateManager.setFogDensity(0.1F);
+            } else if (block.getMaterial() == Material.water) {
+                GlStateManager.setFog(2048);
+                if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(Potion.waterBreathing)) {
+                    GlStateManager.setFogDensity(0.01F);
+                } else {
+                    GlStateManager.setFogDensity(0.1F - (float)EnchantmentHelper.getRespiration(entity) * 0.03F);
+                }
+            } else if (block.getMaterial() == Material.lava) {
+                GlStateManager.setFog(2048);
+                GlStateManager.setFogDensity(2.0F);
+            } else {
+                f = this.farPlaneDistance;
+                GlStateManager.setFog(9729);
+                if (p_setupFog_1_ == -1) {
+                    GlStateManager.setFogStart(0.0F);
+                    GlStateManager.setFogEnd(f);
+                } else {
+                    GlStateManager.setFogStart(f * (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(Camera.class)).getState() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(Camera.class)).getCustomFog().get() ? -LiquidBounce.moduleManager.getModule(Camera.class).getCustomFogDistance().get() : 0.75F));
+                    GlStateManager.setFogEnd(f);
+                }
+
+                if (GLContext.getCapabilities().GL_NV_fog_distance) {
+                    GL11.glFogi(34138, 34139);
+                }
+
+                if (this.mc.theWorld.provider.doesXZShowFog((int)entity.posX, (int)entity.posZ)) {
+                    GlStateManager.setFogStart(f * 0.05F);
+                    GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
+                }
+
+                ForgeHooksClient.onFogRender(this.mc.entityRenderer, entity, block, p_setupFog_2_, p_setupFog_1_, f);
+            }
+        }
+
+        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(Camera.class)).getState() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(Camera.class)).getCustomFog().get()) {
+            FogColorEvent event = new FogColorEvent(fogColorRed, fogColorGreen, fogColorBlue, 0);
+            LiquidBounce.eventManager.callEvent(event);
+
+            fogColorRed = event.getRed() / 255F;
+            fogColorGreen = event.getGreen() / 255F;
+            fogColorBlue = event.getBlue() / 255F;
+        }
+
+        GlStateManager.enableColorMaterial();
+        GlStateManager.enableFog();
+        GlStateManager.colorMaterial(1028, 4608);
     }
 }

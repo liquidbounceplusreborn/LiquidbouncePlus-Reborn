@@ -23,6 +23,21 @@ import net.minecraft.util.EnumFacing
  */
 class AttackEvent(val targetEntity: Entity?) : Event()
 
+class FogColorEvent(var red: Float, var green: Float, var blue: Float, var alpha: Int) : Event(){
+    @JvmName("setRed1")
+    fun setRed(red: Int) {
+        this.red = red.toFloat()
+    }
+    @JvmName("setGreen1")
+    fun setGreen(green: Int) {
+        this.green = green.toFloat()
+    }
+    @JvmName("setBlue1")
+    fun setBlue(blue: Int) {
+        this.blue = blue.toFloat()
+    }
+}
+
 /**
  * Called when minecraft get bounding box of block
  *
