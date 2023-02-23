@@ -289,7 +289,7 @@ public class Speed extends Module {
     public final BoolValue bypassWarning = new BoolValue("BypassWarning", true, () -> (typeValue.get().equalsIgnoreCase("hypixel") && !getModeName().equalsIgnoreCase("hypixelcustom")));
     public final FloatValue customSpeedBoost = new FloatValue("SpeedPotJumpModifier", 0.1f, 0f, 0.4f, () -> hypixelModeValue.get().equalsIgnoreCase("yport"));
     public final IntegerValue wdGroundStay = new IntegerValue("HardGroundStay", 0, 0, 10, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
-    public final FloatValue customSpeed2Boost = new FloatValue("HardSpeedPotJumpModifier", 0.04f, 0.02f, 0.6f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
+    public final FloatValue customSpeed2Boost = new FloatValue("HardSpeedPotJumpModifier", 0.04f, 0.02f, 0.04f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
     public final FloatValue wdHAirTimerValue = new FloatValue("WdHardAirTimer", 1.2f, 0.1f, 3f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
     public final FloatValue wdGroundTimer = new FloatValue("WdHardGroundTimer", 1.7f, 0.1f, 3f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
     public final FloatValue portMax = new FloatValue("AAC-PortLength", 1, 1, 20, () -> typeValue.get().equalsIgnoreCase("aac"));
