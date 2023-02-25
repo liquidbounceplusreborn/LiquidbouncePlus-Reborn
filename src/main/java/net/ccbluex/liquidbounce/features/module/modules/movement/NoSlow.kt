@@ -6,7 +6,11 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.EventState
+import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.event.SlowDownEvent
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -22,11 +26,15 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.item.*
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
+import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.network.play.client.C03PacketPlayer.*
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.client.C0BPacketEntityAction
+import net.minecraft.network.play.client.C09PacketHeldItemChange
+import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
@@ -173,6 +181,45 @@ class NoSlow : Module() {
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
 
         when (modeValue.get().toLowerCase()) {
+            "watchdog"->{
+                if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem != null && MovementUtils.isMoving()) {
+                    var st = 8
+                    for (i in 0..8) {
+                        if (mc.thePlayer.inventory.getStackInSlot(i) == null) {
+                            st = i
+                        }
+                    }
+                    if (mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
+                        if (!released) {
+                            mc.thePlayer.sendQueue.addToSendQueue(
+                                C07PacketPlayerDigging(
+                                    C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                                    BlockPos.ORIGIN,
+                                    EnumFacing.DOWN
+                                )
+                            )
+                            released = true
+                        }
+                        return
+                    } else {
+                        released = false
+                    }
+
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(st))
+
+                    mc.netHandler.addToSendQueue(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,
+                            BlockPos.ORIGIN,
+                            EnumFacing.UP
+                        )
+                    )
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }else{
+                    released = false
+                }
+            }
+
             "aac5" -> if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockingStatus)) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
             }
@@ -219,24 +266,6 @@ class NoSlow : Module() {
                     }
                     "ncp" -> sendPacket(event, true, true, false, 0, false)
                     "custom" -> sendPacket(event, customRelease.get(), customPlace.get(), customDelayValue.get() > 0, customDelayValue.get().toLong(), customOnGround.get())
-                    "watchdog" ->{
-                        if(event.eventState == EventState.POST){
-                            if (mc.thePlayer.ticksExisted % 3 == 2) {
-                                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.getItemInUse()));
-                            }
-                        }
-                        if(event.eventState == EventState.PRE){
-                            if (mc.thePlayer.ticksExisted % 3 === 0) {
-                                mc.netHandler.addToSendQueue(
-                                    C07PacketPlayerDigging(
-                                        C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
-                                        BlockPos.ORIGIN,
-                                        EnumFacing.DOWN
-                                    )
-                                )
-                            }
-                        }
-                    }
                 }
             }
         }
