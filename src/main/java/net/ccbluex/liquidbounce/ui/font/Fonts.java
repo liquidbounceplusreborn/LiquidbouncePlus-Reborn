@@ -63,6 +63,12 @@ public class Fonts {
     @FontDetails(fontName = "Tahoma Bold", fontSize = 30)
     public static GameFontRenderer fontTahoma30;
 
+    @FontDetails(fontName = "noti", fontSize = 85)
+    public static GameFontRenderer NOTIFICATIONS;
+
+    @FontDetails(fontName = "noti2", fontSize = 85)
+    public static GameFontRenderer NOTIFICATIONS2;
+
     public static TTFFontRenderer fontTahomaSmall;
 
     @FontDetails(fontName = "Bangers", fontSize = 45)
@@ -96,6 +102,9 @@ public class Fonts {
         fontTahoma30 = new GameFontRenderer(getFont("TahomaBold.ttf", 30));
         fontTahomaSmall = new TTFFontRenderer(getFont("Tahoma.ttf", 11));
         fontBangers = new GameFontRenderer(getFont("Bangers-Regular.ttf", 45));
+        NOTIFICATIONS = new GameFontRenderer(getFont("noti.ttf", 85));
+        NOTIFICATIONS2 = new GameFontRenderer(getFont("noti2.ttf", 85));
+
 
         try {
             CUSTOM_FONT_RENDERERS.clear();

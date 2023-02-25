@@ -7,11 +7,18 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blue2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blueValue
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.green2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.greenValue
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.red2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.redValue
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
@@ -33,7 +40,14 @@ class Notifications(
      */
     private val exampleNotification = Notification("Notification", "This is an example notification.", NotifyType.INFO)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "IntelliJIDEA","TenacityOld","New"), "Classic")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "IntelliJIDEA","TenacityOld","Novoline"), "Classic")
+        val redValue = IntegerValue("Red", 255, 0, 255)
+        val greenValue = IntegerValue("Green", 255, 0, 255)
+        val blueValue = IntegerValue("Blue", 255, 0, 255)
+        val red2Value = IntegerValue("Red", 255, 0, 255)
+        val green2Value = IntegerValue("Green", 255, 0, 255)
+        val blue2Value = IntegerValue("Blue", 255, 0, 255)
+    
     }
 
     /**
@@ -83,10 +97,6 @@ class Notification(
             .coerceAtLeast(Fonts.fontSFUI35.getStringWidth(this.content)) + 12
     )
     private val notifyDir = "liquidbounce+/notif/intellj/"
-    private val imgSuccess = ResourceLocation("${notifyDir}checkmark.png")
-    private val imgError = ResourceLocation("${notifyDir}error.png")
-    private val imgWarning = ResourceLocation("${notifyDir}warning.png")
-    private val imgInfo = ResourceLocation("${notifyDir}info.png")
     val height = 30
     private var firstY = 0f
     private var firstYz = 0
@@ -170,10 +180,10 @@ class Notification(
             )
             Fonts.fontTahoma.drawString(title, 6F, 4F, -1)
             Fonts.fontSFUI35.drawString(content, 6F, 17F, -1)
-            RenderUtils.drawImage(image, -19,  3, 22, 22)
+            RenderUtils.drawImage(image, -19, 3, 22, 22)
             GlStateManager.resetColor()
         }
-        if(style.equals("IntelliJIDEA")) {
+        if (style.equals("IntelliJIDEA")) {
 
 
             if (nowY != realY) {
@@ -227,24 +237,92 @@ class Notification(
             Stencil.write(true)
 
             if (type == NotifyType.ERROR) {
-                RenderUtils.drawRect(-textLength - 23f + 5, -y.toFloat(), kek + 21f, height.toFloat(), Color(115,69,75).rgb)
-                RenderUtils.drawRect(-textLength.toFloat() - 22f + 5, -y.toFloat() + 1, kek + 20, height.toFloat() - 1, Color(89,61,65).rgb)
-                Fonts.minecraftFont.drawStringWithShadow("IDE Error:", -textLength.toFloat() - 1, -y.toFloat() + 2, Color(249,130,108).rgb)
+                RenderUtils.drawRect(
+                    -textLength - 23f + 5,
+                    -y.toFloat(),
+                    kek + 21f,
+                    height.toFloat(),
+                    Color(115, 69, 75).rgb
+                )
+                RenderUtils.drawRect(
+                    -textLength.toFloat() - 22f + 5,
+                    -y.toFloat() + 1,
+                    kek + 20,
+                    height.toFloat() - 1,
+                    Color(89, 61, 65).rgb
+                )
+                Fonts.minecraftFont.drawStringWithShadow(
+                    "IDE Error:",
+                    -textLength.toFloat() - 1,
+                    -y.toFloat() + 2,
+                    Color(249, 130, 108).rgb
+                )
             }
             if (type == NotifyType.INFO) {
-                RenderUtils.drawRect(-textLength - 23f + 5, -y.toFloat(), textLength.toFloat() - 152, height.toFloat(), Color(70,94,115).rgb)
-                RenderUtils.drawRect(-textLength.toFloat() - 22f + 5, -y + 1f, textLength.toFloat() - 153, height.toFloat() - 1, Color(61,72,87).rgb)
-                Fonts.minecraftFont.drawStringWithShadow("IDE Information:", -textLength.toFloat() - 1, -y.toFloat() + 2, Color(119,145,147).rgb)
+                RenderUtils.drawRect(
+                    -textLength - 23f + 5,
+                    -y.toFloat(),
+                    textLength.toFloat() - 152,
+                    height.toFloat(),
+                    Color(70, 94, 115).rgb
+                )
+                RenderUtils.drawRect(
+                    -textLength.toFloat() - 22f + 5,
+                    -y + 1f,
+                    textLength.toFloat() - 153,
+                    height.toFloat() - 1,
+                    Color(61, 72, 87).rgb
+                )
+                Fonts.minecraftFont.drawStringWithShadow(
+                    "IDE Information:",
+                    -textLength.toFloat() - 1,
+                    -y.toFloat() + 2,
+                    Color(119, 145, 147).rgb
+                )
             }
             if (type == NotifyType.SUCCESS) {
-                RenderUtils.drawRect(-textLength - 23f + 5, -y.toFloat(), kek + 21f, height.toFloat(), Color(67,104,67).rgb)
-                RenderUtils.drawRect(-textLength.toFloat() - 22f + 5, -y + 1f, kek + 20, height.toFloat() - 1, Color(55,78,55).rgb)
-                Fonts.minecraftFont.drawStringWithShadow("IDE Success:", -textLength.toFloat() - 1, -y.toFloat() + 2, Color(10,142,2).rgb)
+                RenderUtils.drawRect(
+                    -textLength - 23f + 5,
+                    -y.toFloat(),
+                    kek + 21f,
+                    height.toFloat(),
+                    Color(67, 104, 67).rgb
+                )
+                RenderUtils.drawRect(
+                    -textLength.toFloat() - 22f + 5,
+                    -y + 1f,
+                    kek + 20,
+                    height.toFloat() - 1,
+                    Color(55, 78, 55).rgb
+                )
+                Fonts.minecraftFont.drawStringWithShadow(
+                    "IDE Success:",
+                    -textLength.toFloat() - 1,
+                    -y.toFloat() + 2,
+                    Color(10, 142, 2).rgb
+                )
             }
             if (type == NotifyType.WARNING) {
-                RenderUtils.drawRect(-textLength - 23f + 5, -y.toFloat(), kek + 21f, height.toFloat(), Color(103,103,63).rgb)
-                RenderUtils.drawRect(-textLength.toFloat() - 22f + 5, -y + 1f, kek + 20, height.toFloat() - 1, Color(80,80,57).rgb)
-                Fonts.minecraftFont.drawStringWithShadow("IDE Warning:", -textLength.toFloat() - 1, -y.toFloat() + 2, Color(175,163,0).rgb)
+                RenderUtils.drawRect(
+                    -textLength - 23f + 5,
+                    -y.toFloat(),
+                    kek + 21f,
+                    height.toFloat(),
+                    Color(103, 103, 63).rgb
+                )
+                RenderUtils.drawRect(
+                    -textLength.toFloat() - 22f + 5,
+                    -y + 1f,
+                    kek + 20,
+                    height.toFloat() - 1,
+                    Color(80, 80, 57).rgb
+                )
+                Fonts.minecraftFont.drawStringWithShadow(
+                    "IDE Warning:",
+                    -textLength.toFloat() - 1,
+                    -y.toFloat() + 2,
+                    Color(175, 163, 0).rgb
+                )
             }
             Stencil.erase(true)
 
@@ -382,78 +460,129 @@ class Notification(
 
             return false
         }
-        if (style.equals("New")) {
-            val pn = ResourceLocation(
-                when (type.name) {
-                    "SUCCESS" -> "liquidbounce+/noti/SUCCESS.png"
-                    "ERROR" -> "liquidbounce+/noti/ERROR.png"
-                    "WARNING" -> "liquidbounce+/noti/WARNING.png"
-                    "INFO" -> "liquidbounce+/noti/INFO.png"
-                    else -> "liquidbounce+/error/error1.png"
-                }
-            )
-            var width = 100.coerceAtLeast((Fonts.fontSFUI35.getStringWidth(this.content))+22)
-            val realY = -(index+1) * height
-            val nowTime = System.currentTimeMillis()
-            var transY = nowY.toDouble()
+        if (style.equals("Novoline")) {
+            val image = ResourceLocation("liquidbounce+/ui/" + type.name + ".png")
+            val width = 100.coerceAtLeast((Fonts.font35.getStringWidth(this.content)) + 70)
 
-            // Y-Axis Animation
+            //Y-Axis Animation
             if (nowY != realY) {
                 var pct = (nowTime - animeYTime) / animeTime.toDouble()
-                if (pct> 1) {
+                if (pct > 1) {
                     nowY = realY
                     pct = 1.0
                 } else {
-                    pct = EaseUtils.easeOutExpo(pct)
+                    pct = EaseUtils.easeOutBack(pct)
                 }
-                transY += (realY - nowY) * pct
+                GL11.glTranslated(0.0, (realY - nowY) * pct, 0.0)
             } else {
                 animeYTime = nowTime
             }
+            GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
 
-            // X-Axis Animation
+            //X-Axis Animation
             var pct = (nowTime - animeXTime) / animeTime.toDouble()
             when (fadeState) {
                 FadeState.IN -> {
-                    if (pct> 1) {
+                    if (pct > 1) {
                         fadeState = FadeState.STAY
                         animeXTime = nowTime
                         pct = 1.0
                     }
-                    pct = EaseUtils.easeOutExpo(pct)
+                    pct = EaseUtils.easeOutBack(pct)
                 }
 
                 FadeState.STAY -> {
                     pct = 1.0
-                    if ((nowTime - animeXTime)> time) {
+                    if ((nowTime - animeXTime) > time) {
                         fadeState = FadeState.OUT
                         animeXTime = nowTime
                     }
                 }
 
                 FadeState.OUT -> {
-                    if (pct> 1) {
+                    if (pct > 1) {
                         fadeState = FadeState.END
                         animeXTime = nowTime
                         pct = 1.0
                     }
-                    pct = 1 - EaseUtils.easeInExpo(pct)
+                    pct = 1 - EaseUtils.easeInBack(pct)
                 }
 
                 FadeState.END -> {
                     return true
                 }
             }
-            val transX = width - (width * pct) - width
-            GL11.glTranslated(transX, transY, 0.0)
+            GL11.glScaled(pct, pct, pct)
+            GL11.glTranslatef(-width.toFloat() / 2, -height.toFloat() / 2, 0F)
+            RenderUtils.drawShadow(1F, 0F, width.toFloat() - 1, height.toFloat())
+            RenderUtils.drawRect(1F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 50))
+            fun drawCircle(x: Float, y: Float, radius: Float, start: Int, end: Int) {
+                GlStateManager.enableBlend()
+                GlStateManager.disableTexture2D()
+                GlStateManager.tryBlendFuncSeparate(
+                    GL11.GL_SRC_ALPHA,
+                    GL11.GL_ONE_MINUS_SRC_ALPHA,
+                    GL11.GL_ONE,
+                    GL11.GL_ZERO
+                )
+                GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                GL11.glLineWidth(2f)
+                GL11.glBegin(GL11.GL_LINE_STRIP)
+                var i = end.toFloat()
+                while (i >= start) {
+                    var c = RenderUtils.getGradientOffset(
+                        Color(redValue.get(), greenValue.get(), blueValue.get()),
+                        Color(red2Value.get(), green2Value.get(), blue2Value.get(), 1),
+                        (Math.abs(System.currentTimeMillis() / 360.0 + (i * 34 / 360) * 56 / 100) / 10)
+                    ).rgb
+                    val f2 = (c shr 24 and 255).toFloat() / 255.0f
+                    val f22 = (c shr 16 and 255).toFloat() / 255.0f
+                    val f3 = (c shr 8 and 255).toFloat() / 255.0f
+                    val f4 = (c and 255).toFloat() / 255.0f
+                    GlStateManager.color(f22, f3, f4, f2)
+                    GL11.glVertex2f(
+                        (x + Math.cos(i * Math.PI / 180) * (radius * 1.001f)).toFloat(),
+                        (y + Math.sin(i * Math.PI / 180) * (radius * 1.001f)).toFloat()
+                    )
+                    i -= 360f / 90.0f
+                }
+                GL11.glEnd()
+                GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                GlStateManager.enableTexture2D()
+                GlStateManager.disableBlend()
+            }
 
-            RenderUtils.drawRect(0f,-1f,width.toFloat(),height.toFloat()-10f,Color(0,0,0,120).rgb)
-            RenderUtils.drawShadow(0f,-1f,width.toFloat(),height.toFloat() - 9f)
-            RenderUtils.drawImage(pn, 2, 1, 16, 16)
-            Fonts.fontSFUI35.drawString(content, 20.0f, Fonts.fontSFUI35.FONT_HEIGHT/2f, Color.WHITE.rgb, false)
+            RenderUtils.drawFilledCircle(16f, 15f, 12.85f, Color(255, 255, 255, 255))
+            RenderUtils.drawGradientSideways(
+                1.0,
+                height.toFloat() + 0.0,
+                width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 0.0,
+                height.toFloat() + 2.0,
+                Color(redValue.get(), greenValue.get(), blueValue.get()).rgb,
+                Color(red2Value.get(), green2Value.get(), blue2Value.get()).rgb
+            )
+            drawCircle(16f, 15f, 13f, 0, 360)
+            if (type == NotifyType.INFO) {
+                Fonts.NOTIFICATIONS.drawString("B", 11F, 8F, 0)
+            } else if (type == NotifyType.WARNING) {
+                Fonts.NOTIFICATIONS.drawString("A", 14F, 8F, 0)
+            } else if (type == NotifyType.ERROR) {
+                Fonts.NOTIFICATIONS2.drawString("L", 9F, 10F, 0)
+            } else {
+                Fonts.NOTIFICATIONS2.drawString("M", 8F, 10F, 0)
+            }
+            Fonts.fontSFUI40.drawString(title, 34F, 4F, -1)
+            Fonts.fontSFUI35.drawString(
+                content + "  (" + BigDecimal(((time - time * ((nowTime - displayTime) / (animeTime * 2F + time))) / 1000).toDouble()).setScale(
+                    1,
+                    BigDecimal.ROUND_HALF_UP
+                ).toString() + "s)", 34F, 17F, -1
+            )
+
+
+            GlStateManager.resetColor()
             return false
         }
-
         return false
     }
 }
