@@ -50,8 +50,6 @@ import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import static net.minecraft.util.MathHelper.wrapAngleTo180_float;
-
 @ModuleInfo(name = "Scaffold", description = "Automatically places blocks beneath your feet.", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_I)
 public class Scaffold extends Module {
 
@@ -59,28 +57,34 @@ public class Scaffold extends Module {
      * OPTIONS (Tower)
      */
     // Global settings
+    private final BoolValue towerEnabled = new BoolValue("EnableTower", false);
     private final ListValue towerModeValue = new ListValue("TowerMode", new String[]{
             "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus","NCP"
-    }, "Motion");
-    private final BoolValue noMoveOnlyValue = new BoolValue("NoMove", true);
-    private final BoolValue towerNoSprint = new BoolValue("NoSprintTower", true);
+    }, "Motion", () -> towerEnabled.get());
+
+    private final BoolValue noMoveOnlyValue = new BoolValue("NoMove", true, () -> towerEnabled.get());
+    private final BoolValue stopWhenBlockAbove = new BoolValue("StopWhenBlockAbove", false, () -> towerEnabled.get());
+    private final FloatValue towerTimerValue = new FloatValue("TowerTimer", 1F, 0.1F, 10F, () -> towerEnabled.get());
 
     // Jump mode
-    private final FloatValue jumpMotionValue = new FloatValue("JumpMotion", 0.42F, 0.3681289F, 0.79F, () -> towerModeValue.get().equalsIgnoreCase("Jump"));
+    private final FloatValue jumpMotionValue = new FloatValue("JumpMotion", 0.42F, 0.3681289F, 0.79F, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("Jump"));
+    private final IntegerValue jumpDelayValue = new IntegerValue("JumpDelay", 0, 0, 20, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("Jump"));
+
     // StableMotion
-    private final FloatValue stableMotionValue = new FloatValue("StableMotion", 0.41982F, 0.1F, 1F, () -> towerModeValue.get().equalsIgnoreCase("StableMotion"));
-    private final BoolValue stableStopValue = new BoolValue("StableStop", false, () -> towerModeValue.get().equalsIgnoreCase("StableMotion"));
-    private final IntegerValue stableStopDelayValue = new IntegerValue("StableStopDelay", 1500, 0, 5000, () -> towerModeValue.get().equalsIgnoreCase("StableMotion") && stableStopValue.get());
+    private final FloatValue stableMotionValue = new FloatValue("StableMotion", 0.41982F, 0.1F, 1F, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("StableMotion"));
+    private final BoolValue stableFakeJumpValue = new BoolValue("StableFakeJump", false, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("StableMotion"));
+    private final BoolValue stableStopValue = new BoolValue("StableStop", false, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("StableMotion"));
+    private final IntegerValue stableStopDelayValue = new IntegerValue("StableStopDelay", 1500, 0, 5000, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("StableMotion") && stableStopValue.get());
 
     // ConstantMotion
-    private final FloatValue constantMotionValue = new FloatValue("ConstantMotion", 0.42F, 0.1F, 1F, () -> towerModeValue.get().equalsIgnoreCase("ConstantMotion"));
-    private final FloatValue constantMotionJumpGroundValue = new FloatValue("ConstantMotionJumpGround", 0.79F, 0.76F, 1F, () -> towerModeValue.get().equalsIgnoreCase("ConstantMotion"));
+    private final FloatValue constantMotionValue = new FloatValue("ConstantMotion", 0.42F, 0.1F, 1F, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("ConstantMotion"));
+    private final FloatValue constantMotionJumpGroundValue = new FloatValue("ConstantMotionJumpGround", 0.79F, 0.76F, 1F, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("ConstantMotion"));
 
     // Teleport
-    private final FloatValue teleportHeightValue = new FloatValue("TeleportHeight", 1.15F, 0.1F, 5F, () -> towerModeValue.get().equalsIgnoreCase("Teleport"));
-    private final IntegerValue teleportDelayValue = new IntegerValue("TeleportDelay", 0, 0, 20, () -> towerModeValue.get().equalsIgnoreCase("Teleport"));
-    private final BoolValue teleportGroundValue = new BoolValue("TeleportGround", true, () -> towerModeValue.get().equalsIgnoreCase("Teleport"));
-    private final BoolValue teleportNoMotionValue = new BoolValue("TeleportNoMotion", false, () -> towerModeValue.get().equalsIgnoreCase("Teleport"));
+    private final FloatValue teleportHeightValue = new FloatValue("TeleportHeight", 1.15F, 0.1F, 5F, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("Teleport"));
+    private final IntegerValue teleportDelayValue = new IntegerValue("TeleportDelay", 0, 0, 20, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("Teleport"));
+    private final BoolValue teleportGroundValue = new BoolValue("TeleportGround", true, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("Teleport"));
+    private final BoolValue teleportNoMotionValue = new BoolValue("TeleportNoMotion", false, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("Teleport"));
 
     /**
      * OPTIONS (Scaffold)
@@ -122,7 +126,6 @@ public class Scaffold extends Module {
     // Basic stuff
     private final BoolValue swingValue = new BoolValue("Swing", true);
     private final BoolValue downValue = new BoolValue("Down", false);
-    private final BoolValue searchValue = new BoolValue("Search", true);
     private final ListValue placeModeValue = new ListValue("PlaceTiming", new String[]{"Pre", "Post"}, "Post");
 
     // Eagle
@@ -138,7 +141,7 @@ public class Scaffold extends Module {
     // Rotations
     private final BoolValue rotationsValue = new BoolValue("Rotations", true);
     private final BoolValue noHitCheckValue = new BoolValue("NoHitCheck", false, () -> rotationsValue.get());
-    public final ListValue rotationModeValue = new ListValue("RotationMode", new String[]{"Normal", "AAC","Backward","Static", "Static2", "Static3", "Spin", "Custom"}, "Normal"); // searching reason
+    public final ListValue rotationModeValue = new ListValue("RotationMode", new String[]{"Normal", "AAC", "Static", "Static2", "Static3", "Spin", "Custom"}, "Normal"); // searching reason
     public final ListValue rotationLookupValue = new ListValue("RotationLookup", new String[]{"Normal", "AAC", "Same"}, "Normal");
 
     private final FloatValue maxTurnSpeed = new FloatValue("MaxTurnSpeed", 180F, 0F, 180F, "°", () -> rotationsValue.get()) {
@@ -164,7 +167,7 @@ public class Scaffold extends Module {
     private final FloatValue staticPitchValue = new FloatValue("Static-Pitch", 86F, 80F, 90F, "°", () -> rotationModeValue.get().toLowerCase().startsWith("static"));
 
     private final FloatValue customYawValue = new FloatValue("Custom-Yaw", 135F, -180F, 180F, "°", () -> rotationModeValue.get().equalsIgnoreCase("custom"));
-    private final FloatValue customPitchValue = new FloatValue("Custom-Pitch", 86F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("custom") || rotationModeValue.get().equalsIgnoreCase("backward"));
+    private final FloatValue customPitchValue = new FloatValue("Custom-Pitch", 86F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("custom"));
 
     private final FloatValue speenSpeedValue = new FloatValue("Spin-Speed", 5F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("spin"));
     private final FloatValue speenPitchValue = new FloatValue("Spin-Pitch", 90F, -90F, 90F, "°", () -> rotationModeValue.get().equalsIgnoreCase("spin"));
@@ -176,25 +179,25 @@ public class Scaffold extends Module {
     private final ListValue placeConditionValue = new ListValue("Place-Condition", new String[]{"Air", "FallDown", "NegativeMotion", "Always"}, "Always");
 
     private final BoolValue rotationStrafeValue = new BoolValue("RotationStrafe", false);
-    private final BoolValue SlowDown = new BoolValue("SlowDown", true);
+    private final BoolValue speedPotSlow = new BoolValue("SpeedPotDetect", true);
     // Zitter
-    private final BoolValue zitterValue = new BoolValue("Zitter", false);
-    private final ListValue zitterModeValue = new ListValue("ZitterMode", new String[]{"Teleport", "Smooth"}, "Teleport", () -> zitterValue.get());
-    private final FloatValue zitterSpeed = new FloatValue("ZitterSpeed", 0.13F, 0.1F, 0.3F, () -> zitterValue.get() && zitterModeValue.get().equalsIgnoreCase("teleport"));
-    private final FloatValue zitterStrength = new FloatValue("ZitterStrength", 0.072F, 0.05F, 0.2F, () -> zitterValue.get() && zitterModeValue.get().equalsIgnoreCase("teleport"));
-    private final IntegerValue zitterDelay = new IntegerValue("ZitterDelay", 100, 0, 500, "ms", () -> zitterValue.get() && zitterModeValue.get().equalsIgnoreCase("smooth"));
+    private final BoolValue zitterValue = new BoolValue("Zitter", false, () -> !isTowerOnly());
+    private final ListValue zitterModeValue = new ListValue("ZitterMode", new String[]{"Teleport", "Smooth"}, "Teleport", () -> !isTowerOnly() && zitterValue.get());
+    private final FloatValue zitterSpeed = new FloatValue("ZitterSpeed", 0.13F, 0.1F, 0.3F, () -> !isTowerOnly() && zitterValue.get() && zitterModeValue.get().equalsIgnoreCase("teleport"));
+    private final FloatValue zitterStrength = new FloatValue("ZitterStrength", 0.072F, 0.05F, 0.2F, () -> !isTowerOnly() && zitterValue.get() && zitterModeValue.get().equalsIgnoreCase("teleport"));
+    private final IntegerValue zitterDelay = new IntegerValue("ZitterDelay", 100, 0, 500, "ms", () -> !isTowerOnly() && zitterValue.get() && zitterModeValue.get().equalsIgnoreCase("smooth"));
 
     // Game
-    private final FloatValue timerValue = new FloatValue("Timer", 1F, 0.1F, 10F);
+    private final FloatValue timerValue = new FloatValue("Timer", 1F, 0.1F, 10F, () -> !isTowerOnly());
     public final FloatValue speedModifierValue = new FloatValue("SpeedModifier", 1F, 0, 2F, "x");
     public final FloatValue xzMultiplier = new FloatValue("XZ-Multiplier", 1F, 0F, 4F, "x");
     private final BoolValue customSpeedValue = new BoolValue("CustomSpeed", false);
     private final FloatValue customMoveSpeedValue = new FloatValue("CustomMoveSpeed", 0.3F, 0, 5F, () -> customSpeedValue.get());
 
     // Safety
-    private final BoolValue sameYValue = new BoolValue("SameY", false);
-    private final BoolValue autoJumpValue = new BoolValue("AutoJump", false);
-    private final BoolValue smartSpeedValue = new BoolValue("SmartSpeed", false);
+    private final BoolValue sameYValue = new BoolValue("SameY", false, () -> !towerEnabled.get());
+    private final BoolValue autoJumpValue = new BoolValue("AutoJump", false, () -> !isTowerOnly());
+    private final BoolValue smartSpeedValue = new BoolValue("SmartSpeed", false, () -> !isTowerOnly());
     private final BoolValue safeWalkValue = new BoolValue("SafeWalk", true);
     private final BoolValue airSafeValue = new BoolValue("AirSafe", false, () -> safeWalkValue.get());
     private final BoolValue autoDisableSpeedValue = new BoolValue("AutoDisable-Speed", true);
@@ -216,7 +219,7 @@ public class Scaffold extends Module {
      */
 
     // Target block
-    private PlaceInfo targetPlace;
+    private PlaceInfo targetPlace, towerPlace;
 
     // Launch position
     private int launchY;
@@ -258,7 +261,15 @@ public class Scaffold extends Module {
     private int verusState = 0;
     private boolean verusJumped = false;
     private int ticks, towerTicks;
-    
+
+    public boolean isTowerOnly() {
+        return (towerEnabled.get());
+    }
+
+    public boolean towerActivation() {
+        return towerEnabled.get() && mc.gameSettings.keyBindJump.isKeyDown();
+    }
+
     /**
      * Enable module
      */
@@ -288,159 +299,164 @@ public class Scaffold extends Module {
     }
 
     /**
+     * Move player
+     */
+    private void move(MotionEvent event) {
+        if (noMoveOnlyValue.get()) {
+            mc.thePlayer.motionX = mc.thePlayer.motionZ = 0;
+            return;
+        }
+        switch (towerModeValue.get().toLowerCase()) {
+            case "jump":
+                if (mc.thePlayer.onGround && timer.hasTimePassed(jumpDelayValue.get())) {
+                    fakeJump();
+                    mc.thePlayer.motionY = jumpMotionValue.get();
+                    timer.reset();
+                }
+                break;
+            case "motion":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    mc.thePlayer.motionY = 0.42D;
+                } else if (mc.thePlayer.motionY < 0.1D) mc.thePlayer.motionY = -0.3D;
+                break;
+            case "motiontp":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    mc.thePlayer.motionY = 0.42D;
+                } else if (mc.thePlayer.motionY < 0.23D)
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, (int) mc.thePlayer.posY, mc.thePlayer.posZ);
+                break;
+            case "packet":
+                if (mc.thePlayer.onGround && timer.hasTimePassed(2)) {
+                    fakeJump();
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+                            mc.thePlayer.posY + 0.42D, mc.thePlayer.posZ, false));
+                    mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
+                            mc.thePlayer.posY + 0.76D, mc.thePlayer.posZ, false));
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.08D, mc.thePlayer.posZ);
+                    timer.reset();
+                }
+                break;
+            case "teleport":
+                if (teleportNoMotionValue.get())
+                    mc.thePlayer.motionY = 0;
+
+                if ((mc.thePlayer.onGround || !teleportGroundValue.get()) && timer.hasTimePassed(teleportDelayValue.get())) {
+                    fakeJump();
+                    mc.thePlayer.setPositionAndUpdate(mc.thePlayer.posX, mc.thePlayer.posY + teleportHeightValue.get(), mc.thePlayer.posZ);
+                    timer.reset();
+                }
+                break;
+            case "stablemotion":
+                if (stableFakeJumpValue.get())
+                    fakeJump();
+                mc.thePlayer.motionY = stableMotionValue.get();
+                if (stableStopValue.get() && towerDelayTimer.hasTimePassed(stableStopDelayValue.get())) {
+                    mc.thePlayer.motionY = -0.28D;
+                    towerDelayTimer.reset();
+                }
+                break;
+            case "constantmotion":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    jumpGround = mc.thePlayer.posY;
+                    mc.thePlayer.motionY = constantMotionValue.get();
+                }
+
+                if (mc.thePlayer.posY > jumpGround + constantMotionJumpGroundValue.get()) {
+                    fakeJump();
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, (int) mc.thePlayer.posY, mc.thePlayer.posZ);
+                    mc.thePlayer.motionY = constantMotionValue.get();
+                    jumpGround = mc.thePlayer.posY;
+                }
+                break;
+            case "aac3.3.9":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    mc.thePlayer.motionY = 0.4001;
+                }
+                mc.timer.timerSpeed = 1F;
+
+                if (mc.thePlayer.motionY < 0) {
+                    mc.thePlayer.motionY -= 0.00000945;
+                    mc.timer.timerSpeed = 1.6F;
+                }
+
+            case "aac3.6.4":
+                if (mc.thePlayer.ticksExisted % 4 == 1) {
+                    mc.thePlayer.motionY = 0.4195464;
+                    mc.thePlayer.setPosition(mc.thePlayer.posX - 0.035, mc.thePlayer.posY, mc.thePlayer.posZ);
+                } else if (mc.thePlayer.ticksExisted % 4 == 0) {
+                    mc.thePlayer.motionY = -0.5;
+                    mc.thePlayer.setPosition(mc.thePlayer.posX + 0.035, mc.thePlayer.posY, mc.thePlayer.posZ);
+                }
+                break;
+            case "verus": // thanks ratted client
+                if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(0, -0.01, 0)).isEmpty() && mc.thePlayer.onGround && mc.thePlayer.isCollidedVertically) {
+                    verusState = 0;
+                    verusJumped = true;
+                }
+                if (verusJumped) {
+                    MovementUtils.strafe();
+                    switch (verusState) {
+                        case 0:
+                            fakeJump();
+                            mc.thePlayer.motionY = 0.41999998688697815;
+                            ++verusState;
+                            break;
+                        case 1:
+                            ++verusState;
+                            break;
+                        case 2:
+                            ++verusState;
+                            break;
+                        case 3:
+                            event.setOnGround(true);
+                            mc.thePlayer.motionY = 0.0;
+                            ++verusState;
+                            break;
+                        case 4:
+                            ++verusState;
+                            break;
+                    }
+                    verusJumped = false;
+                }
+                verusJumped = true;
+                break;
+            case "ncp":
+                if (mc.thePlayer.onGround) {
+                    fakeJump();
+                    towerTicks = 0;
+                }
+                int IntPosY = (int) mc.thePlayer.posY;
+                if (mc.thePlayer.posY - IntPosY < 0.05) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, IntPosY, mc.thePlayer.posZ);
+                    mc.thePlayer.motionY = 0.42;
+                    towerTicks = 1;
+                } else if (towerTicks == 1) {
+                    mc.thePlayer.motionY = 0.34;
+                    towerTicks++;
+                } else if (towerTicks == 2) {
+                    mc.thePlayer.motionY = 0.25;
+                    towerTicks++;
+                }
+                break;
+        }
+    }
+
+    /**
      * Update event
      *
      * @param event
      */
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
-        
-        if (mc.gameSettings.keyBindJump.pressed) {
+
+        if (towerActivation()) {
             shouldGoDown = false;
             mc.gameSettings.keyBindSneak.pressed = false;
-            if(towerNoSprint.get()) {
-                mc.thePlayer.setSprinting(false);
-            }
-            if(noMoveOnlyValue.get()){
-                mc.thePlayer.motionX = 0;
-                mc.thePlayer.motionZ = 0;
-            }
-            switch (towerModeValue.get().toLowerCase()) {
-                case "jump":
-                    if (mc.thePlayer.onGround) {
-                        fakeJump();
-                        mc.thePlayer.motionY = jumpMotionValue.get();
-                        timer.reset();
-                    }
-                    break;
-                case "motion":
-                    if (mc.thePlayer.onGround) {
-                        fakeJump();
-                        mc.thePlayer.motionY = 0.42D;
-                    } else if (mc.thePlayer.motionY < 0.1D) mc.thePlayer.motionY = -0.3D;
-                    break;
-                case "motiontp":
-                    if (mc.thePlayer.onGround) {
-                        fakeJump();
-                        mc.thePlayer.motionY = 0.42D;
-                    } else if (mc.thePlayer.motionY < 0.23D)
-                        mc.thePlayer.setPosition(mc.thePlayer.posX, (int) mc.thePlayer.posY, mc.thePlayer.posZ);
-                    break;
-                case "packet":
-                    if (mc.thePlayer.onGround && timer.hasTimePassed(2)) {
-                        fakeJump();
-                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
-                                mc.thePlayer.posY + 0.42D, mc.thePlayer.posZ, false));
-                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,
-                                mc.thePlayer.posY + 0.76D, mc.thePlayer.posZ, false));
-                        mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 1.08D, mc.thePlayer.posZ);
-                        timer.reset();
-                    }
-                    break;
-                case "teleport":
-                    if (teleportNoMotionValue.get())
-                        mc.thePlayer.motionY = 0;
-
-                    if ((mc.thePlayer.onGround || !teleportGroundValue.get()) && timer.hasTimePassed(teleportDelayValue.get())) {
-                        fakeJump();
-                        mc.thePlayer.setPositionAndUpdate(mc.thePlayer.posX, mc.thePlayer.posY + teleportHeightValue.get(), mc.thePlayer.posZ);
-                        timer.reset();
-                    }
-                    break;
-                case "stablemotion":
-                    fakeJump();
-                    mc.thePlayer.motionY = stableMotionValue.get();
-                    if (stableStopValue.get() && towerDelayTimer.hasTimePassed(stableStopDelayValue.get())) {
-                        mc.thePlayer.motionY = -0.28D;
-                        towerDelayTimer.reset();
-                    }
-                    break;
-                case "constantmotion":
-                    if (mc.thePlayer.onGround) {
-                        fakeJump();
-                        jumpGround = mc.thePlayer.posY;
-                        mc.thePlayer.motionY = constantMotionValue.get();
-                    }
-
-                    if (mc.thePlayer.posY > jumpGround + constantMotionJumpGroundValue.get()) {
-                        fakeJump();
-                        mc.thePlayer.setPosition(mc.thePlayer.posX, (int) mc.thePlayer.posY, mc.thePlayer.posZ);
-                        mc.thePlayer.motionY = constantMotionValue.get();
-                        jumpGround = mc.thePlayer.posY;
-                    }
-                    break;
-                case "aac3.3.9":
-                    if (mc.thePlayer.onGround) {
-                        fakeJump();
-                        mc.thePlayer.motionY = 0.4001;
-                    }
-                    mc.timer.timerSpeed = 1F;
-
-                    if (mc.thePlayer.motionY < 0) {
-                        mc.thePlayer.motionY -= 0.00000945;
-                        mc.timer.timerSpeed = 1.6F;
-                    }
-
-                case "aac3.6.4":
-                    if (mc.thePlayer.ticksExisted % 4 == 1) {
-                        mc.thePlayer.motionY = 0.4195464;
-                        mc.thePlayer.setPosition(mc.thePlayer.posX - 0.035, mc.thePlayer.posY, mc.thePlayer.posZ);
-                    } else if (mc.thePlayer.ticksExisted % 4 == 0) {
-                        mc.thePlayer.motionY = -0.5;
-                        mc.thePlayer.setPosition(mc.thePlayer.posX + 0.035, mc.thePlayer.posY, mc.thePlayer.posZ);
-                    }
-                    break;
-                case "verus": // thanks ratted client
-                    if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(0, -0.01, 0)).isEmpty() && mc.thePlayer.onGround && mc.thePlayer.isCollidedVertically) {
-                        verusState = 0;
-                        verusJumped = true;
-                    }
-                    if (verusJumped) {
-                        MovementUtils.strafe();
-                        switch (verusState) {
-                            case 0:
-                                fakeJump();
-                                mc.thePlayer.motionY = 0.41999998688697815;
-                                ++verusState;
-                                break;
-                            case 1:
-                                ++verusState;
-                                break;
-                            case 2:
-                                ++verusState;
-                                break;
-                            case 3:
-                                mc.thePlayer.onGround = true;
-                                mc.thePlayer.motionY = 0.0;
-                                ++verusState;
-                                break;
-                            case 4:
-                                ++verusState;
-                                break;
-                        }
-                        verusJumped = false;
-                    }
-                    verusJumped = true;
-                    break;
-                case "ncp":
-                    if (mc.thePlayer.onGround) {
-                        fakeJump();
-                        towerTicks = 0;
-                    }
-                    int IntPosY = (int) mc.thePlayer.posY;
-                    if (mc.thePlayer.posY - IntPosY < 0.05) {
-                        mc.thePlayer.setPosition(mc.thePlayer.posX, IntPosY, mc.thePlayer.posZ);
-                        mc.thePlayer.motionY = 0.42;
-                        towerTicks = 1;
-                    } else if (towerTicks == 1) {
-                        mc.thePlayer.motionY = 0.34;
-                        towerTicks++;
-                    } else if (towerTicks == 2) {
-                        mc.thePlayer.motionY = 0.25;
-                        towerTicks++;
-                    }
-                    break;
-            }
+            mc.thePlayer.setSprinting(false);
         }
 
         if (sprintModeValue.get().equalsIgnoreCase("PlaceOff")) {
@@ -580,7 +596,7 @@ public class Scaffold extends Module {
     //took it from applyrotationstrafe XD. staticyaw comes from bestnub.
     public void onStrafe(final StrafeEvent event) {
         if (lookupRotation != null && rotationStrafeValue.get()) {
-            final int dif = (int) ((wrapAngleTo180_float(mc.thePlayer.rotationYaw - lookupRotation.getYaw() - 23.5F - 135) + 180) / 45);
+            final int dif = (int) ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - lookupRotation.getYaw() - 23.5F - 135) + 180) / 45);
 
             final float yaw = lookupRotation.getYaw();
             final float strafe = event.getStrafe();
@@ -681,7 +697,7 @@ public class Scaffold extends Module {
         boolean placeWhenFall = placeConditionValue.get().equalsIgnoreCase("falldown");
         boolean placeWhenNegativeMotion = placeConditionValue.get().equalsIgnoreCase("negativemotion");
         boolean alwaysPlace = placeConditionValue.get().equalsIgnoreCase("always");
-        return  alwaysPlace || (placeWhenAir && !mc.thePlayer.onGround) || (placeWhenFall && mc.thePlayer.fallDistance > 0) || (placeWhenNegativeMotion && mc.thePlayer.motionY < 0);
+        return towerActivation() || alwaysPlace || (placeWhenAir && !mc.thePlayer.onGround) || (placeWhenFall && mc.thePlayer.fallDistance > 0) || (placeWhenNegativeMotion && mc.thePlayer.motionY < 0);
     }
 
     @EventTarget
@@ -690,7 +706,7 @@ public class Scaffold extends Module {
         mc.thePlayer.motionX *= xzMultiplier.get();
         mc.thePlayer.motionZ *= xzMultiplier.get();
 
-        if (SlowDown.get()) {
+        if (speedPotSlow.get()) {
             if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                 mc.thePlayer.motionX = mc.thePlayer.motionX * 0.85F;
                 mc.thePlayer.motionZ = mc.thePlayer.motionZ * 0.85F;
@@ -701,7 +717,7 @@ public class Scaffold extends Module {
         if (rotationsValue.get() && keepRotationValue.get() && lockRotation != null) {
             if (rotationModeValue.get().equalsIgnoreCase("spin")) {
                 spinYaw += speenSpeedValue.get();
-                spinYaw = wrapAngleTo180_float(spinYaw);
+                spinYaw = MathHelper.wrapAngleTo180_float(spinYaw);
                 speenRotation = new Rotation(spinYaw, speenPitchValue.get());
                 RotationUtils.setTargetRotation(speenRotation);
             } else if (lockRotation != null)
@@ -722,31 +738,55 @@ public class Scaffold extends Module {
             place(false);
         }
 
+        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && eventState == EventState.POST && towerActivation()) {
+            place(false);
+        }
+
         if (eventState == EventState.PRE) {
             if (!shouldPlace() || (!autoBlockMode.get().equalsIgnoreCase("Off") ? InventoryUtils.findAutoBlockBlock() == -1 : mc.thePlayer.getHeldItem() == null ||
                     !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock)))
                 return;
 
-            findBlock(mode.equalsIgnoreCase("expand"));
+            findBlock(mode.equalsIgnoreCase("expand") && !towerActivation());
         }
 
         if (targetPlace == null) {
             if (placeableDelay.get())
                 delayTimer.reset();
         }
-        
-        if (eventState == EventState.PRE) {
+
+        if (!towerActivation()) {
+            verusState = 0;
+            towerPlace = null;
+            return;
+        }
+
+        mc.timer.timerSpeed = towerTimerValue.get();
+
+        if (placeModeValue.get().equalsIgnoreCase(eventState.getStateName())) place(true);
+
+        if (eventState == EventState.POST) {
+            towerPlace = null;
             timer.update();
 
             final boolean isHeldItemBlock = mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock;
             if (InventoryUtils.findAutoBlockBlock() != -1 || isHeldItemBlock) {
                 launchY = (int)mc.thePlayer.posY;
 
+                if (towerModeValue.get().equalsIgnoreCase("verus") || !stopWhenBlockAbove.get() || BlockUtils.getBlock(new BlockPos(mc.thePlayer.posX,
+                        mc.thePlayer.posY + 2, mc.thePlayer.posZ)) instanceof BlockAir) {
+                    move(event);
+                }
+
                 final BlockPos blockPos = new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1D, mc.thePlayer.posZ);
                 if (mc.theWorld.getBlockState(blockPos).getBlock() instanceof BlockAir) {
-                    if (search(blockPos, true) && rotationsValue.get()) {
+                    if (search(blockPos, true, true) && rotationsValue.get()) {
                         final VecRotation vecRotation = RotationUtils.faceBlock(blockPos);
 
+                        if (vecRotation != null) {
+                            RotationUtils.setTargetRotation(RotationUtils.limitAngleChange(RotationUtils.serverRotation, vecRotation.getRotation(), RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get())));
+                            towerPlace.setVec3(vecRotation.getVec());
+                        }
                     }
                 }
             }
@@ -759,11 +799,10 @@ public class Scaffold extends Module {
     private void findBlock(final boolean expand) {
         final BlockPos blockPosition = shouldGoDown ? (mc.thePlayer.posY == (int) mc.thePlayer.posY + 0.5D ? new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.6D, mc.thePlayer.posZ)
                 : new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.6, mc.thePlayer.posZ).down()) :
-                ((sameYValue.get() || ((autoJumpValue.get() || (smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed.class).getState())) && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump))) && launchY <= mc.thePlayer.posY ? (new BlockPos(mc.thePlayer.posX, launchY - 1, mc.thePlayer.posZ)) :
+                (!towerActivation() && (sameYValue.get() || ((autoJumpValue.get() || (smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed.class).getState())) && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump))) && launchY <= mc.thePlayer.posY ? (new BlockPos(mc.thePlayer.posX, launchY - 1, mc.thePlayer.posZ)) :
                         (mc.thePlayer.posY == (int) mc.thePlayer.posY + 0.5D ? new BlockPos(mc.thePlayer)
                                 : new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ).down()));
-
-        if (!expand && (!BlockUtils.isReplaceable(blockPosition) || search(blockPosition, !shouldGoDown)))
+        if (!expand && (!BlockUtils.isReplaceable(blockPosition) || search(blockPosition, !shouldGoDown, false)))
             return;
 
         if (expand) {
@@ -772,13 +811,13 @@ public class Scaffold extends Module {
             int z = omniDirectionalExpand.get() ? (int) Math.round(Math.cos(yaw)) : mc.thePlayer.getHorizontalFacing().getDirectionVec().getZ();
 
             for (int i = 0; i < expandLengthValue.get(); i++) {
-                if (search(blockPosition.add(x * i, 0, z * i), false))
+                if (search(blockPosition.add(x * i, 0, z * i), false, false))
                     return;
             }
-        } else if (searchValue.get()) {
+        } else {
             for (int x = -1; x <= 1; x++)
                 for (int z = -1; z <= 1; z++)
-                    if (search(blockPosition.add(x, 0, z), !shouldGoDown))
+                    if (search(blockPosition.add(x, 0, z), !shouldGoDown, false))
                         return;
         }
     }
@@ -787,7 +826,7 @@ public class Scaffold extends Module {
      * Place target block
      */
     private void place(boolean towerActive) {
-        if ((targetPlace) == null) {
+        if ((towerActive ? towerPlace : targetPlace) == null) {
             if (placeableDelay.get())
                 delayTimer.reset();
             return;
@@ -798,7 +837,7 @@ public class Scaffold extends Module {
             mc.thePlayer.motionZ *= 1.0;
         }
 
-        if ((!delayTimer.hasTimePassed(delay) || (smartDelay.get() && mc.rightClickDelayTimer > 0) || ((sameYValue.get() || ((autoJumpValue.get() || (smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed.class).getState())) && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump))) && launchY - 1 != (int) (targetPlace).getVec3().yCoord)))
+        if (!towerActivation() && (!delayTimer.hasTimePassed(delay) || (smartDelay.get() && mc.rightClickDelayTimer > 0) || ((sameYValue.get() || ((autoJumpValue.get() || (smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed.class).getState())) && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump))) && launchY - 1 != (int) (towerActive ? towerPlace : targetPlace).getVec3().yCoord)))
             return;
 
         int blockSlot = -1;
@@ -828,8 +867,8 @@ public class Scaffold extends Module {
             if (InventoryUtils.BLOCK_BLACKLIST.contains(block) || !block.isFullCube() || itemStack.stackSize <= 0) return;
         }
 
-        if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, itemStack, (targetPlace).getBlockPos(),
-                (targetPlace).getEnumFacing(), (targetPlace).getVec3())) {
+        if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, itemStack, (towerActive ? towerPlace : targetPlace).getBlockPos(),
+                (towerActive ? towerPlace : targetPlace).getEnumFacing(), (towerActive ? towerPlace : targetPlace).getVec3())) {
             delayTimer.reset();
             delay = (!placeableDelay.get() ? 0L : TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get()));
 
@@ -850,6 +889,10 @@ public class Scaffold extends Module {
                 mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
         }
 
+        // Reset
+        if (towerActive)
+            this.towerPlace = null;
+        else
             this.targetPlace = null;
 
         if (!stayAutoBlock.get() && blockSlot >= 0 && !autoBlockMode.get().equalsIgnoreCase("Switch"))
@@ -904,6 +947,12 @@ public class Scaffold extends Module {
 
         if (airSafeValue.get() || mc.thePlayer.onGround)
             event.setSafeWalk(true);
+    }
+
+    @EventTarget
+    public void onJump(final JumpEvent event) {
+        if (towerActivation())
+            event.cancelEvent();
     }
 
     /**
@@ -1015,35 +1064,35 @@ public class Scaffold extends Module {
         }
         if (modeDisplay.get()) {
             Speed speed = LiquidBounce.moduleManager.getModule(Speed.class);
-                if (autoJumpValue.get() || smartSpeedValue.get() && speed.getState()) {
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 9, 0xff000000, false);
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 11, 0xff000000, false);
-                    Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2  + 10, Color.WHITE.getRGB(), false);
+            if (autoJumpValue.get() || smartSpeedValue.get() && speed.getState()) {
+                Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
+                Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
+                Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 9, 0xff000000, false);
+                Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 11, 0xff000000, false);
+                Fonts.minecraftFont.drawString("KeepY", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2  + 10, Color.WHITE.getRGB(), false);
+            } else {
+                if (towerActivation()) {
+                    Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
+                    Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
+                    Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 9, 0xff000000, false);
+                    Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 11, 0xff000000, false);
+                    Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2  + 10, Color.WHITE.getRGB(), false);
                 } else {
-                    if (mc.gameSettings.keyBindJump.pressed) {
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 9, 0xff000000, false);
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 11, 0xff000000, false);
-                        Fonts.minecraftFont.drawString("Tower", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2  + 10, Color.WHITE.getRGB(), false);
+                    if (placeModeValue.isMode("Pre")) {
+                        Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
+                        Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
+                        Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 9, 0xff000000, false);
+                        Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 11, 0xff000000, false);
+                        Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 10, Color.WHITE.getRGB(), false);
                     } else {
-                        if (placeModeValue.isMode("Pre")) {
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 9, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 11, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Pre", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 10, Color.WHITE.getRGB(), false);
-                        } else {
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 9, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 11, 0xff000000, false);
-                            Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 10, Color.WHITE.getRGB(), false);
-                        }
+                        Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) - 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
+                        Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 1 + 16, scaledResolution.getScaledHeight() / 2 + 10, 0xff000000, false);
+                        Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 9, 0xff000000, false);
+                        Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 11, 0xff000000, false);
+                        Fonts.minecraftFont.drawString("Post", scaledResolution.getScaledWidth() / 2 - (infoWidth2 / 2) + 16, scaledResolution.getScaledHeight() / 2 + 10, Color.WHITE.getRGB(), false);
                     }
                 }
+            }
         }
     }
     private int getBlockColor(int count) {
@@ -1082,10 +1131,11 @@ public class Scaffold extends Module {
         int x = omniDirectionalExpand.get() ? (int) Math.round(-Math.sin(yaw)) : mc.thePlayer.getHorizontalFacing().getDirectionVec().getX();
         int z = omniDirectionalExpand.get() ? (int) Math.round(Math.cos(yaw)) : mc.thePlayer.getHorizontalFacing().getDirectionVec().getZ();
 
-        for (int i = 0; i < ((modeValue.get().equalsIgnoreCase("Expand")) ? expandLengthValue.get() + 1 : 2); i++) {
+        for (int i = 0; i < ((modeValue.get().equalsIgnoreCase("Expand") && !towerActivation()) ? expandLengthValue.get() + 1 : 2); i++) {
             final BlockPos blockPos = new BlockPos(
                     mc.thePlayer.posX + x * i,
-                    ((sameYValue.get() ||
+                    (!towerActivation()
+                            && (sameYValue.get() ||
                             ((autoJumpValue.get() ||
                                     (smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed.class).getState()))
                                     && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)))
@@ -1100,6 +1150,10 @@ public class Scaffold extends Module {
         }
     }
 
+    private boolean search(final BlockPos blockPosition, final boolean checks) {
+        return search(blockPosition, checks, false);
+    }
+
     /**
      * Search for placeable block
      *
@@ -1107,7 +1161,7 @@ public class Scaffold extends Module {
      * @param checks        visible
      * @return
      */
-    private boolean search(final BlockPos blockPosition, final boolean checks) {
+    private boolean search(final BlockPos blockPosition, final boolean checks, boolean towerActive) {
         faceBlock = false;
 
         if (!BlockUtils.isReplaceable(blockPosition))
@@ -1149,8 +1203,8 @@ public class Scaffold extends Module {
                             final double diffXZ = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
 
                             Rotation rotation = new Rotation(
-                                    wrapAngleTo180_float((float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F),
-                                    wrapAngleTo180_float((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)))
+                                    MathHelper.wrapAngleTo180_float((float) Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F),
+                                    MathHelper.wrapAngleTo180_float((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)))
                             );
 
                             lookupRotation = rotation;
@@ -1163,9 +1217,6 @@ public class Scaffold extends Module {
 
                             if (rotationModeValue.get().equalsIgnoreCase("custom") && (keepRotOnJumpValue.get() || !mc.gameSettings.keyBindJump.isKeyDown()))
                                 rotation = new Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), customPitchValue.get());
-
-                            if (rotationModeValue.get().equalsIgnoreCase("backward") && (keepRotOnJumpValue.get() || !mc.gameSettings.keyBindJump.isKeyDown()))
-                                rotation = new Rotation(this.getYawBackward(), customPitchValue.get());
 
                             if (rotationModeValue.get().equalsIgnoreCase("spin") && speenRotation != null && (keepRotOnJumpValue.get() || !mc.gameSettings.keyBindJump.isKeyDown()))
                                 rotation = speenRotation;
@@ -1190,8 +1241,8 @@ public class Scaffold extends Module {
         if (rotationsValue.get()) {
             if (minTurnSpeed.get() < 180) {
                 final Rotation limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, placeRotation.getRotation(), RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get()));
-                if ((int)(10 * wrapAngleTo180_float(limitedRotation.getYaw())) == (int)(10 * wrapAngleTo180_float(placeRotation.getRotation().getYaw()))
-                        && (int)(10 * wrapAngleTo180_float(limitedRotation.getPitch())) == (int)(10 * wrapAngleTo180_float(placeRotation.getRotation().getPitch()))) {
+                if ((int)(10 * MathHelper.wrapAngleTo180_float(limitedRotation.getYaw())) == (int)(10 * MathHelper.wrapAngleTo180_float(placeRotation.getRotation().getYaw()))
+                        && (int)(10 * MathHelper.wrapAngleTo180_float(limitedRotation.getPitch())) == (int)(10 * MathHelper.wrapAngleTo180_float(placeRotation.getRotation().getPitch()))) {
                     RotationUtils.setTargetRotation(placeRotation.getRotation(), keepLengthValue.get());
                     lockRotation = placeRotation.getRotation();
                     faceBlock = true;
@@ -1210,32 +1261,12 @@ public class Scaffold extends Module {
                 lookupRotation = lockRotation;
         }
 
+        if (towerActive)
+            towerPlace = placeRotation.getPlaceInfo();
+        else
             targetPlace = placeRotation.getPlaceInfo();
 
         return true;
-    }
-
-    private float getYawBackward(){
-        float yaw = wrapAngleTo180_float(mc.thePlayer.rotationYaw);
-        MovementInput input = mc.thePlayer.movementInput;
-        float strafe = input.moveStrafe;
-        float forward = input.moveForward;
-        if (forward != 0f) {
-            if (strafe < 0) {
-                yaw += (forward < 0)? 135F : 45F;
-            } else if (strafe > 0) {
-                yaw -=  (forward < 0)? 135F : 45F;
-            } else if (strafe == 0f && forward < 0) {
-                yaw -= 180f;
-            }
-        } else {
-            if (strafe < 0) {
-                yaw += 90f;
-            } else if (strafe > 0) {
-                yaw -= 90f;
-            }
-        }
-        return wrapAngleTo180_float(yaw - 180);
     }
 
     /**
@@ -1258,6 +1289,6 @@ public class Scaffold extends Module {
 
     @Override
     public String getTag() {
-        return rotationModeValue.get();
+        return (towerActivation()) ? "" + rotationModeValue.get() : rotationModeValue.get();
     }
 }
