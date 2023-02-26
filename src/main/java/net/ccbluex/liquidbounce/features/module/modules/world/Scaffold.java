@@ -304,7 +304,6 @@ public class Scaffold extends Module {
     private void move(MotionEvent event) {
         if (noMoveOnlyValue.get()) {
             mc.thePlayer.motionX = mc.thePlayer.motionZ = 0;
-            return;
         }
         switch (towerModeValue.get().toLowerCase()) {
             case "jump":

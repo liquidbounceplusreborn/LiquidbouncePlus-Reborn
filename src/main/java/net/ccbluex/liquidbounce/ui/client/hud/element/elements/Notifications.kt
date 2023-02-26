@@ -44,9 +44,9 @@ class Notifications(
         val redValue = IntegerValue("Red", 255, 0, 255)
         val greenValue = IntegerValue("Green", 255, 0, 255)
         val blueValue = IntegerValue("Blue", 255, 0, 255)
-        val red2Value = IntegerValue("Red", 255, 0, 255)
-        val green2Value = IntegerValue("Green", 255, 0, 255)
-        val blue2Value = IntegerValue("Blue", 255, 0, 255)
+        val red2Value = IntegerValue("Red2", 255, 0, 255)
+        val green2Value = IntegerValue("Green2", 255, 0, 255)
+        val blue2Value = IntegerValue("Blue2", 255, 0, 255)
     
     }
 
