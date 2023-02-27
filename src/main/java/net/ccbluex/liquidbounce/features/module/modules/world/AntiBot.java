@@ -31,6 +31,7 @@ import net.minecraft.network.play.server.S14PacketEntity;
 import net.minecraft.network.play.server.S38PacketPlayerListItem;
 import net.minecraft.network.play.server.S41PacketServerDifficulty;
 import net.minecraft.world.WorldSettings;
+import org.checkerframework.common.value.qual.BoolVal;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import java.util.stream.Stream;
 
 @ModuleInfo(name = "AntiBot", spacedName = "Anti Bot", description = "Prevents KillAura from attacking AntiCheat bots.", category = ModuleCategory.WORLD)
 public class AntiBot extends Module {
+    private final BoolValue PlayerInvis = new BoolValue("Invisible", false);
     private final BoolValue czechHekValue = new BoolValue("CzechMatrix", false);
     private final BoolValue czechHekPingCheckValue = new BoolValue("PingCheck", true, () -> czechHekValue.get());
     private final BoolValue czechHekGMCheckValue = new BoolValue("GamemodeCheck", true, () -> czechHekValue.get());
@@ -128,6 +130,13 @@ public class AntiBot extends Module {
                         if (debugValue.get()) ClientUtils.displayChatMessage("§7[§a§lAnti Bot/§6Matrix§7] §fPrevented §r"+data.getProfile().getName()+" §ffrom spawning.");
                     }
                 }
+            }
+        }
+        if (PlayerInvis.get()) {
+            if (mc.thePlayer.isInvisible()) {
+                for (Object entity : mc.theWorld.loadedEntityList)
+                    if (((Entity) entity).isInvisible() && entity != mc.thePlayer)
+                        mc.theWorld.removeEntity((Entity) entity);
             }
         }
 
