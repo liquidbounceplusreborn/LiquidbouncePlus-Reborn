@@ -574,6 +574,10 @@ public class Scaffold extends Module {
 
             }
         }
+        if (sprintModeValue.get().equalsIgnoreCase("Hypixel") && mc.thePlayer.onGround && mc.thePlayer.hurtTime > 0) {
+            mc.thePlayer.motionY = 0.0;
+            MovementUtils.strafe(0.47f);
+        }
     }
 
     @EventTarget
