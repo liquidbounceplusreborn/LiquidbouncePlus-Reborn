@@ -38,6 +38,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.*
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.awt.Color
 import java.io.ByteArrayOutputStream
@@ -62,7 +63,8 @@ class Disabler : Module() {
 			"Flag", // flag
 			"Matrix", // re
 			"Watchdog", // $100k anticheat
-			"RotDesync" // Dort, again.
+			"RotDesync", // Dort, again.
+			"Vulcan"// FDP
 		), "SpartanCombat")
 
 	// PingSpoof (idfk what's this purpose but i will keep it here.)
@@ -117,6 +119,10 @@ class Disabler : Module() {
 	private val testDelay = IntegerValue("Delay", 400, 0, 1000, "ms", { modeValue.get().equals("watchdog", true) && testFeature.get() })
 	private val checkValid = BoolValue("InvValidate", false, { modeValue.get().equals("watchdog", true) && testFeature.get() })
 
+	//vulcan
+	private val vulcanStrafe = BoolValue ("Strafe", true, { modeValue.get().equals("vulcan", true) })
+
+
 	// debug
 	private val debugValue = BoolValue("Debug", false)
 
@@ -130,6 +136,7 @@ class Disabler : Module() {
 
 	private val packetBus = hashMapOf<Long, Packet<INetHandlerPlayServer>>()
 	private val queueBus = LinkedList<Packet<INetHandlerPlayServer>>()
+	private val packetBuffer = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
 
 	private val posLookInstance = PosLookInstance()
 
@@ -194,6 +201,7 @@ class Disabler : Module() {
 		playerQueue.clear()
 		packetBus.clear()
 		queueBus.clear()
+		packetBuffer.clear()
 
 		s08count = 0
 
@@ -260,6 +268,7 @@ class Disabler : Module() {
 		playerQueue.clear()
 		packetBus.clear()
 		queueBus.clear()
+		packetBuffer.clear()
 
 		s08count = 0
 
@@ -681,7 +690,16 @@ class Disabler : Module() {
 					}
 				}
 			}
+		if (modeValue.get().equals("vulcan", true)) {
+			if (event.eventState == EventState.PRE) {
+				if(vulcanStrafe.get()){
+				if (mc.thePlayer.ticksExisted % 5 == 0){
+					mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(-1, -1, -1), EnumFacing.UP))
+			}
+		}
 	}
+}
+		}
 
 	@EventTarget
 	fun onUpdate(event: UpdateEvent) {
