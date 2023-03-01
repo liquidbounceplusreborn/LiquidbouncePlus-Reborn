@@ -302,6 +302,8 @@ public class Scaffold extends Module {
      * Move player
      */
     private void move(MotionEvent event) {
+        mc.thePlayer.cameraYaw = 0;
+        mc.thePlayer.cameraPitch = 0;
         if (noMoveOnlyValue.get()) {
             mc.thePlayer.motionX = mc.thePlayer.motionZ = 0;
         }
@@ -573,10 +575,6 @@ public class Scaffold extends Module {
                 mc.thePlayer.jumpTicks = 10;
 
             }
-        }
-        if (sprintModeValue.get().equalsIgnoreCase("Hypixel") && mc.thePlayer.onGround && mc.thePlayer.hurtTime > 0) {
-            mc.thePlayer.motionY = 0.0;
-            MovementUtils.strafe(0.4f);
         }
     }
 
