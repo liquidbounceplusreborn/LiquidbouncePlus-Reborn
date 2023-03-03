@@ -739,7 +739,7 @@ public class Scaffold extends Module {
             place(false);
         }
 
-        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && eventState == EventState.POST && towerActivation()) {
+        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && placeModeValue.get().equalsIgnoreCase(eventState.getStateName()) && towerActivation()) {
             place(false);
         }
 
