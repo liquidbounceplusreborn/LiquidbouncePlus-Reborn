@@ -39,16 +39,6 @@ public class Animations extends Module {
 
     // modify item swing and rotate
     public static final IntegerValue SpeedSwing = new IntegerValue("Swing-Speed", 4, 0, 20);
-    public static final BoolValue RotateItems = new BoolValue("Rotate-Items", false);
-    public static final FloatValue SpeedRotate = new FloatValue("Rotate-Speed", 1f, 0f, 10f, () -> RotateItems.get() || Sword.get().equalsIgnoreCase("smoothfloat") || Sword.get().equalsIgnoreCase("rotate360"));
-
-    // transform rotation
-    public static final ListValue transformFirstPersonRotate = new ListValue("RotateMode", new String[]{"RotateY", "RotateXY", "Custom" , "None"}, "RotateY");
-
-    // custom item rotate
-    public static final FloatValue customRotate1 = new FloatValue("RotateXAxis", 0, -180, 180, () -> RotateItems.get() && transformFirstPersonRotate.get().equalsIgnoreCase("custom"));
-    public static final FloatValue customRotate2 = new FloatValue("RotateYAxis", 0, -180, 180, () -> RotateItems.get() && transformFirstPersonRotate.get().equalsIgnoreCase("custom"));
-    public static final FloatValue customRotate3 = new FloatValue("RotateZAxis", 0, -180, 180, () -> RotateItems.get() && transformFirstPersonRotate.get().equalsIgnoreCase("custom"));
 
     // custom animation sword
     public static final FloatValue mcSwordPos =  new FloatValue("MCPosOffset", 0.45f, 0, 0.5f, () -> Sword.get().equalsIgnoreCase("minecraft"));
@@ -59,7 +49,7 @@ public class Animations extends Module {
     // block not everything
     public static final BoolValue blockEverything = new BoolValue("Block-Everything", false);
 
-    public static final BoolValue swing = new BoolValue("Swing-Animation", false);
+    public static final BoolValue swing = new BoolValue("FluxSwing", false);
 
     // gui animations
     public static final ListValue guiAnimations = new ListValue("Container-Animation", new String[]{"None", "Zoom", "Slide", "Smooth"}, "None");
@@ -70,5 +60,13 @@ public class Animations extends Module {
 
     // block crack
     public static final BoolValue noBlockParticles = new BoolValue("NoBlockParticles", false);
+
+    //1.7
+
+    public static final BoolValue oldBow = new BoolValue("1.7Bow", false);
+
+    public static final BoolValue oldRod = new BoolValue("1.7Rod", false);
+
+    public static final BoolValue oldSwing = new BoolValue("1.7Swing", false);
 
 }
