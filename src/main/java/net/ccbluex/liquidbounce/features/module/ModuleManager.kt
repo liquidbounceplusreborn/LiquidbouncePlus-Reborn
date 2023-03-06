@@ -160,6 +160,7 @@ class ModuleManager : Listenable {
                 Teleport::class.java,
                 AsianHat::class.java,
                 BowJump::class.java,
+		Trails::class.java,
                 ConsoleSpammer::class.java,
                 PointerESP::class.java,
                 SafeWalk::class.java,
