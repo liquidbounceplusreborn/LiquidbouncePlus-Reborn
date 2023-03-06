@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -7,9 +8,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C02PacketUseEntity
@@ -24,6 +26,8 @@ class BackTrack : Module() {
     private val pulseTimer = MSTimer()
     var currentTarget: EntityLivingBase? = null
     private var shown = false
+
+    val killaura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
 
     override fun onDisable() {
         removeFakePlayer()
@@ -67,7 +71,7 @@ class BackTrack : Module() {
     fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
         if (mc.thePlayer == null)
             return
-        if (fakePlayer != null && EntityUtils.isRendered(fakePlayer ?: return) && ((currentTarget ?: return).isDead || EntityUtils.isRendered(
+        if (fakePlayer != null && EntityUtils.isRendered(fakePlayer ?: return) && ((currentTarget ?: return).isDead || !EntityUtils.isRendered(
                 currentTarget ?: return
             ))
         ) {
