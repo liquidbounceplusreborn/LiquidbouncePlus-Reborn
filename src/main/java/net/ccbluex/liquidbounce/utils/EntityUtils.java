@@ -63,6 +63,7 @@ public final class EntityUtils extends MinecraftInstance {
         return false;
     }
 
+
     public static boolean isFriend(final Entity entity) {
         return entity instanceof EntityPlayer && entity.getName() != null &&
                 LiquidBounce.fileManager.friendsConfig.isFriend(ColorUtils.stripColor(entity.getName()));

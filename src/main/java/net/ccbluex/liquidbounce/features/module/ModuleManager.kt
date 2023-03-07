@@ -51,6 +51,7 @@ class ModuleManager : Listenable {
                 KillAura::class.java,
                 Velocity::class.java,
                 Fly::class.java,
+                TimerRange::class.java,
                 HighJump::class.java,
                 InvMove::class.java,
                 NoSlow::class.java,

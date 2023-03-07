@@ -37,6 +37,8 @@ import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.*
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S2FPacketSetSlot
+import net.minecraft.network.play.server.S3EPacketTeams
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
@@ -121,6 +123,8 @@ class Disabler : Module() {
 
 	//vulcan
 	private val vulcanStrafe = BoolValue ("Strafe", true, { modeValue.get().equals("vulcan", true) })
+	private val vulcanStrafe2 = BoolValue ("Test", true, { modeValue.get().equals("vulcan", true) })
+
 
 
 	// debug
@@ -330,6 +334,47 @@ class Disabler : Module() {
 		val packet = event.packet
 
 		when (modeValue.get().toLowerCase()) {
+			"vulcan" -> {
+				if (vulcanStrafe2.get()) {
+					if(event.packet is C0FPacketConfirmTransaction) {
+						if (mc.thePlayer.ticksExisted % 20 == 0) {
+							event.cancelEvent()
+						}
+					}
+					if(event.packet is C17PacketCustomPayload) {
+						event.cancelEvent()
+					}
+					if (event.packet is S08PacketPlayerPosLook) {
+						val c03 = event.packet as C03PacketPlayer
+						val s08 = event.packet as S08PacketPlayerPosLook
+						mc.thePlayer.posX = s08.x
+						mc.thePlayer.posY = s08.y - 1
+						mc.thePlayer.posZ = s08.z
+						c03.isMoving = false
+						c03.rotating = false
+						c03.onGround = false
+					}
+					val packet: Packet<*> = event.packet
+					if (packet is S08PacketPlayerPosLook) {
+						val x = packet.getX() - mc.thePlayer.posX
+						val y = packet.getY() - mc.thePlayer.posY
+						val z = packet.getZ() - mc.thePlayer.posZ
+						val diff = Math.sqrt(x * x + y * y + z * z)
+						if (diff <= 4) {
+							PacketUtils.sendPacketNoEvent(
+								C06PacketPlayerPosLook(
+									packet.getX(),
+									packet.getY(),
+									packet.getZ(),
+									packet.getYaw(),
+									packet.getPitch(),
+									true
+								)
+							)
+						}
+					}
+				}
+			}
 			"matrixgeyser" -> if (packet is C03PacketPlayer && mc.thePlayer.ticksExisted % 15 == 0) {
 				try {
 					val b = ByteArrayOutputStream()
@@ -668,11 +713,14 @@ class Disabler : Module() {
 
 		if (event.eventState == EventState.POST && (!matrixMoveOnly.get() || isMoving())) // check post event
 			if (modeValue.get().equals("matrix", true)) {
-				if (matrixNoCheck.get() || LiquidBounce.moduleManager.getModule(Fly::class.java)!!.state || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state) {
+				if (matrixNoCheck.get() || LiquidBounce.moduleManager.getModule(Fly::class.java)!!.state || LiquidBounce.moduleManager.getModule(
+						Speed::class.java
+					)!!.state
+				) {
 					var changed = false
 					if (matrixHotbarChange.get()) for (i in 0..8) {
 						// find a empty inventory slot
-						if(mc.thePlayer.inventory.mainInventory[i] == null && i != mc.thePlayer.inventory.currentItem) {
+						if (mc.thePlayer.inventory.mainInventory[i] == null && i != mc.thePlayer.inventory.currentItem) {
 							PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(i))
 							changed = true
 							debug("found empty slot $i, switching")
@@ -680,8 +728,26 @@ class Disabler : Module() {
 						}
 					}
 
-					PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, RotationUtils.serverRotation.yaw, RotationUtils.serverRotation.pitch, mc.thePlayer.onGround))
-					mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), -1, null, 0f, 0f, 0f))
+					PacketUtils.sendPacketNoEvent(
+						C06PacketPlayerPosLook(
+							mc.thePlayer.posX,
+							mc.thePlayer.posY,
+							mc.thePlayer.posZ,
+							RotationUtils.serverRotation.yaw,
+							RotationUtils.serverRotation.pitch,
+							mc.thePlayer.onGround
+						)
+					)
+					mc.netHandler.addToSendQueue(
+						C08PacketPlayerBlockPlacement(
+							BlockPos(-1, -1, -1),
+							-1,
+							null,
+							0f,
+							0f,
+							0f
+						)
+					)
 					debug("sent placement")
 
 					if (changed) {
@@ -692,14 +758,47 @@ class Disabler : Module() {
 			}
 		if (modeValue.get().equals("vulcan", true)) {
 			if (event.eventState == EventState.PRE) {
-				if(vulcanStrafe.get()){
-				if (mc.thePlayer.ticksExisted % 5 == 0){
-					mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(-1, -1, -1), EnumFacing.UP))
+				if (vulcanStrafe.get()) {
+					if (mc.thePlayer.ticksExisted % 5 == 0) {
+						mc.netHandler.addToSendQueue(
+							C07PacketPlayerDigging(
+								C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+								BlockPos(-1, -1, -1),
+								EnumFacing.UP
+							)
+						)
+					}
+				}
+			}
+		}
+		if (modeValue.get().equals("vulcan", ignoreCase = true)) {
+			if (event.eventState == EventState.PRE) {
+				if (vulcanStrafe2.get()) {
+					mc.netHandler.addToSendQueue(
+						C0BPacketEntityAction(
+							mc.thePlayer,
+							C0BPacketEntityAction.Action.START_SPRINTING
+						)
+					)
+					mc.netHandler.addToSendQueue(
+						C0BPacketEntityAction(
+							mc.thePlayer,
+							C0BPacketEntityAction.Action.STOP_SPRINTING
+						)
+					)
+					if (mc.thePlayer.ticksExisted % 5 == 0) {
+						mc.netHandler.addToSendQueue(
+							C07PacketPlayerDigging(
+								C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+								BlockPos(-1, -1, -1),
+								EnumFacing.UP
+							)
+						)
+					}
+				}
 			}
 		}
 	}
-}
-		}
 
 	@EventTarget
 	fun onUpdate(event: UpdateEvent) {

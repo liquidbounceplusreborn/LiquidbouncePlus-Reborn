@@ -32,6 +32,7 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -337,6 +338,9 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             this.setSprinting(true);
         }
 
+        EntityLivingBase entity;
+
+        final KillAura killaura = LiquidBounce.moduleManager.getModule(KillAura.class);
         final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
         NoSlow noslow = LiquidBounce.moduleManager.getModule(NoSlow.class);
 

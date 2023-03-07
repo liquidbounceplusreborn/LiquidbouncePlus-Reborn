@@ -1,3 +1,6 @@
+/*
+ * Originally made by LuckySynx#2351 and GOOSE(RIP)
+ */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -21,8 +24,14 @@ import net.minecraft.world.WorldSettings
 class BackTrack : Module() {
 
     var fakePlayer: EntityOtherPlayerMP? = null
+    private val aura =
+        BoolValue("Aura", false)
     private val pulseDelayValue =
         IntegerValue("PulseDelay", 1000, 5, 2000)
+    private val intavetest =
+        BoolValue("IntaveTest", false)
+    private val intavetesthurttime =
+        IntegerValue("Value", 5, 0, 100)
     private val pulseTimer = MSTimer()
     var currentTarget: EntityLivingBase? = null
     private var shown = false
@@ -69,6 +78,11 @@ class BackTrack : Module() {
 
     @EventTarget
     fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent?) {
+        if (aura.get() && !killaura.state) {
+            currentTarget = null
+            (mc.theWorld ?: return).removeEntityFromWorld((fakePlayer ?: return).entityId) ?: return
+            fakePlayer = null
+        }
         if (mc.thePlayer == null)
             return
         if (fakePlayer != null && EntityUtils.isRendered(fakePlayer ?: return) && ((currentTarget ?: return).isDead || !EntityUtils.isRendered(
@@ -85,7 +99,15 @@ class BackTrack : Module() {
                 (fakePlayer ?: return).setCurrentItemOrArmor(index, equipmentInSlot)
             }
         }
-        if (pulseTimer.hasTimePassed(pulseDelayValue.get().toLong())) {
+        if (intavetest.get() && mc.thePlayer.ticksExisted % intavetesthurttime.get() == 0) {
+            if (fakePlayer != null) {
+                (fakePlayer ?: return).rotationYawHead = (currentTarget ?: return).rotationYawHead
+                (fakePlayer ?: return).renderYawOffset = (currentTarget ?: return).renderYawOffset
+                (fakePlayer ?: return).copyLocationAndAnglesFrom(currentTarget ?: return)
+                (fakePlayer ?: return).rotationYawHead = (currentTarget ?: return).rotationYawHead
+            }
+            pulseTimer.reset()
+        }else   if (!intavetest.get() && pulseTimer.hasTimePassed(pulseDelayValue.get().toLong())) {
             if (fakePlayer != null) {
                 (fakePlayer ?: return).rotationYawHead = (currentTarget ?: return).rotationYawHead
                 (fakePlayer ?: return).renderYawOffset = (currentTarget ?: return).renderYawOffset
@@ -94,6 +116,7 @@ class BackTrack : Module() {
             }
             pulseTimer.reset()
         }
+
         if (!shown && currentTarget != null && (currentTarget ?: return).uniqueID != null && mc.netHandler.getPlayerInfo(
                 (currentTarget ?: return).uniqueID ?: return
             ) != null && mc.netHandler.getPlayerInfo((currentTarget ?: return).uniqueID ?: return).gameProfile != null

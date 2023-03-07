@@ -137,6 +137,8 @@ class KillAura : Module() {
     private val swingValue = BoolValue("Swing", true)
     private val swingOrderValue = BoolValue("1.9OrderCheck", true, { swingValue.get() })
     private val keepSprintValue = BoolValue("KeepSprint", true)
+    public val nosprint = BoolValue("NoSprint", true)
+
 
     // AutoBlock
     private val autoBlockModeValue = ListValue("AutoBlock", arrayOf("None", "Packet", "AfterTick", "NCP", "OldHypixel", "TestHypixel","Vanilla"), "None")
@@ -461,7 +463,8 @@ class KillAura : Module() {
         var startTime = System.currentTimeMillis()
 
         @EventTarget
-        private fun onAttack(event: AttackEvent) { syncEntity = event.targetEntity as EntityLivingBase?
+        private fun onAttack(event: AttackEvent) {
+            syncEntity = event.targetEntity as EntityLivingBase?
         }
 
         @EventTarget
@@ -635,6 +638,9 @@ class KillAura : Module() {
 
                     if (entity is EntityLivingBase && isEnemy(entity) && distance <= getRange(entity)) {
                         attackEntity(entity)
+                        if (nosprint.get()) {
+                            mc.thePlayer.isSprinting = false
+                        }
 
                         targets += 1
 
