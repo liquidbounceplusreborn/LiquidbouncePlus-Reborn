@@ -16,17 +16,19 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
 import kotlin.random.Random
+
 
 @ModuleInfo(name = "ChestStealer", spacedName = "Chest Stealer", description = "Automatically steals all items from a chest.", category = ModuleCategory.WORLD)
 class ChestStealer : Module() {
@@ -55,6 +57,7 @@ class ChestStealer : Module() {
             nextDelay = TimerUtils.randomDelay(get(), maxDelayValue.get())
         }
     }
+    private val instantexploit = BoolValue("InstantExploit", false)
 
     private val eventModeValue = ListValue("OnEvent", arrayOf("Render3D", "Update", "MotionPre", "MotionPost"), "Render3D")
 
@@ -114,6 +117,28 @@ class ChestStealer : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (instantexploit.get()) {
+            if (mc.currentScreen is GuiChest) {
+                val chest = mc.currentScreen as GuiChest
+                val rows = chest.inventoryRows * 9
+                for (i in 0 until rows) {
+                    val slot = chest.inventorySlots.getSlot(i)
+                    if (slot.hasStack) {
+                        mc.thePlayer.sendQueue.addToSendQueue(
+                            C0EPacketClickWindow(
+                                chest.inventorySlots.windowId,
+                                i,
+                                0,
+                                1,
+                                slot.stack,
+                                1.toShort()
+                            )
+                        )
+                    }
+                }
+                mc.thePlayer.closeScreen()
+            }
+        }
         val screen = mc.currentScreen ?: return
 
         if (eventModeValue.get().equals("update", true))
