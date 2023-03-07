@@ -35,11 +35,10 @@ import net.minecraft.util.EnumFacing;
 @ModuleInfo(name = "LongJump", spacedName = "Long Jump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT)
 public class LongJump extends Module {
 
-    private final ListValue modeValue = new ListValue("Mode", new String[] {"SpeedInAir", "NCP", "Damage", "AACv1", "AACv2", "AACv3", "AACv4", "Mineplex", "Mineplex2", "Mineplex3", "RedeskyMaki", "Redesky", "InfiniteRedesky", "MatrixFlag", "VerusDmg", "Pearl"}, "NCP");
+    private final ListValue modeValue = new ListValue("Mode", new String[] {"NCP", "Damage", "AACv1", "AACv2", "AACv3", "AACv4", "Mineplex", "Mineplex2", "Mineplex3", "RedeskyMaki", "Redesky", "InfiniteRedesky", "MatrixFlag", "VerusDmg", "Pearl"}, "NCP");
     private final BoolValue autoJumpValue = new BoolValue("AutoJump", false);
 
     private final FloatValue ncpBoostValue = new FloatValue("NCPBoost", 4.25F, 1F, 10F, () -> modeValue.get().equalsIgnoreCase("ncp"));
-    private final FloatValue SpeedInAir = new FloatValue("SpeedInAir", 1F, 1F, 200F, () -> modeValue.get().equalsIgnoreCase("SpeedInAir"));
 
     private final FloatValue matrixBoostValue = new FloatValue("MatrixFlag-Boost", 1.95F, 0F, 3F, () -> modeValue.get().equalsIgnoreCase("matrixflag"));
     private final FloatValue matrixHeightValue = new FloatValue("MatrixFlag-Height", 5F, 0F, 10F, () -> modeValue.get().equalsIgnoreCase("matrixflag"));
@@ -303,9 +302,6 @@ public class LongJump extends Module {
                     MovementUtils.strafe(MovementUtils.getSpeed() * (canBoost ? ncpBoostValue.get() : 1F));
                     canBoost = false;
                     break;
-                case "speedinair":
-                    mc.thePlayer.speedInAir = SpeedInAir.getValue();
-                    break;
                 case "aacv1":
                     mc.thePlayer.motionY += 0.05999D;
                     MovementUtils.strafe(MovementUtils.getSpeed() * 1.08F);
@@ -511,7 +507,6 @@ public class LongJump extends Module {
 
     public void onDisable(){
         mc.timer.timerSpeed = 1.0F;
-        mc.thePlayer.speedInAir = 0.02F;
     }
 
     @Override

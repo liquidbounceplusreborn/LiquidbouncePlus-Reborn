@@ -37,7 +37,10 @@ import java.awt.Color;
 @ModuleInfo(name = "BowJump", spacedName = "Bow Jump", description = "Allows you to jump further with auto bow shoot.", category = ModuleCategory.MOVEMENT)
 public class BowJump extends Module {
 
-    private final FloatValue boostValue = new FloatValue("Boost", 4.25F, 0F, 10F, "x");
+    private final ListValue modeValue = new ListValue("Mode", new String[] {"Strafe","SpeedInAir"}, "Strafe");
+    private final FloatValue speedInAirBoostValue = new FloatValue("SpeedInAir", 0.5F, 0.02F, 1F, () -> modeValue.get().equalsIgnoreCase("SpeedInAir"));
+
+    private final FloatValue boostValue = new FloatValue("Boost", 4.25F, 0F, 10F, "x", () -> modeValue.get().equalsIgnoreCase("Strafe"));
     private final FloatValue heightValue = new FloatValue("Height", 0.42F, 0F, 10F, "m");
     private final FloatValue timerValue = new FloatValue("Timer", 1F, 0.1F, 10F, "x");
     private final IntegerValue delayBeforeLaunch = new IntegerValue("DelayBeforeArrowLaunch", 1, 1, 20, " tick");
@@ -123,7 +126,16 @@ public class BowJump extends Module {
                 bowState = 3;
             break;
         case 3:
-            MovementUtils.strafe(boostValue.get());
+            switch (modeValue.get()) {
+                case "Strafe": {
+                    MovementUtils.strafe(boostValue.get());
+                    break;
+                }
+                case "SpeedInAir":{
+                    mc.thePlayer.speedInAir = speedInAirBoostValue.getValue();
+                    mc.thePlayer.jump();
+                }
+            }
             mc.thePlayer.motionY = heightValue.get();
             bowState = 4;
             lastPlayerTick = mc.thePlayer.ticksExisted;
