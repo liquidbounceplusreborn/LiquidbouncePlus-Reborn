@@ -323,8 +323,8 @@ public final class RenderUtils extends MinecraftInstance {
 
         GL11.glScissor(x * scaleFactor, mc.displayHeight - (y + height2) * scaleFactor, width * scaleFactor, height2 * scaleFactor);
     }
-    
-    
+
+
     public static void drawRoundedRect(float x, float y, float x1, float y1, int borderC, int insideC) {
         drawRect(x + 0.5F, y, x1 - 0.5F, y + 0.5F, insideC);
         drawRect(x + 0.5F, y1 - 0.5F, x1 - 0.5F, y1, insideC);
@@ -492,7 +492,7 @@ public final class RenderUtils extends MinecraftInstance {
         int displayHeight = scaledResolution.getScaledHeight();
         return displayHeight;
     }
-    
+
     public static int darker(int hexColor, int factor) {
         float alpha = (float) (hexColor >> 24 & 255);
         float red = Math.max((float) (hexColor >> 16 & 255) - (float) (hexColor >> 16 & 255) / (100.0F / (float) factor), 0.0F);
@@ -1381,10 +1381,10 @@ public final class RenderUtils extends MinecraftInstance {
             paramYEnd = z;
         }
 
-    	double x1 = (paramXStart + radius);
-    	double y1 = (paramYStart + radius);
-    	double x2 = (paramXEnd - radius);
-    	double y2 = (paramYEnd - radius);
+        double x1 = (paramXStart + radius);
+        double y1 = (paramYStart + radius);
+        double x2 = (paramXEnd - radius);
+        double y2 = (paramYEnd - radius);
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
@@ -1501,10 +1501,10 @@ public final class RenderUtils extends MinecraftInstance {
             paramYEnd = z;
         }
 
-    	double x1 = (paramXStart + radius);
-    	double y1 = (paramYStart + radius);
-    	double x2 = (paramXEnd - radius);
-    	double y2 = (paramYEnd - radius);
+        double x1 = (paramXStart + radius);
+        double y1 = (paramYStart + radius);
+        double x2 = (paramXEnd - radius);
+        double y2 = (paramYEnd - radius);
 
         if (popPush) glPushMatrix();
         glEnable(GL_BLEND);
@@ -1513,7 +1513,7 @@ public final class RenderUtils extends MinecraftInstance {
         glEnable(GL_LINE_SMOOTH);
         glLineWidth(1);
 
-    	glColor4f(red, green, blue, alpha);
+        glColor4f(red, green, blue, alpha);
         glBegin(GL_POLYGON);
 
         double degree = Math.PI / 180;
@@ -1578,7 +1578,7 @@ public final class RenderUtils extends MinecraftInstance {
         glEnable(GL_LINE_SMOOTH);
         glLineWidth(1);
 
-    	glColor4f(red, green, blue, alpha);
+        glColor4f(red, green, blue, alpha);
         glBegin(GL_POLYGON);
 
         double degree = Math.PI / 180;
@@ -1623,10 +1623,10 @@ public final class RenderUtils extends MinecraftInstance {
             paramYEnd = z;
         }
 
-    	double x1 = (paramXStart + radius);
-    	double y1 = (paramYStart + radius);
-    	double x2 = (paramXEnd - radius);
-    	double y2 = (paramYEnd - radius);
+        double x1 = (paramXStart + radius);
+        double y1 = (paramYStart + radius);
+        double x2 = (paramXEnd - radius);
+        double y2 = (paramYEnd - radius);
 
         glEnable(GL_LINE_SMOOTH);
         glLineWidth(1);
