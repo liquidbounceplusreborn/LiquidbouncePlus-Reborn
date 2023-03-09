@@ -313,6 +313,20 @@ public class ClickGui extends GuiScreen {
             }
         }
         
+       if (Mouse.hasWheel()) {
+           int wheel = Mouse.getDWheel();
+           boolean handledScroll = false;
+
+            for (int i = panels.size() - 1; i >= 0; i--)
+                if (panels.get(i).handleScroll(mouseX, mouseY, wheel)) {
+                    handledScroll = true;
+                    break;
+                }
+
+            if (!handledScroll)
+                handleScroll(wheel);
+        }
+        
         int finalMouseY = mouseY;
 
         GlStateManager.disableLighting();
