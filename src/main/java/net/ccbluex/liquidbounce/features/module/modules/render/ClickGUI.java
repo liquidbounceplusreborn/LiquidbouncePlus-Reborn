@@ -37,6 +37,7 @@ public class ClickGUI extends Module {
 
     public final FloatValue scaleValue = new FloatValue("Scale", 1F, 0.4F, 2F);
     public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
+    public final BoolValue scrollsValue = new BoolValue("Scrolls", false);
 
     public static final ListValue colorModeValue = new ListValue("Color", new String[]{"Custom", "Sky", "Rainbow", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
     public static final IntegerValue colorRedValue = new IntegerValue("Red", 0, 0, 255);
