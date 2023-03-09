@@ -312,6 +312,8 @@ public class ClickGui extends GuiScreen {
                 }
             }
         }
+        
+        int finalMouseY = mouseY;
 
         GlStateManager.disableLighting();
         RenderHelper.disableStandardItemLighting();
@@ -337,6 +339,18 @@ public class ClickGui extends GuiScreen {
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
+    
+    private void handleScroll(final int wheel) {
+        if (wheel == 0)
+            return;
+
+        if (!((ClickGUI) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUI.class))).scrollsValue.get()) {
+            return;
+        }
+
+        for(final Panel panel : panels)
+            panel.setY(panel.getY() + wheel);
+    }
 
     public void handleMouseInput() throws IOException {
         super.handleMouseInput();
@@ -355,15 +369,23 @@ public class ClickGui extends GuiScreen {
         mouseY /= scale;
 
         for (int i = panels.size() - 1; i >= 0; i--) {
-            if (panels.get(i).mouseClicked(mouseX, mouseY, mouseButton)){
+            if (panels.get(i).handleScroll(mouseX, mouseY, wheel)) {
+                    handledScroll = true;
+                    break;
+                }
+
+            if (!handledScroll)
+                handleScroll(wheel);
                 break;
             }
         }
 
         for (final Panel panel : panels) {
+            panel.mouseClicked(mouseX, mouseY, mouseButton);
+            
             panel.drag = false;
 
-            if (mouseButton == 0 && panel.isHovering(mouseX, mouseY)) {
+            if (mouseButton == 0 && panel.isHovering(mouseX, mouseY))
                 clickedPanel = panel;
                 break;
             }
@@ -378,8 +400,6 @@ public class ClickGui extends GuiScreen {
             panels.add(clickedPanel);
             clickedPanel = null;
         }
-
-        super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
