@@ -343,8 +343,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         final KillAura killaura = LiquidBounce.moduleManager.getModule(KillAura.class);
         final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
         NoSlow noslow = LiquidBounce.moduleManager.getModule(NoSlow.class);
-
-        if ((scaffold.getState() && scaffold.sprintModeValue.get().equalsIgnoreCase("Off")) || (scaffold.getState() && scaffold.sprintModeValue.get().equalsIgnoreCase("Off"))  || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.targetRotation != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30))
+        if ((scaffold.getState() && !scaffold.sprintValue.get())  || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.targetRotation != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30))
             this.setSprinting(false);
 
         if (this.isSprinting() && ((!(sprint.getState() && sprint.getAllDirectionsValue().get()) && this.movementInput.moveForward < f) || this.isCollidedHorizontally || !flag3)) {
