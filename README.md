@@ -2,8 +2,7 @@
 
 A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
 ### LiquidBounce+'sReborn contact info
-Discord:get nuke by lb++ owner lmao
-New server:https://discord.gg/BrXGxGeY8r
+Discord new server:https://discord.gg/BrXGxGeY8r
 Website:https://liquidbounceplusreborn.github.io/
 
 ### LiquidBounce's contact info
