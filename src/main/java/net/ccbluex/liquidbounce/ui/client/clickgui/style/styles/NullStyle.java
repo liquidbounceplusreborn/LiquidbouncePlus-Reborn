@@ -27,7 +27,6 @@ import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NullStyle extends Style {
 
@@ -70,7 +69,7 @@ public class NullStyle extends Style {
         GlStateManager.resetColor();
         Fonts.minecraftFont.drawString(moduleElement.getDisplayName(), (int) (moduleElement.getX() + 5), moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
-        final List<Value<?>> moduleValues = moduleElement.getModule().getValues().stream().filter(Value::isSupported).collect(Collectors.toList());
+        final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
         if(!moduleValues.isEmpty()) {
             Fonts.minecraftFont.drawString("+", moduleElement.getX() + moduleElement.getWidth() - 10, moduleElement.getY() + (moduleElement.getHeight() / 2), Color.WHITE.getRGB());

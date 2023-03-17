@@ -28,7 +28,6 @@ import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @SideOnly(Side.CLIENT)
 public class TestStyle extends Style {
@@ -63,7 +62,7 @@ public class TestStyle extends Style {
         GlStateManager.resetColor();
         Fonts.minecraftFont.drawString(moduleElement.getDisplayName(), (int) (moduleElement.getX()+3), moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
-        final List<Value<?>> moduleValues = moduleElement.getModule().getValues().stream().filter(Value::isSupported).collect(Collectors.toList());
+        final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
         if(!moduleValues.isEmpty()) {
             Fonts.minecraftFont.drawString("+", moduleElement.getX() + moduleElement.getWidth() - 8, moduleElement.getY() + (moduleElement.getHeight() / 2), Color.WHITE.getRGB());
@@ -71,8 +70,6 @@ public class TestStyle extends Style {
             if(moduleElement.isShowSettings()) {
                 int yPos = moduleElement.getY() + 4;
                 for(final Value value : moduleValues) {
-                    if (!((boolean)value.getCanDisplay().invoke()))
-                        continue;
                     if(value instanceof BoolValue) {
                         String text = value.getName();
                         float textWidth = Fonts.minecraftFont.getStringWidth(text);

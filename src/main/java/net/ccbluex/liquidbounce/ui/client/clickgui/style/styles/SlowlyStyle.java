@@ -27,7 +27,6 @@ import org.lwjgl.input.Mouse;
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SlowlyStyle extends Style {
 
@@ -102,7 +101,7 @@ public class SlowlyStyle extends Style {
         Fonts.fontSFUI35.drawString(moduleElement.getDisplayName(), moduleElement.getX() + 5, moduleElement.getY() + 7, Color.WHITE.getRGB());
 
         // Draw settings
-        final List<Value<?>> moduleValues = moduleElement.getModule().getValues().stream().filter(Value::isSupported).collect(Collectors.toList());
+        final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
         if (!moduleValues.isEmpty()) {
             Fonts.fontSFUI35.drawString(">", moduleElement.getX() + moduleElement.getWidth() - 8, moduleElement.getY() + 5, Color.WHITE.getRGB());

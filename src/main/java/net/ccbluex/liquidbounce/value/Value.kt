@@ -51,8 +51,6 @@ abstract class Value<T>(val name: String,var value: T, var canDisplay: () -> Boo
     protected open fun onChange(oldValue: T, newValue: T) {}
     protected open fun onChanged(oldValue: T, newValue: T) {}
 
-    open fun isSupported() = true
-
 }
 
 /**
@@ -96,9 +94,7 @@ open class IntegerValue(name: String, value: Int, val minimum: Int = 0, val maxi
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive)
             value = element.asInt
-        return
     }
-    fun isMinimal(): Boolean = value <= minimum
 
 }
 
@@ -122,10 +118,7 @@ open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val m
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive)
             value = element.asFloat
-        return
     }
-
-    fun isMinimal(): Boolean = value <= minimum
 
 }
 
