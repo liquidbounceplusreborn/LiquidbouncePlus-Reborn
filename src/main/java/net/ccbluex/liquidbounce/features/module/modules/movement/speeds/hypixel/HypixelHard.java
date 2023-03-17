@@ -22,10 +22,10 @@ public class HypixelHard extends SpeedMode {
             if (mc.thePlayer.onGround) {
                 if (groundTick >= speed.wdGroundStay.get()) {
                     mc.timer.timerSpeed = speed.wdGroundTimer.get();
-                    MovementUtils.strafe(0.43f);
+                    MovementUtils.strafe(0.42f);
                     mc.thePlayer.motionY = MovementUtils.getJumpBoostModifier(0.41999998688698, true);
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        MovementUtils.strafe(0.63f);
+                        MovementUtils.strafe(0.57f);
                     }
                 }
                 groundTick++;
