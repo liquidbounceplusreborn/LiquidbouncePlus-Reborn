@@ -22,20 +22,42 @@ class Camera : Module(){
     //
     var alpha2: Int = 0
     //
-    val cameraClipValue = BoolValue("CameraClip", true)
-    val antiBlindValue = BoolValue("AntiBlind", true)
-    val noFov = BoolValue("NoFOV", true)
-    val worldColorValue = BoolValue("WorldColor", true)
-    val hitColorValue = BoolValue("HitColor", true)
-    val noHurtCam = BoolValue("NoHurtCam", true)
-    val customFog = BoolValue("CustomFog", true)
+    val cameraClipValue = BoolValue("CameraClip", false)
+    val noHurtCam = BoolValue("NoHurtCam", false)
+    val antiBlindValue = BoolValue("AntiBlind", false)
+    //AntiBlind
+    val confusionEffect = BoolValue("Confusion", false) { antiBlindValue.get() }
+    val pumpkinEffect = BoolValue("Pumpkin", false) { antiBlindValue.get() }
+    val fireEffect = BoolValue("Fire", false) { antiBlindValue.get() }
+    val scoreBoard = BoolValue("Scoreboard", false) { antiBlindValue.get() }
+    val bossHealth = BoolValue("Boss-Health", false) { antiBlindValue.get() }
+    val noFov = BoolValue("NoFOV", false)
+    //NoFOV
+    val fovValue = FloatValue("FOV", 1f, 0f, 1.5f, "x") { noFov.get() }
+    val worldColorValue = BoolValue("WorldColor", false)
+    //WorldColor
+    val worldColorRValue = IntegerValue("WorldRed", 255, 0, 255) { worldColorValue.get() }
+    val worldColorGValue = IntegerValue("WorldGreen", 255, 0, 255) { worldColorValue.get() }
+    val worldColorBValue = IntegerValue("WorldBlue", 255, 0, 255) { worldColorValue.get() }
+    val hitColorValue = BoolValue("HitColor", false)
+    //HitColor
+    val hitColorRValue = IntegerValue("HitRed", 255, 0, 255) { hitColorValue.get() }
+    val hitColorGValue = IntegerValue("HitGreen", 255, 0, 255) { hitColorValue.get() }
+    val hitColorBValue = IntegerValue("HitBlue", 255, 0, 255) { hitColorValue.get() }
+    val hitColorAlphaValue = IntegerValue("HitAlpha", 255, 0, 255) { hitColorValue.get() }
+    val customFog = BoolValue("CustomFog", false)
     //CustomFog
     val customFogDistance = FloatValue("FogDistance", 0.10f, 0.001f, 2.0f) { customFog.get() }
     val customFogRValue = IntegerValue("FogRed", 255, 0, 255) { customFog.get() }
     val customFogGValue = IntegerValue("FogGreen", 255, 0, 255) { customFog.get() }
     val customFogBValue = IntegerValue("FogBlue", 255, 0, 255) { customFog.get() }
+    val cameraPositionValue = BoolValue("CameraPosition", false)
+    //CameraPosition
+    val cameraPositionYawValue = FloatValue("Yaw", 10F, -50F, 50F) { cameraPositionValue.get() }
+    val cameraPositionPitchValue = FloatValue("Pitch", 10F, -50F, 50F) { cameraPositionValue.get() }
+    val cameraPositionFovValue = FloatValue("DistanceFov", 4F, 1F, 50F) { cameraPositionValue.get() }
     //FPSHurtCam
-    private val fpsHurtCam = BoolValue("FPSHurtCam", true)
+    private val fpsHurtCam = BoolValue("FPSHurtCam", false)
     val hurtcamColorRValue = IntegerValue("HurtColorRed", 255, 0, 255) { fpsHurtCam.get() }
     val hurtcamColorGValue = IntegerValue("HurtColorGreen", 255, 0, 255) { fpsHurtCam.get() }
     val hurtcamColorBValue = IntegerValue("HurtColorBlue", 255, 0, 255) { fpsHurtCam.get() }
@@ -43,23 +65,6 @@ class Camera : Module(){
     private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f){ fpsHurtCam.get() }
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f){ fpsHurtCam.get() }
     private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10){ fpsHurtCam.get() }
-    //WorldColor
-    val worldColorRValue = IntegerValue("WorldRed", 255, 0, 255) { worldColorValue.get() }
-    val worldColorGValue = IntegerValue("WorldGreen", 255, 0, 255) { worldColorValue.get() }
-    val worldColorBValue = IntegerValue("WorldBlue", 255, 0, 255) { worldColorValue.get() }
-    //HitColor
-    val hitColorRValue = IntegerValue("HitRed", 255, 0, 255) { hitColorValue.get() }
-    val hitColorGValue = IntegerValue("HitGreen", 255, 0, 255) { hitColorValue.get() }
-    val hitColorBValue = IntegerValue("HitBlue", 255, 0, 255) { hitColorValue.get() }
-    val hitColorAlphaValue = IntegerValue("HitAlpha", 255, 0, 255) { hitColorValue.get() }
-    //AntiBlind
-    val confusionEffect = BoolValue("Confusion", true) { antiBlindValue.get() }
-    val pumpkinEffect = BoolValue("Pumpkin", true) { antiBlindValue.get() }
-    val fireEffect = BoolValue("Fire", false) { antiBlindValue.get() }
-    val scoreBoard = BoolValue("Scoreboard", false) { antiBlindValue.get() }
-    val bossHealth = BoolValue("Boss-Health", true) { antiBlindValue.get() }
-    //NoFOV
-    val fovValue = FloatValue("FOV", 1f, 0f, 1.5f, "x") { noFov.get() }
     //FPSHurtCam
     @EventTarget
     private fun renderHud(event: Render2DEvent) {
