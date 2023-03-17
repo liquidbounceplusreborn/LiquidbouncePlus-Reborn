@@ -16,7 +16,9 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.LiquidSlowly
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @ElementInfo(name = "SessionInfo")
@@ -90,6 +92,7 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                     Color(0xFFFFFF).rgb
                 )
             }
+            return Border(0f, 0f, 165f, 63f)
         }
         if (modeValue.get().equals("2")) {
             for (i in 0..(gradientAmountValue.get() - 1)) {
@@ -141,7 +144,8 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
             var hour = durationInMillis / (1000 * 60 * 60) % 24
             var time: String
             time = String.format("%02dh %02dm %02ds", hour, minute, second)
-
+            GlStateManager.pushMatrix()
+            GL11.glTranslated(20.5, 15.5, 0.0)
             if (blurValue.get()) {
                 BlurUtils.blurAreaRounded(
                     -14f,
@@ -202,7 +206,8 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 Color.WHITE.rgb
             )
         }
-        return Border(0f, 0f, 165f, 63f)
+        GlStateManager.popMatrix()
+        return Border(14F, 0F, 165F, 63F)
     }
 
     fun getColor(): Color? {
