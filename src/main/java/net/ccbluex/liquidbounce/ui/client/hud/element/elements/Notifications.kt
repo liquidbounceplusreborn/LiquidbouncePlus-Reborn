@@ -76,8 +76,11 @@ class Notifications(
             exampleNotification.displayTime = System.currentTimeMillis()
 //            exampleNotification.x = exampleNotification.textLength + 8F
 
-            return Border(-exampleNotification.width.toFloat(), -exampleNotification.height.toFloat(), 0F, 0F)
-
+            if (styleValue.get() == "Classic") return Border(-150F, -30F, 0F, 0F)
+                if (styleValue.get() == "IntelliJIDEA") return Border(-180F, -30F, 0F, 0F)
+                    if (styleValue.get() == "TenacityOld") return Border(-138F, -30F, 0F, 0F)
+                        if (styleValue.get() == "Novoline") return Border(-185F, -30F, 0F, 0F)
+                            else return Border(-exampleNotification.width.toFloat(), exampleNotification.height.toFloat(), 0F,0F)
         }
 
         return null
@@ -262,14 +265,14 @@ class Notification(
                 RenderUtils.drawRect(
                     -textLength - 23f + 5,
                     -y.toFloat(),
-                    textLength.toFloat() - 152,
+                    textLength.toFloat() - 162,
                     height.toFloat(),
                     Color(70, 94, 115).rgb
                 )
                 RenderUtils.drawRect(
                     -textLength.toFloat() - 22f + 5,
                     -y + 1f,
-                    textLength.toFloat() - 153,
+                    textLength.toFloat() - 163,
                     height.toFloat() - 1,
                     Color(61, 72, 87).rgb
                 )
@@ -412,7 +415,7 @@ class Notification(
                 }
             }
             GL11.glScaled(pct, pct, pct)
-            GL11.glTranslatef(-width.toFloat(), 0F, 0F)
+            GL11.glTranslatef(-width.toFloat(), -height.toFloat() + 40, 0F)
 
             var fontcolor = 0
             if (type.toString() == "SUCCESS") {
@@ -513,7 +516,7 @@ class Notification(
                 }
             }
             GL11.glScaled(pct, pct, pct)
-            GL11.glTranslatef(-width.toFloat() / 2, -height.toFloat() / 2, 0F)
+            GL11.glTranslatef(-width.toFloat(), -height.toFloat() + 30, 0F)
             RenderUtils.drawShadow(1F, 0F, width.toFloat() - 1, height.toFloat())
             RenderUtils.drawRect(1F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 50))
             fun drawCircle(x: Float, y: Float, radius: Float, start: Int, end: Int) {
