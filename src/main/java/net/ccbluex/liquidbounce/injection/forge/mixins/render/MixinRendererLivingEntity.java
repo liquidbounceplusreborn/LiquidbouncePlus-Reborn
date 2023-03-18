@@ -59,6 +59,9 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     protected abstract <T extends EntityLivingBase> void preRenderCallback(T entitylivingbaseIn, float partialTickTime);
 
     @Shadow
+    protected abstract <T extends EntityLivingBase> void rotateCorpse(T p_rotateCorpse_1_, float p_rotateCorpse_2_, float p_rotateCorpse_3_, float p_rotateCorpse_4_);
+
+    @Shadow
     protected boolean renderOutlines = false;
 
     @Shadow
@@ -95,26 +98,13 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Shadow
     protected ModelBase mainModel;
 
-    @Overwrite
-    protected <T extends EntityLivingBase> void rotateCorpse(T p_rotateCorpse_1_, float p_rotateCorpse_2_, float p_rotateCorpse_3_, float p_rotateCorpse_4_) {
-        final PlayerEdit playerEdit = LiquidBounce.moduleManager.getModule(PlayerEdit.class);
-        GlStateManager.rotate(180.0F - p_rotateCorpse_3_, 0.0F, 1.0F, 0.0F);
-        if (p_rotateCorpse_1_.deathTime > 0) {
-            float f = ((float)p_rotateCorpse_1_.deathTime + p_rotateCorpse_4_ - 1.0F) / 20.0F * 1.6F;
-            f = MathHelper.sqrt_float(f);
-            if (f > 1.0F) {
-                f = 1.0F;
-            }
-
-            GlStateManager.rotate(f * this.getDeathMaxRotation(p_rotateCorpse_1_), 0.0F, 0.0F, 1.0F);
-        } else {
-            String s = EnumChatFormatting.getTextWithoutFormattingCodes(p_rotateCorpse_1_.getName());
+    @Inject(method = "rotateCorpse", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;deathTime:I", shift = At.Shift.AFTER))
+    protected <T extends EntityLivingBase> void rotateCorpse(T p_rotateCorpse_1_, float p_rotateCorpse_2_, float p_rotateCorpse_3_, float p_rotateCorpse_4_, CallbackInfo ci) {
+        String s = EnumChatFormatting.getTextWithoutFormattingCodes(p_rotateCorpse_1_.getName());
             if (s != null && (PlayerEdit.rotatePlayer.get() && p_rotateCorpse_1_.equals(Minecraft.getMinecraft().thePlayer) && Objects.requireNonNull(LiquidBounce.moduleManager.get(PlayerEdit.class)).getState()) && (!(p_rotateCorpse_1_ instanceof EntityPlayer) || ((EntityPlayer)p_rotateCorpse_1_).isWearing(EnumPlayerModelParts.CAPE))) {
                 GlStateManager.translate(0.0F, p_rotateCorpse_1_.height + 0.1F, 0.0F);
                 GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
             }
-        }
-
     }
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"), cancellable = true)
