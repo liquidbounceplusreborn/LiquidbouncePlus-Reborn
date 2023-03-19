@@ -35,6 +35,12 @@ public class MixinLayerCape {
             if (PlayerEdit.baby.get() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(PlayerEdit.class)).getState()) {
                 GlStateManager.scale(0.5,0.5,0.5);
                 GlStateManager.translate(0.0,1.5,0.125);
+            }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Rabbit" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()){
+                GlStateManager.scale(1.0,1.0,1.0);
+                GlStateManager.translate(0.0,0.49,0.24);
+            }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Freddy" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()){
+                GlStateManager.scale(0.75, 0.75, 0.75);
+                GlStateManager.translate(0.0, -0.24, 0.23);
             }else {
                 GlStateManager.translate(0.0F, 0.0F, 0.125F);
             }
@@ -57,8 +63,14 @@ public class MixinLayerCape {
             if (p_doRenderLayer_1_.isSneaking()) {
                 if (PlayerEdit.baby.get() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(PlayerEdit.class)).getState()) {
                     GlStateManager.translate(0.0,-0.17,-0.1);
+                }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Rabbit" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()) {
+                    GlStateManager.scale(1.0, 1.0, 1.0);
+                    GlStateManager.translate(0.0, -0.10, -0.10);
+                }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Freddy" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()){
+                    GlStateManager.scale(1.0, 1.0, 1.0);
+                    GlStateManager.translate(0.0, -0.08, -0.1);
                 }
-                lvt_20_1_ += 25.0F;
+                    lvt_20_1_ += 25.0F;
             }
 
             GlStateManager.rotate(6.0F + lvt_21_1_ / 2.0F + lvt_20_1_, 1.0F, 0.0F, 0.0F);
