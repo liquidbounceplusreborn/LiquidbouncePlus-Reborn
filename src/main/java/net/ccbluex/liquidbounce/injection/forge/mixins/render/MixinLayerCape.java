@@ -28,14 +28,16 @@ public class MixinLayerCape {
      */
     @Overwrite
     public void doRenderLayer(AbstractClientPlayer p_doRenderLayer_1_, float p_doRenderLayer_2_, float p_doRenderLayer_3_, float p_doRenderLayer_4_, float p_doRenderLayer_5_, float p_doRenderLayer_6_, float p_doRenderLayer_7_, float p_doRenderLayer_8_) {
-        if (PlayerEdit.baby.get() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(PlayerEdit.class)).getState()) {
-            return;
-        }
         if (p_doRenderLayer_1_.hasPlayerInfo() && !p_doRenderLayer_1_.isInvisible() && p_doRenderLayer_1_.isWearing(EnumPlayerModelParts.CAPE) && p_doRenderLayer_1_.getLocationCape() != null) {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.playerRenderer.bindTexture(p_doRenderLayer_1_.getLocationCape());
             GlStateManager.pushMatrix();
-            GlStateManager.translate(0.0F, 0.0F, 0.125F);
+            if (PlayerEdit.baby.get() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(PlayerEdit.class)).getState()) {
+                GlStateManager.scale(0.5,0.5,0.5);
+                GlStateManager.translate(0.0,1.5,0.125);
+            }else {
+                GlStateManager.translate(0.0F, 0.0F, 0.125F);
+            }
             double lvt_9_1_ = p_doRenderLayer_1_.prevChasingPosX + (p_doRenderLayer_1_.chasingPosX - p_doRenderLayer_1_.prevChasingPosX) * (double)p_doRenderLayer_4_ - (p_doRenderLayer_1_.prevPosX + (p_doRenderLayer_1_.posX - p_doRenderLayer_1_.prevPosX) * (double)p_doRenderLayer_4_);
             double lvt_11_1_ = p_doRenderLayer_1_.prevChasingPosY + (p_doRenderLayer_1_.chasingPosY - p_doRenderLayer_1_.prevChasingPosY) * (double)p_doRenderLayer_4_ - (p_doRenderLayer_1_.prevPosY + (p_doRenderLayer_1_.posY - p_doRenderLayer_1_.prevPosY) * (double)p_doRenderLayer_4_);
             double lvt_13_1_ = p_doRenderLayer_1_.prevChasingPosZ + (p_doRenderLayer_1_.chasingPosZ - p_doRenderLayer_1_.prevChasingPosZ) * (double)p_doRenderLayer_4_ - (p_doRenderLayer_1_.prevPosZ + (p_doRenderLayer_1_.posZ - p_doRenderLayer_1_.prevPosZ) * (double)p_doRenderLayer_4_);
@@ -53,6 +55,9 @@ public class MixinLayerCape {
             float lvt_23_1_ = p_doRenderLayer_1_.prevCameraYaw + (p_doRenderLayer_1_.cameraYaw - p_doRenderLayer_1_.prevCameraYaw) * p_doRenderLayer_4_;
             lvt_20_1_ += MathHelper.sin((p_doRenderLayer_1_.prevDistanceWalkedModified + (p_doRenderLayer_1_.distanceWalkedModified - p_doRenderLayer_1_.prevDistanceWalkedModified) * p_doRenderLayer_4_) * 6.0F) * 32.0F * lvt_23_1_;
             if (p_doRenderLayer_1_.isSneaking()) {
+                if (PlayerEdit.baby.get() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(PlayerEdit.class)).getState()) {
+                    GlStateManager.translate(0.0,-0.17,-0.1);
+                }
                 lvt_20_1_ += 25.0F;
             }
 
