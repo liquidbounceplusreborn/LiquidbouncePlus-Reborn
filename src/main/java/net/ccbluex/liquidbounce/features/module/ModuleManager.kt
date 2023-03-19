@@ -40,7 +40,6 @@ class ModuleManager : Listenable {
         ClientUtils.getLogger().info("[ModuleManager] Loading modules...")
 
         registerModules(
-                CustomModel::class.java,
                 AntiExploit::class.java,
                 AutoWeapon::class.java,
                 BowAimbot::class.java,

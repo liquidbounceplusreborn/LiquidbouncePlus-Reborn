@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.UpdateModelEvent;
-import net.ccbluex.liquidbounce.features.module.modules.render.CustomModel;
+import net.ccbluex.liquidbounce.features.module.modules.render.PlayerEdit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
@@ -115,8 +115,8 @@ public class MixinModelPlayer extends ModelBiped {
 
     @Inject(method = {"render"}, at = {@At("HEAD")}, cancellable = true)
     public void renderHook(Entity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale, CallbackInfo ci) {
-        CustomModel customModel = LiquidBounce.moduleManager.getModule(CustomModel.class);
-        if (customModel.getState()) {
+        PlayerEdit playerEdit = LiquidBounce.moduleManager.getModule(PlayerEdit.class);
+        if (PlayerEdit.customModel.get() && (LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()) {
             ci.cancel();
             renderCustom(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
         }
@@ -351,10 +351,10 @@ public class MixinModelPlayer extends ModelBiped {
         }
 
 
-        CustomModel customModel = LiquidBounce.moduleManager.getModule(CustomModel.class);
+        PlayerEdit playerEdit = LiquidBounce.moduleManager.getModule(PlayerEdit.class);
         GlStateManager.pushMatrix();
-        if ((!customModel.getOnlySelf().getValue() || entityIn == (Minecraft.getMinecraft()).thePlayer || (LiquidBounce.fileManager.friendsConfig.isFriend(entityIn.getName()) && customModel.getFriends().getValue())) && customModel.getState()) {
-            if (customModel.getState() && customModel.getMode().get().contains("Rabbit")) {
+        if (PlayerEdit.customModel.get() && (LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()) {
+            if (playerEdit.mode.get().contains("Rabbit")) {
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(1.25D, 1.25D, 1.25D);
                 GlStateManager.translate(0.0D, -0.3D, 0.0D);
@@ -375,7 +375,7 @@ public class MixinModelPlayer extends ModelBiped {
                 this.rabbitLleg.rotateAngleZ = this.bipedLeftLeg.rotateAngleZ;
                 this.rabbitBone.render(scale);
                 GlStateManager.popMatrix();
-            } else if (customModel.getState() && customModel.getMode().get().contains("Freddy")) {
+            } else if (playerEdit.mode.get().contains("Freddy")) {
                 this.fredhead.rotateAngleX = this.bipedHead.rotateAngleX;
                 this.fredhead.rotateAngleY = this.bipedHead.rotateAngleY;
                 this.fredhead.rotateAngleZ = this.bipedHead.rotateAngleZ;
