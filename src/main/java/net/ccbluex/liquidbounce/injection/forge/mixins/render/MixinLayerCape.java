@@ -28,6 +28,9 @@ public class MixinLayerCape {
      */
     @Overwrite
     public void doRenderLayer(AbstractClientPlayer p_doRenderLayer_1_, float p_doRenderLayer_2_, float p_doRenderLayer_3_, float p_doRenderLayer_4_, float p_doRenderLayer_5_, float p_doRenderLayer_6_, float p_doRenderLayer_7_, float p_doRenderLayer_8_) {
+        if (LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState() && PlayerEdit.removeCape.get()){
+            return;
+        }
         if (p_doRenderLayer_1_.hasPlayerInfo() && !p_doRenderLayer_1_.isInvisible() && p_doRenderLayer_1_.isWearing(EnumPlayerModelParts.CAPE) && p_doRenderLayer_1_.getLocationCape() != null) {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.playerRenderer.bindTexture(p_doRenderLayer_1_.getLocationCape());

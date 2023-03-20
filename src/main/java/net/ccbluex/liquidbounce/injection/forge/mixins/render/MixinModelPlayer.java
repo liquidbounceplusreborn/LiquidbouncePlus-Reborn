@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.UpdateModelEvent;
 import net.ccbluex.liquidbounce.features.module.modules.render.PlayerEdit;
+import net.ccbluex.liquidbounce.utils.render.ColorUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.model.ModelBox;
@@ -396,6 +398,50 @@ public class MixinModelPlayer extends ModelBiped {
                 GlStateManager.translate(0.0, 0.85, 0.0);
                 this.fredbody.render(scale);
                 GlStateManager.popMatrix();
+            } else if (playerEdit.mode.get().contains("Amogus")){
+                this.bipedHead.rotateAngleY = netHeadYaw * 0.017453292F;
+                this.bipedHead.rotateAngleX = headPitch * 0.017453292F;
+                this.bipedBody.rotateAngleY = 0.0F;
+                this.bipedRightArm.rotationPointZ = 0.0F;
+                this.bipedRightArm.rotationPointX = -5.0F;
+                this.bipedLeftArm.rotationPointZ = 0.0F;
+                this.bipedLeftArm.rotationPointX = 5.0F;
+                float f = 1.0F;
+                if (f < 1.0F)
+                    f = 1.0F;
+                this.bipedRightArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + 3.1415927F) * 2.0F * limbSwingAmount * 0.5F / f;
+                this.bipedLeftArm.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 2.0F * limbSwingAmount * 0.5F / f;
+                this.bipedRightArm.rotateAngleZ = 0.0F;
+                this.bipedLeftArm.rotateAngleZ = 0.0F;
+                this.right_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount / f;
+                this.left_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + 3.1415927F) * 1.4F * limbSwingAmount / f;
+                this.right_leg.rotateAngleY = 0.0F;
+                this.left_leg.rotateAngleY = 0.0F;
+                this.right_leg.rotateAngleZ = 0.0F;
+                this.left_leg.rotateAngleZ = 0.0F;
+                int bodyCustomColor = new Color(PlayerEdit.bodyColorR.get(), PlayerEdit.bodyColorG.get(), PlayerEdit.bodyColorB.get()).getRGB();
+                int eyeCustomColor = new Color(PlayerEdit.eyeColorR.get(), PlayerEdit.eyeColorG.get(), PlayerEdit.eyeColorB.get()).getRGB();
+                int legsCustomColor = new Color(PlayerEdit.legsColorR.get(), PlayerEdit.legsColorG.get(), PlayerEdit.legsColorB.get()).getRGB();
+                if (this.isChild) {
+                    GlStateManager.scale(0.5F, 0.5F, 0.5F);
+                    GlStateManager.translate(0.0F, 24.0F * scale, 0.0F);
+                    this.body.render(scale);
+                    this.left_leg.render(scale);
+                    this.right_leg.render(scale);
+                } else {
+                    GlStateManager.translate(0.0D, -0.8D, 0.0D);
+                    GlStateManager.scale(1.8D, 1.6D, 1.6D);
+                    RenderUtils.color(bodyCustomColor);
+                    GlStateManager.translate(0.0D, 0.15D, 0.0D);
+                    this.body.render(scale);
+                    RenderUtils.color(eyeCustomColor);
+                    this.eye.render(scale);
+                    RenderUtils.color(legsCustomColor);
+                    GlStateManager.translate(0.0D, -0.15D, 0.0D);
+                    this.left_leg.render(scale);
+                    this.right_leg.render(scale);
+                    GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                }
             }
         } else {
             super.render(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);

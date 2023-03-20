@@ -17,8 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinRenderPlayer {
     private final ResourceLocation rabbit = new ResourceLocation("liquidbounce+/models/rabbit.png");
     private final ResourceLocation freddy = new ResourceLocation("liquidbounce+/models/freddy.png");
-    //soon
-//    private final ResourceLocation amogus = new ResourceLocation("liquidbounce+/models/amogus.png");
+    private final ResourceLocation amogus = new ResourceLocation("liquidbounce+/models/amogus.png");
     @Inject(method = "renderLivingAt", at = @At("HEAD"))
     protected void renderLivingAt(AbstractClientPlayer entityLivingBaseIn, double x, double y, double z, CallbackInfo callbackInfo) {
         if(LiquidBounce.moduleManager.get(PlayerEdit.class).getState() & entityLivingBaseIn.equals(Minecraft.getMinecraft().thePlayer) && PlayerEdit.editPlayerSizeValue.get()) {
@@ -34,10 +33,9 @@ public abstract class MixinRenderPlayer {
             if (LiquidBounce.moduleManager.getModule(PlayerEdit.class).mode.get().contains("Freddy")) {
                 ci.setReturnValue(freddy);
             }
-            //soon
-//            if (LiquidBounce.moduleManager.getModule(PlayerEdit.class).mode.get().contains("Amogus")) {
-//                ci.setReturnValue(amogus);
-//            }
+            if (LiquidBounce.moduleManager.getModule(PlayerEdit.class).mode.get().contains("Amogus")) {
+                ci.setReturnValue(amogus);
+            }
         }
     }
 }
