@@ -16,6 +16,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
+import net.ccbluex.liquidbounce.value.ListValue;
+import net.minecraft.entity.Entity;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -27,10 +29,14 @@ import static org.lwjgl.opengl.GL11.*;
 @ModuleInfo(name = "Breadcrumbs", description = "Leaves a trail behind you.", category = ModuleCategory.RENDER)
 public class Breadcrumbs extends Module {
     public final BoolValue unlimitedValue = new BoolValue("Unlimited", false);
-    public final FloatValue lineWidth = new FloatValue("LineWidth", 0F, 1F, 10F);
-    public final IntegerValue colorRedValue = new IntegerValue("R", 255, 0, 255);
-    public final IntegerValue colorGreenValue = new IntegerValue("G", 179, 0, 255);
-    public final IntegerValue colorBlueValue = new IntegerValue("B", 72, 0, 255);
+    public final FloatValue lineWidth = new FloatValue("LineWidth", 1F, 1F, 10F);
+    private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
+    public final IntegerValue colorRedValue = new IntegerValue("R", 255, 0, 255, () -> colorModeValue.get().contains("Custom") || colorModeValue.get().contains("Fade"));
+    public final IntegerValue colorGreenValue = new IntegerValue("G", 179, 0, 255, () -> colorModeValue.get().contains("Custom") || colorModeValue.get().contains("Fade"));
+    public final IntegerValue colorBlueValue = new IntegerValue("B", 72, 0, 255, () -> colorModeValue.get().contains("Custom") || colorModeValue.get().contains("Fade"));
+    private final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F, () -> !(colorModeValue.get().contains("Custom") || colorModeValue.get().contains("Fade")));
+    private final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F, () -> !(colorModeValue.get().contains("Custom") || colorModeValue.get().contains("Fade")));
+    private final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10, () -> !(colorModeValue.get().contains("Custom") || colorModeValue.get().contains("Fade")));
     public final IntegerValue fadeSpeedValue = new IntegerValue("Fade-Speed", 25, 0, 255);
     public final BoolValue colorRainbow = new BoolValue("Rainbow", false);
     private final LinkedList<Dot> positions = new LinkedList<>();
@@ -39,7 +45,7 @@ public class Breadcrumbs extends Module {
 
     @EventTarget
     public void onRender3D(Render3DEvent event) {
-        final Color color = colorRainbow.get() ? ColorUtils.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
+        final Color color = getColor();
 
         synchronized (positions) {
             glPushMatrix();
@@ -125,6 +131,23 @@ public class Breadcrumbs extends Module {
             glVertex3d(pos[0] - renderPosX, pos[1] - renderPosY, pos[2] - renderPosZ);
             alpha -= decreaseBy;
             if (alpha < 0) alpha = 0;
+        }
+    }
+
+    public final Color getColor() {
+        switch (colorModeValue.get()) {
+            case "Custom":
+                return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
+            case "Rainbow":
+                return new Color(RenderUtils.getRainbowOpaque(mixerSecondsValue.get(), saturationValue.get(), brightnessValue.get(), 0));
+            case "Sky":
+                return RenderUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get());
+            case "LiquidSlowly":
+                return ColorUtils.LiquidSlowly(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get());
+            case "Mixer":
+                return ColorMixer.getMixedColor(0, mixerSecondsValue.get());
+            default:
+                return ColorUtils.fade(new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), 0, 100);
         }
     }
 }
