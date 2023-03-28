@@ -57,6 +57,7 @@ class Disabler : Module() {
 
 	val modeValue = ListValue("Mode",
 		arrayOf(
+			"Basic", // basic disabler
 			"SpartanCombat", // old spartan combat disabler
 			"MatrixGeyser", // work with old matrix, around 5.2.x (with badly configured geysermc)
 			"OldVerus", // Dort
@@ -309,7 +310,7 @@ class Disabler : Module() {
 				Fonts.font40.drawCenteredString("${(msTimer.hasTimeLeft(psfWorldDelay.get().toLong()).toFloat() / 1000F).toInt()}s left...", sc.scaledWidth / 2F, 41F, -1)
 			}
 			if ((modeValue.get().equals("watchdog", true) && testFeature.get()) && !ServerUtils.isHypixelLobby() && !mc.isSingleplayer()) {
-				when (waitingDisplayMode.get().toLowerCase()) {
+				when (waitingDisplayMode.get().lowercase()) {
 					"top" -> {
 						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F, 61.5F, Color(0, 0, 0).rgb, false)
 						Fonts.minecraftFont.drawString("Please wait...", sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth("Please wait...") / 2F, 62.5F, Color(0, 0, 0).rgb, false)
@@ -333,15 +334,15 @@ class Disabler : Module() {
 	fun onPacket(event: PacketEvent) {
 		val packet = event.packet
 
-		when (modeValue.get().toLowerCase()) {
+		when (modeValue.get().lowercase()) {
 			"vulcan" -> {
 				if (vulcanStrafe2.get()) {
-					if(event.packet is C0FPacketConfirmTransaction) {
+					if (event.packet is C0FPacketConfirmTransaction) {
 						if (mc.thePlayer.ticksExisted % 20 == 0) {
 							event.cancelEvent()
 						}
 					}
-					if(event.packet is C17PacketCustomPayload) {
+					if (event.packet is C17PacketCustomPayload) {
 						event.cancelEvent()
 					}
 					if (event.packet is S08PacketPlayerPosLook) {
@@ -362,20 +363,34 @@ class Disabler : Module() {
 						val diff = Math.sqrt(x * x + y * y + z * z)
 						if (diff <= 4) {
 							PacketUtils.sendPacketNoEvent(
-								C06PacketPlayerPosLook(
-									packet.getX(),
-									packet.getY(),
-									packet.getZ(),
-									packet.getYaw(),
-									packet.getPitch(),
-									true
-								)
+									C06PacketPlayerPosLook(
+											packet.getX(),
+											packet.getY(),
+											packet.getZ(),
+											packet.getYaw(),
+											packet.getPitch(),
+											true
+									)
 							)
 						}
 					}
 				}
 			}
-			"matrixgeyser" -> if (packet is C03PacketPlayer && mc.thePlayer.ticksExisted % 15 == 0) {
+
+			"basic" -> {
+				if (packet is C00PacketKeepAlive) {
+					debug("C00PacketKeepAlive disabled")
+					event.cancelEvent()
+				}
+				if (packet is C0FPacketConfirmTransaction) {
+					debug("C0FPacketConfirmTransaction disabled")
+					event.cancelEvent()
+				}
+				if (packet is S3EPacketTeams)
+					debug("S3EPacketTeams disabled")
+					event.cancelEvent()
+			}
+ 			"matrixgeyser" -> if (packet is C03PacketPlayer && mc.thePlayer.ticksExisted % 15 == 0) {
 				try {
 					val b = ByteArrayOutputStream()
 					val _out = DataOutputStream(b)
@@ -609,7 +624,7 @@ class Disabler : Module() {
 						if (!shouldActive) {
 							shouldActive = true
 							debug("activated")
-							when (waitingDisplayMode.get().toLowerCase()) {
+							when (waitingDisplayMode.get().lowercase()) {
 								"notification" -> LiquidBounce.hud.addNotification(Notification("Disabler","Activated Disabler.", NotifyType.SUCCESS, 2000))
 								"chat" -> debug("Activated Disabler.", true)
 							}
