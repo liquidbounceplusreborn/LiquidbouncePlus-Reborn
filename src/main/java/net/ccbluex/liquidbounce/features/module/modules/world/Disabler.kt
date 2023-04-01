@@ -386,9 +386,6 @@ class Disabler : Module() {
 					debug("C0FPacketConfirmTransaction disabled")
 					event.cancelEvent()
 				}
-				if (packet is S3EPacketTeams)
-					debug("S3EPacketTeams disabled")
-					event.cancelEvent()
 			}
  			"matrixgeyser" -> if (packet is C03PacketPlayer && mc.thePlayer.ticksExisted % 15 == 0) {
 				try {
