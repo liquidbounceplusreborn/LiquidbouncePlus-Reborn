@@ -59,7 +59,7 @@ public class Scaffold extends Module {
     // Global settings
     private final BoolValue towerEnabled = new BoolValue("EnableTower", false);
     private final ListValue towerModeValue = new ListValue("TowerMode", new String[]{
-            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus","NCP"
+            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus","NCP","BlocksMCLessFlag"
     }, "Motion", () -> towerEnabled.get());
 
     private final BoolValue noMoveOnlyValue = new BoolValue("NoMove", true, () -> towerEnabled.get());
@@ -262,6 +262,8 @@ public class Scaffold extends Module {
     private boolean verusJumped = false;
     private int ticks, towerTicks;
 
+    private int offGroundTicks = 0;
+
     public boolean isTowerOnly() {
         return (towerEnabled.get());
     }
@@ -425,7 +427,7 @@ public class Scaffold extends Module {
                 }
                 verusJumped = true;
                 break;
-            case "ncp":
+            case "ncp": {
                 if (mc.thePlayer.onGround) {
                     fakeJump();
                     towerTicks = 0;
@@ -443,8 +445,25 @@ public class Scaffold extends Module {
                     towerTicks++;
                 }
                 break;
+            }
+            case"blocksmclessflag":{
+                    if (mc.thePlayer.posY % 1 <= 0.00153598) {
+                        mc.thePlayer.setPosition(
+                                mc.thePlayer.posX,
+                                Math.floor(mc.thePlayer.posY),
+                                mc.thePlayer.posZ
+                        );
+                        mc.thePlayer.motionY = 0.41998;
+                    } else if (mc.thePlayer.posY % 1 < 0.1 && offGroundTicks != 0) {
+                        mc.thePlayer.setPosition(
+                                mc.thePlayer.posX,
+                                Math.floor(mc.thePlayer.posY),
+                                mc.thePlayer.posZ
+                        );
+                    }
+                }
+            }
         }
-    }
 
     /**
      * Update event
@@ -459,6 +478,10 @@ public class Scaffold extends Module {
             mc.gameSettings.keyBindSneak.pressed = false;
             mc.thePlayer.setSprinting(false);
         }
+
+        if (mc.thePlayer.onGround) {
+            offGroundTicks = 0;
+        } else offGroundTicks++;
 
         if (sprintModeValue.get().equalsIgnoreCase("PlaceOff")) {
             if (mc.thePlayer.onGround);
