@@ -1,6 +1,6 @@
 # LiquidBounce+ Reborn(Unofficial)
 
-Randomguy currently????mm
+I love releasing src of some shit private liquidbounce
 
 A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
 ### LiquidBounce+ Reborn contact info
