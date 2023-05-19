@@ -33,7 +33,7 @@ object Remapper {
             srgFile.createNewFile()
 
             ClientUtils.getLogger().info("[Remapper] Downloading $srgName srg...")
-            HttpUtils.download("https://wysi-foundation.github.io/LiquidCloud/LiquidBounce/mcp-$srgName.srg", srgFile)
+            HttpUtils.download("${LiquidBounce.CLIENT_CLOUD}/mcp-$srgName.srg", srgFile)
             ClientUtils.getLogger().info("[Remapper] Downloaded $srgName.")
         }
 
