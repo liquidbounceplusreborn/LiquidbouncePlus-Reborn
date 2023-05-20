@@ -52,9 +52,13 @@ public class ClickGUI extends Module {
 
     public final ListValue animationValue = new ListValue("Animation", new String[]{"Azura", "Slide", "SlideBounce", "Zoom", "ZoomBounce", "None"}, "Azura");
     public final FloatValue animSpeedValue = new FloatValue("AnimSpeed", 1F, 0.01F, 5F, "x");
+    public final BoolValue disp = new BoolValue("DisplayValue", false);
 
-    public final BoolValue getClosePrevious = (BoolValue) new BoolValue("ClosePrevious",false);
-   public final BoolValue disp = new BoolValue("DisplayValue", false);
+    public OtcClickGUi otcGui = new OtcClickGUi();
+
+    public ClickUI zerodayGui = new ClickUI();
+
+    public FluxClassic fluxGui = new FluxClassic();
 
     public static Color generateColor() {
         Color c = new Color(255, 255, 255, 255);
@@ -88,15 +92,15 @@ public class ClickGUI extends Module {
             this.setState(false);
         } else {
                 if (styleValue.get().contains("Flux")) {
-                    mc.displayGuiScreen(new FluxClassic());
+                    mc.displayGuiScreen(fluxGui);
                     this.setState(false);
                 } else {
                     if (styleValue.get().contains("Zeroday")) {
-                        mc.displayGuiScreen(new ClickUI());
+                        mc.displayGuiScreen(zerodayGui);
                         this.setState(false);
                     } else {
                         if (styleValue.get().contains("OneTap")) {
-                            mc.displayGuiScreen(new OtcClickGUi());
+                            mc.displayGuiScreen(otcGui);
                             this.setState(false);
                         } else {
                             if (styleValue.get().equalsIgnoreCase("Chocolate")) {
