@@ -18,6 +18,7 @@ public class Window {
     public final ModuleCategory category;
     public final ArrayList<Button> buttons = Lists.newArrayList();
     public boolean drag;
+    public Module module;
     public boolean extended;
     public int x;
     public int y;
@@ -189,17 +190,18 @@ public class Window {
             }
             if (wheel < 0) {
                 if (wheely < totalY - height) {
-                    wheely += 20 + Mouse.getDWheel();
+                    wheely += 10;
                     if (wheely < 0) {
-                        wheely = 0;
+                        wheely -= 10;
                     }
                 }
             } else if (wheel > 0) {
-                wheely -= 20 + Mouse.getDWheel();
+                wheely -= 10;
                 if (wheely < 0) {
-                    wheely = 0;
+                    wheely += 10;
                 }
             }
+            translate.interpolate(0,wheely,100);
         }
     }
 

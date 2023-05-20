@@ -47,6 +47,8 @@ public class Button {
         float y2 = y + 15;
         buttons.clear();
         for (Value v : cheat.getValues()) {
+            if (!((boolean)v.getCanDisplay().invoke()))
+                continue;
             buttons.add(new ValueButton(v, x + 5, y2));
             y2 += 15;
         }
