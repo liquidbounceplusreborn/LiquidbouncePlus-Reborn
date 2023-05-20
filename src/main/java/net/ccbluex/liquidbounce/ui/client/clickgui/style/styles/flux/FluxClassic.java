@@ -177,8 +177,8 @@ public class FluxClassic extends GuiScreen {
                     }
                 }
             }
-            module.getValueTranslate().interpolate(0, module.yPos1, 0.1);
-            module.getModuleTranslate().interpolate(0, moduleY, 0.1);
+            module.getValueTranslate().interpolate(0, module.yPos1, 100);
+            module.getModuleTranslate().interpolate(0, moduleY, 100);
             //Animations
             float modulePosY = module.getModuleTranslate().getY();
             float valuePosY = module.getValueTranslate().getY();
@@ -237,7 +237,7 @@ public class FluxClassic extends GuiScreen {
                         optionInt.getTranslate().interpolate((112F *
                                         (optionInt.get() > optionInt.getMaximum() ? optionInt.getMaximum() : optionInt.get() < optionInt.getMinimum() ? 0 : optionInt.get()
                                                 - optionInt.getMinimum()) / (optionInt.getMaximum() - optionInt.getMinimum()) + 8)
-                                , 0, 0.1);
+                                , 0, 100);
 
                         RenderUtils.drawRect(posX + 8, valuePosY + 16, posX + 120, valuePosY + 17,
                                 (new Color(227, 227, 227)).getRGB());
@@ -252,7 +252,7 @@ public class FluxClassic extends GuiScreen {
 
                         FloatValue optionDouble = (FloatValue) option;
                         Fonts.fontSFUI35.drawString(optionDouble.getName(), posX + 8, valuePosY, new Color(160,160,160).getRGB());
-                        optionDouble.getTranslate().interpolate((float) (112F * (optionDouble.get() > optionDouble.getMaximum() ? optionDouble.getMaximum() : optionDouble.get() < optionDouble.getMinimum() ? 0 : optionDouble.get() - optionDouble.getMinimum()) / (optionDouble.getMaximum() - optionDouble.getMinimum()) + 8), 0, 0.1);
+                        optionDouble.getTranslate().interpolate((float) (112F * (optionDouble.get() > optionDouble.getMaximum() ? optionDouble.getMaximum() : optionDouble.get() < optionDouble.getMinimum() ? 0 : optionDouble.get() - optionDouble.getMinimum()) / (optionDouble.getMaximum() - optionDouble.getMinimum()) + 8), 0, 100);
                         RenderUtils.drawRect(posX + 8, valuePosY + 16, posX + 120, valuePosY + 17,
                                 (new Color(227, 227, 227)).getRGB());
                         RenderUtils.drawRect(posX + 8, valuePosY + 16, (posX + optionDouble.getTranslate().getX()), valuePosY + 17,
@@ -383,9 +383,9 @@ public class FluxClassic extends GuiScreen {
                 }
             }
         }
-        translate.interpolate(0, mouseWheel, 0.15F);
+        translate.interpolate(0, mouseWheel, 100F);
 
-        configTranslate.interpolate(0,showConfig ? LiquidBounce.fileManager.profilesConfigs.size() * 20 : 0, 0.1);
+        configTranslate.interpolate(0,showConfig ? LiquidBounce.fileManager.profilesConfigs.size() * 20 : 0, 100);
         float posY = configTranslate.getY();
         if(isHovered(width - 80, height - 30 - posY, width - 20, height - 10 - posY,mouseX, mouseY)) {
             if(Mouse.isButtonDown(0)) {
