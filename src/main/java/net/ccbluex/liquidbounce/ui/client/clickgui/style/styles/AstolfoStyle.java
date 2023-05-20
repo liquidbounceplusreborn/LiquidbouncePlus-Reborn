@@ -117,6 +117,8 @@ public class AstolfoStyle extends Style {
                 int yPos = moduleElement.getY() + 4;
 
                 for (final Value value : moduleValues) {
+                    if (!((boolean)value.getCanDisplay().invoke()))
+                        continue;
                     if (value instanceof BoolValue) {
                         String text = value.getName();
                         float textWidth = Fonts.minecraftFont.getStringWidth(text);
