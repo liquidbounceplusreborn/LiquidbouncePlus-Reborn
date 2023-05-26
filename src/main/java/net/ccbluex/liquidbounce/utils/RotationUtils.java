@@ -22,6 +22,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
+import static java.lang.Math.PI;
+
 public final class RotationUtils extends MinecraftInstance implements Listenable {
 
     private static Random random = new Random();
@@ -477,6 +479,18 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         float yaw = (float)(Math.atan2(zDiff, xDiff) * 180.0 / Math.PI) - 90.0f;
         float pitch = (float)(- Math.atan2(yDiff, dist) * 180.0 / Math.PI);
         return new Rotation(yaw,pitch);
+    }
+
+    public static Rotation calculate(final Vec3 from, final Vec3 to) {
+        final Vec3 diff = to.subtract(from);
+        final double distance = Math.hypot(diff.xCoord, diff.zCoord);
+        final float yaw = (float) (MathHelper.atan2(diff.zCoord, diff.xCoord) * (180F / PI)) - 90.0F;
+        final float pitch = (float) (-(MathHelper.atan2(diff.yCoord, distance) * (180F / PI)));
+        return new Rotation(yaw, pitch);
+    }
+
+    public static Rotation calculate(final Vec3 to) {
+        return calculate(mc.thePlayer.getPositionVector().add(new Vec3(0, mc.thePlayer.getEyeHeight(), 0)), new Vec3(to.xCoord, to.yCoord, to.zCoord));
     }
 
     /**

@@ -126,7 +126,7 @@ public class Scaffold extends Module {
     // Basic stuff
     private final BoolValue swingValue = new BoolValue("Swing", true);
     private final BoolValue downValue = new BoolValue("Down", false);
-    private final ListValue placeModeValue = new ListValue("PlaceTiming", new String[]{"Pre", "Post"}, "Post");
+    private final ListValue placeModeValue = new ListValue("PlaceTiming", new String[]{"Pre", "Post","Legit"}, "Post");
 
     // Eagle
     private final BoolValue eagleValue = new BoolValue("Eagle", false);
@@ -472,6 +472,10 @@ public class Scaffold extends Module {
      */
     @EventTarget
     public void onUpdate(final UpdateEvent event) {
+
+        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && placeModeValue.get() == "Legit") {
+            place(false);
+        }
 
         if (towerActivation()) {
             shouldGoDown = false;
