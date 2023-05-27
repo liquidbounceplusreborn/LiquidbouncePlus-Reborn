@@ -287,11 +287,11 @@ public class Speed extends Module {
     public final FloatValue baseTimerValue = new FloatValue("BaseTimer", 1.5F, 1F, 3F, () -> getModeName().equalsIgnoreCase("hypixelboost"));
     public final FloatValue baseMTimerValue = new FloatValue("BaseMultiplierTimer", 1F, 0F, 3F, () -> getModeName().equalsIgnoreCase("hypixelboost"));
     public final BoolValue bypassWarning = new BoolValue("BypassWarning", true, () -> (typeValue.get().equalsIgnoreCase("hypixel") && !getModeName().equalsIgnoreCase("hypixelcustom")));
+
+    public final BoolValue hardDmgBoost = new BoolValue("HypHardDmgBoost",false, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
+    public final BoolValue hardDmgStrafe = new BoolValue("HypHardDmgStrafe",false, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
+
     public final FloatValue customSpeedBoost = new FloatValue("SpeedPotJumpModifier", 0.1f, 0f, 0.4f, () -> hypixelModeValue.get().equalsIgnoreCase("yport"));
-    public final IntegerValue wdGroundStay = new IntegerValue("HardGroundStay", 0, 0, 10, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
-    public final FloatValue customSpeed2Boost = new FloatValue("HardSpeedPotJumpModifier", 0.04f, 0.02f, 0.04f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
-    public final FloatValue wdHAirTimerValue = new FloatValue("WdHardAirTimer", 1.2f, 0.1f, 3f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
-    public final FloatValue wdGroundTimer = new FloatValue("WdHardGroundTimer", 1.7f, 0.1f, 3f, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
     public final FloatValue portMax = new FloatValue("AAC-PortLength", 1, 1, 20, () -> typeValue.get().equalsIgnoreCase("aac"));
     public final FloatValue aacGroundTimerValue = new FloatValue("AACGround-Timer", 3F, 1.1F, 10F, () -> typeValue.get().equalsIgnoreCase("aac"));
     public final FloatValue cubecraftPortLengthValue = new FloatValue("CubeCraft-PortLength", 1F, 0.1F, 2F, () -> getModeName().equalsIgnoreCase("teleportcubecraft"));

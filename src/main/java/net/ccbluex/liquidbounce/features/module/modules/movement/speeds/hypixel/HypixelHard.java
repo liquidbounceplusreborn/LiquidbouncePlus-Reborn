@@ -7,6 +7,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.minecraft.potion.Potion;
 
+import java.util.Objects;
+
 public class HypixelHard extends SpeedMode {
 
     public HypixelHard() {
@@ -14,14 +16,15 @@ public class HypixelHard extends SpeedMode {
     }
     private int groundTick;
 
+    final Speed speed = LiquidBounce.moduleManager.getModule(Speed.class);
+
     @Override
     public void onUpdate(){
-        final Speed speed = LiquidBounce.moduleManager.getModule(Speed.class);
         if (MovementUtils.isMoving()) {
-            mc.timer.timerSpeed = speed.wdHAirTimerValue.get();
+            mc.timer.timerSpeed = 1.07f;
             if (mc.thePlayer.onGround) {
-                if (groundTick >= speed.wdGroundStay.get()) {
-                    mc.timer.timerSpeed = speed.wdGroundTimer.get();
+                if (groundTick >= 1) {
+                    mc.timer.timerSpeed = 1.2f;
                     MovementUtils.strafe(0.42f);
                     mc.thePlayer.motionY = MovementUtils.getJumpBoostModifier(0.41999998688698, true);
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
@@ -32,11 +35,17 @@ public class HypixelHard extends SpeedMode {
             } else{
                 groundTick = 0;
             }
-            if (mc.thePlayer.hurtTime > 0 || mc.thePlayer.fallDistance > 0.0) {
+            if (mc.thePlayer.hurtTime > 0 && Objects.requireNonNull(speed).hardDmgStrafe.get() || mc.thePlayer.fallDistance > 0.0) {
                 MovementUtils.strafe();
             }
+            if (mc.thePlayer.hurtTime > 6) {
+                assert speed != null;
+                if (speed.hardDmgBoost.get()) {
+                    mc.thePlayer.jumpMovementFactor = 0.05f;
+                }
+            }
             if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                mc.thePlayer.jumpMovementFactor = speed.customSpeed2Boost.get();
+                mc.thePlayer.jumpMovementFactor = 0.03f;
             }
         }
     }
