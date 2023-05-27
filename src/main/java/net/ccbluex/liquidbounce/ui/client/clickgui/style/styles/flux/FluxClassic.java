@@ -54,9 +54,9 @@ public class FluxClassic extends GuiScreen {
      */
     @Override
     public void onGuiClosed() {
-        clickGuiModule.moduleCategory = this.currentCategory;
-        clickGuiModule.animationHeight = this.animationHeight;
-        clickGuiModule.configName = this.currentConfigName;
+//        clickGuiModule.moduleCategory = this.currentCategory;
+//        clickGuiModule.animationHeight = this.animationHeight;
+//        clickGuiModule.configName = this.currentConfigName;
     }
 
     /**
