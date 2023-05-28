@@ -35,12 +35,12 @@ public class HypixelHard extends SpeedMode {
             } else{
                 groundTick = 0;
             }
-            if (mc.thePlayer.hurtTime > 0 && speed.hardDmgStrafe.get() || mc.thePlayer.fallDistance > 0.0) {
-                MovementUtils.strafe();
-            }
-            if (mc.thePlayer.hurtTime > 6 && speed.hardDmgBoost.get()) {
-                    mc.thePlayer.jumpMovementFactor = 0.05f;
-            }
+            //if (mc.thePlayer.hurtTime > 0 && speed.hardDmgStrafe.get() || mc.thePlayer.fallDistance > 0.0) {
+                //MovementUtils.strafe();
+            //}
+            //if (mc.thePlayer.hurtTime > 6 && speed.hardDmgBoost.get()) {
+                    //mc.thePlayer.jumpMovementFactor = 0.05f;
+            //}
             if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                 mc.thePlayer.jumpMovementFactor = 0.03f;
             }

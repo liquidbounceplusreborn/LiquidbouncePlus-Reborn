@@ -288,8 +288,8 @@ public class Speed extends Module {
     public final FloatValue baseMTimerValue = new FloatValue("BaseMultiplierTimer", 1F, 0F, 3F, () -> getModeName().equalsIgnoreCase("hypixelboost"));
     public final BoolValue bypassWarning = new BoolValue("BypassWarning", true, () -> (typeValue.get().equalsIgnoreCase("hypixel") && !getModeName().equalsIgnoreCase("hypixelcustom")));
 
-    public final BoolValue hardDmgBoost = new BoolValue("HypHardDmgBoost",false, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
-    public final BoolValue hardDmgStrafe = new BoolValue("HypHardDmgStrafe",false, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
+    //public final BoolValue hardDmgBoost = new BoolValue("HypHardDmgBoost",false, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
+    //public final BoolValue hardDmgStrafe = new BoolValue("HypHardDmgStrafe",false, () -> hypixelModeValue.get().equalsIgnoreCase("hard"));
 
     public final FloatValue customSpeedBoost = new FloatValue("SpeedPotJumpModifier", 0.1f, 0f, 0.4f, () -> hypixelModeValue.get().equalsIgnoreCase("yport"));
     public final FloatValue portMax = new FloatValue("AAC-PortLength", 1, 1, 20, () -> typeValue.get().equalsIgnoreCase("aac"));
