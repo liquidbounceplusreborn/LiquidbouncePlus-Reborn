@@ -1,6 +1,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -15,12 +17,14 @@ import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "Rotations", description = "Allows you to see server-sided head and body rotations.", category = ModuleCategory.RENDER)
 class Rotations : Module() {
 
     val headValue = BoolValue("Head", true)
-    val bodyValue = ListValue("Body-Mode", arrayOf("Normal", "Legit","None"), "Normal")
+    val bodyValue = ListValue("Body-Mode", arrayOf("Normal", "Astolfo","None"), "Normal")
+    val lockValue = BoolValue("Lock", false) {bodyValue.get().equals("Astolfo")}
     val fakeValue = BoolValue("FakeBody", true)
     var R = FloatValue("R", 255f, 0f, 255f)
     var G = FloatValue("G", 255f, 0f, 255f)
@@ -38,4 +42,31 @@ class Rotations : Module() {
                 getState(BowAimbot::class.java) || getState(Breaker::class.java) ||
                 getState(ChestAura::class.java) || getState(Fly::class.java)
     }
+
+    var playerYaw: Float? = null
+
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        if (bodyValue.get().equals("Astolfo")) {
+            val thePlayer = mc.thePlayer
+
+            if (thePlayer == null) {
+                playerYaw = null
+                return
+            }
+
+            val packet = event.packet
+
+            if (packet is C03PacketPlayer.C06PacketPlayerPosLook || packet is C03PacketPlayer.C05PacketPlayerLook) {
+                val packetPlayer = packet as C03PacketPlayer
+
+                playerYaw = packetPlayer.yaw
+
+                thePlayer.rotationYawHead = packetPlayer.yaw
+            } else {
+                thePlayer.rotationYawHead = this.playerYaw!!
+            }
+        }
+    }
+
 }

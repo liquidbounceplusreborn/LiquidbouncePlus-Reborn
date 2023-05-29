@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.player.Patcher;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
+import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
@@ -83,11 +84,58 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Shadow
     public float swingProgress;
 
+    @Shadow
+    public float renderYawOffset;
+
     @Inject(method = "updatePotionEffects", at = @At(value = "INVOKE", target = "Lnet/minecraft/potion/PotionEffect;onUpdate(Lnet/minecraft/entity/EntityLivingBase;)Z"),
         locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
     private void checkPotionEffect(CallbackInfo ci, Iterator<Integer> iterator, Integer integer, PotionEffect potioneffect) {
         if (potioneffect == null)
             ci.cancel();
+    }
+
+    /**
+     * @author
+     * @reason
+     */
+    @Overwrite
+    protected float updateDistance(float p_1101461, float p_1101462) {
+        float rotationYaw = this.rotationYaw;
+        Rotations silentView = LiquidBounce.moduleManager.getModule(Rotations.class);
+        if ((EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
+            if (silentView.getState()) {
+                if (silentView.getPlayerYaw() != null) {
+                    rotationYaw = silentView.getPlayerYaw();
+                }
+            }
+        }
+        float f = MathHelper.wrapAngleTo180_float(p_1101461 - this.renderYawOffset);
+        this.renderYawOffset += f * 0.3F;
+        float f1 = MathHelper.wrapAngleTo180_float(rotationYaw - this.renderYawOffset);
+        boolean flag = f1 < 75.0F || f1 >= 75.0F;
+
+        if (silentView.getState() && silentView.getBodyValue().get().equals("Astolfo") && silentView.getLockValue().get() && (EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
+            f1 = 0.0F;
+        }
+
+        if (f1 < -75.0F) {
+            f1 = -75.0F;
+        }
+
+        if (f1 >= 75.0F) {
+            f1 = 75.0F;
+        }
+
+        this.renderYawOffset = rotationYaw - f1;
+        if (f1 * f1 > 2500.0F) {
+            this.renderYawOffset += f1 * 0.2F;
+        }
+
+        if (flag) {
+            p_1101462 *= -1.0F;
+        }
+
+        return p_1101462;
     }
 
     /**

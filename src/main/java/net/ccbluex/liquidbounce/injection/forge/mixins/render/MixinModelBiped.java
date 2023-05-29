@@ -46,6 +46,9 @@ public class MixinModelBiped {
                     && p_setRotationAngles_7_.equals(Minecraft.getMinecraft().thePlayer)) {
                 this.bipedHead.rotateAngleX = RotationUtils.serverRotation.getPitch() / (180F / (float) Math.PI);
             }
+            else if (p_setRotationAngles_7_ instanceof EntityPlayer && p_setRotationAngles_7_.equals(Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.getModule(Rotations.class).getState() && LiquidBounce.moduleManager.getModule(Rotations.class).getBodyValue().get().equals("Astolfo")){
+                this.bipedHead.rotateAngleX = RotationUtils.serverRotation.getPitch() / 61f;
+            }
         }
     }
 }
