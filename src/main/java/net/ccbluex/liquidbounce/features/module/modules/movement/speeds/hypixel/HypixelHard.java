@@ -23,7 +23,7 @@ public class HypixelHard extends SpeedMode {
         if (MovementUtils.isMoving()) {
             mc.timer.timerSpeed = 1.07f;
             if (mc.thePlayer.onGround) {
-                if (groundTick >= 1) {
+                if (groundTick >= 0) {
                     mc.timer.timerSpeed = 1.2f;
                     MovementUtils.strafe(0.42f);
                     mc.thePlayer.motionY = MovementUtils.getJumpBoostModifier(0.41999998688698, true);
@@ -41,8 +41,8 @@ public class HypixelHard extends SpeedMode {
             //if (mc.thePlayer.hurtTime > 6 && speed.hardDmgBoost.get()) {
                     //mc.thePlayer.jumpMovementFactor = 0.05f;
             //}
-            if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                mc.thePlayer.jumpMovementFactor = 0.03f;
+            //if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                //mc.thePlayer.jumpMovementFactor = 0.03f;
             }
         }
     }
