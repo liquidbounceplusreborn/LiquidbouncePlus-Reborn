@@ -43,7 +43,7 @@ public class HypixelHard extends SpeedMode {
             //}
             //if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                 //mc.thePlayer.jumpMovementFactor = 0.03f;
-            }
+
         }
     }
 
