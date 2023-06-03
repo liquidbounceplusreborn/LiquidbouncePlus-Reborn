@@ -180,7 +180,7 @@ class Disabler : Module() {
 
 	val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!! as Speed
 
-	val scaffold = LiquidBounce.moduleManager.getModule(Scaffold::class.java)!! as Speed
+	val scaffold = LiquidBounce.moduleManager.getModule(Scaffold::class.java)!! as Scaffold
 
 
 	val canModifyRotation: Boolean
