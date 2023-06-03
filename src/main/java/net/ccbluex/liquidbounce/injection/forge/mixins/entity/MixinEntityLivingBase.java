@@ -103,7 +103,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         float rotationYaw = this.rotationYaw;
         Rotations silentView = LiquidBounce.moduleManager.getModule(Rotations.class);
         if ((EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
-            if (silentView.getState()) {
+            if (silentView.getState() && silentView.getBodyValue().get().equals("Astolfo")) {
                 if (silentView.getPlayerYaw() != null) {
                     rotationYaw = silentView.getPlayerYaw();
                 }
