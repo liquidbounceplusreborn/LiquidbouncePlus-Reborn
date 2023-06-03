@@ -37,7 +37,7 @@ class NovolineOld(inst: Target): TargetStyle("NovolineOld", inst, false) {
     }
 
     override fun getBorder(entity: EntityPlayer?): Border? {
-        return Border(0F, 0F, 160F, 60F)
+        return Border(0F, 0F, 80F, 40F)
     }
 
     private fun drawArmor(x: Int, y: Int, ent: EntityPlayer) {
