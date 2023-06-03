@@ -180,6 +180,9 @@ class Disabler : Module() {
 
 	val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!! as Speed
 
+	val scaffold = LiquidBounce.moduleManager.getModule(Scaffold::class.java)!! as Speed
+
+
 	val canModifyRotation: Boolean
 		get() = (state && modeValue.get().equals("watchdog", true) && shouldModifyRotation)
 
@@ -655,7 +658,7 @@ class Disabler : Module() {
 					if (packet !is C04PacketPlayerPosition && packet !is C05PacketPlayerLook && packet !is C06PacketPlayerPosLook)
 						event.cancelEvent()
 				}
-				if(gaySexBlinkStrafeDisabler.get() && !mc.thePlayer.onGround && speed.state && mc.thePlayer.hurtTime == 10){
+				if(gaySexBlinkStrafeDisabler.get() && !mc.thePlayer.onGround && speed.state && mc.thePlayer.hurtTime == 10 && !scaffold.state){
 					if (packet is C03PacketPlayer|| packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook ||
 						packet is C08PacketPlayerBlockPlacement ||
 						packet is C0APacketAnimation ||
