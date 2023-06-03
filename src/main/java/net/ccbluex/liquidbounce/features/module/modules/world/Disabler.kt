@@ -37,8 +37,6 @@ import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.*
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.network.play.server.S2FPacketSetSlot
-import net.minecraft.network.play.server.S3EPacketTeams
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
@@ -121,6 +119,7 @@ class Disabler : Module() {
 	private val testFeature = BoolValue("PingSpoof", false, { modeValue.get().equals("watchdog", true) })
 	private val testDelay = IntegerValue("Delay", 400, 0, 1000, "ms", { modeValue.get().equals("watchdog", true) && testFeature.get() })
 	private val checkValid = BoolValue("InvValidate", false, { modeValue.get().equals("watchdog", true) && testFeature.get() })
+	private val gaySexBlinkStrafeDisabler = BoolValue("OmgBlinkStrafeDisabler", false, { modeValue.get().equals("watchdog", true)})
 
 	//vulcan
 	private val vulcanStrafe = BoolValue ("Strafe", true, { modeValue.get().equals("vulcan", true) })
@@ -178,6 +177,8 @@ class Disabler : Module() {
 	private var lastUid = 0
 
 	private var initPos: Vec3? = null
+
+	val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!! as Speed
 
 	val canModifyRotation: Boolean
 		get() = (state && modeValue.get().equals("watchdog", true) && shouldModifyRotation)
@@ -654,6 +655,14 @@ class Disabler : Module() {
 					if (packet !is C04PacketPlayerPosition && packet !is C05PacketPlayerLook && packet !is C06PacketPlayerPosLook)
 						event.cancelEvent()
 				}
+				if(gaySexBlinkStrafeDisabler.get() && !mc.thePlayer.onGround && speed.state && mc.thePlayer.hurtTime == 10){
+					if (packet is C03PacketPlayer|| packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook ||
+						packet is C08PacketPlayerBlockPlacement ||
+						packet is C0APacketAnimation ||
+						packet is C0BPacketEntityAction || packet is C02PacketUseEntity) {
+						event.cancelEvent()
+					}
+				}
 			}
 			"rotdesync" -> {
 				if (packet is S08PacketPlayerPosLook) {
@@ -682,7 +691,6 @@ class Disabler : Module() {
 	@EventTarget(priority = 2)
 	fun onMotion(event: MotionEvent) {
 		val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)!! as KillAura
-		val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!! as Speed
 		val fly = LiquidBounce.moduleManager.getModule(Fly::class.java)!! as Fly
 		val targetStrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java)!! as TargetStrafe
 
