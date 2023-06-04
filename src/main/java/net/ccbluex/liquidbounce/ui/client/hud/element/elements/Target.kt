@@ -93,6 +93,7 @@ class Target : Element() {
             Astolfo(this),
             AsuidBounce(this),
             Chill(this),
+            Distance(this),
             Exhibition(this),
             OldExhibition(this),
             Flux(this),
