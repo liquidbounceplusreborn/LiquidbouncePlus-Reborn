@@ -2877,12 +2877,6 @@ public final class RenderUtils extends MinecraftInstance {
         glScissor((int) (x * factor), (int) ((scaledResolution.getScaledHeight() - y2) * factor), (int) ((x2 - x) * factor), (int) ((y2 - y) * factor));
     }
 
-    /**
-     * GL CAP MANAGER
-     *
-     * TODO: Remove gl cap manager and replace by something better
-     */
-
     public static void resetCaps() {
         glCapMap.forEach(RenderUtils::setGlState);
     }
@@ -2911,5 +2905,23 @@ public final class RenderUtils extends MinecraftInstance {
             glEnable(cap);
         else
             glDisable(cap);
+    }
+        public static void drawCircle(float x, float y, float radius, int start, int end,final Color color) {
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        glColor4f(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
+
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(2F);
+        glBegin(GL_LINE_STRIP);
+        for (float i = end; i >= start; i -= (360 / 90.0f)) {
+            glVertex2f((float) (x + (cos(i * PI / 180) * (radius * 1.001F))), (float) (y + (sin(i * PI / 180) * (radius * 1.001F))));
+        }
+        glEnd();
+        glDisable(GL_LINE_SMOOTH);
+
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
     }
 }
