@@ -103,6 +103,7 @@ class Target : Element() {
             Lnk(this),
             Moon(this),
             MoonTwo(this),
+            Moon4(this),
             Novoline(this),
             NovolineTwo(this),
             NovolineThree(this),
