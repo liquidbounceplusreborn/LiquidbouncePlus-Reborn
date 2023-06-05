@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import kotlin.math.cos
@@ -37,7 +36,7 @@ class Velocity : Module() {
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
     private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple","Hypixel","AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero","Intave",
-        "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine"), "Cancel") // later
+            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine"), "Cancel") // later
 
     private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
@@ -199,7 +198,7 @@ class Velocity : Module() {
 
                     // Reduce Y
                     if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get()
-                        && !LiquidBounce.moduleManager[Speed::class.java]!!.state)
+                            && !LiquidBounce.moduleManager[Speed::class.java]!!.state)
                         mc.thePlayer.motionY -= 0.014999993
                 }
 
@@ -280,10 +279,9 @@ class Velocity : Module() {
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
                 "hypixel"->{
-                    if(mc.thePlayer.onGround || mc.thePlayer.isInLava || mc.thePlayer.isInWater || mc.thePlayer.isInWeb || !mc.thePlayer.fallDistance > 0.0){
-                       
-                        mc.thePlayer.motionY = packet.getMotionY()
-                        
+                    if (mc.thePlayer.onGround || mc.thePlayer.isInLava || mc.thePlayer.isInWater || mc.thePlayer.isInWeb || !(mc.thePlayer.fallDistance > 0.0)) {
+                        mc.thePlayer.motionY = packet.getMotionY().toDouble()
+
                     }else{
                         event.cancelEvent()
                     }
@@ -395,17 +393,17 @@ class Velocity : Module() {
     fun onMotion(event: MotionEvent) {
         when (modeValue.get().toLowerCase()) {
             "intave" -> {
-            if (mc.thePlayer.hurtTime > 1 && mc.thePlayer.hurtTime < 10) {
-                mc.thePlayer.motionX *= 0.75
-                mc.thePlayer.motionZ *= 0.75
-                if (mc.thePlayer.hurtTime < 4) {
-                    if (mc.thePlayer.motionY > 0) {
-                        mc.thePlayer.motionY *= 0.9
-                    } else {
-                        mc.thePlayer.motionY *= 1.1
+                if (mc.thePlayer.hurtTime > 1 && mc.thePlayer.hurtTime < 10) {
+                    mc.thePlayer.motionX *= 0.75
+                    mc.thePlayer.motionZ *= 0.75
+                    if (mc.thePlayer.hurtTime < 4) {
+                        if (mc.thePlayer.motionY > 0) {
+                            mc.thePlayer.motionY *= 0.9
+                        } else {
+                            mc.thePlayer.motionY *= 1.1
+                        }
+                    }
                 }
-                }
-            }
             }
         }
     }
