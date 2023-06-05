@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.PlayerEdit;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
@@ -35,13 +36,13 @@ public class MixinLayerCape {
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             this.playerRenderer.bindTexture(p_doRenderLayer_1_.getLocationCape());
             GlStateManager.pushMatrix();
-            if (PlayerEdit.baby.get() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(PlayerEdit.class)).getState()) {
+            if (PlayerEdit.baby.get() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(PlayerEdit.class)).getState() && (PlayerEdit.onlyMe.get() && p_doRenderLayer_1_ == Minecraft.getMinecraft().thePlayer || PlayerEdit.onlyOther.get() && p_doRenderLayer_1_ != Minecraft.getMinecraft().thePlayer)) {
                 GlStateManager.scale(0.5,0.5,0.5);
                 GlStateManager.translate(0.0,1.5,0.125);
-            }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Rabbit" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()){
+            }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Rabbit" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState() && (PlayerEdit.onlyMe.get() && p_doRenderLayer_1_ == Minecraft.getMinecraft().thePlayer || PlayerEdit.onlyOther.get() && p_doRenderLayer_1_ != Minecraft.getMinecraft().thePlayer)){
                 GlStateManager.scale(1.0,1.0,1.0);
                 GlStateManager.translate(0.0,0.49,0.24);
-            }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Freddy" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()){
+            }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Freddy" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState() && (PlayerEdit.onlyMe.get() && p_doRenderLayer_1_ == Minecraft.getMinecraft().thePlayer || PlayerEdit.onlyOther.get() && p_doRenderLayer_1_ != Minecraft.getMinecraft().thePlayer)){
                 GlStateManager.scale(0.75, 0.75, 0.75);
                 GlStateManager.translate(0.0, -0.24, 0.23);
             }else {
@@ -66,10 +67,10 @@ public class MixinLayerCape {
             if (p_doRenderLayer_1_.isSneaking()) {
                 if (PlayerEdit.baby.get() && Objects.requireNonNull(LiquidBounce.moduleManager.getModule(PlayerEdit.class)).getState()) {
                     GlStateManager.translate(0.0,-0.17,-0.1);
-                }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Rabbit" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()) {
+                }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Rabbit" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState() && (PlayerEdit.onlyMe.get() && p_doRenderLayer_1_ == Minecraft.getMinecraft().thePlayer || PlayerEdit.onlyOther.get() && p_doRenderLayer_1_ != Minecraft.getMinecraft().thePlayer)) {
                     GlStateManager.scale(1.0, 1.0, 1.0);
                     GlStateManager.translate(0.0, -0.10, -0.10);
-                }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Freddy" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()){
+                }else if (PlayerEdit.customModel.get() && PlayerEdit.mode.get() == "Freddy" && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState() && (PlayerEdit.onlyMe.get() && p_doRenderLayer_1_ == Minecraft.getMinecraft().thePlayer || PlayerEdit.onlyOther.get() && p_doRenderLayer_1_ != Minecraft.getMinecraft().thePlayer)){
                     GlStateManager.scale(1.0, 1.0, 1.0);
                     GlStateManager.translate(0.0, -0.08, -0.1);
                 }
