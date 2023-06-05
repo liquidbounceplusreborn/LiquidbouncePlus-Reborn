@@ -280,10 +280,10 @@ class Velocity : Module() {
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
                 "hypixel"->{
-                    if(mc.thePlayer.onGround || mc.thePlayer.isInLava || mc.thePlayer.isInWater || mc.thePlayer.isInWeb){
-                        packet.motionX = 0
-                        packet.motionY = packet.getMotionY()
-                        packet.motionZ = 0
+                    if(mc.thePlayer.onGround || mc.thePlayer.isInLava || mc.thePlayer.isInWater || mc.thePlayer.isInWeb || !mc.thePlayer.fallDistance > 0.0){
+                       
+                        mc.thePlayer.motionY = packet.getMotionY()
+                        
                     }else{
                         event.cancelEvent()
                     }
