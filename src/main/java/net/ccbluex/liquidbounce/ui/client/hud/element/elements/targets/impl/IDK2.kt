@@ -35,7 +35,7 @@ class IDK2(inst: Target): TargetStyle("IDK2", inst, false) {
         RenderUtils.drawGradientSideways(startPos, 16.0, startPos + ((easingHealth / entity.maxHealth) * barWidth),
             26.0, c.rgb, c.rgb)
 
-        mc.fontRendererObj.drawStringWithShadow(((entity.health * 10).toInt() / 10.0F).toString() + " HP", 100f / 2.5F, 18.0F, -1)
+        mc.fontRendererObj.drawStringWithShadow(((entity.health * 10).toInt() / 10.0F).toString() + " HP", 100f / 2.3F, 18.0F, -1)
 
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.animProgress)) * RenderUtils.deltaTime
 
