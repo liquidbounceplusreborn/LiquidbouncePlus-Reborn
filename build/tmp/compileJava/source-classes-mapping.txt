@@ -443,6 +443,7 @@ net/ccbluex/liquidbounce/features/module/modules/movement/Speed.java
  net.ccbluex.liquidbounce.features.module.modules.movement.Speed$6
  net.ccbluex.liquidbounce.features.module.modules.movement.Speed$7
  net.ccbluex.liquidbounce.features.module.modules.movement.Speed$8
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed$9
 net/ccbluex/liquidbounce/utils/item/ItemCreator.java
  net.ccbluex.liquidbounce.utils.item.ItemCreator
 net/ccbluex/liquidbounce/features/module/modules/movement/speeds/other/SlowHop.java

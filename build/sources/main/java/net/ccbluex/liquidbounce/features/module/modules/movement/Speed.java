@@ -11,6 +11,10 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.*;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanGroundSpeed;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanLowHopSpeed;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanYPort2Speed;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanYPortSpeed;
 import net.ccbluex.liquidbounce.features.module.modules.world.Disabler;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*;
@@ -105,6 +109,12 @@ public class Speed extends Module {
             new VerusLowHop(),
             new VerusHard(),
 
+            //Vulcan
+            new VulcanGroundSpeed(),
+            new VulcanLowHopSpeed(),
+            new VulcanYPort2Speed(),
+            new VulcanYPortSpeed(),
+
             // Matrix
             new MatrixSemiStrafe(),
             new MatrixTimerBalance(),
@@ -113,7 +123,7 @@ public class Speed extends Module {
             new Matrix692()
     };
 
-    public final ListValue typeValue = new ListValue("Type", new String[]{"NCP", "AAC", "Spartan", "Spectre", "Hypixel", "Verus", "Matrix", "Custom", "Other"}, "NCP") {
+    public final ListValue typeValue = new ListValue("Type", new String[]{"NCP", "AAC", "Spartan", "Spectre", "Hypixel", "Verus", "Vulcan", "Matrix", "Custom", "Other"}, "NCP") {
 
         @Override
         protected void onChange(final String oldValue, final String newValue) {
@@ -228,6 +238,21 @@ public class Speed extends Module {
     };
     
     public final ListValue verusModeValue = new ListValue("Verus-Mode", new String[]{"Hop", "LowHop", "Hard"}, "Hop", () -> typeValue.get().equalsIgnoreCase("verus")) {
+
+        @Override
+        protected void onChange(final String oldValue, final String newValue) {
+            if(getState())
+                onDisable();
+        }
+
+        @Override
+        protected void onChanged(final String oldValue, final String newValue) {
+            if(getState())
+                onEnable();
+        }
+    };
+
+    public final ListValue vulcanModeValue = new ListValue("Vulcan-Mode", new String[]{"Ground", "LowHop", "YPort2Speed", "YPortSpeed"}, "Ground", () -> typeValue.get().equalsIgnoreCase("vulcan")) {
 
         @Override
         protected void onChange(final String oldValue, final String newValue) {
@@ -446,6 +471,9 @@ public class Speed extends Module {
             case "Matrix":
             mode = matrixModeValue.get();
             break;
+            case "Vulcan":
+            mode = vulcanModeValue.get();
+            break;
         }
         return mode;
     }
@@ -482,6 +510,9 @@ public class Speed extends Module {
             break;
             case "Matrix":
             mode = matrixModeValue.get();
+            break;
+            case "Vulcan":
+            mode = vulcanModeValue.get();
             break;
         }
         return mode;

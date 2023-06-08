@@ -1,0 +1,738 @@
+[17:39:27] [main/INFO]: Extra: []
+[17:39:27] [main/INFO]: Running with arguments: [--userProperties, {}, --assetsDir, /home/zheka/.gradle/caches/minecraft/assets, --assetIndex, 1.8, --accessToken{REDACTED}, --version, 1.8.9, --tweakClass, net.minecraftforge.fml.common.launcher.FMLTweaker, --tweakClass, net.minecraftforge.gradle.tweakers.CoremodTweaker]
+[17:39:27] [main/INFO]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLTweaker
+[17:39:27] [main/INFO]: Using primary tweak class name net.minecraftforge.fml.common.launcher.FMLTweaker
+[17:39:27] [main/INFO]: Loading tweak class name net.minecraftforge.gradle.tweakers.CoremodTweaker
+[17:39:27] [main/INFO]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLTweaker
+[17:39:27] [main/INFO]: Forge Mod Loader version 11.15.1.2318 for Minecraft 1.8.9 loading
+[17:39:27] [main/INFO]: Java is OpenJDK 64-Bit Server VM, version 1.8.0_362, running on Linux:amd64:6.3.6-arch1-1, installed at /home/zheka/.jdks/azul-1.8.0_362/jre
+[17:39:27] [main/INFO]: Managed to load a deobfuscated Minecraft name- we are in a deobfuscated environment. Skipping runtime deobfuscation
+[17:39:27] [main/INFO]: Found a command line coremod : net.ccbluex.liquidbounce.injection.forge.TransformerLoader
+[17:39:27] [main/INFO]: SpongePowered MIXIN Subsystem Version=0.7.11 Source=file:/home/zheka/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.7.11-SNAPSHOT/7a670207bdb97db418118ad1e9bb42424ff3776d/mixin-0.7.11-SNAPSHOT.jar Service=LaunchWrapper Env=CLIENT
+[17:39:27] [main/INFO]: Compatibility level set to JAVA_8
+[17:39:27] [main/DEBUG]: Enqueued coremod TransformerLoader
+[17:39:27] [main/DEBUG]: Attempting to load commandline specified mods, relative to /home/zheka/LiquidbouncePlus-Reborn/run/.
+[17:39:27] [main/DEBUG]: Discovering coremods
+[17:39:27] [main/INFO]: Calling tweak class net.minecraftforge.gradle.tweakers.CoremodTweaker
+[17:39:27] [main/INFO]: Injecting location in coremod net.minecraftforge.fml.relauncher.FMLCorePlugin
+[17:39:27] [main/INFO]: Injecting location in coremod net.minecraftforge.classloading.FMLForgePlugin
+[17:39:27] [main/INFO]: Injecting location in coremod net.ccbluex.liquidbounce.injection.forge.TransformerLoader
+[17:39:27] [main/INFO]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker
+[17:39:27] [main/INFO]: Loading tweak class name org.spongepowered.asm.mixin.EnvironmentStateTweaker
+[17:39:27] [main/INFO]: Loading tweak class name net.minecraftforge.fml.common.launcher.FMLDeobfTweaker
+[17:39:27] [main/INFO]: Loading tweak class name net.minecraftforge.gradle.tweakers.AccessTransformerTweaker
+[17:39:27] [main/INFO]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker
+[17:39:27] [main/INFO]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLInjectionAndSortingTweaker
+[17:39:27] [main/INFO]: Calling tweak class net.minecraftforge.fml.relauncher.CoreModManager$FMLPluginWrapper
+[17:39:27] [main/DEBUG]: Injecting coremod FMLCorePlugin {net.minecraftforge.fml.relauncher.FMLCorePlugin} class transformers
+[17:39:27] [main/TRACE]: Registering transformer net.minecraftforge.fml.common.asm.transformers.BlamingTransformer
+[17:39:27] [main/TRACE]: Registering transformer net.minecraftforge.fml.common.asm.transformers.SideTransformer
+[17:39:27] [main/TRACE]: Registering transformer net.minecraftforge.fml.common.asm.transformers.EventSubscriptionTransformer
+[17:39:27] [main/TRACE]: Registering transformer net.minecraftforge.fml.common.asm.transformers.EventSubscriberTransformer
+[17:39:27] [main/DEBUG]: Injection complete
+[17:39:27] [main/DEBUG]: Running coremod plugin for FMLCorePlugin {net.minecraftforge.fml.relauncher.FMLCorePlugin}
+[17:39:27] [main/DEBUG]: Running coremod plugin FMLCorePlugin
+[17:39:27] [main/ERROR]: The binary patch set is missing. Either you are in a development environment, or things are not going to work!
+[17:39:27] [main/DEBUG]: Loading deobfuscation resource /home/zheka/.gradle/caches/minecraft/de/oceanlabs/mcp/mcp_stable/22/srgs/srg-mcp.srg with 27884 records
+[17:39:28] [main/ERROR]: FML appears to be missing any signature data. This is not a good thing
+[17:39:28] [main/DEBUG]: Coremod plugin class FMLCorePlugin run successfully
+[17:39:28] [main/INFO]: Calling tweak class net.minecraftforge.fml.relauncher.CoreModManager$FMLPluginWrapper
+[17:39:28] [main/DEBUG]: Injecting coremod FMLForgePlugin {net.minecraftforge.classloading.FMLForgePlugin} class transformers
+[17:39:28] [main/DEBUG]: Injection complete
+[17:39:28] [main/DEBUG]: Running coremod plugin for FMLForgePlugin {net.minecraftforge.classloading.FMLForgePlugin}
+[17:39:28] [main/DEBUG]: Running coremod plugin FMLForgePlugin
+[17:39:28] [main/DEBUG]: Coremod plugin class FMLForgePlugin run successfully
+[17:39:28] [main/INFO]: Calling tweak class net.minecraftforge.fml.relauncher.CoreModManager$FMLPluginWrapper
+[17:39:28] [main/DEBUG]: Injecting coremod TransformerLoader {net.ccbluex.liquidbounce.injection.forge.TransformerLoader} class transformers
+[17:39:28] [main/TRACE]: Registering transformer net.ccbluex.liquidbounce.injection.transformers.ForgeNetworkTransformer
+[17:39:28] [main/TRACE]: Registering transformer net.ccbluex.liquidbounce.injection.transformers.OptimizeTransformer
+[17:39:28] [main/TRACE]: Registering transformer net.ccbluex.liquidbounce.script.remapper.injection.transformers.AbstractJavaLinkerTransformer
+[17:39:28] [main/DEBUG]: Injection complete
+[17:39:28] [main/DEBUG]: Running coremod plugin for TransformerLoader {net.ccbluex.liquidbounce.injection.forge.TransformerLoader}
+[17:39:28] [main/DEBUG]: Running coremod plugin TransformerLoader
+[17:39:28] [main/DEBUG]: Coremod plugin class TransformerLoader run successfully
+[17:39:28] [main/INFO]: Calling tweak class org.spongepowered.asm.mixin.EnvironmentStateTweaker
+[17:39:28] [main/INFO]: Initialised Mixin FML Remapper Adapter with net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper@194152cf
+[17:39:28] [main/INFO]: Calling tweak class net.minecraftforge.fml.common.launcher.FMLDeobfTweaker
+[17:39:28] [main/DEBUG]: Loaded 165 rules from AccessTransformer config file forge_at.cfg
+[17:39:28] [main/DEBUG]: Validating minecraft
+[17:39:28] [main/INFO]: Calling tweak class net.minecraftforge.gradle.tweakers.AccessTransformerTweaker
+[17:39:28] [main/INFO]: Loading tweak class name net.minecraftforge.fml.common.launcher.TerminalTweaker
+[17:39:28] [main/INFO]: Calling tweak class net.minecraftforge.fml.common.launcher.TerminalTweaker
+[17:39:28] [main/WARN]: Reference map 'liquidbounce.mixins.refmap.json' for liquidbounce.forge.mixins.json could not be read. If this is a development environment you can ignore this message
+[17:39:29] [main/INFO]: Launching wrapped minecraft {net.minecraft.client.main.Main}
+[17:39:31] [Client thread/INFO]: Setting user: Player958
+[17:39:33] [Client thread/INFO]: [org.apache.log4j.helpers.LogLog:warn:171]: log4j:WARN No appenders could be found for logger (io.netty.util.internal.logging.InternalLoggerFactory).
+[17:39:33] [Client thread/INFO]: [org.apache.log4j.helpers.LogLog:warn:171]: log4j:WARN Please initialize the log4j system properly.
+[17:39:33] [Client thread/INFO]: [org.apache.log4j.helpers.LogLog:warn:171]: log4j:WARN See http://logging.apache.org/log4j/1.2/faq.html#noconfig for more info.
+[17:39:34] [Via-Mappingloader-0/INFO]: Loading 1.12 -> 1.13 mappings...
+[17:39:34] [Via-Mappingloader-1/INFO]: Loading 1.13 -> 1.13.2 mappings...
+[17:39:35] [Via-Mappingloader-0/INFO]: Loading block connection mappings ...
+[17:39:35] [Via-Mappingloader-2/INFO]: Loading 1.13.2 -> 1.14 mappings...
+[17:39:35] [Via-Mappingloader-3/INFO]: Loading 1.14 -> 1.15 mappings...
+[17:39:35] [Via-Mappingloader-4/INFO]: Loading 1.15 -> 1.16 mappings...
+[17:39:35] [Via-Mappingloader-3/INFO]: Loading 1.16 -> 1.16.2 mappings...
+[17:39:35] [Via-Mappingloader-3/INFO]: Loading 1.16.2 -> 1.17 mappings...
+[17:39:35] [Via-Mappingloader-3/INFO]: Loading 1.17 -> 1.18 mappings...
+[17:39:35] [Client thread/INFO]: Loading translations...
+[17:39:35] [Via-Mappingloader-3/INFO]: Loading 1.10 -> 1.9.4 mappings...
+[17:39:35] [Via-Mappingloader-3/INFO]: Loading 1.11 -> 1.10 mappings...
+[17:39:35] [Via-Mappingloader-3/INFO]: Loading 1.12 -> 1.11 mappings...
+[17:39:35] [Via-Mappingloader-3/INFO]: Loading 1.13 -> 1.12 mappings...
+[17:39:35] [Via-Mappingloader-0/INFO]: Loading 1.13.2 -> 1.13 mappings...
+[17:39:36] [Via-Mappingloader-0/INFO]: Loading 1.14 -> 1.13.2 mappings...
+[17:39:36] [Via-Mappingloader-3/INFO]: Loading 1.15 -> 1.14 mappings...
+[17:39:36] [Via-Mappingloader-3/INFO]: Loading 1.16 -> 1.15 mappings...
+[17:39:36] [Via-Mappingloader-0/INFO]: Loading 1.16.2 -> 1.16 mappings...
+[17:39:36] [Via-Mappingloader-3/INFO]: Loading 1.17 -> 1.16.2 mappings...
+[17:39:36] [Via-Mappingloader-3/INFO]: Loading 1.18 -> 1.17 mappings...
+[17:39:36] [ViaForge-0/WARN]: There is a newer plugin version available: 4.7.0, you're on: 4.0.0
+[17:39:36] [ViaForge-0/INFO]: ViaVersion detected server version: 1.8.x (47)
+[17:39:36] [Client thread/INFO]: LWJGL Version: 2.9.4
+[17:39:36] [ViaForge-0/WARN]: This version of Minecraft is extremely outdated and support for it has reached its end of life. You will still be able to run Via on this Minecraft version, but we are unlikely to provide any further fixes or help with problems specific to legacy Minecraft versions. Please consider updating to give your players a better experience and to avoid issues that have long been fixed.
+[17:39:36] [ViaForge-0/WARN]: You are running an outdated Java version, please consider updating it to at least Java 17 (your version is 1.8.0_362). At some point in the future, ViaVersion will no longer be compatible with this version of Java.
+[17:39:36] [ViaForge-0/INFO]: Finished mapping loading, shutting down loader executor!
+[17:39:37] [Client thread/INFO]: [net.minecraftforge.fml.client.SplashProgress:start:246]: ---- Minecraft Crash Report ----
+// But it works on my machine.
+
+Time: 6/8/23 5:39 PM
+Description: Loading screen debug info
+
+This is just a prompt for computer specs to be printed. THIS IS NOT A ERROR
+
+
+A detailed walkthrough of the error, its code path and all known details is as follows:
+---------------------------------------------------------------------------------------
+
+-- System Details --
+Details:
+	Minecraft Version: 1.8.9
+	Operating System: Linux (amd64) version 6.3.6-arch1-1
+	Java Version: 1.8.0_362, Azul Systems, Inc.
+	Java VM Version: OpenJDK 64-Bit Server VM (mixed mode), Azul Systems, Inc.
+	Memory: 1351945696 bytes (1289 MB) / 1730150400 bytes (1650 MB) up to 7456948224 bytes (7111 MB)
+	JVM Flags: 0 total; 
+	IntCache: cache: 0, tcache: 0, allocated: 0, tallocated: 0
+	FML: 
+	Loaded coremods (and transformers): 
+TransformerLoader (unknown)
+  net.ccbluex.liquidbounce.injection.transformers.ForgeNetworkTransformer
+  net.ccbluex.liquidbounce.injection.transformers.OptimizeTransformer
+  net.ccbluex.liquidbounce.script.remapper.injection.transformers.AbstractJavaLinkerTransformer
+	GL info: ' Vendor: 'NVIDIA Corporation' Version: '4.6.0 NVIDIA 530.41.03' Renderer: 'NVIDIA GeForce GTX 980/PCIe/SSE2'
+[17:39:37] [Client thread/INFO]: MinecraftForge v11.15.1.2318 Initialized
+[17:39:37] [Client thread/INFO]: Replaced 229 ore recipies
+[17:39:38] [Client thread/INFO]: Found 0 mods from the command line. Injecting into mod discoverer
+[17:39:38] [Client thread/INFO]: Searching /home/zheka/LiquidbouncePlus-Reborn/run/mods for mods
+[17:39:39] [Client thread/ERROR]: Unable to read a class file correctly
+java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) [ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+[17:39:39] [Client thread/ERROR]: There was a problem reading the entry META-INF/versions/9/module-info.class in the jar /home/zheka/LiquidbouncePlus-Reborn/libs/ViaVersion-4.2.1.jar - probably a corrupt zip
+net.minecraftforge.fml.common.LoaderException: java.lang.IllegalArgumentException
+
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:58) ~[ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+Caused by: java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) ~[ASMModParser.class:?]
+	... 22 more
+[17:39:39] [Client thread/WARN]: Zip file ViaVersion-4.2.1.jar failed to read properly, it will be ignored
+net.minecraftforge.fml.common.LoaderException: java.lang.IllegalArgumentException
+
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:58) ~[ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+Caused by: java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) ~[ASMModParser.class:?]
+	... 22 more
+[17:39:39] [Client thread/ERROR]: Unable to read a class file correctly
+java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) [ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+[17:39:39] [Client thread/ERROR]: There was a problem reading the entry META-INF/versions/9/module-info.class in the jar /home/zheka/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.6.10/e80fe6ac3c3573a80305f5ec43f86b829e8ab53d/kotlin-stdlib-jdk8-1.6.10.jar - probably a corrupt zip
+net.minecraftforge.fml.common.LoaderException: java.lang.IllegalArgumentException
+
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:58) ~[ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+Caused by: java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) ~[ASMModParser.class:?]
+	... 22 more
+[17:39:39] [Client thread/WARN]: Zip file kotlin-stdlib-jdk8-1.6.10.jar failed to read properly, it will be ignored
+net.minecraftforge.fml.common.LoaderException: java.lang.IllegalArgumentException
+
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:58) ~[ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+Caused by: java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) ~[ASMModParser.class:?]
+	... 22 more
+[17:39:39] [Client thread/ERROR]: Unable to read a class file correctly
+java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) [ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+[17:39:39] [Client thread/ERROR]: There was a problem reading the entry META-INF/versions/9/module-info.class in the jar /home/zheka/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk7/1.6.10/e1c380673654a089c4f0c9f83d0ddfdc1efdb498/kotlin-stdlib-jdk7-1.6.10.jar - probably a corrupt zip
+net.minecraftforge.fml.common.LoaderException: java.lang.IllegalArgumentException
+
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:58) ~[ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+Caused by: java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) ~[ASMModParser.class:?]
+	... 22 more
+[17:39:39] [Client thread/WARN]: Zip file kotlin-stdlib-jdk7-1.6.10.jar failed to read properly, it will be ignored
+net.minecraftforge.fml.common.LoaderException: java.lang.IllegalArgumentException
+
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:58) ~[ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+Caused by: java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) ~[ASMModParser.class:?]
+	... 22 more
+[17:39:40] [Client thread/ERROR]: Unable to read a class file correctly
+java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) [ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+[17:39:40] [Client thread/ERROR]: There was a problem reading the entry META-INF/versions/9/module-info.class in the jar /home/zheka/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.6.10/b8af3fe6f1ca88526914929add63cf5e7c5049af/kotlin-stdlib-1.6.10.jar - probably a corrupt zip
+net.minecraftforge.fml.common.LoaderException: java.lang.IllegalArgumentException
+
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:58) ~[ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+Caused by: java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) ~[ASMModParser.class:?]
+	... 22 more
+[17:39:40] [Client thread/WARN]: Zip file kotlin-stdlib-1.6.10.jar failed to read properly, it will be ignored
+net.minecraftforge.fml.common.LoaderException: java.lang.IllegalArgumentException
+
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:58) ~[ASMModParser.class:?]
+	at net.minecraftforge.fml.common.discovery.JarDiscoverer.discover(JarDiscoverer.java:69) [JarDiscoverer.class:?]
+	at net.minecraftforge.fml.common.discovery.ContainerType.findMods(ContainerType.java:42) [ContainerType.class:?]
+	at net.minecraftforge.fml.common.discovery.ModCandidate.explore(ModCandidate.java:71) [ModCandidate.class:?]
+	at net.minecraftforge.fml.common.discovery.ModDiscoverer.identifyMods(ModDiscoverer.java:134) [ModDiscoverer.class:?]
+	at net.minecraftforge.fml.common.Loader.identifyMods(Loader.java:363) [Loader.class:?]
+	at net.minecraftforge.fml.common.Loader.loadMods(Loader.java:488) [Loader.class:?]
+	at net.minecraftforge.fml.client.FMLClientHandler.beginMinecraftLoading(FMLClientHandler.java:208) [FMLClientHandler.class:?]
+	at net.minecraft.client.Minecraft.startGame(Minecraft.java:417) [Minecraft.class:?]
+	at net.minecraft.client.Minecraft.run(Minecraft.java:329) [Minecraft.class:?]
+	at net.minecraft.client.main.Main.main(SourceFile:124) [Main.class:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraft.launchwrapper.Launch.launch(Launch.java:135) [launchwrapper-1.12.jar:?]
+	at net.minecraft.launchwrapper.Launch.main(Launch.java:28) [launchwrapper-1.12.jar:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_362]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_362]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_362]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_362]
+	at net.minecraftforge.gradle.GradleStartCommon.launch(GradleStartCommon.java:97) [start/:?]
+	at GradleStart.main(GradleStart.java:26) [start/:?]
+Caused by: java.lang.IllegalArgumentException
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:170) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:153) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at org.objectweb.asm.ClassReader.<init>(ClassReader.java:424) ~[asm-debug-all-5.0.3.jar:5.0.3]
+	at net.minecraftforge.fml.common.discovery.asm.ASMModParser.<init>(ASMModParser.java:52) ~[ASMModParser.class:?]
+	... 22 more
+[17:39:40] [Client thread/INFO]: Forge Mod Loader has identified 3 mods to load
+[17:39:40] [Client thread/INFO]: Attempting connection with missing mods [mcp, FML, Forge] at CLIENT
+[17:39:40] [Client thread/INFO]: Attempting connection with missing mods [mcp, FML, Forge] at SERVER
+[17:39:41] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge
+[17:39:41] [Client thread/INFO]: Processing ObjectHolder annotations
+[17:39:41] [Client thread/INFO]: Found 384 ObjectHolder annotations
+[17:39:41] [Client thread/INFO]: Identifying ItemStackHolder annotations
+[17:39:41] [Client thread/INFO]: Found 0 ItemStackHolder annotations
+[17:39:41] [Client thread/INFO]: Configured a dormant chunk cache size of 0
+[17:39:41] [Client thread/INFO]: Applying holder lookups
+[17:39:41] [Forge Version Check/INFO]: [Forge] Starting version check at http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json
+[17:39:41] [Client thread/INFO]: Holder lookups applied
+[17:39:41] [Client thread/INFO]: Injecting itemstacks
+[17:39:41] [Client thread/INFO]: Itemstack injection complete
+[17:39:41] [Client thread/INFO]: [tv.twitch.StandardCoreAPI:<init>:16]: If on Windows, make sure to provide all of the necessary dll's as specified in the twitchsdk README. Also, make sure to set the PATH environment variable to point to the directory containing the dll's.
+[17:39:41] [Client thread/ERROR]: Couldn't initialize twitch stream
+[17:39:41] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[17:39:41] [Thread-9/INFO]: Initializing LWJGL OpenAL
+[17:39:41] [Thread-9/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[17:39:41] [Thread-9/INFO]: OpenAL initialized.
+[17:39:41] [Sound Library Loader/INFO]: Sound engine started
+[17:39:44] [Client thread/INFO]: Max texture size: 16384
+[17:39:44] [Client thread/INFO]: Created: 16x16 textures-atlas
+[17:39:44] [Client thread/INFO]: Injecting itemstacks
+[17:39:44] [Client thread/INFO]: Itemstack injection complete
+[17:39:45] [Client thread/INFO]: Forge Mod Loader has successfully loaded 3 mods
+[17:39:45] [Client thread/INFO]: Reloading ResourceManager: Default, FMLFileResourcePack:Forge Mod Loader, FMLFileResourcePack:Minecraft Forge
+[17:39:45] [Client thread/INFO]: SoundSystem shutting down...
+[17:39:45] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
+[17:39:45] [Sound Library Loader/INFO]: Starting up SoundSystem...
+[17:39:45] [Thread-11/INFO]: Initializing LWJGL OpenAL
+[17:39:45] [Thread-11/INFO]: (The LWJGL binding of OpenAL.  For more information, see http://www.lwjgl.org)
+[17:39:45] [Thread-11/INFO]: OpenAL initialized.
+[17:39:45] [Sound Library Loader/INFO]: Sound engine started
+[17:39:47] [Client thread/INFO]: Max texture size: 16384
+[17:39:47] [Client thread/INFO]: Created: 512x512 textures-atlas
+[17:39:48] [Client thread/INFO]: Starting LiquidBounce+ build reborn
+[17:39:48] [Client thread/INFO]: Loading Fonts.
+[17:39:51] [Client thread/INFO]: Loaded Fonts. (3260ms)
+[17:39:51] [Client thread/INFO]: [ModuleManager] Loading modules...
+[17:39:52] [Client thread/ERROR]: Failed to load module: net.ccbluex.liquidbounce.features.module.modules.player.Damage (java.lang.NullPointerException: null)
+[17:39:52] [Client thread/INFO]: [ModuleManager] Successfully loaded 180 modules.
+[17:39:52] [Client thread/INFO]: [Remapper] Loading srg...
+[17:39:52] [Client thread/INFO]: [Remapper] Loaded srg.
+[17:39:53] [Client thread/INFO]: [FileManager] Loaded config: modules.json.
+[17:39:53] [Thread-14/INFO]: [net.ccbluex.liquidbounce.features.module.modules.world.AntiStaff$onInitialize$1:invoke:46]: [Staff/fallback] vFahad_
+testtest50
+iDhoom
+7sO
+Jinaaan
+_JustMix
+Eissaa
+1Mhmmd
+mohmad_q8
+1Brhom
+Aliiyah
+AssassinTime
+Ahmmd
+PerfectRod_
+xImTaiG_
+Muntadher
+xIBerryPlayz
+comsterr
+iiRaivy
+M4rwaan
+1LaB            
+1Sweet
+Ev2n
+1Daykel
+iMehdi_
+Aboz3bl
+xMz7
+EyesO_Diamond
+qB6o6
+506_
+ZANAD
+bu3qeel
+Luvaa
+devilsxul
+ilySno
+Sadlly
+Thenvra
+zayedk
+MK_F16
+FxKrown
+TheDaddyJames
+rcski
+M7mmd
+WiseActually
+iLuvSG_
+1BeSo
+420kinaka
+Refolt
+iiM7mdZ_
+iS3od_
+1SenpaiM7md_
+Flineer
+1SaQeR
+Fta7
+KaaReeeM
+_KG5
+7y_
+1RealFadi
+PT7
+CallMeWhatUWant
+Driction
+RealLoga
+A3loosh
+BoMshary
+MrProfessor_T
+1Opere
+GreatSensei
+saleh2007
+Sql7
+ALGNAZA
+m7mdxjw
+Igisa
+LW_xfr93n
+Omar_Bo5bo7
+TheDrag_Xx
+GUN01S
+devilsqul
+ilybb0
+CsO__
+KingHOYT
+1Khalid
+Mt3h
+AFG_progamer92
+ManiacR2H
+7moooody_
+Firas
+SD_Safeh
+Groshdom
+i3li
+SacrificerLuvW6n
+KpIsNot_
+AdvantageCheese
+Solivion
+iNolan_
+0hBarry_
+1Ax_
+Aiiden
+MX_7mode_yt
+s2lm
+Watchdog
+ToFy_
+S4KR
+DetectiveFoxTY
+Felings
+Nikolas44
+_H53
+Malfore_
+janet4
+2xr1
+zLeonides_
+ilypush
+_Wxx
+d5qq
+i9mm
+xBNEDRx
+Mondoros
+Destroyerxayu_
+_sadeq
+wl3d
+BaSiL_123
+Adaam79
+z7knn
+90fa
+SxAd_
+zAsyx
+IScaryum
+Fayruza
+be6sho
+Night_King1
+Azzam9
+M0nsef
+IRA8
+BlacK__KilleR
+SamyLoses
+1Bqby_
+stepmixer
+YOUSEfTHEKING
+vMusterd_
+Neeres
+RealMo_
+puwsa
+Omar962
+criminall
+Lockrz
+i_ABx
+v2pex
+3tdm
+Xu7_01
+_VaKris_
+AnkaraView
+StrengthSimp
+UnKnownPrey
+maybe_meee
+Secxlity
+iH2san
+1Eie
+7MoDy_
+8eTaM
+s2ad
+2ali
+1cutie
+Moaazmohammed
+1CHIDA
+canable
+iL7nN
+v3low
+xAmiin_
+Snjobh
+ohm0r
+2yod
+JenJvL
+1min_
+BoM9er
+Valiantess
+KillMach1ne_
+Jix4_1s
+
+[17:39:53] [Client thread/INFO]: [FileManager] Loaded config: values.json.
+[17:39:53] [Client thread/INFO]: [FileManager] Loaded config: accounts.json.
+[17:39:53] [Client thread/INFO]: [FileManager] Loaded config: friends.json.
+[17:39:53] [Client thread/INFO]: [FileManager] Loaded config: xray-blocks.json.
+[17:39:53] [Client thread/INFO]: [FileManager] Loaded config: clickgui.json.
+[17:39:53] [Client thread/INFO]: Loading heads...
+[17:39:53] [Client thread/INFO]: Loading heads from https://headdb.org/api/category/all...
+[17:39:53] [Client thread/INFO]: Loaded 956 heads from HeadDB.
+[17:39:53] [Client thread/INFO]: [FileManager] Loaded config: hud.json.
+[17:39:53] [Client thread/INFO]: Finished loading LiquidBounce+ in 5593ms.
+[17:39:54] [Client thread/INFO]: [Shader] Successfully loaded: background.frag
+[17:40:09] [Client thread/WARN]: Mixin liquidbounce.forge.mixins.json:gui.MixinGuiButtonExt has multiple constructors, (IIILjava/lang/String;)V was selected
+
+[17:40:13] [Client thread/INFO]: [FileManager] Saved config: modules.json.
+[17:40:13] [Client thread/INFO]: [FileManager] Saved config: values.json.
+[17:40:13] [Client thread/INFO]: [FileManager] Saved config: clickgui.json.
+[17:40:13] [Client thread/INFO]: [FileManager] Saved config: xray-blocks.json.
+[17:40:13] [Client thread/INFO]: [FileManager] Saved config: hud.json.
+[17:40:13] [Client thread/INFO]: [FileManager] Saved config: shortcuts.json.
+[17:40:13] [Client thread/INFO]: Stopping!
+[17:40:13] [Client thread/INFO]: SoundSystem shutting down...
+[17:40:13] [Client thread/WARN]: Author: Paul Lamb, www.paulscode.com
