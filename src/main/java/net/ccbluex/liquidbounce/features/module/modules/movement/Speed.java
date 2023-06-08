@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.*;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanGroundSpeed;
 import net.ccbluex.liquidbounce.features.module.modules.world.Disabler;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*;
@@ -105,6 +106,9 @@ public class Speed extends Module {
             new VerusLowHop(),
             new VerusHard(),
 
+            //Vulcan
+            new VulcanGroundSpeed(),
+
             // Matrix
             new MatrixSemiStrafe(),
             new MatrixTimerBalance(),
@@ -113,7 +117,7 @@ public class Speed extends Module {
             new Matrix692()
     };
 
-    public final ListValue typeValue = new ListValue("Type", new String[]{"NCP", "AAC", "Spartan", "Spectre", "Hypixel", "Verus", "Matrix", "Custom", "Other"}, "NCP") {
+    public final ListValue typeValue = new ListValue("Type", new String[]{"NCP", "AAC", "Spartan", "Spectre", "Hypixel", "Verus", "Vulcan", "Matrix", "Custom", "Other"}, "NCP") {
 
         @Override
         protected void onChange(final String oldValue, final String newValue) {

@@ -1,0 +1,776 @@
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/performance/MixinGameRulesValue.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.performance.MixinGameRulesValue
+net/ccbluex/liquidbounce/injection/forge/mixins/entity/MixinPlayerControllerMP.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.entity.MixinPlayerControllerMP
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACHop350.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACHop350
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AAC3BHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AAC3BHop
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinTileEntitySkullRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinTileEntitySkullRenderer
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/spectre/SpectreOnGround.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.SpectreOnGround
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/zeroday/Window.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.Window
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/NCPYPort.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.NCPYPort
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/performance/MixinBlockPos.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.performance.MixinBlockPos
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiButton.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiButton
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACBHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACBHop
+net/ccbluex/liquidbounce/utils/TabUtils.java
+ net.ccbluex.liquidbounce.utils.TabUtils
+net/ccbluex/liquidbounce/features/module/modules/world/Scaffold.java
+ net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
+ net.ccbluex.liquidbounce.features.module.modules.world.Scaffold$1
+ net.ccbluex.liquidbounce.features.module.modules.world.Scaffold$2
+ net.ccbluex.liquidbounce.features.module.modules.world.Scaffold$3
+ net.ccbluex.liquidbounce.features.module.modules.world.Scaffold$4
+net/ccbluex/liquidbounce/utils/render/AnimationUtils.java
+ net.ccbluex.liquidbounce.utils.render.AnimationUtils
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiDisconnected.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiDisconnected
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiChat.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiChat
+net/ccbluex/liquidbounce/utils/EntityUtils.java
+ net.ccbluex.liquidbounce.utils.EntityUtils
+net/ccbluex/liquidbounce/features/module/modules/movement/LadderJump.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.LadderJump
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/zeroday/ValueButton.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.ValueButton
+net/ccbluex/liquidbounce/features/module/modules/player/AntiFall.java
+ net.ccbluex.liquidbounce.features.module.modules.player.AntiFall
+net/ccbluex/liquidbounce/file/configs/ModulesConfig.java
+ net.ccbluex.liquidbounce.file.configs.ModulesConfig
+net/ccbluex/liquidbounce/utils/render/shader/shaders/GlowShader.java
+ net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
+net/ccbluex/liquidbounce/utils/ClientUtils.java
+ net.ccbluex.liquidbounce.utils.ClientUtils
+net/vitox/particle/util/RenderUtils.java
+ net.vitox.particle.util.RenderUtils
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/flux/Translate.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.Translate
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/BlackStyle.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/hypixel/HypixelHard.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.HypixelHard
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/performance/MixinNodeProcessor.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.performance.MixinNodeProcessor
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinLayerArmorBase.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinLayerArmorBase
+net/ccbluex/liquidbounce/utils/render/CustomTexture.java
+ net.ccbluex.liquidbounce.utils.render.CustomTexture
+net/ccbluex/liquidbounce/injection/forge/mixins/crash/MixinCrashReport.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.crash.MixinCrashReport
+net/ccbluex/liquidbounce/file/configs/FriendsConfig.java
+ net.ccbluex.liquidbounce.file.configs.FriendsConfig
+ net.ccbluex.liquidbounce.file.configs.FriendsConfig$Friend
+net/ccbluex/liquidbounce/injection/forge/mixins/network/MixinNetworkPlayerInfo.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.network.MixinNetworkPlayerInfo
+net/ccbluex/liquidbounce/features/module/modules/render/ColorMixer.java
+ net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer
+ net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer$1
+net/ccbluex/liquidbounce/utils/render/shader/shaders/OutlineShader.java
+ net.ccbluex.liquidbounce.utils.render.shader.shaders.OutlineShader
+net/ccbluex/liquidbounce/utils/Stencil.java
+ net.ccbluex.liquidbounce.utils.Stencil
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinCommandHandler.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinCommandHandler
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/performance/MixinAnvilChunkLoader.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.performance.MixinAnvilChunkLoader
+net/ccbluex/liquidbounce/features/module/modules/world/BanChecker.java
+ net.ccbluex.liquidbounce.features.module.modules.world.BanChecker
+ net.ccbluex.liquidbounce.features.module.modules.world.BanChecker$1
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/NCPBHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.NCPBHop
+net/ccbluex/liquidbounce/utils/MinecraftInstance.java
+ net.ccbluex.liquidbounce.utils.MinecraftInstance
+net/ccbluex/liquidbounce/injection/forge/mixins/world/MixinWorldClient.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.world.MixinWorldClient
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinEffectRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinEffectRenderer
+net/ccbluex/liquidbounce/features/module/modules/render/TargetMark.java
+ net.ccbluex.liquidbounce.features.module.modules.render.TargetMark
+net/ccbluex/liquidbounce/features/module/modules/render/Skeletal.java
+ net.ccbluex.liquidbounce.features.module.modules.render.Skeletal
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinEntityRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinEntityRenderer
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinEntityRenderer$1
+net/ccbluex/liquidbounce/injection/forge/mixins/client/MixinGameSettings.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.client.MixinGameSettings
+net/ccbluex/liquidbounce/file/FileConfig.java
+ net.ccbluex.liquidbounce.file.FileConfig
+net/ccbluex/liquidbounce/utils/timer/TimerUtils.java
+ net.ccbluex.liquidbounce.utils.timer.TimerUtils
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/spectre/SpectreBHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.SpectreBHop
+net/ccbluex/liquidbounce/utils/RollingArrayLongBuffer.java
+ net.ccbluex.liquidbounce.utils.RollingArrayLongBuffer
+net/ccbluex/liquidbounce/features/module/modules/render/Breadcrumbs.java
+ net.ccbluex.liquidbounce.features.module.modules.render.Breadcrumbs
+ net.ccbluex.liquidbounce.features.module.modules.render.Breadcrumbs$Dot
+net/ccbluex/liquidbounce/injection/forge/TransformerLoader.java
+ net.ccbluex.liquidbounce.injection.forge.TransformerLoader
+net/ccbluex/liquidbounce/features/module/modules/world/AntiBot.java
+ net.ccbluex.liquidbounce.features.module.modules.world.AntiBot
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinRegionRenderCache.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinRegionRenderCache
+net/ccbluex/liquidbounce/file/configs/ClickGuiConfig.java
+ net.ccbluex.liquidbounce.file.configs.ClickGuiConfig
+net/ccbluex/liquidbounce/ui/client/clickgui/Panel.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.Panel
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/novoline/Button.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.Button
+net/ccbluex/liquidbounce/ui/client/clickgui/elements/ModuleElement.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement
+net/ccbluex/liquidbounce/utils/RaycastUtils.java
+ net.ccbluex.liquidbounce.utils.RaycastUtils
+ net.ccbluex.liquidbounce.utils.RaycastUtils$IEntityFilter
+de/enzaxd/viaforge/platform/ViaConfig.java
+ de.enzaxd.viaforge.platform.ViaConfig
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/novoline/ClickyUI.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI
+net/ccbluex/liquidbounce/file/configs/AccountsConfig.java
+ net.ccbluex.liquidbounce.file.configs.AccountsConfig
+net/ccbluex/liquidbounce/ui/font/FontDetails.java
+ net.ccbluex.liquidbounce.ui.font.FontDetails
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACYPort2.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACYPort2
+net/ccbluex/liquidbounce/utils/render/ShaderUtil.java
+ net.ccbluex.liquidbounce.utils.render.ShaderUtil
+net/ccbluex/liquidbounce/features/module/modules/movement/LegitSpeed.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.LegitSpeed
+net/ccbluex/liquidbounce/features/module/modules/render/Crosshair.java
+ net.ccbluex.liquidbounce.features.module.modules.render.Crosshair
+net/ccbluex/liquidbounce/features/module/modules/player/MemoryFix.java
+ net.ccbluex.liquidbounce.features.module.modules.player.MemoryFix
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/verus/VerusHard.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus.VerusHard
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AAC5BHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AAC5BHop
+net/ccbluex/liquidbounce/injection/forge/mixins/entity/MixinAbstractClientPlayer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.entity.MixinAbstractClientPlayer
+net/ccbluex/liquidbounce/features/module/modules/render/AsianHat.java
+ net.ccbluex.liquidbounce.features.module.modules.render.AsianHat
+net/ccbluex/liquidbounce/script/remapper/injection/transformers/AbstractJavaLinkerTransformer.java
+ net.ccbluex.liquidbounce.script.remapper.injection.transformers.AbstractJavaLinkerTransformer
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/Downward.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Downward
+net/ccbluex/liquidbounce/features/module/modules/render/NewGUI.java
+ net.ccbluex.liquidbounce.features.module.modules.render.NewGUI
+net/ccbluex/liquidbounce/injection/forge/mixins/item/MixinNBTTagCompound.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.item.MixinNBTTagCompound
+net/ccbluex/liquidbounce/utils/misc/FallingPlayer.java
+ net.ccbluex.liquidbounce.utils.misc.FallingPlayer
+ net.ccbluex.liquidbounce.utils.misc.FallingPlayer$CollisionResult
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/SpeedMode.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
+net/ccbluex/liquidbounce/features/module/modules/render/PlayerEdit.java
+ net.ccbluex.liquidbounce.features.module.modules.render.PlayerEdit
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACv4BHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACv4BHop
+net/ccbluex/liquidbounce/injection/forge/mixins/block/MixinBlockLadder.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.block.MixinBlockLadder
+ net.ccbluex.liquidbounce.injection.forge.mixins.block.MixinBlockLadder$1
+net/ccbluex/liquidbounce/injection/forge/mixins/client/MixinResourcePackRepository.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.client.MixinResourcePackRepository
+net/ccbluex/liquidbounce/file/configs/ProfilesConfig.java
+ net.ccbluex.liquidbounce.file.configs.ProfilesConfig
+de/enzaxd/viaforge/handler/CommonTransformer.java
+ de.enzaxd.viaforge.handler.CommonTransformer
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinServerAddress.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinServerAddress
+net/ccbluex/liquidbounce/injection/forge/mixins/block/MixinBlockAnvil.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.block.MixinBlockAnvil
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinEntityPackets.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinEntityPackets
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/AstolfoStyle.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.AstolfoStyle
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinLazyLoadBase.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinLazyLoadBase
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/performance/MixinFluidRegistry.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.performance.MixinFluidRegistry
+de/enzaxd/viaforge/loader/BackwardsLoader.java
+ de.enzaxd.viaforge.loader.BackwardsLoader
+net/ccbluex/liquidbounce/utils/math/MathUtil.java
+ net.ccbluex.liquidbounce.utils.math.MathUtil
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiSpectator.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiSpectator
+net/ccbluex/liquidbounce/utils/item/ItemUtils.java
+ net.ccbluex.liquidbounce.utils.item.ItemUtils
+net/ccbluex/liquidbounce/utils/render/shader/FramebufferShader.java
+ net.ccbluex.liquidbounce.utils.render.shader.FramebufferShader
+net/ccbluex/liquidbounce/utils/GLUtils.java
+ net.ccbluex.liquidbounce.utils.GLUtils
+net/ccbluex/liquidbounce/ui/client/clickgui/elements/ButtonElement.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.elements.ButtonElement
+net/ccbluex/liquidbounce/injection/access/IItemStack.java
+ net.ccbluex.liquidbounce.injection.access.IItemStack
+net/ccbluex/liquidbounce/ui/client/clickgui/elements/Element.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.elements.Element
+net/ccbluex/liquidbounce/features/module/modules/world/Spammer.java
+ net.ccbluex.liquidbounce.features.module.modules.world.Spammer
+ net.ccbluex.liquidbounce.features.module.modules.world.Spammer$1
+ net.ccbluex.liquidbounce.features.module.modules.world.Spammer$2
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AAC6BHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AAC6BHop
+net/ccbluex/liquidbounce/utils/SessionUtils.java
+ net.ccbluex.liquidbounce.utils.SessionUtils
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiContainer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiContainer
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinLayerWitherAura.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinLayerWitherAura
+net/ccbluex/liquidbounce/ui/font/TTFFontRenderer.java
+ net.ccbluex.liquidbounce.ui.font.TTFFontRenderer
+ net.ccbluex.liquidbounce.ui.font.TTFFontRenderer$CharacterData
+net/ccbluex/liquidbounce/utils/render/SafeVertexBuffer.java
+ net.ccbluex.liquidbounce.utils.render.SafeVertexBuffer
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinTileEntityBannerRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinTileEntityBannerRenderer
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinBlockFluidRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinBlockFluidRenderer
+net/ccbluex/liquidbounce/features/module/modules/movement/ReverseStep.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.ReverseStep
+de/enzaxd/viaforge/ViaForge.java
+ de.enzaxd.viaforge.ViaForge
+net/ccbluex/liquidbounce/utils/misc/sound/TipSoundPlayer.java
+ net.ccbluex.liquidbounce.utils.misc.sound.TipSoundPlayer
+ net.ccbluex.liquidbounce.utils.misc.sound.TipSoundPlayer$1
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinTileEntityRendererDispatcher.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinTileEntityRendererDispatcher
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/zeroday/AnimationUtil.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.AnimationUtil
+net/ccbluex/liquidbounce/features/special/AntiForge.java
+ net.ccbluex.liquidbounce.features.special.AntiForge
+net/ccbluex/liquidbounce/features/module/modules/movement/LongJump.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.LongJump
+ net.ccbluex.liquidbounce.features.module.modules.movement.LongJump$1
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiAchievement.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiAchievement
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/TestStyle.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.TestStyle
+net/ccbluex/liquidbounce/utils/math/Vec4.java
+ net.ccbluex.liquidbounce.utils.math.Vec4
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/other/MineplexGround.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.MineplexGround
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/Settings/ListSetting.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings.ListSetting
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinRendererLivingEntity.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinRendererLivingEntity
+net/ccbluex/liquidbounce/features/module/modules/movement/Sneak.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.Sneak
+ net.ccbluex.liquidbounce.features.module.modules.movement.Sneak$1
+net/ccbluex/liquidbounce/utils/AnimationUtils.java
+ net.ccbluex.liquidbounce.utils.AnimationUtils
+net/ccbluex/liquidbounce/features/module/modules/movement/Phase.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.Phase
+net/ccbluex/liquidbounce/utils/Interpolator.java
+ net.ccbluex.liquidbounce.utils.Interpolator
+ net.ccbluex.liquidbounce.utils.Interpolator$1
+ net.ccbluex.liquidbounce.utils.Interpolator$2
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/Settings/FloatSetting.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings.FloatSetting
+net/ccbluex/liquidbounce/utils/timer/MSTimer.java
+ net.ccbluex.liquidbounce.utils.timer.MSTimer
+net/ccbluex/liquidbounce/features/module/modules/player/Blink.java
+ net.ccbluex.liquidbounce.features.module.modules.player.Blink
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACYPort.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACYPort
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/ModuleRender.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.ModuleRender
+net/ccbluex/liquidbounce/features/module/modules/world/Plugins.java
+ net.ccbluex.liquidbounce.features.module.modules.world.Plugins
+net/ccbluex/liquidbounce/utils/PosLookInstance.java
+ net.ccbluex.liquidbounce.utils.PosLookInstance
+net/ccbluex/liquidbounce/utils/render/UiUtils.java
+ net.ccbluex.liquidbounce.utils.render.UiUtils
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinLayerSpiderEyes.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinLayerSpiderEyes
+net/ccbluex/liquidbounce/utils/item/ArmorComparator.java
+ net.ccbluex.liquidbounce.utils.item.ArmorComparator
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinSoundManager.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinSoundManager
+net/ccbluex/liquidbounce/features/module/modules/render/EnchantEffect.java
+ net.ccbluex.liquidbounce.features.module.modules.render.EnchantEffect
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/verus/VerusHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus.VerusHop
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiGameOver.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiGameOver
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACHop3310.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACHop3310
+net/ccbluex/liquidbounce/injection/forge/mixins/entity/MixinEntityXPOrb.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.entity.MixinEntityXPOrb
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/NullStyle.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.NullStyle
+net/ccbluex/liquidbounce/features/module/modules/render/Animations.java
+ net.ccbluex.liquidbounce.features.module.modules.render.Animations
+net/ccbluex/liquidbounce/utils/render/Animation.java
+ net.ccbluex.liquidbounce.utils.render.Animation
+de/enzaxd/viaforge/handler/DecodeHandler.java
+ de.enzaxd.viaforge.handler.DecodeHandler
+net/ccbluex/liquidbounce/injection/forge/mixins/network/MixinNetHandlerPlayClient.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.network.MixinNetHandlerPlayClient
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/flux/AnimationUtil.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.AnimationUtil
+net/ccbluex/liquidbounce/injection/forge/mixins/packets/MixinC17PacketCustomPayload.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.packets.MixinC17PacketCustomPayload
+net/ccbluex/liquidbounce/injection/forge/mixins/packets/MixinC00Handshake.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.packets.MixinC00Handshake
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/zeroday/KeyBindButton.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.KeyBindButton
+net/ccbluex/liquidbounce/injection/forge/mixins/block/MixinBlock.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.block.MixinBlock
+net/ccbluex/liquidbounce/utils/PacketUtils.java
+ net.ccbluex.liquidbounce.utils.PacketUtils
+net/ccbluex/liquidbounce/utils/render/Render.java
+ net.ccbluex.liquidbounce.utils.render.Render
+net/ccbluex/liquidbounce/ui/client/hud/element/elements/KeyBinds.java
+ net.ccbluex.liquidbounce.ui.client.hud.element.elements.KeyBinds
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/Settings/BoolSetting.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings.BoolSetting
+net/ccbluex/liquidbounce/utils/render/Stencil.java
+ net.ccbluex.liquidbounce.utils.render.Stencil
+net/ccbluex/liquidbounce/file/configs/XRayConfig.java
+ net.ccbluex.liquidbounce.file.configs.XRayConfig
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/spartan/SpartanYPort.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spartan.SpartanYPort
+net/ccbluex/liquidbounce/features/module/modules/movement/IceSpeed.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.IceSpeed
+net/ccbluex/liquidbounce/ui/client/clickgui/Opacity.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.Opacity
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/Utils/Position.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Utils.Position
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinTileEntityMobSpawnerRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinTileEntityMobSpawnerRenderer
+net/ccbluex/liquidbounce/utils/timer/TickTimer.java
+ net.ccbluex.liquidbounce.utils.timer.TickTimer
+net/ccbluex/liquidbounce/utils/Palette.java
+ net.ccbluex.liquidbounce.utils.Palette
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/other/CustomSpeed.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.CustomSpeed
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiIngameMenu.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiIngameMenu
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/zeroday/ClickUI.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.ClickUI
+de/enzaxd/viaforge/util/AttackOrder.java
+ de.enzaxd.viaforge.util.AttackOrder
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinInventoryEffectRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinInventoryEffectRenderer
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/other/Legit.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.Legit
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiConnecting.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiConnecting
+net/ccbluex/liquidbounce/injection/forge/mixins/block/MixinBlockLiquid.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.block.MixinBlockLiquid
+net/ccbluex/liquidbounce/utils/AnimationHelper.java
+ net.ccbluex.liquidbounce.utils.AnimationHelper
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/hypixel/HypixelBoost.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.HypixelBoost
+net/ccbluex/liquidbounce/injection/transformers/ForgeNetworkTransformer.java
+ net.ccbluex.liquidbounce.injection.transformers.ForgeNetworkTransformer
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACLowHop2.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACLowHop2
+net/ccbluex/liquidbounce/injection/forge/mixins/client/MixinMinecraft.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.client.MixinMinecraft
+net/ccbluex/liquidbounce/injection/access/StaticStorage.java
+ net.ccbluex.liquidbounce.injection.access.StaticStorage
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinLayerArrow.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinLayerArrow
+co/uk/hexeption/utils/OutlineUtils.java
+ co.uk.hexeption.utils.OutlineUtils
+net/ccbluex/liquidbounce/ui/client/clickgui/ClickGui.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
+ net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui$1
+ net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui$2
+ net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui$2$1
+ net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui$2$2
+ net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui$2$3
+ net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui$2$4
+ net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui$2$5
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinModelVillager.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinModelVillager
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiButtonExt.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiButtonExt
+net/ccbluex/liquidbounce/injection/forge/mixins/block/MixinBlockRedstoneTorch.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.block.MixinBlockRedstoneTorch
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinScoreboard.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinScoreboard
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/OnGround.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.OnGround
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/Settings/TextSetting.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings.TextSetting
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinVisGraph.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinVisGraph
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinModelBiped.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinModelBiped
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinRenderEntityItem.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinRenderEntityItem
+net/ccbluex/liquidbounce/utils/render/shader/Shader.java
+ net.ccbluex.liquidbounce.utils.render.shader.Shader
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinModelSkeleton.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinModelSkeleton
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinLayerCreeperCharge.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinLayerCreeperCharge
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/matrix/MatrixDynamic.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixDynamic
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/other/TeleportCubeCraft.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.TeleportCubeCraft
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/spectre/SpectreLowHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.SpectreLowHop
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/matrix/MatrixMultiply.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixMultiply
+de/enzaxd/viaforge/platform/ProviderLoader.java
+ de.enzaxd.viaforge.platform.ProviderLoader
+ de.enzaxd.viaforge.platform.ProviderLoader$1
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/flux/FluxClassic.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.FluxClassic
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.FluxClassic$1
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiLanguage.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiLanguage
+net/ccbluex/liquidbounce/ui/font/Fonts.java
+ net.ccbluex.liquidbounce.ui.font.Fonts
+net/ccbluex/liquidbounce/injection/transformers/NetworkManagerTransformer.java
+ net.ccbluex.liquidbounce.injection.transformers.NetworkManagerTransformer
+net/ccbluex/liquidbounce/features/module/modules/movement/Speed.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed$1
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed$2
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed$3
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed$4
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed$5
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed$6
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed$7
+ net.ccbluex.liquidbounce.features.module.modules.movement.Speed$8
+net/ccbluex/liquidbounce/utils/item/ItemCreator.java
+ net.ccbluex.liquidbounce.utils.item.ItemCreator
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/other/SlowHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.SlowHop
+net/ccbluex/liquidbounce/utils/render/shader/shaders/BackgroundShader.java
+ net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader
+net/ccbluex/liquidbounce/utils/misc/MiscUtils.java
+ net.ccbluex.liquidbounce.utils.misc.MiscUtils
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinLayerCape.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinLayerCape
+de/enzaxd/viaforge/protocol/ProtocolCollection.java
+ de.enzaxd.viaforge.protocol.ProtocolCollection
+net/ccbluex/liquidbounce/injection/forge/mixins/entity/MixinEntityPlayerSP.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.entity.MixinEntityPlayerSP
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinRenderPlayer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinRenderPlayer
+net/ccbluex/liquidbounce/utils/RotationUtils.java
+ net.ccbluex.liquidbounce.utils.RotationUtils
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACGround.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACGround
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/SkeetStyle.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.SkeetStyle
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/NCPFHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.NCPFHop
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACHop3313.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACHop3313
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinModelPlayer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinModelPlayer
+de/enzaxd/viaforge/util/JLoggerToLog4j.java
+ de.enzaxd.viaforge.util.JLoggerToLog4j
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiNewChat.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiNewChat
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/zeroday/Button.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.Button
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/MiJump.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.MiJump
+net/ccbluex/liquidbounce/utils/InventoryUtils.java
+ net.ccbluex.liquidbounce.utils.InventoryUtils
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/SNCPBHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.SNCPBHop
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/matrix/MatrixSemiStrafe.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixSemiStrafe
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACLowHop3.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACLowHop3
+net/ccbluex/liquidbounce/file/FileManager.java
+ net.ccbluex.liquidbounce.file.FileManager
+net/ccbluex/liquidbounce/features/module/modules/world/ItemTeleport.java
+ net.ccbluex.liquidbounce.features.module.modules.world.ItemTeleport
+net/vitox/ParticleGenerator.java
+ net.vitox.ParticleGenerator
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AAC4BHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AAC4BHop
+net/ccbluex/liquidbounce/features/module/modules/movement/WallClimb.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.WallClimb
+net/ccbluex/liquidbounce/injection/forge/mixins/network/MixinNetworkManagerChInit.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.network.MixinNetworkManagerChInit
+net/ccbluex/liquidbounce/file/configs/HudConfig.java
+ net.ccbluex.liquidbounce.file.configs.HudConfig
+net/ccbluex/liquidbounce/utils/render/RoundedUtil.java
+ net.ccbluex.liquidbounce.utils.render.RoundedUtil
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiEditSign.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiEditSign
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/Boost.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.Boost
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/Utils/OtcScroll.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Utils.OtcScroll
+net/ccbluex/liquidbounce/features/module/modules/movement/HighJump.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.HighJump
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/novoline/ValueButton.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ValueButton
+net/ccbluex/liquidbounce/features/module/modules/render/ClickGUI.java
+ net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI
+ net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI$1
+net/ccbluex/liquidbounce/injection/forge/mixins/resources/MixinDefaultResourcePack.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.resources.MixinDefaultResourcePack
+net/ccbluex/liquidbounce/features/module/modules/movement/Jesus.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.Jesus
+de/enzaxd/viaforge/util/FutureTaskId.java
+ de.enzaxd.viaforge.util.FutureTaskId
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/novoline/Window.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.Window
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/performance/MixinMinecraftServer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.performance.MixinMinecraftServer
+net/ccbluex/liquidbounce/injection/forge/MixinLoader.java
+ net.ccbluex.liquidbounce.injection.forge.MixinLoader
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/CategoryScreen.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.CategoryScreen
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiSlot.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiSlot
+net/ccbluex/liquidbounce/features/module/modules/movement/SlimeJump.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.SlimeJump
+net/ccbluex/liquidbounce/utils/render/IconUtils.java
+ net.ccbluex.liquidbounce.utils.render.IconUtils
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/YPort.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.YPort
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/WhiteStyle.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.WhiteStyle
+net/ccbluex/liquidbounce/injection/forge/mixins/entity/MixinEntity.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.entity.MixinEntity
+net/ccbluex/liquidbounce/ui/client/hud/element/elements/Indicators.java
+ net.ccbluex.liquidbounce.ui.client.hud.element.elements.Indicators
+net/ccbluex/liquidbounce/injection/forge/mixins/item/MixinItemStack.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.item.MixinItemStack
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AAC2BHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AAC2BHop
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiKeyBindingList.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiKeyBindingList
+net/ccbluex/liquidbounce/injection/implementations/IMixinGuiSlot.java
+ net.ccbluex.liquidbounce.injection.implementations.IMixinGuiSlot
+net/ccbluex/liquidbounce/event/Listener.java
+ net.ccbluex.liquidbounce.event.Listener
+net/ccbluex/liquidbounce/features/module/modules/render/StorageESP.java
+ net.ccbluex.liquidbounce.features.module.modules.render.StorageESP
+net/ccbluex/liquidbounce/features/module/modules/render/ESP.java
+ net.ccbluex.liquidbounce.features.module.modules.render.ESP
+net/ccbluex/liquidbounce/injection/forge/mixins/resources/MixinSkinManager.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.resources.MixinSkinManager
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/flux/ProfilesScreen.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.ProfilesScreen
+net/ccbluex/liquidbounce/ui/client/clickgui/newVer/NewUi.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.newVer.NewUi
+net/ccbluex/liquidbounce/utils/render/BlendUtils.java
+ net.ccbluex.liquidbounce.utils.render.BlendUtils
+net/ccbluex/liquidbounce/features/module/modules/movement/BowJump.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.BowJump
+de/enzaxd/viaforge/platform/ViaAPI.java
+ de.enzaxd.viaforge.platform.ViaAPI
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinClientCommandHandler.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinClientCommandHandler
+net/ccbluex/liquidbounce/injection/transformers/OptimizeTransformer.java
+ net.ccbluex.liquidbounce.injection.transformers.OptimizeTransformer
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AAC7BHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AAC7BHop
+net/ccbluex/liquidbounce/injection/forge/mixins/entity/MixinEntityOtherPlayerMP.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.entity.MixinEntityOtherPlayerMP
+net/ccbluex/liquidbounce/utils/Colors.java
+ net.ccbluex.liquidbounce.utils.Colors
+net/ccbluex/liquidbounce/features/module/modules/player/Patcher.java
+ net.ccbluex.liquidbounce.features.module.modules.player.Patcher
+net/ccbluex/liquidbounce/utils/render/WorldToScreen.java
+ net.ccbluex.liquidbounce.utils.render.WorldToScreen
+net/ccbluex/liquidbounce/utils/item/ArmorPiece.java
+ net.ccbluex.liquidbounce.utils.item.ArmorPiece
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinRenderItem.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinRenderItem
+net/ccbluex/liquidbounce/utils/misc/EaseInOutQuad.java
+ net.ccbluex.liquidbounce.utils.misc.EaseInOutQuad
+net/ccbluex/liquidbounce/features/module/modules/render/NameProtect.java
+ net.ccbluex.liquidbounce.features.module.modules.render.NameProtect
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiOptions.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiOptions
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinItemModelMesher.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinItemModelMesher
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/OldAACBHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.OldAACBHop
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinRegionRenderCache.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinRegionRenderCache
+net/ccbluex/liquidbounce/utils/render/GLUtils.java
+ net.ccbluex.liquidbounce.utils.render.GLUtils
+net/ccbluex/liquidbounce/features/module/modules/movement/Fly.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.Fly
+ net.ccbluex.liquidbounce.features.module.modules.movement.Fly$1
+net/ccbluex/liquidbounce/utils/render/Colors.java
+ net.ccbluex.liquidbounce.utils.render.Colors
+net/ccbluex/liquidbounce/utils/AStarCustomPathFinder.java
+ net.ccbluex.liquidbounce.utils.AStarCustomPathFinder
+ net.ccbluex.liquidbounce.utils.AStarCustomPathFinder$CompareHub
+ net.ccbluex.liquidbounce.utils.AStarCustomPathFinder$Hub
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/Settings/ColorSetting.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings.ColorSetting
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiScreen.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiScreen
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/hypixel/HypixelStable.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.HypixelStable
+net/ccbluex/liquidbounce/utils/render/RenderUtils.java
+ net.ccbluex.liquidbounce.utils.render.RenderUtils
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiMultiplayer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiMultiplayer
+net/ccbluex/liquidbounce/features/module/modules/render/ProphuntESP.java
+ net.ccbluex.liquidbounce.features.module.modules.render.ProphuntESP
+net/ccbluex/liquidbounce/features/module/modules/movement/WaterSpeed.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.WaterSpeed
+net/vitox/Particle.java
+ net.vitox.Particle
+net/ccbluex/liquidbounce/utils/misc/Direction.java
+ net.ccbluex.liquidbounce.utils.misc.Direction
+net/ccbluex/liquidbounce/injection/forge/mixins/packets/MixinS3FPacketCustomPayload.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.packets.MixinS3FPacketCustomPayload
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/OtcClickGUi.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.OtcClickGUi
+net/ccbluex/liquidbounce/injection/forge/mixins/accessors/MinecraftForgeClientAccessor.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiScreenOptionsSounds.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiScreenOptionsSounds
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACLowHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACLowHop
+net/ccbluex/liquidbounce/utils/misc/StringUtils.java
+ net.ccbluex.liquidbounce.utils.misc.StringUtils
+net/ccbluex/liquidbounce/features/module/modules/render/ESP2D.java
+ net.ccbluex.liquidbounce.features.module.modules.render.ESP2D
+net/ccbluex/liquidbounce/injection/forge/mixins/entity/MixinEntityLivingBase.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.entity.MixinEntityLivingBase
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACGround2.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACGround2
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinFontRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinFontRenderer
+net/ccbluex/liquidbounce/utils/MovementUtils.java
+ net.ccbluex.liquidbounce.utils.MovementUtils
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/verus/VerusLowHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus.VerusLowHop
+net/ccbluex/liquidbounce/event/Priority.java
+ net.ccbluex.liquidbounce.event.Priority
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/novoline/ColorValueButton.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ColorValueButton
+net/ccbluex/liquidbounce/file/configs/ValuesConfig.java
+ net.ccbluex.liquidbounce.file.configs.ValuesConfig
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/novoline/AnimationUtil.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.AnimationUtil
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/Frame.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.Frame
+de/enzaxd/viaforge/loader/RewindLoader.java
+ de.enzaxd.viaforge.loader.RewindLoader
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiIngameForge.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiIngameForge
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/other/Jump.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.Jump
+net/ccbluex/liquidbounce/injection/forge/mixins/network/MixinNetworkManager.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.network.MixinNetworkManager
+net/ccbluex/liquidbounce/injection/implementations/IItemStack.java
+ net.ccbluex.liquidbounce.injection.implementations.IItemStack
+net/ccbluex/liquidbounce/ui/client/clickgui/style/Style.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.Style
+net/ccbluex/liquidbounce/injection/forge/mixins/patcher/bugfixes/MixinServerList.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes.MixinServerList
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGui.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGui
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/aac/AACPort.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.AACPort
+net/ccbluex/liquidbounce/utils/math/MathUtils.java
+ net.ccbluex.liquidbounce.utils.math.MathUtils
+net/ccbluex/liquidbounce/utils/Translate.java
+ net.ccbluex.liquidbounce.utils.Translate
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiScreenResourcePacks.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiScreenResourcePacks
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/zeroday/Translate.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.Translate
+net/ccbluex/liquidbounce/injection/forge/mixins/world/MixinWorld.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.world.MixinWorld
+net/ccbluex/liquidbounce/injection/forge/mixins/block/MixinBlockModelRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.block.MixinBlockModelRenderer
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/NCPHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.NCPHop
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/SlowlyStyle.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.SlowlyStyle
+net/ccbluex/liquidbounce/injection/forge/mixins/entity/MixinEntityPlayer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.entity.MixinEntityPlayer
+net/ccbluex/liquidbounce/features/module/modules/movement/BufferSpeed.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.BufferSpeed
+de/enzaxd/viaforge/platform/Platform.java
+ de.enzaxd.viaforge.platform.Platform
+net/ccbluex/liquidbounce/features/module/modules/world/AutoHypixel.java
+ net.ccbluex.liquidbounce.features.module.modules.world.AutoHypixel
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/flux/AnimationHelper.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.AnimationHelper
+net/ccbluex/liquidbounce/utils/ServerUtils.java
+ net.ccbluex.liquidbounce.utils.ServerUtils
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/otcV2/Settings/NumberSetting.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings.NumberSetting
+net/ccbluex/liquidbounce/utils/misc/SmoothStepAnimation.java
+ net.ccbluex.liquidbounce.utils.misc.SmoothStepAnimation
+net/ccbluex/liquidbounce/utils/misc/FileUtils.java
+ net.ccbluex.liquidbounce.utils.misc.FileUtils
+net/ccbluex/liquidbounce/ui/client/clickgui/style/styles/LiquidBounceStyle.java
+ net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.LiquidBounceStyle
+net/ccbluex/liquidbounce/utils/render/ParticleUtils.java
+ net.ccbluex.liquidbounce.utils.render.ParticleUtils
+net/ccbluex/liquidbounce/utils/PathUtils.java
+ net.ccbluex.liquidbounce.utils.PathUtils
+net/ccbluex/liquidbounce/features/module/modules/render/ColorElement.java
+ net.ccbluex.liquidbounce.features.module.modules.render.ColorElement
+ net.ccbluex.liquidbounce.features.module.modules.render.ColorElement$Material
+net/ccbluex/liquidbounce/features/module/modules/movement/Teleport.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.Teleport
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinRender.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinRender
+net/ccbluex/liquidbounce/features/module/modules/render/BlockESP.java
+ net.ccbluex.liquidbounce.features.module.modules.render.BlockESP
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiInGame.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiInGame
+net/ccbluex/liquidbounce/features/module/modules/render/ItemESP.java
+ net.ccbluex.liquidbounce.features.module.modules.render.ItemESP
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/ncp/YPort2.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.YPort2
+net/ccbluex/liquidbounce/utils/CPSCounter.java
+ net.ccbluex.liquidbounce.utils.CPSCounter
+ net.ccbluex.liquidbounce.utils.CPSCounter$MouseButton
+net/ccbluex/liquidbounce/features/module/modules/render/Fullbright.java
+ net.ccbluex.liquidbounce.features.module.modules.render.Fullbright
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/matrix/MatrixTimerBalance.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.MatrixTimerBalance
+net/ccbluex/liquidbounce/injection/forge/mixins/block/MixinBlockSoulSand.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.block.MixinBlockSoulSand
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinTileEntityItemStackRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinTileEntityItemStackRenderer
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/other/AEMine.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.AEMine
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinGuiDownloadTerrain.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiDownloadTerrain
+de/enzaxd/viaforge/handler/EncodeHandler.java
+ de.enzaxd.viaforge.handler.EncodeHandler
+net/ccbluex/liquidbounce/features/module/modules/movement/speeds/other/HiveHop.java
+ net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.HiveHop
+net/ccbluex/liquidbounce/utils/FileUtils.java
+ net.ccbluex.liquidbounce.utils.FileUtils
+net/ccbluex/liquidbounce/injection/forge/mixins/gui/MixinServerSelectionList.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinServerSelectionList
+net/ccbluex/liquidbounce/utils/misc/RandomUtils.java
+ net.ccbluex.liquidbounce.utils.misc.RandomUtils
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinTileEntityChestRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinTileEntityChestRenderer
+net/ccbluex/liquidbounce/utils/PlayerUtils.java
+ net.ccbluex.liquidbounce.utils.PlayerUtils
+net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinLayerHeldItem.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.render.MixinLayerHeldItem
+net/ccbluex/liquidbounce/injection/forge/mixins/client/MixinMovementInputFromOptions.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.client.MixinMovementInputFromOptions
+net/ccbluex/liquidbounce/injection/forge/mixins/item/MixinItemRenderer.java
+ net.ccbluex.liquidbounce.injection.forge.mixins.item.MixinItemRenderer
+ net.ccbluex.liquidbounce.injection.forge.mixins.item.MixinItemRenderer$1
+de/enzaxd/viaforge/platform/Injector.java
+ de.enzaxd.viaforge.platform.Injector

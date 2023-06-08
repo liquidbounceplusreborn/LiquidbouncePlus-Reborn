@@ -371,4 +371,10 @@ public final class MovementUtils extends MinecraftInstance {
             moveEvent.setZ((forward * moveSpeed * sin - strafe * moveSpeed * cos));
         }
     }
+
+    public static void resetMotion(boolean y) {
+        mc.thePlayer.motionX = 0.0;
+        mc.thePlayer.motionZ = 0.0;
+        if(y) mc.thePlayer.motionY = 0.0;
+    }
 }
