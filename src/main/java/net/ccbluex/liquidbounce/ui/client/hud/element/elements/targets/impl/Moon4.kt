@@ -18,8 +18,10 @@ class Moon4(inst: Target): TargetStyle("Moon4.0", inst, true) {
         updateAnim(entity.health)
         val mainColor = targetInstance.barColor
         val percent = entity.health.toInt()
-        val nameLength = (Fonts.fontTahoma.getStringWidth(entity.name)).coerceAtLeast(
-            Fonts.fontTahoma.getStringWidth(
+        // val nameLength = (Fonts.fontTahoma.getStringWidth(entity.name)).coerceAtLeast(
+        val nameLength = (Fonts.fontSFUI35.getStringWidth(entity.name)).coerceAtLeast(
+        //   Fonts.fontTahoma.getStringWidth(
+            Fonts.fontSFUI35.getStringWidth(
                 "${
                     decimalFormat2.format(percent)
                 }"
@@ -40,7 +42,8 @@ class Moon4(inst: Target): TargetStyle("Moon4.0", inst, true) {
             drawHead(entity.skin, 1, 0.5.toInt(), 35, 35, 1F - targetInstance.getFadeProgress())
             Stencil.dispose()
         }
-        Fonts.fontTahoma.drawStringWithShadow(entity.name, 2F + 36F, 2F, -1)
+        // Fonts.fontTahoma.drawStringWithShadow(entity.name, 2F + 36F, 2F, -1)
+        Fonts.fontSFUI35.drawStringWithShadow(entity.name, 2F + 36F, 2F, -1)
         RenderUtils.drawRoundedRect(37F, 23F, 37F + nameLength, 33f, 3f,Color(0, 0, 0, 100).rgb)
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
         val animateThingy =
@@ -48,13 +51,15 @@ class Moon4(inst: Target): TargetStyle("Moon4.0", inst, true) {
         if (easingHealth > entity.health)
             RenderUtils.drawRoundedRect(38F, 24F, 38F + animateThingy, 32f,3f, mainColor.darker().rgb)
         RenderUtils.drawRoundedRect(38F, 24f, 38F + barWidth, 32f,3f, mainColor.rgb)
-        Fonts.fontTahoma30.drawStringWithShadow("${decimalFormat2.format(percent)}HP", 38F, 15F, Color.WHITE.rgb)
+        Fonts.fontSFUI35.drawStringWithShadow("${decimalFormat2.format(percent)}HP", 38F, 15F, Color.WHITE.rgb)
     }
 
     override fun handleBlur(entity: EntityPlayer) {
         val percent = entity.health.toInt()
-        val nameLength = (Fonts.fontTahoma.getStringWidth(entity.name)).coerceAtLeast(
-            Fonts.fontTahoma.getStringWidth(
+        // val nameLength = (Fonts.fontTahoma.getStringWidth(entity.name)).coerceAtLeast(
+        val nameLength = (Fonts.fontSFUI35.getStringWidth(entity.name)).coerceAtLeast(
+            // Fonts.fontTahoma.getStringWidth(
+            Fonts.fontSFUI35.getStringWidth(
                 "${
                     decimalFormat2.format(percent)
                 }"
@@ -72,8 +77,10 @@ class Moon4(inst: Target): TargetStyle("Moon4.0", inst, true) {
 
     override fun handleShadow(entity: EntityPlayer) {
         val percent = entity.health.toInt()
-        val nameLength = (Fonts.fontTahoma.getStringWidth(entity.name)).coerceAtLeast(
-            Fonts.fontTahoma.getStringWidth(
+        // val nameLength = (Fonts.fontTahoma.getStringWidth(entity.name)).coerceAtLeast(
+        val nameLength = (Fonts.fontSFUI35.getStringWidth(entity.name)).coerceAtLeast(
+        // Fonts.fontTahoma.getStringWidth(
+            Fonts.fontSFUI35.getStringWidth(
                 "${
                     decimalFormat2.format(percent)
                 }"
@@ -84,8 +91,10 @@ class Moon4(inst: Target): TargetStyle("Moon4.0", inst, true) {
 
     override fun getBorder(entity: EntityPlayer?): Border? {
         val percent = entity?.health?.toInt()
-        val nameLength = (Fonts.fontTahoma.getStringWidth(entity?.name.toString())).coerceAtLeast(
-            Fonts.fontTahoma.getStringWidth(
+        // val nameLength = (Fonts.fontTahoma.getStringWidth(entity?.name.toString())).coerceAtLeast(
+        val nameLength = (Fonts.fontSFUI35.getStringWidth(entity?.name.toString())).coerceAtLeast(
+            // Fonts.fontTahoma.getStringWidth(
+            Fonts.fontSFUI35.getStringWidth(
                 "${
                     decimalFormat2.format(percent)
                 }"
