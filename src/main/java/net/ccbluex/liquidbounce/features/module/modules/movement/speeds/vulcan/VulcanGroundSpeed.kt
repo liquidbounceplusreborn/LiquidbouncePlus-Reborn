@@ -16,7 +16,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
  * VulcanStrafe Disabler needed
  */
 
-class VulcanGroundSpeed : SpeedMode("VulcanGround") {
+class VulcanGroundSpeed : SpeedMode("VulcanGroundSpeed") {
     private val boostSpeedValue = BoolValue("GroundBoost", true)
     private val boostDelayValue = IntegerValue("BoostDelay", 8, 2, 15) { boostSpeedValue.get() }
     private val warnings = TextValue("Warning: ", "")

@@ -1355,14 +1355,14 @@
     "%ls": "Random long string (max length 16)"
   },
   "Speed": {
-    "Type": "NCP",
+    "Type": "Vulcan",
     "NCP-Mode": "BHop",
     "AAC-Mode": "4Hop",
     "Hypixel-Mode": "Stable",
     "Spectre-Mode": "BHop",
     "Other-Mode": "Boost",
     "Verus-Mode": "Hop",
-    "Vulcan-Mode": "Ground",
+    "Vulcan-Mode": "LowHopSpeed",
     "Matrix-Mode": "MatrixSemiStrafe",
     "ModifySprinting": true,
     "UseTimer": true,

@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 
 
 //by contionability(fdp client)
-class VulcanLowHopSpeed : SpeedMode("VulcanLowHop") {
+class VulcanLowHopSpeed : SpeedMode("LowHopSpeed") {
     private var ticks = 0
     private var launchY = 0.0
     override fun onMotion() {

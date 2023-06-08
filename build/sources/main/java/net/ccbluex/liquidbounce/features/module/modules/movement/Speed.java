@@ -252,7 +252,7 @@ public class Speed extends Module {
         }
     };
 
-    public final ListValue vulcanModeValue = new ListValue("Vulcan-Mode", new String[]{"Ground", "LowHop", "YPort2Speed", "YPortSpeed"}, "Ground", () -> typeValue.get().equalsIgnoreCase("vulcan")) {
+    public final ListValue vulcanModeValue = new ListValue("Vulcan-Mode", new String[]{"GroundSpeed", "LowHopSpeed", "YPort2Speed", "YPortSpeed"}, "Ground", () -> typeValue.get().equalsIgnoreCase("vulcan")) {
 
         @Override
         protected void onChange(final String oldValue, final String newValue) {

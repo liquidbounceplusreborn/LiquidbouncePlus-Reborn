@@ -7,7 +7,7 @@ import net.minecraft.client.settings.GameSettings
 
 //from fdpclient
 
-class VulcanYPortSpeed : SpeedMode("VulcanYPort") {
+class VulcanYPortSpeed : SpeedMode("YPortSpeed") {
 
     private var wasTimer = false
     private var ticks = 0

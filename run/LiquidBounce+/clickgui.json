@@ -147,10 +147,10 @@
     }
   },
   "Movement": {
-    "open": false,
+    "open": true,
     "visible": true,
-    "posX": 100,
-    "posY": 45,
+    "posX": 228,
+    "posY": 2,
     "AirJump": {
       "Settings": false
     },
@@ -242,7 +242,7 @@
       "Settings": false
     },
     "Speed": {
-      "Settings": false
+      "Settings": true
     },
     "Sprint": {
       "Settings": false

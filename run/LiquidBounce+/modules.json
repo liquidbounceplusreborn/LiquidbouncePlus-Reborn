@@ -925,7 +925,7 @@
   },
   "Speed": {
     "State": false,
-    "KeyBind": 0,
+    "KeyBind": 45,
     "Array": true,
     "AutoDisable": []
   },
