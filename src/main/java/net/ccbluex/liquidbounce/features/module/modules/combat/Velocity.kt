@@ -281,6 +281,7 @@ class Velocity : Module() {
                 "hypixel"->{
                     if (mc.thePlayer.onGround || mc.thePlayer.isInLava || mc.thePlayer.isInWater || mc.thePlayer.isInWeb || mc.thePlayer.fallDistance < 0) {
                         mc.thePlayer.motionY = packet.getMotionY().toDouble()
+                        event.cancelEvent()
                     }else{
                         event.cancelEvent()
                     }
