@@ -59,7 +59,7 @@ public class Scaffold extends Module {
     // Global settings
     private final BoolValue towerEnabled = new BoolValue("EnableTower", false);
     private final ListValue towerModeValue = new ListValue("TowerMode", new String[]{
-            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus","NCP","BlocksMCLessFlag"
+            "Jump", "Motion", "StableMotion", "ConstantMotion", "MotionTP", "Packet", "Teleport", "AAC3.3.9", "AAC3.6.4", "Verus","NCP","BlocksMCLessFlag","Hypixel"
     }, "Motion", () -> towerEnabled.get());
 
     private final BoolValue noMoveOnlyValue = new BoolValue("NoMove", true, () -> towerEnabled.get());
@@ -264,6 +264,8 @@ public class Scaffold extends Module {
 
     private int offGroundTicks = 0;
 
+    private int offGroundTick = 0;
+
     public boolean isTowerOnly() {
         return (towerEnabled.get());
     }
@@ -461,6 +463,13 @@ public class Scaffold extends Module {
                                 mc.thePlayer.posZ
                         );
                     }
+                }
+            case"hypixel":{
+                if(mc.thePlayer.onGround){
+                    mc.thePlayer.motionY = 0.4;
+                }
+                if(offGroundTick == 3) mc.thePlayer.motionY = -0.02;
+                break;
                 }
             }
         }
