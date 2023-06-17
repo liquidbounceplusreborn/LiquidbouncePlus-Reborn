@@ -11,10 +11,8 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed;
-import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import java.awt.Color;
-
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
