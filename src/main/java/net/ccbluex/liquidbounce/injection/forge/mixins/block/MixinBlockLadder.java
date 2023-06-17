@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.movement.FastClimb;
+import net.ccbluex.liquidbounce.features.module.modules.player.ViaVersionFix;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
@@ -16,6 +17,10 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
+
+import java.util.Objects;
 
 @Mixin(BlockLadder.class)
 public abstract class MixinBlockLadder extends MixinBlock {
@@ -51,5 +56,10 @@ public abstract class MixinBlockLadder extends MixinBlock {
             }
         }
     }
-    
+    @ModifyConstant(method = "setBlockBoundsBasedOnState", constant = @Constant(floatValue = 0.125F))
+    private float ViaVersion_LadderBB(float constant) {
+        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ViaVersionFix.class)).getState())
+            return 0.1875F;
+        return 0.125F;
+    }
 }

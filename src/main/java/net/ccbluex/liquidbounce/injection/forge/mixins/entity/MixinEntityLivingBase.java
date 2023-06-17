@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.player.Patcher;
+import net.ccbluex.liquidbounce.features.module.modules.player.ViaVersionFix;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
 import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
@@ -28,6 +29,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -213,10 +215,21 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     }
 
     //visionfx sucks
+    /**
+     * @author
+     * @reason
+     */
     @Overwrite
     private int getArmSwingAnimationEnd() {
         int speed = LiquidBounce.moduleManager.getModule(Animations.class).getState() ? 2 + (20 - Animations.SpeedSwing.get()) : 6;
         return this.isPotionActive(Potion.digSpeed) ? speed - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) * 1 : (this.isPotionActive(Potion.digSlowdown) ? speed + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : speed);
+    }
+
+    @ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))
+    private double ViaVersion_MovementThreshold(double constant) {
+        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ViaVersionFix.class)).getState())
+            return 0.003D;
+        return 0.005D;
     }
 
 }
