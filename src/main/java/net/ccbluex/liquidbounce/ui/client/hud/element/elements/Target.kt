@@ -126,7 +126,6 @@ class Target : Element() {
 
     override fun drawElement(): Border? {
         val mainStyle = getCurrentStyle(styleValue.get()) ?: return null
-
         val kaTarget = (LiquidBounce.moduleManager[KillAura::class.java] as KillAura).target
         val taTarget = (LiquidBounce.moduleManager[TeleportAura::class.java] as TeleportAura).lastTarget
 
