@@ -27,6 +27,9 @@ import java.util.Collections;
 public final class MovementUtils extends MinecraftInstance {
 
     private static double lastX = -999999.0;
+
+    private static double lastY = -999999.0;
+
     private static double lastZ = -999999.0;
 
     public static float getSpeed() {
@@ -376,5 +379,16 @@ public final class MovementUtils extends MinecraftInstance {
         mc.thePlayer.motionX = 0.0;
         mc.thePlayer.motionZ = 0.0;
         if(y) mc.thePlayer.motionY = 0.0;
+    }
+    public static void updateBlocksPerSecond() {
+        double bps = 0.0;
+        if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 1) {
+            bps = 0.0;
+        }
+        double distance = mc.thePlayer.getDistance(lastX, lastY, lastZ);
+        lastX = mc.thePlayer.posX;
+        lastY = mc.thePlayer.posY;
+        lastZ = mc.thePlayer.posZ;
+        bps = distance * (20 * mc.timer.timerSpeed);
     }
 }
