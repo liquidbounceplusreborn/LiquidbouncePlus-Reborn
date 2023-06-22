@@ -62,7 +62,6 @@ class ModuleManager : Listenable {
                 Teams::class.java,
                 LegitSpeed::class.java,
                 NoRotate::class.java,
-                AntiBot::class.java,
                 ChestStealer::class.java,
                 Scaffold::class.java,
                 JumpCircle::class.java,
@@ -221,7 +220,7 @@ class ModuleManager : Listenable {
                 SpeedMine::class.java,
 		ViaVersionFix::class.java,
         )
-
+        registerModule(AntiBot)
         registerModule(Breaker)
         registerModule(ChestAura)
 
