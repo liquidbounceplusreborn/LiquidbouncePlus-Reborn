@@ -18,31 +18,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 @ModuleInfo(name = "NoRotate", spacedName = "No Rotate", description = "Prevents the server from rotating your head.", category = ModuleCategory.WORLD)
 class NoRotate : Module() {
 
-    private val confirmValue = BoolValue("Confirm", true)
-    private val illegalRotationValue = BoolValue("ConfirmIllegalRotation", false)
-    private val noZeroValue = BoolValue("NoZero", false)
-
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val packet = event.packet
-
-        mc.thePlayer ?: return
-
-        if (packet is S08PacketPlayerPosLook) {
-            if (noZeroValue.get() && packet.getYaw() == 0F && packet.getPitch() == 0F)
-                return
-
-            if (illegalRotationValue.get() || packet.getPitch() <= 90 && packet.getPitch() >= -90 &&
-                    RotationUtils.serverRotation != null && packet.getYaw() != RotationUtils.serverRotation.yaw &&
-                    packet.getPitch() != RotationUtils.serverRotation.pitch) {
-
-                if (confirmValue.get())
-                    mc.netHandler.addToSendQueue(C05PacketPlayerLook(packet.getYaw(), packet.getPitch(), mc.thePlayer.onGround))
-            }
-
-            packet.yaw = mc.thePlayer.rotationYaw
-            packet.pitch = mc.thePlayer.rotationPitch
-        }
-    }
-
+    val noLoadingValue = BoolValue("NoLoading", true)
+    val overwriteTeleportValue = BoolValue("SilentConfirm", true)
+    val rotateValue = BoolValue("SilentConfirmSetRotation", true, { overwriteTeleportValue.get() })
 }
