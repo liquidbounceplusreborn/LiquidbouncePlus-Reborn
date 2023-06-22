@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import kotlin.math.cos
@@ -35,8 +36,8 @@ class Velocity : Module() {
     private val verticalValue = FloatValue("Vertical", 0F, -1F, 1F, "x")
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
-    private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple","Hypixel","AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero","Intave",
-            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine"), "Cancel") // later
+    private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple","Hypixel","AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero",
+            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine","GrimAC"), "Cancel") // later
 
     private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
@@ -78,6 +79,13 @@ class Velocity : Module() {
     // AACPush
     private var jump = false
 
+    //Grim
+    var cancelPacket = 6
+    var resetPersec = 8
+    var grimTCancel = 0
+    var updates = 0
+
+
     override val tag: String
         get() = if (modeValue.get() == "Simple")
             String.format("%.2f%% %.2f%%",horizontalValue.get(), verticalValue.get())
@@ -87,6 +95,9 @@ class Velocity : Module() {
     override fun onDisable() {
         mc.thePlayer?.speedInAir = 0.02F
     }
+    override fun onEnable() {
+        grimTCancel = 0
+    }
     /*
         override fun onEnable() {
             if (modeValue.get().equals("simple", true) && horizontalValue.get() == 0F && verticalValue.get() == 0F && !LiquidBounce.isStarting)
@@ -95,6 +106,17 @@ class Velocity : Module() {
     */
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if(modeValue.get() == "GrimAC"){
+            updates++
+            if (resetPersec > 0) {
+                if (updates >= 0 || updates >= resetPersec) {
+                    updates = 0
+                    if (grimTCancel > 0){
+                        grimTCancel--
+                    }
+                }
+            }
+        }
         if (mc.thePlayer.hurtTime <= 0) shouldAffect = (Math.random().toFloat() < reduceChance.get() / 100F)
         if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || !shouldAffect)
             return
@@ -312,6 +334,10 @@ class Velocity : Module() {
                 "legit" -> {
                     pos = BlockPos(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
                 }
+                "grimac" -> {
+                    event.cancelEvent()
+                    grimTCancel = cancelPacket
+                }
             }
         }
 
@@ -320,6 +346,10 @@ class Velocity : Module() {
             mc.thePlayer.motionY = mc.thePlayer.motionY + packet.func_149144_d() * (verticalExplosionValue.get())
             mc.thePlayer.motionZ = mc.thePlayer.motionZ + packet.func_149147_e() * (horizontalExplosionValue.get())
             event.cancelEvent()
+        }
+        if (packet is S32PacketConfirmTransaction && grimTCancel > 0 && modeValue.get() == "GrimAC") {
+            event.cancelEvent()
+            grimTCancel--
         }
     }
 
@@ -387,24 +417,6 @@ class Velocity : Module() {
             }
             "aaczero" -> if (mc.thePlayer.hurtTime > 0)
                 event.cancelEvent()
-        }
-    }
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
-        when (modeValue.get().toLowerCase()) {
-            "intave" -> {
-                if (mc.thePlayer.hurtTime > 1 && mc.thePlayer.hurtTime < 10) {
-                    mc.thePlayer.motionX *= 0.75
-                    mc.thePlayer.motionZ *= 0.75
-                    if (mc.thePlayer.hurtTime < 4) {
-                        if (mc.thePlayer.motionY > 0) {
-                            mc.thePlayer.motionY *= 0.9
-                        } else {
-                            mc.thePlayer.motionY *= 1.1
-                        }
-                    }
-                }
-            }
         }
     }
 }
