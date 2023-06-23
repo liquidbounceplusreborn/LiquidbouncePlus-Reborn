@@ -1,9 +1,11 @@
 package net.ccbluex.liquidbounce.features.module.modules.world;
 
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.render.BlurUtils;
@@ -46,6 +48,9 @@ public class Scaffold2 extends Module {
     private final BoolValue safeWalkValue = new BoolValue("SafeWalk", true);
 
     private final BoolValue eagleValue = new BoolValue("Eagle", false);
+
+    public final FloatValue speedModifierValue = new FloatValue("SpeedModifier", 1F, 0, 2F, "x");
+    public final FloatValue xzMultiplier = new FloatValue("XZ-Multiplier", 1F, 0F, 4F, "x");
 
     private final ListValue placeConditionValue = new ListValue("Place-Condition", new String[]{"Air", "FallDown", "NegativeMotion", "Always"}, "Always");
     private final BoolValue towerEnabled = new BoolValue("Tower", false);
@@ -100,6 +105,9 @@ public class Scaffold2 extends Module {
 
     @EventTarget
     public void onUpdate(UpdateEvent event) {
+
+        mc.thePlayer.motionX *= xzMultiplier.get();
+        mc.thePlayer.motionZ *= xzMultiplier.get();
 
             int blockSlot = -1;
         ItemStack itemStack = mc.thePlayer.getHeldItem();
@@ -168,6 +176,12 @@ public class Scaffold2 extends Module {
                     } else {
                         mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
                     }
+                    if (mc.thePlayer.onGround) {
+                        final float modifier = speedModifierValue.get();
+
+                        mc.thePlayer.motionX *= modifier;
+                        mc.thePlayer.motionZ *= modifier;
+                    }
                     if (eagleValue.get())
                         mc.gameSettings.keyBindSneak.pressed = PlayerUtils.isAirUnder(mc.thePlayer);
                 }
@@ -203,7 +217,6 @@ public class Scaffold2 extends Module {
                 }
             }
         }
-
     }
 
     private boolean towerMoving() {
