@@ -5,12 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils;
 
-import kotlin.jvm.functions.Function0;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.EventTarget;
-import net.ccbluex.liquidbounce.event.Listenable;
-import net.ccbluex.liquidbounce.event.PacketEvent;
-import net.ccbluex.liquidbounce.event.TickEvent;
+import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.FastBow;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
@@ -491,6 +487,22 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
 
     public static Rotation calculate(final Vec3 to) {
         return calculate(mc.thePlayer.getPositionVector().add(new Vec3(0, mc.thePlayer.getEyeHeight(), 0)), new Vec3(to.xCoord, to.yCoord, to.zCoord));
+    }
+
+    public static Rotation getAngles(EntityLivingBase entity) {
+        if (entity == null)
+            return null;
+        final EntityPlayerSP thePlayer = mc.thePlayer;
+
+        final double diffX = entity.posX - thePlayer.posX,
+                diffY = entity.posY + entity.getEyeHeight() * 0.9 - (thePlayer.posY + thePlayer.getEyeHeight()),
+                diffZ = entity.posZ - thePlayer.posZ, dist = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ); // @on
+
+        final float yaw = (float) (Math.atan2(diffZ, diffX) * 180.0D / Math.PI) - 90.0F,
+                pitch = (float) -(Math.atan2(diffY, dist) * 180.0D / Math.PI);
+
+        return new Rotation (thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(yaw - thePlayer.rotationYaw),
+                thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(pitch - thePlayer.rotationPitch));
     }
 
     /**

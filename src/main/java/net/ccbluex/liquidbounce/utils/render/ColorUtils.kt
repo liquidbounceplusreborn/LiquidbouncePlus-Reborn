@@ -78,6 +78,15 @@ object ColorUtils {
     }
 
     @JvmStatic
+    fun getColor(red: Int, green: Int, blue: Int, alpha: Int): Int {
+        var color = 0
+        color = color or (alpha shl 24)
+        color = color or (red shl 16)
+        color = color or (green shl 8)
+        return blue.let { color = color or it; color }
+    }
+
+    @JvmStatic
     fun interpolateColorC(color1: Color, color2: Color, amount: Float): Color? {
         var amount = amount
         amount = Math.min(1f, Math.max(0f, amount))
