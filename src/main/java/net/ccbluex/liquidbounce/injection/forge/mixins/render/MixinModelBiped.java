@@ -20,6 +20,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
+import static net.ccbluex.liquidbounce.utils.RotationUtils.serverRotation;
+
 @Mixin(ModelBiped.class)
 public class MixinModelBiped {
 
@@ -34,21 +37,10 @@ public class MixinModelBiped {
 
     @Inject(method = "setRotationAngles", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/ModelBiped;swingProgress:F"))
     private void revertSwordAnimation(float p_setRotationAngles_1_, float p_setRotationAngles_2_, float p_setRotationAngles_3_, float p_setRotationAngles_4_, float p_setRotationAngles_5_, float p_setRotationAngles_6_, Entity p_setRotationAngles_7_, CallbackInfo callbackInfo) {
-        if (heldItemRight == 3)
-            this.bipedRightArm.rotateAngleY = 0F;
+        if (heldItemRight == 3) bipedRightArm.rotateAngleY = 0F;
 
-        final Rotations rotationModule = LiquidBounce.moduleManager.getModule(Rotations.class);
-        if (p_setRotationAngles_7_ instanceof EntityPlayer && p_setRotationAngles_7_.equals(Minecraft.getMinecraft().thePlayer)) {
-            final SpinBot spinBot = LiquidBounce.moduleManager.getModule(SpinBot.class);
-            if (spinBot.getState() && !spinBot.getPitchMode().get().equalsIgnoreCase("none"))
-                this.bipedHead.rotateAngleX = spinBot.getPitch() / (180F / (float) Math.PI);
-            else if (rotationModule.getState() && rotationModule.getHeadValue().get() && RotationUtils.serverRotation != null && p_setRotationAngles_7_ instanceof EntityPlayer
-                    && p_setRotationAngles_7_.equals(Minecraft.getMinecraft().thePlayer)) {
-                this.bipedHead.rotateAngleX = RotationUtils.serverRotation.getPitch() / (180F / (float) Math.PI);
-            }
-            else if (p_setRotationAngles_7_ instanceof EntityPlayer && p_setRotationAngles_7_.equals(Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.getModule(Rotations.class).getState() && LiquidBounce.moduleManager.getModule(Rotations.class).getBodyValue().get().equals("Astolfo")){
-                this.bipedHead.rotateAngleX = RotationUtils.serverRotation.getPitch() / 61f;
-            }
+        if (Rotations.shouldRotate() && p_setRotationAngles_7_ instanceof EntityPlayer && p_setRotationAngles_7_.equals(mc.thePlayer)) {
+            bipedHead.rotateAngleX = (float) Math.toRadians(Rotations.lerp(mc.timer.renderPartialTicks, Rotations.getPrevHeadPitch(), Rotations.getHeadPitch()));
         }
     }
 }

@@ -41,7 +41,6 @@ class ModuleManager : Listenable {
 
         registerModules(
             AntiExploit::class.java,
-            AntiBot::class.java,
             AutoWeapon::class.java,
             BowAimbot::class.java,
             Aimbot::class.java,
@@ -223,6 +222,7 @@ class ModuleManager : Listenable {
             ViaVersionFix::class.java,
 
         )
+        registerModule(AntiBot)
         registerModule(Breaker)
         registerModule(ChestAura)
 

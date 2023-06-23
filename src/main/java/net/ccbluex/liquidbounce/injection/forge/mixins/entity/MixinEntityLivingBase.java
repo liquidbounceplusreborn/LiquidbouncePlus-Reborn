@@ -103,22 +103,16 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Overwrite
     protected float updateDistance(float p_1101461, float p_1101462) {
         float rotationYaw = this.rotationYaw;
-        Rotations silentView = LiquidBounce.moduleManager.getModule(Rotations.class);
+        Rotations rotations = LiquidBounce.moduleManager.getModule(Rotations.class);
         if ((EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
-            if (silentView.getState() && silentView.getBodyValue().get().equals("Astolfo")) {
-                if (silentView.getPlayerYaw() != null) {
-                    rotationYaw = silentView.getPlayerYaw();
+                if (rotations.getPlayerYaw() != null) {
+                    rotationYaw = rotations.getPlayerYaw();
                 }
-            }
         }
         float f = MathHelper.wrapAngleTo180_float(p_1101461 - this.renderYawOffset);
         this.renderYawOffset += f * 0.3F;
         float f1 = MathHelper.wrapAngleTo180_float(rotationYaw - this.renderYawOffset);
         boolean flag = f1 < 75.0F || f1 >= 75.0F;
-
-        if (silentView.getState() && silentView.getBodyValue().get().equals("Astolfo") && silentView.getLockValue().get() && (EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
-            f1 = 0.0F;
-        }
 
         if (f1 < -75.0F) {
             f1 = -75.0F;
