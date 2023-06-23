@@ -19,7 +19,7 @@ import net.minecraft.network.play.server.*
 import net.minecraft.world.WorldSettings
 import java.util.*
 
-@ModuleInfo(name = "AntiBot", spacedName = "Anti Bot", description = "Prevents KillAura from attacking AntiCheat bots.", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "AntiBot", spacedName = "Anti Bot", category = ModuleCategory.MOVEMENT, description = "Prevents KillAura from attacking AntiCheat bots.")
 object AntiBot : Module() {
     private val tabValue = BoolValue("Tab", true)
     private val tabModeValue = ListValue("TabMode", arrayOf("Equals", "Contains"), "Contains",{ tabValue.get() })
