@@ -55,7 +55,7 @@ public class Scaffold2 extends Module {
     private final ListValue placeConditionValue = new ListValue("Place-Condition", new String[]{"Air", "FallDown", "NegativeMotion", "Always"}, "Always");
     private final BoolValue towerEnabled = new BoolValue("Tower", false);
     private final ListValue towerModeValue = new ListValue("TowerMode", new String[]{
-            "Jump", "Motion","ConstantMotion", "MotionTP"
+            "Jump", "Motion","ConstantMotion", "MotionTP","Hypixel"
     }, "Motion", () -> towerEnabled.get());
 
     private final FloatValue constantMotionValue = new FloatValue("ConstantMotion", 0.42F, 0.1F, 1F, () -> towerEnabled.get() && towerModeValue.get().equalsIgnoreCase("ConstantMotion"));
@@ -79,11 +79,14 @@ public class Scaffold2 extends Module {
 
     private int slot;
 
+    private Rotation rot;
+
     private final TimerUtils timer = new TimerUtils();
+
 
     public void onEnable() {
         slot = mc.thePlayer.inventory.currentItem;
-    }
+        }
 
 
     public void onDisable() {
@@ -264,6 +267,9 @@ public class Scaffold2 extends Module {
                     mc.thePlayer.motionY = constantMotionValue.get();
                     jumpGround = mc.thePlayer.posY;
                 }
+                break;
+            case"hypixel":
+                hypixelTower();
                 break;
         }
     }
@@ -580,6 +586,7 @@ public class Scaffold2 extends Module {
             slot = packetHeldItemChange.getSlotId();
         }
     }
+
     private void fakeJump() {
         mc.thePlayer.isAirBorne = true;
         mc.thePlayer.triggerAchievement(StatList.jumpStat);
@@ -727,6 +734,26 @@ public class Scaffold2 extends Module {
     public void onMove(final MoveEvent event) {
         if (safeWalkValue.get() && mc.thePlayer.onGround)
             event.setSafeWalk(true);
+    }
+
+    @EventTarget
+    public void onJump(final JumpEvent event) {
+        if(towerMoving()){
+            event.cancelEvent();
+        }
+    }
+
+    private void hypixelTower() {
+        if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(0.0D, -0.76, 0.0D)).isEmpty() && mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(0.0D, -0.75, 0.0D)).isEmpty() && mc.thePlayer.motionY > 0.23 && mc.thePlayer.motionY < 0.25) {
+            mc.thePlayer.motionY = Math.round(mc.thePlayer.posY) - mc.thePlayer.posY;
+        }
+
+        if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(0.0D, -0.0001, 0.0D)).isEmpty()) {
+            mc.thePlayer.motionY = 0.41999998688698;
+
+        } else if (mc.thePlayer.posY >= Math.round(mc.thePlayer.posY) - 0.0001 && mc.thePlayer.posY <= Math.round(mc.thePlayer.posY) + 0.0001 && !Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode())) {
+            mc.thePlayer.motionY = 0.0;
+        }
     }
 
     @Override
