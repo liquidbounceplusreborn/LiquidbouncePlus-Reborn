@@ -41,7 +41,7 @@ class ModuleManager : Listenable {
 
         registerModules(
             AntiExploit::class.java,
-            AntiBot::class.java,
+            AntiBot::object.java,
             AutoWeapon::class.java,
             BowAimbot::class.java,
             Aimbot::class.java,
