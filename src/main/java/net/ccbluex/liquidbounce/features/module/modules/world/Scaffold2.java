@@ -750,6 +750,8 @@ public class Scaffold2 extends Module {
 
         if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(0.0D, -0.0001, 0.0D)).isEmpty()) {
             mc.thePlayer.motionY = 0.41999998688698;
+            mc.thePlayer.motionX *= 0.9;
+            mc.thePlayer.motionZ *= 0.9;
 
         } else if (mc.thePlayer.posY >= Math.round(mc.thePlayer.posY) - 0.0001 && mc.thePlayer.posY <= Math.round(mc.thePlayer.posY) + 0.0001 && !Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode())) {
             mc.thePlayer.motionY = 0.0;
