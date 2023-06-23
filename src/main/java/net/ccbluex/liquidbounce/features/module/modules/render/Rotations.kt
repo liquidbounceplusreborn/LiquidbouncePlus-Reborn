@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestAura
 import net.ccbluex.liquidbounce.features.module.modules.world.Breaker
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
+import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold2
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -40,7 +41,7 @@ class Rotations : Module() {
                 (getState(KillAura::class.java) && killAura.target != null) ||
                 (getState(Disabler::class.java) && disabler.canRenderInto3D) ||
                 getState(BowAimbot::class.java) || getState(Breaker::class.java) ||
-                getState(ChestAura::class.java) || getState(Fly::class.java)
+                getState(ChestAura::class.java) || getState(Fly::class.java) || getState(Scaffold2::class.java)
     }
 
     var playerYaw: Float? = null

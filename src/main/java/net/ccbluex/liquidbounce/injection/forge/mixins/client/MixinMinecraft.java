@@ -253,6 +253,7 @@ public abstract class MixinMinecraft {
             final Rotations Rotations = LiquidBounce.moduleManager.getModule(Rotations.class);
             final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
             final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
+            final Scaffold2 scaffold2 = LiquidBounce.moduleManager.getModule(Scaffold2.class);
             final Disabler disabler = LiquidBounce.moduleManager.getModule(Disabler.class);
             final SpinBot spinBot = LiquidBounce.moduleManager.getModule(SpinBot.class);
             final ChestAura chestAura = LiquidBounce.moduleManager.getModule(ChestAura.class);
@@ -272,7 +273,14 @@ public abstract class MixinMinecraft {
             if (scaffold.getState() && Rotations.getHeadValue().get() && Rotations.getState()) {
                 entityLivingBase.rotationYawHead = yaw;
             }
+            if (scaffold2.getState() && Rotations.getHeadValue().get() && Rotations.getState()) {
+                entityLivingBase.rotationYawHead = yaw;
+            }
             if (scaffold.getState() && Rotations.getBodyValue().get() == "Normal" && Rotations.getState()) {
+                entityLivingBase.renderYawOffset = yaw;
+                entityLivingBase.prevRenderYawOffset = yaw;
+            }
+            if (scaffold2.getState() && Rotations.getBodyValue().get() == "Normal" && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
             }
@@ -324,115 +332,6 @@ public abstract class MixinMinecraft {
             if (nuker.getState() && Rotations.getBodyValue().get() == "Normal" && Rotations.getState()) {
                 entityLivingBase.renderYawOffset = yaw;
                 entityLivingBase.prevRenderYawOffset = yaw;
-            }
-            if (killAura.getTarget() != null && Rotations.getBodyValue().get() == "Legit" && Rotations.getState()) {
-                entityLivingBase.renderYawOffset = yaw;
-                entityLivingBase.prevRenderYawOffset = yaw;
-                if (Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw + 45;
-                    entityLivingBase.prevRenderYawOffset = yaw + 45;
-                }
-                if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw - 45;
-                    entityLivingBase.prevRenderYawOffset = yaw - 45;
-                }
-            }
-            if (scaffold.getState() && Rotations.getBodyValue().get() == "Legit" && Rotations.getState()) {
-                entityLivingBase.renderYawOffset = yaw;
-                entityLivingBase.prevRenderYawOffset = yaw;
-                if (Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw + 45;
-                    entityLivingBase.prevRenderYawOffset = yaw + 45;
-                }
-                if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw - 45;
-                    entityLivingBase.prevRenderYawOffset = yaw - 45;
-                }
-            }
-            if (disabler.getCanRenderInto3D() && Rotations.getBodyValue().get() == "Legit" && Rotations.getState()) {
-                entityLivingBase.renderYawOffset = yaw;
-                entityLivingBase.prevRenderYawOffset = yaw;
-                if (Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw + 45;
-                    entityLivingBase.prevRenderYawOffset = yaw + 45;
-                }
-                if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw - 45;
-                    entityLivingBase.prevRenderYawOffset = yaw - 45;
-                }
-            }
-            if (spinBot.getState() && Rotations.getBodyValue().get() == "Legit" && Rotations.getState()) {
-                entityLivingBase.renderYawOffset = yaw;
-                entityLivingBase.prevRenderYawOffset = yaw;
-                if (Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw + 45;
-                    entityLivingBase.prevRenderYawOffset = yaw + 45;
-                }
-
-                if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw - 45;
-                    entityLivingBase.prevRenderYawOffset = yaw - 45;
-                }
-            }
-            if (chestAura.getState() && Rotations.getBodyValue().get() == "Legit" && Rotations.getState()) {
-                entityLivingBase.renderYawOffset = yaw;
-                entityLivingBase.prevRenderYawOffset = yaw;
-                if (Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw + 45;
-                    entityLivingBase.prevRenderYawOffset = yaw + 45;
-                }
-                if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw - 45;
-                    entityLivingBase.prevRenderYawOffset = yaw - 45;
-                }
-            }
-            if (fly.getState() && Rotations.getBodyValue().get() == "Legit" && Rotations.getState()) {
-                entityLivingBase.renderYawOffset = yaw;
-                entityLivingBase.prevRenderYawOffset = yaw;
-                if (Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown()) {
-                    entityLivingBase.renderYawOffset = yaw + 45;
-                    entityLivingBase.prevRenderYawOffset = yaw + 45;
-                    if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()) {
-                        entityLivingBase.renderYawOffset = yaw - 45;
-                        entityLivingBase.prevRenderYawOffset = yaw - 45;
-                    }
-                }
-                if (bowAimbot.getState() && Rotations.getBodyValue().get() == "Legit" && Rotations.getState()) {
-                    entityLivingBase.renderYawOffset = yaw;
-                    entityLivingBase.prevRenderYawOffset = yaw;
-                    if (Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown()) {
-                        entityLivingBase.renderYawOffset = yaw + 45;
-                        entityLivingBase.prevRenderYawOffset = yaw + 45;
-                    }
-                    if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()) {
-                        entityLivingBase.renderYawOffset = yaw - 45;
-                        entityLivingBase.prevRenderYawOffset = yaw - 45;
-                    }
-                }
-                if (fucker.getState() && Rotations.getBodyValue().get() == "Legit" && Rotations.getState()) {
-                    entityLivingBase.renderYawOffset = yaw;
-                    entityLivingBase.prevRenderYawOffset = yaw;
-                    if (Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown()) {
-                        entityLivingBase.renderYawOffset = yaw + 45;
-                        entityLivingBase.prevRenderYawOffset = yaw + 45;
-                    }
-                    if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()) {
-                        entityLivingBase.renderYawOffset = yaw - 45;
-                        entityLivingBase.prevRenderYawOffset = yaw - 45;
-                    }
-                }
-                if (nuker.getState() && Rotations.getBodyValue().get() == "Legit" && Rotations.getState()) {
-                    entityLivingBase.renderYawOffset = yaw;
-                    entityLivingBase.prevRenderYawOffset = yaw;
-                    if (Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown()) {
-                        entityLivingBase.renderYawOffset = yaw + 45;
-                        entityLivingBase.prevRenderYawOffset = yaw + 45;
-                    }
-                    if (Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() || Minecraft.getMinecraft().gameSettings.keyBindBack.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindRight.isKeyDown() && !Minecraft.getMinecraft().gameSettings.keyBindLeft.isKeyDown()) {
-                        entityLivingBase.renderYawOffset = yaw - 45;
-                        entityLivingBase.prevRenderYawOffset = yaw - 45;
-                    }
-                }
             }
         }
     }

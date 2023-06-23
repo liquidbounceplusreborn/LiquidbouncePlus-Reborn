@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
+import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.block.*;
 import net.minecraft.client.gui.ScaledResolution;
@@ -37,7 +38,7 @@ public class Scaffold2 extends Module {
 
     private final ListValue autoBlockMode = new ListValue("AutoBlock", new String[]{"Spoof", "Switch", "Off"}, "Spoof");
 
-    private final ListValue sprintModeValue = new ListValue("SprintMode", new String[]{
+    public final ListValue sprintModeValue = new ListValue("SprintMode", new String[]{
             "Vanilla", "NoPacket", "None"
     }, "Vanilla");
     private final BoolValue swingValue = new BoolValue("Swing", false);
@@ -134,88 +135,83 @@ public class Scaffold2 extends Module {
                     : this.getBlockData(
                     new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)));
 
-    }
 
-    @EventTarget
-    public void onMotion(MotionEvent event) {
-
-
-            switch (sprintModeValue.get()) {
-                case "Vanilla":
-                case "NoPacket": {
-                    mc.thePlayer.setSprinting(true);
-                    break;
-                }
-                case "None": {
-                    mc.thePlayer.setSprinting(false);
-                    break;
-                }
+        switch (sprintModeValue.get()) {
+            case "Vanilla":
+            case "NoPacket": {
+                mc.thePlayer.setSprinting(true);
+                break;
             }
-            if (shouldPlace()) {
+            case "None": {
+                mc.thePlayer.setSprinting(false);
+                break;
+            }
+        }
+        if (shouldPlace()) {
 
-                if (towerMoving()) {
-                    move(event);
-                }
+            if (towerMoving()) {
+                move(event);
+            }
 
-                if (blockData != null) {
-                    if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getCurrentEquippedItem(),
-                            blockData.position, blockData.facing,
-                            getVec3(blockData.position, blockData.facing))) {
-                        if (mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem).getItem() != null
-                                && mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem)
-                                .getItem() instanceof ItemBlock
-                                && !mc.isSingleplayer()) {
-                            mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem).getItem();
-                        }
-                        if (swingValue.getValue() && event.getEventState() == EventState.PRE) {
-                            mc.thePlayer.swingItem();
-                        } else {
-                            mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
-                        }
-                        if (eagleValue.get())
-                            mc.gameSettings.keyBindSneak.pressed = PlayerUtils.isAirUnder(mc.thePlayer);
+            if (blockData != null) {
+                if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getCurrentEquippedItem(),
+                        blockData.position, blockData.facing,
+                        getVec3(blockData.position, blockData.facing))) {
+                    if (mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem).getItem() != null
+                            && mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem)
+                            .getItem() instanceof ItemBlock
+                            && !mc.isSingleplayer()) {
+                        mc.thePlayer.inventory.getStackInSlot(mc.thePlayer.inventory.currentItem).getItem();
                     }
-                    switch (rotationModeValue.get()) {
-                        case "Novoline": {
-                            if (blockData != null) {
-                                EntityPig entity = new EntityPig(mc.theWorld);
-                                entity.posX = blockData.position.getX() + 0.5;
-                                entity.posY = blockData.position.getY() + 0.5;
-                                entity.posZ = blockData.position.getZ() + 0.5;
-                                Rotation rots = RotationUtils.getAngles(entity);
-                                RotationUtils.setTargetRotation(rots);
-                            }
-                            break;
+                    if (swingValue.getValue()) {
+                        mc.thePlayer.swingItem();
+                    } else {
+                        mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
+                    }
+                    if (eagleValue.get())
+                        mc.gameSettings.keyBindSneak.pressed = PlayerUtils.isAirUnder(mc.thePlayer);
+                }
+                switch (rotationModeValue.get()) {
+                    case "Novoline": {
+                        if (blockData != null) {
+                            EntityPig entity = new EntityPig(mc.theWorld);
+                            entity.posX = blockData.position.getX() + 0.5;
+                            entity.posY = blockData.position.getY() + 0.5;
+                            entity.posZ = blockData.position.getZ() + 0.5;
+                            Rotation rots = RotationUtils.getAngles(entity);
+                            RotationUtils.setTargetRotation(rots);
                         }
-                        case "Backward": {
-                            for (int i = 0; i < 2; i++) {
-                                final Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.getEntityBoundingBox().minY + mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
-                                final double diffX = i == 0 ? 0 : blockData.hitVec.xCoord - eyesPos.xCoord;
-                                final double diffY = blockData.hitVec.yCoord - eyesPos.yCoord;
-                                final double diffZ = i == 1 ? 0 : blockData.hitVec.zCoord - eyesPos.zCoord;
+                        break;
+                    }
+                    case "Backward": {
+                        for (int i = 0; i < 2; i++) {
+                            final Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.getEntityBoundingBox().minY + mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
+                            final double diffX = i == 0 ? 0 : blockData.hitVec.xCoord - eyesPos.xCoord;
+                            final double diffY = blockData.hitVec.yCoord - eyesPos.yCoord;
+                            final double diffZ = i == 1 ? 0 : blockData.hitVec.zCoord - eyesPos.zCoord;
 
-                                final double diffXZ = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
+                            final double diffXZ = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ);
 
-                                Rotation rots = new Rotation(
-                                        mc.thePlayer.rotationYaw + 180,
-                                        MathHelper.wrapAngleTo180_float((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)))
-                                );
-                                RotationUtils.setTargetRotation(rots);
-                            }
-                            break;
+                            Rotation rots = new Rotation(
+                                    mc.thePlayer.rotationYaw + 180,
+                                    MathHelper.wrapAngleTo180_float((float) -Math.toDegrees(Math.atan2(diffY, diffXZ)))
+                            );
+                            RotationUtils.setTargetRotation(rots);
                         }
+                        break;
                     }
                 }
             }
+        }
+
     }
 
     private boolean towerMoving() {
         return towerEnabled.get() && Keyboard.isKeyDown(Keyboard.KEY_SPACE);
     }
 
-    private void move(MotionEvent event) {
+    private void move(UpdateEvent event) {
 
-        try{
         mc.thePlayer.cameraYaw = 0;
         mc.thePlayer.cameraPitch = 0;
         if (noMoveOnlyValue.get()) {
@@ -256,9 +252,6 @@ public class Scaffold2 extends Module {
                     jumpGround = mc.thePlayer.posY;
                 }
                 break;
-        }
-    }catch (Exception e) {
-        e.printStackTrace();
         }
     }
 

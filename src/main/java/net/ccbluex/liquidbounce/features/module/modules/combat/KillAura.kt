@@ -11,13 +11,10 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.world.Disabler
-import net.ccbluex.liquidbounce.features.module.modules.world.AntiBot
-import net.ccbluex.liquidbounce.features.module.modules.world.Teams
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
+import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.getNearestPointBB
@@ -1082,7 +1079,7 @@ class KillAura : Module() {
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
                 || (blinkCheck.get() && LiquidBounce.moduleManager[Blink::class.java]!!.state) || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
-                (noScaffValue.get() && LiquidBounce.moduleManager[Scaffold::class.java]!!.state)
+                (noScaffValue.get() && (LiquidBounce.moduleManager[Scaffold::class.java]!!.state || LiquidBounce.moduleManager[Scaffold2::class.java]!!.state))
 
     /**
      * Check if [entity] is alive
