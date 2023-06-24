@@ -58,6 +58,7 @@ object Breaker : Module() {
     private val swingValue = BoolValue("Swing", true)
     private val rotationsValue = BoolValue("Rotations", true)
     private val surroundingsValue = BoolValue("Surroundings", true)
+    private val hypixelValue = BoolValue("Hypixel", false)
     private val noHitValue = BoolValue("NoAura", false)
     private val toggleResetCDValue = BoolValue("ResetCoolDownWhenToggled", false)
 
@@ -130,6 +131,21 @@ object Breaker : Module() {
                 pos = blockPos
                 currentPos = pos ?: return
                 rotations = RotationUtils.faceBlock(currentPos) ?: return
+            }
+        }
+
+        val b = Block.getIdFromBlock(getBlock(currentPos)) == targetId
+        if (hypixelValue.get()) {
+            if (b) {
+                val blockPos = currentPos.up()
+                if (getBlock(blockPos) !is BlockAir) {
+                    if (currentPos.x != blockPos.x || currentPos.y != blockPos.y || currentPos.z != blockPos.z)
+                        surroundings = true
+
+                    pos = blockPos
+                    currentPos = pos ?: return
+                    rotations = RotationUtils.faceBlock(currentPos) ?: return
+                }
             }
         }
 
