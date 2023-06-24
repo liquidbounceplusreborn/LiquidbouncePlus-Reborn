@@ -77,7 +77,7 @@ public class Scaffold2 extends Module {
     private double jumpGround = 0;
     private float alpha;
 
-    private int slot;
+    private int slot,lastSlot;
 
     private Rotation rot;
 
@@ -86,6 +86,7 @@ public class Scaffold2 extends Module {
 
     public void onEnable() {
         slot = mc.thePlayer.inventory.currentItem;
+        lastSlot = mc.thePlayer.inventory.currentItem;
         }
 
 
@@ -94,6 +95,11 @@ public class Scaffold2 extends Module {
         if (eagleValue.get()) {
             mc.gameSettings.keyBindSneak.pressed = Keyboard.isKeyDown(mc.gameSettings.keyBindSneak.getKeyCode());
         }
+        if (lastSlot != mc.thePlayer.inventory.currentItem && autoBlockMode.get().equalsIgnoreCase("switch")) {
+            mc.thePlayer.inventory.currentItem = lastSlot;
+            mc.playerController.updateController();
+        }
+
         if (slot != mc.thePlayer.inventory.currentItem && autoBlockMode.get().equalsIgnoreCase("spoof"))
             mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
     }
@@ -112,34 +118,33 @@ public class Scaffold2 extends Module {
         mc.thePlayer.motionX *= xzMultiplier.get();
         mc.thePlayer.motionZ *= xzMultiplier.get();
 
-            int blockSlot = -1;
+        int blockSlot = -1;
         ItemStack itemStack = mc.thePlayer.getHeldItem();
 
-            if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock)) {
-                if (autoBlockMode.get().equalsIgnoreCase("Off"))
-                    return;
+        if (mc.thePlayer.getHeldItem() == null || !(mc.thePlayer.getHeldItem().getItem() instanceof ItemBlock)) {
+            if (autoBlockMode.get().equalsIgnoreCase("Off"))
+                return;
 
-                blockSlot = InventoryUtils.findAutoBlockBlock();
+            blockSlot = InventoryUtils.findAutoBlockBlock();
 
-                if (blockSlot == -1)
-                    return;
+            if (blockSlot == -1)
+                return;
 
-                if (autoBlockMode.get().equalsIgnoreCase("Spoof")) {
-                    mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(blockSlot - 36));
-                    itemStack = mc.thePlayer.inventoryContainer.getSlot(blockSlot).getStack();
-                } else {
-                    mc.thePlayer.inventory.currentItem = blockSlot - 36;
-                    mc.playerController.updateController();
-                }
+            if (autoBlockMode.get().equalsIgnoreCase("Spoof")) {
+                mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(blockSlot - 36));
+                itemStack = mc.thePlayer.inventoryContainer.getSlot(blockSlot).getStack();
+            } else {
+                mc.thePlayer.inventory.currentItem = blockSlot - 36;
+                mc.playerController.updateController();
             }
+        }
 
-            // blacklist check
-            if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemBlock) {
-                Block block = ((ItemBlock) itemStack.getItem()).getBlock();
-                if (InventoryUtils.BLOCK_BLACKLIST.contains(block) || !block.isFullCube() || itemStack.stackSize <= 0)
-                    return;
-            }
-            this.blockData = ((this
+        // blacklist check
+        if (itemStack != null && itemStack.getItem() != null && itemStack.getItem() instanceof ItemBlock) {
+            Block block = ((ItemBlock)itemStack.getItem()).getBlock();
+            if (InventoryUtils.BLOCK_BLACKLIST.contains(block) || !block.isFullCube() || itemStack.stackSize <= 0) return;
+        }
+        this.blockData = ((this
                     .getBlockData(new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)) == null)
                     ? this.getBlockData(
                     new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ).down(1))
@@ -220,6 +225,9 @@ public class Scaffold2 extends Module {
                 }
             }
         }
+
+        if ( blockSlot >= 0 && !autoBlockMode.get().equalsIgnoreCase("Switch"))
+            mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
     }
 
     private boolean towerMoving() {
@@ -573,7 +581,7 @@ public class Scaffold2 extends Module {
         final Packet<?> packet = event.getPacket();
 
         // Sprint
-        if (sprintModeValue.get().equalsIgnoreCase("silent")) {
+        if (sprintModeValue.get().equalsIgnoreCase("NoPacket")) {
             if (packet instanceof C0BPacketEntityAction &&
                     (((C0BPacketEntityAction) packet).getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING || ((C0BPacketEntityAction) packet).getAction() == C0BPacketEntityAction.Action.START_SPRINTING))
                 event.cancelEvent();
