@@ -77,10 +77,45 @@ class KillAura : Module() {
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
 
-    // Range
-    val rangeValue = FloatValue("Range", 3.7f, 1f, 8f, "m")
-    private val throughWallsRangeValue = FloatValue("ThroughWallsRange", 3f, 0f, 8f, "m")
-    private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f, "m")
+    private val rangeValue: FloatValue = object : FloatValue("Rotation-Range", 8f, 1f, 20f, "m") {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val i = attackRangeValue.get()
+            if (i > newValue) set(i)
+
+            val a = throughWallsRangeValue.get()
+            if (a > newValue) set(a)
+        }
+    }
+
+    private val attackRangeValue: FloatValue = object : FloatValue("Attack-Range", 6f, 1f, 20f, "m") {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val i = rangeValue.get()
+            if (i < newValue) set(i)
+
+            val a = throughWallsAttackRangeValue.get()
+            if (a > newValue) set(a)
+        }
+    }
+
+    private val throughWallsRangeValue: FloatValue = object : FloatValue("Rotation-WallsRange", 8f, 1f, 20f, "m") {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val i = throughWallsAttackRangeValue.get()
+            if (i > newValue) set(i)
+
+            val a = rangeValue.get()
+            if (a < newValue) set(a)
+        }
+    }
+
+    private val throughWallsAttackRangeValue: FloatValue = object : FloatValue("Attack-WallsRange", 6f, 1f, 20f, "m") {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val i = throughWallsRangeValue.get()
+            if (i < newValue) set(i)
+
+            val a = attackRangeValue.get()
+            if (a < newValue) set(a)
+        }
+    }
 
     // Modes
     private val rotations = ListValue("RotationMode", arrayOf("Vanilla", "BackTrack","Grim", "Spin", "Shake", "None"), "BackTrack")
@@ -981,7 +1016,7 @@ class KillAura : Module() {
             return
         }
 
-        val reach = min(maxRange.toDouble(), mc.thePlayer.getDistanceToEntityBox(target!!)) + 1
+        val reach = min(attackRange.toDouble(), mc.thePlayer.getDistanceToEntityBox(target!!)) + 1
 
         if (raycastValue.get()) {
             val raycastedEntity = RaycastUtils.raycastEntity(reach) {
@@ -1100,8 +1135,11 @@ class KillAura : Module() {
     private val maxRange: Float
         get() = max(rangeValue.get(), throughWallsRangeValue.get())
 
+    private val attackRange: Float
+        get() = max(attackRangeValue.get(), throughWallsAttackRangeValue.get())
+
     private fun getRange(entity: Entity) =
-        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRangeValue.get()) rangeValue.get() else throughWallsRangeValue.get()) - if (mc.thePlayer.isSprinting) rangeSprintReducementValue.get() else 0F
+        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRangeValue.get()) rangeValue.get() else throughWallsRangeValue.get()) - if (mc.thePlayer.isSprinting) 0.02F else 0F
 
     /**
      * HUD Tag
