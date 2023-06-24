@@ -6,7 +6,11 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.EventState
+import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.event.SlowDownEvent
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -22,19 +26,22 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.item.*
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
-import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.C0BPacketEntityAction
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
+import net.minecraft.network.play.client.C07PacketPlayerDigging
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-import java.util.*
 
 @ModuleInfo(name = "NoSlow", spacedName = "No Slow", category = ModuleCategory.MOVEMENT, description = "Prevent you from getting slowed down by items (swords, foods, etc.) and liquids.")
 class NoSlow : Module() {
     private val msTimer = MSTimer()
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "Blink", "Intave", "NCP", "AAC", "AAC5", "Custom","Watchdog","WatchdogBlink"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "Blink", "Intave", "NCP", "AAC", "AAC5", "Custom","Watchdog"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
@@ -56,7 +63,6 @@ class NoSlow : Module() {
     val liquidPushValue = BoolValue("LiquidPush", true)
     private var released = true
     private val blinkPackets = mutableListOf<Packet<INetHandlerPlayServer>>()
-    private var packetBuf = LinkedList<Packet<INetHandlerPlayServer>>()
     private var lastX = 0.0
     private var lastY = 0.0
     private var lastZ = 0.0
@@ -164,15 +170,6 @@ class NoSlow : Module() {
                 }
             }
         }
-        if(modeValue.equals("WatchDogBlink")) {
-            if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity) {
-                packetBuf.add(packet as Packet<INetHandlerPlayServer>)
-                event.cancelEvent()
-            }
-            if (packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
-                event.cancelEvent()
-            }
-        }
     }
 
     @EventTarget
@@ -270,24 +267,6 @@ class NoSlow : Module() {
                     "ncp" -> sendPacket(event, true, true, false, 0, false)
                     "custom" -> sendPacket(event, customRelease.get(), customPlace.get(), customDelayValue.get() > 0, customDelayValue.get().toLong(), customOnGround.get())
                 }
-            }
-        }
-    }
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        if(mc.thePlayer == null || mc.theWorld == null)
-            return
-        if (modeValue.equals("WatchDogBlink")) {
-            if(msTimer.hasTimePassed(230)) {
-                if(packetBuf.isNotEmpty()) {
-                    PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
-                    for(packet in packetBuf) {
-                        PacketUtils.sendPacketNoEvent(packet)
-                    }
-                    packetBuf.clear()
-                    PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
-                }
-                msTimer.reset()
             }
         }
     }
