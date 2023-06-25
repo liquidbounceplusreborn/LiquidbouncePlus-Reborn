@@ -447,6 +447,15 @@ public abstract class MixinItemRenderer {
                                     this.func_178103_d();
                                     break;
                                 }
+                                case "Smooth": {
+                                    float var9 = MathHelper.sin((float) (MathHelper.sqrt_float(f1) * Math.PI));
+                                    transformFirstPersonItem(f / 1.5F, 0.0f);
+                                    func_178103_d(0.2F);
+                                    GlStateManager.translate(-0.05f, 0.3f, 0.3f);
+                                    GlStateManager.rotate(-var9 * 140.0f, 8.0f, 0.0f, 8.0f);
+                                    GlStateManager.rotate(var9 * 90.0f, 8.0f, 0.0f, 8.0f);
+                                    break;
+                                }
                                 case "Minecraft": {
                                     this.func_178096_b(f, Animations.mcSwordPos.get());
                                     this.func_178103_d();
