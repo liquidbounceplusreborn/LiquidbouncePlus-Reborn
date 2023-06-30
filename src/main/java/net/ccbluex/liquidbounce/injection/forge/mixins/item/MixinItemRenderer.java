@@ -370,10 +370,6 @@ public abstract class MixinItemRenderer {
             GL11.glTranslated(Animations.itemPosX.get().doubleValue(), Animations.itemPosY.get().doubleValue(), Animations.itemPosZ.get().doubleValue());
         }
 
-        if(Animations.oldHeld.get() && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
-            GlStateManager.translate(-0.0625f, 0.4375f, 0.0625f);
-        }
-
         if (this.itemToRender != null) {
             if (Animations.oldRod.get() && itemToRender.getItem() instanceof ItemCarrotOnAStick && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
                 GlStateManager.translate(0.08F, -0.027F, -0.33F);
