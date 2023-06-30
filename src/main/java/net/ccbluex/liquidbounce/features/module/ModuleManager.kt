@@ -70,6 +70,7 @@ class ModuleManager : Listenable {
             FastBreak::class.java,
             Patcher::class.java,
             FastPlace::class.java,
+            AutoPlace::class.java,
             ESP::class.java,
             HudDesigner::class.java,
             AntiObbyTrap::class.java,
