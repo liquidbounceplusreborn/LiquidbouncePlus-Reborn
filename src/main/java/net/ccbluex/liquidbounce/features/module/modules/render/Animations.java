@@ -68,5 +68,5 @@ public class Animations extends Module {
     public static final BoolValue oldRod = new BoolValue("1.7Rod", false);
 
     public static final BoolValue oldSwing = new BoolValue("1.7Swing", false);
-    
+
 }

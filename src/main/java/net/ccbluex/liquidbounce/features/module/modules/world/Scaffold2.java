@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.render.BlurUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -19,6 +20,7 @@ import net.minecraft.block.*;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -48,6 +50,10 @@ public class Scaffold2 extends Module {
     private final BoolValue safeWalkValue = new BoolValue("SafeWalk", true);
 
     private final BoolValue eagleValue = new BoolValue("Eagle", false);
+
+    private final BoolValue zitterValue = new BoolValue("Zitter",true);
+    private final IntegerValue zitterDelay = new IntegerValue("ZitterDelay", 100, 0, 500, "ms",() -> zitterValue.get());
+
 
     public final FloatValue speedModifierValue = new FloatValue("SpeedModifier", 1F, 0, 2F, "x");
     public final FloatValue xzMultiplier = new FloatValue("XZ-Multiplier", 1F, 0F, 4F, "x");
@@ -79,9 +85,11 @@ public class Scaffold2 extends Module {
 
     private int slot,lastSlot;
 
-    private Rotation rot;
+    private final MSTimer zitterTimer = new MSTimer();
 
     private final TimerUtils timer = new TimerUtils();
+
+    private boolean zitterDirection;
 
 
     public void onEnable() {
@@ -151,24 +159,30 @@ public class Scaffold2 extends Module {
                     : this.getBlockData(
                     new BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)));
 
-
-        switch (sprintModeValue.get()) {
-            case "Vanilla":
-            case "NoPacket": {
-                mc.thePlayer.setSprinting(true);
-                break;
-            }
-            case "None": {
-                mc.thePlayer.setSprinting(false);
-                break;
-            }
-        }
         if (shouldPlace()) {
+            if (zitterValue.get()) {
+                if (!GameSettings.isKeyDown(mc.gameSettings.keyBindRight))
+                    mc.gameSettings.keyBindRight.pressed = false;
 
+                if (!GameSettings.isKeyDown(mc.gameSettings.keyBindLeft))
+                    mc.gameSettings.keyBindLeft.pressed = false;
+
+                if (zitterTimer.hasTimePassed(zitterDelay.get())) {
+                    zitterDirection = !zitterDirection;
+                    zitterTimer.reset();
+                }
+
+                if (zitterDirection) {
+                    mc.gameSettings.keyBindRight.pressed = true;
+                    mc.gameSettings.keyBindLeft.pressed = false;
+                } else {
+                    mc.gameSettings.keyBindRight.pressed = false;
+                    mc.gameSettings.keyBindLeft.pressed = true;
+                }
+            }
             if (towerMoving()) {
                 move(event);
             }
-
             if (blockData != null) {
                 if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getCurrentEquippedItem(),
                         blockData.position, blockData.facing,
