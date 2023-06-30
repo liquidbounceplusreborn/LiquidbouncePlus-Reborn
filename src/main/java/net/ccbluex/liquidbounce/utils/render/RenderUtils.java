@@ -59,7 +59,11 @@ public final class RenderUtils extends MinecraftInstance {
     public static int deltaTime;
     public static Minecraft mc = Minecraft.getMinecraft();
     public static float delta;
-
+    public static void scaleStart(float x, float y, float scale) {
+        glTranslatef(x, y, 0);
+        glScalef(scale, scale, 1);
+        glTranslatef(-x, -y, 0);
+    }
     private static final int[] DISPLAY_LISTS_2D = new int[4];
 
     static {

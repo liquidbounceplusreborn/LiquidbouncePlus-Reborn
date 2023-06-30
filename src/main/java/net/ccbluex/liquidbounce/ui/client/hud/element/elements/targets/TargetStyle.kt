@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.utils.AnimationUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.animations.impl.EaseBackIn
 import net.ccbluex.liquidbounce.value.Value
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager

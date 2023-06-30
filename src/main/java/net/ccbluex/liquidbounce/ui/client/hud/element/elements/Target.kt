@@ -16,11 +16,14 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl.*
 import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.utils.render.animations.Direction
+import net.ccbluex.liquidbounce.utils.render.animations.impl.EaseBackIn
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -49,7 +52,7 @@ class Target : Element() {
 
     val fadeValue = BoolValue("FadeAnim", false)
     val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F, { fadeValue.get() })
-
+    val animation = EaseBackIn(350 * this.fadeSpeed.get().toInt(),1.0,2f)
     val noAnimValue = BoolValue("No-Animation", false)
     val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 6.30F, { !noAnimValue.get() })
 
@@ -117,7 +120,8 @@ class Target : Element() {
             Tifality(this),
         ).toTypedArray(), "LiquidBounce")
     }
-
+    val killAura: KillAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
+    val tpaura: TeleportAura = LiquidBounce.moduleManager.getModule(TeleportAura::class.java) as TeleportAura
     var mainTarget: EntityPlayer? = null
     var animProgress = 0F
 
@@ -134,7 +138,15 @@ class Target : Element() {
                             else if (taTarget != null &&  taTarget is EntityPlayer) taTarget
                             else if ((mc.currentScreen is GuiChat && showWithChatOpen.get()) || mc.currentScreen is GuiHudDesigner) mc.thePlayer 
                             else null
-
+        if (!killAura.state || !tpaura.state) {
+            animation.setDirection(Direction.BACKWARDS)
+        }
+        if (actualTarget != null){
+            animation.setDirection(Direction.FORWARDS)
+        }
+        if (actualTarget == null){
+            animation.setDirection(Direction.BACKWARDS)
+        }
         val preBarColor = when (colorModeValue.get()) {
             "Rainbow" -> Color(RenderUtils.getRainbowOpaque(waveSecondValue.get(), saturationValue.get(), brightnessValue.get(), 0))
             "Custom" -> Color(redValue.get(), greenValue.get(), blueValue.get())
@@ -190,8 +202,7 @@ class Target : Element() {
                 GL11.glPushMatrix()
                 GL11.glTranslated(renderX, renderY, 0.0)
                 if (fadeValue.get()) {
-                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+                    RenderUtils.scaleStart((3F + calcTranslateX + 36F)/2, (2F + 36F)/2,animation.output.toFloat())
                 }
                 mainStyle.handleShadow(convertTarget)
                 GL11.glPopMatrix()
@@ -199,8 +210,7 @@ class Target : Element() {
                 GL11.glPushMatrix()
                 GL11.glTranslated(renderX, renderY, 0.0)
                 if (fadeValue.get()) {
-                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+                    RenderUtils.scaleStart((3F + calcTranslateX + 36F)/2, (2F + 36F)/2,animation.output.toFloat())
                 }
                 mainStyle.handleShadowCut(convertTarget)
                 GL11.glPopMatrix()
@@ -220,8 +230,7 @@ class Target : Element() {
                 GL11.glPushMatrix()
                 GL11.glTranslated(renderX, renderY, 0.0)
                 if (fadeValue.get()) {
-                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+                    RenderUtils.scaleStart((3F + calcTranslateX + 36F)/2, (2F + 36F)/2,animation.output.toFloat())
                 }
                 mainStyle.handleBlur(convertTarget)
                 GL11.glPopMatrix()
@@ -231,17 +240,12 @@ class Target : Element() {
         }
 
         if (fadeValue.get()) {
-            GL11.glPushMatrix()
-            GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
-            GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+            RenderUtils.scaleStart((3F + calcTranslateX + 36F)/2, (2F + 36F)/2,animation.output.toFloat())
         }
         
         if (mainStyle is Chill)
             mainStyle.updateData(renderX.toFloat() + calcTranslateX, renderY.toFloat() + calcTranslateY, calcScaleX, calcScaleY)
         mainStyle.drawTarget(convertTarget)
-
-        if (fadeValue.get())
-            GL11.glPopMatrix()
 
         GlStateManager.resetColor()
         return returnBorder
