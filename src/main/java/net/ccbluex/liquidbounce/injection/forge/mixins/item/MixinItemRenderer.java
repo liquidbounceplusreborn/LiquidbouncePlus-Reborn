@@ -370,16 +370,20 @@ public abstract class MixinItemRenderer {
             GL11.glTranslated(Animations.itemPosX.get().doubleValue(), Animations.itemPosY.get().doubleValue(), Animations.itemPosZ.get().doubleValue());
         }
 
+        if(Animations.oldHeld.get() && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
+            GlStateManager.translate(-0.0625f, 0.4375f, 0.0625f);
+        }
+
         if (this.itemToRender != null) {
-            if (Animations.oldRod.getValue() && itemToRender.getItem() instanceof ItemCarrotOnAStick && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
+            if (Animations.oldRod.get() && itemToRender.getItem() instanceof ItemCarrotOnAStick && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
                 GlStateManager.translate(0.08F, -0.027F, -0.33F);
                 GlStateManager.scale(0.93F, 1.0F, 1.0F);
             }
-            if (Animations.oldRod.getValue() && itemToRender.getItem() instanceof ItemFishingRod && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
+            if (Animations.oldRod.get() && itemToRender.getItem() instanceof ItemFishingRod && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
                 GlStateManager.translate(0.08F, -0.027F, -0.33F);
                 GlStateManager.scale(0.93F, 1.0F, 1.0F);
             }
-            if (Animations.oldSwing.getValue() && f1 != 0.0F && (!mc.thePlayer.isBlocking()) && !mc.thePlayer.isEating() && !mc.thePlayer.isUsingItem() && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
+            if (Animations.oldSwing.get() && f1 != 0.0F && (!mc.thePlayer.isBlocking()) && !mc.thePlayer.isEating() && !mc.thePlayer.isUsingItem() && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
                 GlStateManager.scale(0.85F, 0.85F, 0.85F);
                 GlStateManager.translate(-0.06F, 0.003F, 0.05F);
             }
@@ -405,9 +409,7 @@ public abstract class MixinItemRenderer {
                     case EAT:
                     case DRINK:
                         this.performDrinking(abstractclientplayer, partialTicks);
-                        this.transformFirstPersonItem(f, f1);
-
-
+                            transformFirstPersonItem(f, f1);
                         break;
                     case BLOCK:
                         if (LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
@@ -425,8 +427,9 @@ public abstract class MixinItemRenderer {
                                 }
                                 case "1.7": {
                                     this.transformFirstPersonItem(f, f1);
-                                    GlStateManager.translate(0, 0.3, 0);
                                     this.doBlockTransformations();
+                                    GlStateManager.scale(0.83f, 0.88f, 0.85f);
+                                    GlStateManager.translate(-0.3f, 0.1f, 0.0f);
                                     break;
                                 }
                                 case "Flux": {
@@ -675,10 +678,12 @@ public abstract class MixinItemRenderer {
                     case BOW:
                         if (Animations.oldBow.getValue() && LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
                             this.transformFirstPersonItem(f, f1);
+                            this.doBowTransformations(partialTicks, this.mc.thePlayer);
+                            GlStateManager.translate(0.0F, 0.1F, -0.15F);
                         } else {
                             this.transformFirstPersonItem(f, 0.0F);
+                            this.doBowTransformations(partialTicks, this.mc.thePlayer);
                         }
-                        this.doBowTransformations(partialTicks, this.mc.thePlayer);
 
                 }
             } else {
