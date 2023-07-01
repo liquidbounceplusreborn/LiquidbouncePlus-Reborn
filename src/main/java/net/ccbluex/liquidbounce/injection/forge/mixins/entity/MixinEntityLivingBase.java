@@ -122,6 +122,10 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             f1 = 75.0F;
         }
 
+        if (rotations.shouldRotate() && rotations.getBodyValue().get() && (EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
+            f1 = 0.0F;
+        }
+
         this.renderYawOffset = rotationYaw - f1;
         if (f1 * f1 > 2500.0F) {
             this.renderYawOffset += f1 * 0.2F;

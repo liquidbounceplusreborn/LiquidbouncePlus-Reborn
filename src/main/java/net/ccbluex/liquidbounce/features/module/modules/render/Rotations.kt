@@ -76,10 +76,5 @@ class Rotations : Module() {
 
             if (headValue.get())
                 thePlayer.rotationYawHead = RotationUtils.serverRotation.yaw
-
-            if (bodyValue.get() && shouldRotate()) {
-                thePlayer.renderYawOffset = thePlayer.rotationYawHead
-                thePlayer.prevRenderYawOffset = thePlayer.rotationYawHead
-        }
     }
 }
