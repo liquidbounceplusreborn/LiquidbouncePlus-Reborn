@@ -301,12 +301,8 @@ class Velocity : Module() {
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
                 "hypixel"->{
-                    if (mc.thePlayer.onGround || mc.thePlayer.isInLava || mc.thePlayer.isInWater || mc.thePlayer.isInWeb || mc.thePlayer.fallDistance < 0) {
                         mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
                         event.cancelEvent()
-                    }else{
-                        event.cancelEvent()
-                    }
                 }
                 "aac4reduce" -> {
                     velocityInput = true

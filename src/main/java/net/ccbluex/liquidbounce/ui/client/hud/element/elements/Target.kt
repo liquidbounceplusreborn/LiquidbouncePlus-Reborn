@@ -112,6 +112,7 @@ class Target : Element() {
             NovolineTwo(this),
             NovolineThree(this),
             NovolineFour(this),
+            NovolineFive(this),
             NovolineOld(this),
             Remix(this),
             Rice(this),
