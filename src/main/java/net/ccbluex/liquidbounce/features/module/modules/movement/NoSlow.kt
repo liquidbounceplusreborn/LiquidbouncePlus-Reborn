@@ -41,7 +41,7 @@ import net.minecraft.util.EnumFacing
 @ModuleInfo(name = "NoSlow", spacedName = "No Slow", category = ModuleCategory.MOVEMENT, description = "Prevent you from getting slowed down by items (swords, foods, etc.) and liquids.")
 class NoSlow : Module() {
     private val msTimer = MSTimer()
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "Blink", "Intave", "NCP", "AAC", "AAC5", "Custom","Watchdog"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "Blink", "Intave", "NCP", "AAC", "AAC5", "Custom","WatchdogTest","OldIntave"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
@@ -181,42 +181,24 @@ class NoSlow : Module() {
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
 
         when (modeValue.get().toLowerCase()) {
-            "watchdog"->{
-                if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem != null && MovementUtils.isMoving()) {
-                    var st = 8
-                    for (i in 0..8) {
-                        if (mc.thePlayer.inventory.getStackInSlot(i) == null) {
-                            st = i
-                        }
-                    }
-                    if (mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
-                        if (!released) {
-                            mc.thePlayer.sendQueue.addToSendQueue(
-                                C07PacketPlayerDigging(
-                                    C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
-                                    BlockPos.ORIGIN,
-                                    EnumFacing.DOWN
-                                )
+            "watchdogtest"-> {
+                if (mc.thePlayer.isUsingItem && mc.thePlayer.isBlocking && MovementUtils.isMoving()) {
+                    if (event.eventState == EventState.POST) {
+                        mc.netHandler.addToSendQueue(
+                            C08PacketPlayerBlockPlacement(
+                                BlockPos(-1, -1, -1),
+                                255,
+                                mc.thePlayer.inventory.getCurrentItem(),
+                                0f,
+                                0f,
+                                0f
                             )
-                            released = true
-                        }
-                        return
-                    } else {
-                        released = false
-                    }
-
-                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(st))
-
-                    mc.netHandler.addToSendQueue(
-                        C07PacketPlayerDigging(
-                            C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,
-                            BlockPos.ORIGIN,
-                            EnumFacing.UP
                         )
-                    )
-                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                }else{
-                    released = false
+                    }
+                    if (event.eventState == EventState.PRE) {
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    }
                 }
             }
 
@@ -251,6 +233,17 @@ class NoSlow : Module() {
                         } else
                             fasterDelay = true
                         timer.reset()
+                    }
+                }
+            }
+            "oldintave" -> {
+                if(mc.thePlayer.isUsingItem){
+                    if (event.eventState == EventState.PRE){
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    }
+                    if(event.eventState == EventState.POST){
+                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
                     }
                 }
             }
