@@ -47,7 +47,7 @@ import java.util.*
 import kotlin.math.*
 
 @ModuleInfo(
-    name = "Scaffold3",
+    name = "Scaffold",
     description = "Automatically places blocks beneath your feet.",
     category = ModuleCategory.WORLD
 )
