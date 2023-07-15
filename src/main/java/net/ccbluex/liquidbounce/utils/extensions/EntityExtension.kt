@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.utils.extensions
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.DefaultPlayerSkin
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
@@ -23,3 +24,5 @@ val EntityLivingBase.ping: Int
 val EntityLivingBase.skin: ResourceLocation // TODO: add special skin for mobs
     get() = if (this is EntityPlayer) { Minecraft.getMinecraft().netHandler.getPlayerInfo(this.uniqueID)?.locationSkin } else { null } ?: DefaultPlayerSkin.getDefaultSkinLegacy()
 
+val Entity.eyes: Vec3
+    get() = getPositionEyes(1f)

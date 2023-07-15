@@ -3,24 +3,16 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.BowAimbot
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.features.module.modules.world.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
-import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint
-import net.ccbluex.liquidbounce.features.module.modules.world.ChestAura
-import net.ccbluex.liquidbounce.features.module.modules.world.Breaker
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold2
+import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "Rotations", description = "Allows you to see server-sided head and body rotations.", category = ModuleCategory.RENDER)
 class Rotations : Module() {
@@ -57,7 +49,8 @@ class Rotations : Module() {
                     (getState(KillAura::class.java) && killAura.target != null) ||
                     (getState(Disabler::class.java) && disabler.canRenderInto3D) ||
                     getState(BowAimbot::class.java) || getState(Breaker::class.java) ||
-                    getState(ChestAura::class.java) || getState(Fly::class.java) || getState(Scaffold2::class.java)
+                    getState(ChestAura::class.java) || getState(Fly::class.java) || getState(Scaffold2::class.java)|| getState(
+                Scaffold::class.java)
         }
     }
 

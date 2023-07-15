@@ -38,3 +38,5 @@ fun gaussian(x: Int, sigma: Float): Float {
 
     return (1f / (sqrt(PI.toFloat() * s))) * exp(-(x * x) / s)
 }
+fun Float.toRadians() = this * 0.017453292f
+fun Float.toRadiansD() = toRadians().toDouble()
