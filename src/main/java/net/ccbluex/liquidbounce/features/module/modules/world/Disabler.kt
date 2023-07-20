@@ -92,7 +92,8 @@ class Disabler : Module() {
 
 	// matrix
 	private val matrixNoCheck = BoolValue("Matrix-NoModuleCheck", false, { modeValue.get().equals("matrix", true) })
-	private val matrixMoveFix = BoolValue("Matrix-MoveFix", true, { modeValue.get().equals("matrix", true) })
+	private val matrixOldMoveFix = BoolValue("Matrix-OldMoveFix", true, { modeValue.get().equals("matrix", true) })
+	private val matrixNewMoveFix = BoolValue("Matrix-NewMoveFix", true, { modeValue.get().equals("matrix", true) })
 	private val matrixMoveOnly = BoolValue("Matrix-MoveOnly", false, { modeValue.get().equals("matrix", true) })
 	private val matrixNoMovePacket = BoolValue("Matrix-NoMovePacket", true, { modeValue.get().equals("matrix", true) })
 	private val matrixHotbarChange = BoolValue("Matrix-HotbarChange", true, { modeValue.get().equals("matrix", true) })
@@ -177,6 +178,11 @@ class Disabler : Module() {
 	private var lastUid = 0
 
 	private var initPos: Vec3? = null
+
+	private var lastMotionX = 0.0;
+	private var lastMotionY = 0.0;
+	private var lastMotionZ = 0.0;
+	private var pendingFlagApplyPacket = false;
 
 	val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!! as Speed
 
@@ -592,18 +598,31 @@ class Disabler : Module() {
 			"matrix" -> {
 				if (matrixNoCheck.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state || LiquidBounce.moduleManager.getModule(Fly::class.java)!!.state) {
 					if (packet is C03PacketPlayer) {
-						if (matrixNoMovePacket.get() && !packet.isMoving()) {
+						if (matrixNoMovePacket.get() && !packet.isMoving) {
 							event.cancelEvent()
 							debug("no move, cancelled")
 							return
 						}
-						if (matrixMoveFix.get()) {
+						if (matrixOldMoveFix.get()) {
 							// almost completely disable strafe check, nofall
 							packet.onGround = true
 							if (!packet.rotating) { // fix fly sometimes doesn't land properly since most mc servers all refer to C04, C05, C06 as C03s aka. PacketPlayerInFlying.
 								packet.rotating = true
 								packet.yaw = mc.thePlayer.rotationYaw
 								packet.pitch = mc.thePlayer.rotationPitch
+							}
+						}
+						if (matrixNewMoveFix.get()) {
+							if (packet is C06PacketPlayerPosLook && pendingFlagApplyPacket ) {
+								pendingFlagApplyPacket = false;
+								mc.thePlayer.motionX = lastMotionX;
+								mc.thePlayer.motionY = lastMotionY;
+								mc.thePlayer.motionZ = lastMotionZ;
+							} else if (packet is S08PacketPlayerPosLook ) {
+								pendingFlagApplyPacket = true
+								lastMotionX = mc.thePlayer.motionX;
+								lastMotionY = mc.thePlayer.motionY;
+								lastMotionZ = mc.thePlayer.motionZ;
 							}
 						}
 					}
