@@ -301,7 +301,10 @@ class Velocity : Module() {
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
                 }
                 "hypixel"->{
+                    if(mc.thePlayer.onGround || mc.thePlayer.fallDistance > 0.0) {
                         mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
+                    }
+                        MovementUtils.strafe(0.4f)
                         event.cancelEvent()
                 }
                 "aac4reduce" -> {
@@ -314,7 +317,7 @@ class Velocity : Module() {
 
                 "aac5.2.0" -> {
                     event.cancelEvent()
-                    if (!mc.isIntegratedServerRunning() && (!aac5KillAuraValue.get() || killAura.target != null)) mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
+                    if (!mc.isIntegratedServerRunning && (!aac5KillAuraValue.get() || killAura.target != null)) mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
                 }
 
                 "glitch" -> {

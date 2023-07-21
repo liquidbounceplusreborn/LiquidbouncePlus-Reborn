@@ -444,7 +444,7 @@ class Scaffold : Module() {
             } else {
                 BlockPos(player.posX, player.posY - 0.6, player.posZ).down()
             }
-        } else if (keepY.get() && launchY <= player.posY) {
+        } else if (keepY.get() && launchY <= player.posY && Keyboard.isKeyDown(mc.gameSettings.keyBindJump.keyCode)) {
             BlockPos(player.posX, launchY - 1.0, player.posZ)
         } else if (player.posY == player.posY.roundToInt() + 0.5) {
             BlockPos(player)
@@ -638,7 +638,7 @@ class Scaffold : Module() {
 
     @EventTarget
     fun onJump(event: JumpEvent) {
-        if (towering()) {
+        if (towerEnabled.get()) {
             event.cancelEvent()
         }
     }
@@ -1090,7 +1090,7 @@ class Scaffold : Module() {
     }
 
     private fun towering(): Boolean {
-        return towerEnabled.get() && Keyboard.isKeyDown(Keyboard.KEY_SPACE)
+        return towerEnabled.get() && Keyboard.isKeyDown(mc.gameSettings.keyBindJump.keyCode)
     }
 
     private fun fakeJump() {
