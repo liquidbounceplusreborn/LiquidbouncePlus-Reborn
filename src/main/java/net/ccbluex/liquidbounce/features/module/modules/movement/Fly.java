@@ -109,7 +109,8 @@ public class Fly extends Module {
             "Clip",
             "Jump",
             "Derp",
-            "Collide"
+            "Collide",
+            "GrimTNT"
     }, "Motion");
 
     private final FloatValue vanillaSpeedValue = new FloatValue("Speed", 2F, 0F, 5F, () -> {
@@ -940,6 +941,12 @@ public class Fly extends Module {
         if (bobbingValue.get()) {
             mc.thePlayer.cameraYaw = bobbingAmountValue.get();
             mc.thePlayer.prevCameraYaw = bobbingAmountValue.get();
+        }
+
+        if (modeValue.isMode("GrimTNT")) {
+            if(event.getEventState() == EventState.PRE && mc.thePlayer.hurtTime > 0){
+                mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX+1000, mc.thePlayer.posY, mc.thePlayer.posZ+1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+            }
         }
 
         if (modeValue.get().equalsIgnoreCase("boosthypixel")) {
