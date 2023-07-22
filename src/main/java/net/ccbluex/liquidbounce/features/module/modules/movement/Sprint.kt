@@ -19,8 +19,6 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.potion.Potion
-import net.minecraft.util.MathHelper
-import net.minecraft.util.Vec3
 
 @ModuleInfo(name = "Sprint", description = "Automatically sprints all the time.", category = ModuleCategory.MOVEMENT)
 class Sprint : Module() {
