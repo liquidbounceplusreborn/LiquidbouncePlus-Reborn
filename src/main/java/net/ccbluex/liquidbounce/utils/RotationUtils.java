@@ -8,15 +8,18 @@ package net.ccbluex.liquidbounce.utils;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.FastBow;
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Math.PI;
 
@@ -503,6 +506,17 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
 
         return new Rotation (thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(yaw - thePlayer.rotationYaw),
                 thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(pitch - thePlayer.rotationPitch));
+    }
+
+    public static Rotation getDirectionToBlock(final double x, final double y, final double z, final EnumFacing enumfacing) {
+        final EntityEgg var4 = new EntityEgg(mc.theWorld);
+        var4.posX = x + 0.5D;
+        var4.posY = y + 0.5D;
+        var4.posZ = z + 0.5D;
+        var4.posX += (double) enumfacing.getDirectionVec().getX() * 0.5D;
+        var4.posY += (double) enumfacing.getDirectionVec().getY() * 0.5D;
+        var4.posZ += (double) enumfacing.getDirectionVec().getZ() * 0.5D;
+        return getRotations(var4.posX, var4.posY, var4.posZ);
     }
 
     /**

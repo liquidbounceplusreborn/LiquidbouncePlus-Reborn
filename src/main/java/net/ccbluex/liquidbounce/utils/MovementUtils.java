@@ -19,6 +19,8 @@ import net.minecraft.stats.StatList;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
+import org.lwjgl.util.vector.Vector2f;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,8 +47,8 @@ public final class MovementUtils extends MinecraftInstance {
     }
 
     public static boolean isOnIce() {
-        final EntityPlayerSP player = mc.thePlayer;
-        final Block blockUnder = mc.theWorld.getBlockState(new BlockPos(player.posX, player.posY - 1.0, player.posZ)).getBlock();
+        final EntityPlayerSP thePlayer = mc.thePlayer;
+        final Block blockUnder = mc.theWorld.getBlockState(new BlockPos(thePlayer.posX, thePlayer.posY - 1.0, thePlayer.posZ)).getBlock();
         return blockUnder instanceof BlockIce || blockUnder instanceof BlockPackedIce;
     }
 
@@ -390,5 +392,16 @@ public final class MovementUtils extends MinecraftInstance {
         lastY = mc.thePlayer.posY;
         lastZ = mc.thePlayer.posZ;
         bps = distance * (20 * mc.timer.timerSpeed);
+    }
+    public static float getMoveYaw(float yaw) {
+        Vector2f from = new Vector2f((float) mc.thePlayer.lastTickPosX, (float) mc.thePlayer.lastTickPosZ),
+                to = new Vector2f((float) mc.thePlayer.posX, (float) mc.thePlayer.posZ),
+                diff = new Vector2f(to.x - from.x, to.y - from.y);
+
+        double x = diff.x, z = diff.y;
+        if (x != 0 && z != 0) {
+            yaw = (float) Math.toDegrees((Math.atan2(-x, z) + Math.PI * 2F) % Math.PI * 2F);
+        }
+        return yaw;
     }
 }

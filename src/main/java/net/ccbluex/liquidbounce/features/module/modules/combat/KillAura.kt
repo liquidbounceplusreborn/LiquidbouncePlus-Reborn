@@ -170,7 +170,7 @@ class KillAura : Module() {
     private val swingValue = BoolValue("Swing", true)
     private val swingOrderValue = BoolValue("1.9OrderCheck", true, { swingValue.get() })
     private val keepSprintValue = BoolValue("KeepSprint", true)
-    public val nosprint = BoolValue("NoSprint", true)
+    public val nosprint = BoolValue("NoSprint", true, { keepSprintValue.get() })
 
 
     // AutoBlock
@@ -671,9 +671,6 @@ class KillAura : Module() {
 
                     if (entity is EntityLivingBase && isEnemy(entity) && distance <= getRange(entity)) {
                         attackEntity(entity)
-                        if (nosprint.get()) {
-                            mc.thePlayer.isSprinting = false
-                        }
 
                         targets += 1
 
@@ -850,6 +847,9 @@ class KillAura : Module() {
             // Enchant Effect
             if (EnchantmentHelper.getModifierForCreature(mc.thePlayer.heldItem, entity.creatureAttribute) > 0F)
                 mc.thePlayer.onEnchantmentCritical(entity)
+            if (nosprint.get()) {
+                mc.thePlayer.isSprinting = false
+            }
         } else {
             if (mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR)
                 mc.thePlayer.attackTargetEntityWithCurrentItem(entity)
@@ -1114,7 +1114,7 @@ class KillAura : Module() {
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
                 || (blinkCheck.get() && LiquidBounce.moduleManager[Blink::class.java]!!.state) || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
-                (noScaffValue.get() && (LiquidBounce.moduleManager[Scaffold::class.java]!!.state || LiquidBounce.moduleManager[Scaffold2::class.java]!!.state))
+                (noScaffValue.get() && (LiquidBounce.moduleManager[Scaffold::class.java]!!.state))
 
     /**
      * Check if [entity] is alive

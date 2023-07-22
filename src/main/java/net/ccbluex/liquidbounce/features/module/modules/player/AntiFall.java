@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold2;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
@@ -49,8 +48,6 @@ public class AntiFall extends Module {
     public final BoolValue resetFallDistanceValue = new BoolValue("Reset-FallDistance", true);
     public final BoolValue renderTraceValue = new BoolValue("Render-Trace", true);
     public final BoolValue scaffoldValue = new BoolValue("AutoScaffold", true);
-
-    public final BoolValue scaffold2Value = new BoolValue("AutoScaffold2", true);
     public final BoolValue noFlyValue = new BoolValue("NoFly", true);
 
     private BlockPos detectedLocation = BlockPos.ORIGIN;
@@ -131,10 +128,6 @@ public class AntiFall extends Module {
                         LiquidBounce.moduleManager.getModule(Scaffold.class).setState(true);
                     }
 
-                    if (scaffold2Value.get()) {
-                        LiquidBounce.moduleManager.getModule(Scaffold2.class).setState(true);
-                    }
-
                     packetCache.clear();
                     blink = false;
                     canBlink = false;
@@ -192,8 +185,6 @@ public class AntiFall extends Module {
                     if (scaffoldValue.get() && !LiquidBounce.moduleManager.getModule(Scaffold.class).getState())
                         LiquidBounce.moduleManager.getModule(Scaffold.class).setState(true);
 
-                    if (scaffold2Value.get() && !LiquidBounce.moduleManager.getModule(Scaffold2.class).getState())
-                        LiquidBounce.moduleManager.getModule(Scaffold2.class).setState(true);
                 }
             }
         } else {
@@ -254,10 +245,6 @@ public class AntiFall extends Module {
 
                     if (scaffoldValue.get() && !LiquidBounce.moduleManager.getModule(Scaffold.class).getState())
                         LiquidBounce.moduleManager.getModule(Scaffold.class).setState(true);
-
-                    if (scaffold2Value.get() && !LiquidBounce.moduleManager.getModule(Scaffold2.class).getState())
-                        LiquidBounce.moduleManager.getModule(Scaffold.class).setState(true);
-
                 }
             }
         }

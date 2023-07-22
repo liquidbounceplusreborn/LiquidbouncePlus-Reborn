@@ -6,7 +6,6 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.features.module.modules.world.GameSpeed
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold2
 import net.ccbluex.liquidbounce.utils.MovementUtils.*
 import kotlin.math.max
 
@@ -26,15 +25,14 @@ class HypixelCustom: SpeedMode("HypixelCustom") {
 
         val speedModule = (LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed?)!!
         val scaffoldModule = LiquidBounce.moduleManager.getModule(Scaffold::class.java)
-        val scaffold2Module = LiquidBounce.moduleManager.getModule(Scaffold2::class.java)
         val timer = LiquidBounce.moduleManager.getModule(GameSpeed::class.java)
 
         if (isMoving()) {
             when {
                 thePlayer.onGround && thePlayer.isCollidedVertically -> {
-                    thePlayer.motionY = getJumpBoostModifier(if (scaffoldModule!!.state || scaffold2Module!!.state) 0.41999 else speedModule.motionYValue.get().toDouble(), true)
+                    thePlayer.motionY = getJumpBoostModifier(if (scaffoldModule!!.state) 0.41999 else speedModule.motionYValue.get().toDouble(), true)
 
-                    if (scaffoldModule.state || scaffold2Module!!.state) {
+                    if (scaffoldModule.state) {
                         strafe(0.37F)
                     } else {
                         strafe((max(speedModule.customSpeedValue.get() + getSpeedEffect() * 0.1, getBaseMoveSpeed(0.2873))).toFloat())

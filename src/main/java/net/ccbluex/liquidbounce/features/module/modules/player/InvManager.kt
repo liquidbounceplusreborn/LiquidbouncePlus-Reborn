@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold2
 import net.ccbluex.liquidbounce.injection.implementations.IItemStack
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.item.*
@@ -143,7 +142,7 @@ class InvManager : Module() {
     }
 
     fun performManager() {
-        if ((noScaffoldValue.get() && (LiquidBounce.moduleManager[Scaffold::class.java]!!.state || LiquidBounce.moduleManager[Scaffold2::class.java]!!.state))|| !InventoryUtils.CLICK_TIMER.hasTimePassed(delay) ||
+        if ((noScaffoldValue.get() && (LiquidBounce.moduleManager[Scaffold::class.java]!!.state))|| !InventoryUtils.CLICK_TIMER.hasTimePassed(delay) ||
             noMoveValue.get() && MovementUtils.isMoving() ||
             mc.thePlayer.openContainer != null && mc.thePlayer.openContainer.windowId != 0)
             return

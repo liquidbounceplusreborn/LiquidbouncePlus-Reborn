@@ -64,7 +64,6 @@ class ModuleManager : Listenable {
             NoRotate::class.java,
             ChestStealer::class.java,
             Scaffold::class.java,
-            Scaffold2::class.java,
             JumpCircle::class.java,
             PlayerEdit::class.java,
             FastBreak::class.java,

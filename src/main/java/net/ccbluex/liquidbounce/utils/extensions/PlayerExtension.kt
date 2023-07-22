@@ -21,10 +21,12 @@ import net.minecraft.entity.passive.EntitySquid
 import net.minecraft.entity.passive.EntityVillager
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
+
 
 /**
  * Allows to get the distance between the current entity and [entity] from the nearest corner of the bounding box
@@ -72,6 +74,24 @@ fun EntityPlayer.isClientFriend(): Boolean {
     val entityName = name ?: return false
 
     return LiquidBounce.fileManager.friendsConfig.isFriend(stripColor(entityName))
+}
+fun EntityPlayer.customRayTrace(blockReachDistance: Double, partialTicks: Float, yaw: Float, pitch: Float): MovingObjectPosition? {
+    val vec3: Vec3 = this.getPositionEyes(partialTicks)
+    val vec4: Vec3? = this.customGetLook(partialTicks, yaw, pitch)
+    val vec5 = vec3.addVector(
+        vec4!!.xCoord * blockReachDistance,
+        vec4.yCoord * blockReachDistance,
+        vec4.zCoord * blockReachDistance
+    )
+    return this.worldObj.rayTraceBlocks(vec3, vec5, false, false, true)
+}
+private fun EntityPlayer.customGetLook(partialTicks: Float, yaw: Float, pitch: Float): Vec3? {
+    if (partialTicks == 1.0f || partialTicks == 2.0f) {
+        return this.getVectorForRotation(pitch, yaw)
+    }
+    val f: Float = this.prevRotationPitch + (this.rotationPitch - this.prevRotationPitch) * partialTicks
+    val f2: Float = this.prevRotationYaw + (this.rotationYaw - this.prevRotationYaw) * partialTicks
+    return this.getVectorForRotation(f, f2)
 }
 
 val Entity.rotation: Rotation

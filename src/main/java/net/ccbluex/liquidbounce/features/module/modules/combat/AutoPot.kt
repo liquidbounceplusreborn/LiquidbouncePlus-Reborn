@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold2
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryHelper
@@ -71,12 +70,10 @@ class AutoPot : Module() {
 
     private lateinit var killAura: KillAura
     private lateinit var scaffold: Scaffold
-    private lateinit var scaffold2: Scaffold2
 
     override fun onInitialize() {
         killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)!! as KillAura
         scaffold = LiquidBounce.moduleManager.getModule(Scaffold::class.java)!! as Scaffold
-        scaffold2 = LiquidBounce.moduleManager.getModule(Scaffold2::class.java)!! as Scaffold2
     }
 
     private fun resetAll() {
@@ -157,7 +154,7 @@ class AutoPot : Module() {
                 }
             }
 
-            if (throwing && mc.currentScreen !is GuiContainer && (!killAura.state || killAura.target == null) && (!scaffold.state || !scaffold2.state)) {
+            if (throwing && mc.currentScreen !is GuiContainer && (!killAura.state || killAura.target == null) && (!scaffold.state)) {
                 if (mc.thePlayer.onGround && modeValue.get().equals("jump", true)) {
                     mc.thePlayer.jump()
                     debug("jumped")
@@ -176,7 +173,7 @@ class AutoPot : Module() {
             if (throwing && mc.currentScreen !is GuiContainer
                 && ((mc.thePlayer.onGround && modeValue.get().equals("floor", true)) ||
                         (!mc.thePlayer.onGround && modeValue.get().equals("jump", true)))
-                && (!noCombatValue.get() || !killAura.state || killAura.target == null) && (!scaffold.state|| scaffold2.state)) {
+                && (!noCombatValue.get() || !killAura.state || killAura.target == null) && (!scaffold.state)) {
                 val potionEffects = getPotionFromSlot(potIndex)
                 if (potionEffects != null) {
                     val potionIds = potionEffects!!.map { it.potionID }
