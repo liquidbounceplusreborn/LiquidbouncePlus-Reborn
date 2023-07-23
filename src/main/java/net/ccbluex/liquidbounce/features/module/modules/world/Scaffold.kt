@@ -653,7 +653,6 @@ class Scaffold : Module() {
         if (towerActivation()) {
             shouldGoDown = false
             mc.gameSettings.keyBindSneak.pressed = false
-            mc.thePlayer.isSprinting = false
         }
         if (mc.thePlayer.onGround) {
             offGroundTicks = 0
@@ -994,14 +993,7 @@ class Scaffold : Module() {
             if (placeableDelay.get()) delayTimer.reset()
             return
         }
-        if (sprintModeValue.get().equals("PlaceOff", ignoreCase = true)) {
-            mc.thePlayer.isSprinting = false
-            mc.thePlayer.motionX *= 1.0
-            mc.thePlayer.motionZ *= 1.0
-        }
-        if (sprintModeValue.get().equals("PlaceOff", ignoreCase = true)) {
-            mc.thePlayer.isSprinting = true
-        }
+
         if (!towerActivation() && (!delayTimer.hasTimePassed(delay) || smartDelay.get() && mc.rightClickDelayTimer > 0 || (sameYValue.get() || (autoJumpValue.get() || smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(
                 Speed::class.java
             )!!.state) && !GameSettings.isKeyDown(
@@ -1043,6 +1035,13 @@ class Scaffold : Module() {
                 val modifier = speedModifierValue.get()
                 mc.thePlayer.motionX *= modifier.toDouble()
                 mc.thePlayer.motionZ *= modifier.toDouble()
+            }
+            if (sprintModeValue.get().equals("PlaceOff", ignoreCase = true)) {
+                mc.thePlayer.isSprinting = false
+
+            }
+            if (sprintModeValue.get().equals("PlaceOn", ignoreCase = true)) {
+                mc.thePlayer.isSprinting = true
             }
             if (swingValue.get()) mc.thePlayer.swingItem() else mc.netHandler.addToSendQueue(C0APacketAnimation())
         }
