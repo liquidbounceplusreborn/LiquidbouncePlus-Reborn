@@ -944,8 +944,10 @@ public class Fly extends Module {
         }
 
         if (modeValue.isMode("GrimTNT")) {
-            if(event.getEventState() == EventState.PRE && mc.thePlayer.hurtTime > 0){
-                mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX+1000, mc.thePlayer.posY, mc.thePlayer.posZ+1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+            if(event.getEventState() == EventState.PRE) {
+                if (mc.thePlayer.hurtTime > 0) {
+                    mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX + 1000, mc.thePlayer.posY, mc.thePlayer.posZ + 1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+                }
             }
         }
 

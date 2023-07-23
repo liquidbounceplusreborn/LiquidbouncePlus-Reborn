@@ -120,7 +120,6 @@ class Disabler : Module() {
 	private val testFeature = BoolValue("PingSpoof", false, { modeValue.get().equals("watchdog", true) })
 	private val testDelay = IntegerValue("Delay", 400, 0, 1000, "ms", { modeValue.get().equals("watchdog", true) && testFeature.get() })
 	private val checkValid = BoolValue("InvValidate", false, { modeValue.get().equals("watchdog", true) && testFeature.get() })
-	private val gaySexBlinkStrafeDisabler = BoolValue("OmgBlinkStrafeDisabler", false, { modeValue.get().equals("watchdog", true)})
 
 	//vulcan
 	private val vulcanStrafe = BoolValue ("Strafe", true, { modeValue.get().equals("vulcan", true) })
@@ -184,10 +183,7 @@ class Disabler : Module() {
 	private var lastMotionZ = 0.0;
 	private var pendingFlagApplyPacket = false;
 
-	val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!! as Speed
-
-	val scaffold = LiquidBounce.moduleManager.getModule(Scaffold::class.java)!! as Scaffold
-
+	val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!!
 
 	val canModifyRotation: Boolean
 		get() = (state && modeValue.get().equals("watchdog", true) && shouldModifyRotation)
@@ -676,14 +672,6 @@ class Disabler : Module() {
 				if (noC03s.get() && packet is C03PacketPlayer) {
 					if (packet !is C04PacketPlayerPosition && packet !is C05PacketPlayerLook && packet !is C06PacketPlayerPosLook)
 						event.cancelEvent()
-				}
-				if(gaySexBlinkStrafeDisabler.get() && !mc.thePlayer.onGround && speed.state && mc.thePlayer.hurtTime == 10 && !scaffold.state){
-					if (packet is C03PacketPlayer|| packet is C04PacketPlayerPosition || packet is C06PacketPlayerPosLook ||
-						packet is C08PacketPlayerBlockPlacement ||
-						packet is C0APacketAnimation ||
-						packet is C0BPacketEntityAction || packet is C02PacketUseEntity) {
-						event.cancelEvent()
-					}
 				}
 			}
 			"rotdesync" -> {

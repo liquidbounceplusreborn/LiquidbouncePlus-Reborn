@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.utils.extensions
 
+import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.Entity
@@ -37,15 +38,15 @@ fun Entity.getVectorForRotation(pitch: Float, yaw: Float): Vec3 {
     val f4 = MathHelper.sin(-pitch * 0.017453292f)
     return Vec3((f2 * f3).toDouble(), f4.toDouble(), (f * f3).toDouble())
 }
-fun Entity.rayTraceCustom(blockReachDistance: Float, partialTicks: Float, yaw: Float, pitch: Float): MovingObjectPosition? {
-    val vec3: Vec3 = this.getPositionEyes(partialTicks)
-    val vec31: Vec3 = this.getLookCustom(yaw, pitch)
+fun Entity.rayTraceCustom(blockReachDistance: Double, yaw: Float, pitch: Float): MovingObjectPosition? {
+    val vec3 = MinecraftInstance.mc.thePlayer.getPositionEyes(1.0f)
+    val vec31 = MinecraftInstance.mc.thePlayer.getVectorForRotation(yaw, pitch)
     val vec32 = vec3.addVector(
         vec31.xCoord * blockReachDistance,
         vec31.yCoord * blockReachDistance,
         vec31.zCoord * blockReachDistance
     )
-    return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true)
+    return MinecraftInstance.mc.theWorld.rayTraceBlocks(vec3, vec32, false, false, true)
 }
 fun Entity.getLookCustom(yaw: Float, pitch: Float): Vec3 {
     return this.getVectorForRotation(pitch, yaw)

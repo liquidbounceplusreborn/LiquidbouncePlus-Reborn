@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.utils;
 import com.google.common.base.Predicates;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.*;
+import org.lwjgl.util.vector.Vector2f;
 
 import java.util.List;
 

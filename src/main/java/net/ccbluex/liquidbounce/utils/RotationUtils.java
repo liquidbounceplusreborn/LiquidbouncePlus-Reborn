@@ -488,6 +488,17 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         return new Rotation(yaw, pitch);
     }
 
+    public static Rotation calculate(final Vec3 position, final EnumFacing enumFacing) {
+        double x = position.xCoord + 0.5D;
+        double y = position.yCoord + 0.5D;
+        double z = position.zCoord + 0.5D;
+
+        x += (double) enumFacing.getDirectionVec().getX() * 0.5D;
+        y += (double) enumFacing.getDirectionVec().getY() * 0.5D;
+        z += (double) enumFacing.getDirectionVec().getZ() * 0.5D;
+        return calculate(new Vec3(x, y, z));
+    }
+
     public static Rotation calculate(final Vec3 to) {
         return calculate(mc.thePlayer.getPositionVector().add(new Vec3(0, mc.thePlayer.getEyeHeight(), 0)), new Vec3(to.xCoord, to.yCoord, to.zCoord));
     }
