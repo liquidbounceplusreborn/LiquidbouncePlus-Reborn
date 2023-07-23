@@ -284,7 +284,7 @@ class Velocity : Module() {
                 }
             }
             "intave" -> {
-                if (mc.thePlayer.hurtTime == 9) {//0.00000012 reduce lmao
+                if (mc.thePlayer.hurtTime == 9) {
                     mc.thePlayer.movementInput.jump = true
                 }
             }
