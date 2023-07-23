@@ -184,6 +184,7 @@ class Scaffold : Module() {
     // Rotations
     private val rotationsValue = BoolValue("Rotations", true)
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
+    private val keepRotation = BoolValue("KeepRotation", false) { rotationsValue.get() }
     private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() && (rotationModeValue.isMode("Normal") ||rotationModeValue.isMode("GrimTest") ) }
     private val rotationModeValue = ListValue(
         "RotationMode",
@@ -534,15 +535,7 @@ class Scaffold : Module() {
         }
     }
 
-    /**
-     * Update event
-     *
-     * @param event
-     */
-    @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
-
-        if (rotationsValue.get()) {
+    private fun rotation(){
             val sameY = sameYValue.get()
             val smartSpeed = smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state
             val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
@@ -645,9 +638,21 @@ class Scaffold : Module() {
                 }
             }
             RotationUtils.setTargetRotation(lockRotation)
+
+    }
+
+    /**
+     * Update event
+     *
+     * @param event
+     */
+    @EventTarget
+    fun onUpdate(event: UpdateEvent?) {
+        if (rotationsValue.get() && keepRotation.get()) {
+            rotation()
         }
 
-        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && placeModeValue.get() === "Legit") {
+        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock || !keepRotation.get()) && placeModeValue.get() === "Legit") {
             place()
         }
         if (towerActivation()) {
@@ -898,12 +903,12 @@ class Scaffold : Module() {
                 && mc.thePlayer.inventory.mainInventory[i].stackSize <= 0
             ) mc.thePlayer.inventory.mainInventory[i] = null
         }
-        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && placeModeValue.get()
+        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock || !keepRotation.get()) && placeModeValue.get()
                 .equals(eventState.stateName, ignoreCase = true)
         ) {
             place()
         }
-        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && placeModeValue.get()
+        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock || !keepRotation.get()) && placeModeValue.get()
                 .equals(eventState.stateName, ignoreCase = true) && towerActivation()
         ) {
             place()
@@ -925,24 +930,6 @@ class Scaffold : Module() {
         }
         mc.timer.timerSpeed = towerTimerValue.get()
         if (placeModeValue.get().equals(eventState.stateName, ignoreCase = true)) place()
-         /*if (eventState === EventState.POST) {
-            timer.update()
-            val isHeldItemBlock = mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemBlock
-            if (InventoryUtils.findAutoBlockBlock() != -1 || isHeldItemBlock) {
-                launchY = mc.thePlayer.posY.toInt()
-                val blockPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)
-                if (mc.theWorld.getBlockState(blockPos).block is BlockAir) {
-                    if (search(blockPos, raycast = false,area = true) && rotationsValue.get() && rotationModeValue.isMode("Normal")) {
-                        val vecRotation = RotationUtils.faceBlock(blockPos)
-                        if (vecRotation != null) {
-                            RotationUtils.limitAngleChange(
-                                currRotation, RotationUtils.serverRotation, RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get()))
-                            towerPlace!!.vec3 = vecRotation.vec
-                        }
-                    }
-                }
-            }
-        }*/
     }
 
     /**
@@ -1029,6 +1016,9 @@ class Scaffold : Module() {
                 targetPlace!!.vec3
             )
         ) {
+            if (rotationsValue.get()) {
+                rotation()
+            }
             delayTimer.reset()
             delay = if (!placeableDelay.get()) 0L else TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             if (mc.thePlayer.onGround) {
