@@ -590,10 +590,6 @@ class Scaffold : Module() {
                     faceBlock = true
                 }
                 "GrimTest" ->{
-                    if(mc.thePlayer.motionY < 0){
-                        mc.thePlayer.movementInput.moveForward = 0F
-                        mc.thePlayer.movementInput.moveStrafe = 0F
-                    }
                     if(offGroundTicks >= 3){
                         faceBlock = true
                     }else{
