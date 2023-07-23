@@ -491,9 +491,7 @@ public class Fly extends Module {
 
 
         if (modeValue.isMode("GrimTNT")) {
-            if(event.getEventState() == EventState.PRE) {
                     mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX + 1000, mc.thePlayer.posY, mc.thePlayer.posZ + 1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
-            }
         }
 
         switch (modeValue.get().toLowerCase()) {
