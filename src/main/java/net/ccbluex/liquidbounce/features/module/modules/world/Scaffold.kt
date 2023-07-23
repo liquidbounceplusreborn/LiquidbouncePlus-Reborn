@@ -1017,7 +1017,7 @@ class Scaffold : Module() {
                 targetPlace!!.vec3
             )
         ) {
-            if (rotationsValue.get()) {
+            if (!keepRotation.get()) {
                 rotation()
             }
             delayTimer.reset()
