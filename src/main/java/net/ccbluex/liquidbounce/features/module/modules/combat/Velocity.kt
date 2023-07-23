@@ -37,7 +37,7 @@ class Velocity : Module() {
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
     private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple","Hypixel","AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero",
-            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine","GrimAC","GrimReduce"), "Cancel") // later
+            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine","GrimAC","GrimReduce","Intave"), "Cancel") // later
 
     private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
@@ -275,11 +275,18 @@ class Velocity : Module() {
                     mc.thePlayer.motionY -= 0.095
                 }
             }
-            "grimreduce" ->{ //0.00000012 reduce lmao
-                mc.thePlayer.motionX += -1.0E-7
-                mc.thePlayer.motionY += -1.0E-7
-                mc.thePlayer.motionZ += -1.0E-7
-                mc.thePlayer.isAirBorne = true
+            "grimreduce" -> {
+                if (mc.thePlayer.hurtTime > 0) {//0.00000012 reduce lmao
+                    mc.thePlayer.motionX += -1.0E-7
+                    mc.thePlayer.motionY += -1.0E-7
+                    mc.thePlayer.motionZ += -1.0E-7
+                    mc.thePlayer.isAirBorne = true
+                }
+            }
+            "intave" -> {
+                if (mc.thePlayer.hurtTime == 9) {//0.00000012 reduce lmao
+                    mc.thePlayer.movementInput.jump = true
+                }
             }
         }
     }

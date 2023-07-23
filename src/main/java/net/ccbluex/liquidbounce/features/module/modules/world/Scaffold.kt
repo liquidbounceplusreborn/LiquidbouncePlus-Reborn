@@ -608,7 +608,7 @@ class Scaffold : Module() {
                     if(mc.thePlayer.fallDistance > 0){
                         faceBlock = true
                     }else{
-                        lockRotation = Rotation(mc.thePlayer.rotationYaw, 75f)
+                        lockRotation = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
                         faceBlock = false
                     }
                 }
