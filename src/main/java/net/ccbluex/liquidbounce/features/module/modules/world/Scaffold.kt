@@ -187,7 +187,7 @@ class Scaffold : Module() {
     private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() && (rotationModeValue.isMode("Normal") ||rotationModeValue.isMode("GrimTest") ) }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","GrimTest","Rise","Rise2"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","GrimTest","GrimTest2","Rise","Rise2"),
         "Normal") // searching reason
     private val maxTurnSpeed: FloatValue =
         object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() }) {
@@ -606,6 +606,19 @@ class Scaffold : Module() {
                         mc.thePlayer.movementInput.moveStrafe = 0F
                     }
                     if(mc.thePlayer.fallDistance > 0){
+                        faceBlock = true
+                    }else{
+                        lockRotation = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+                        faceBlock = false
+                    }
+                }
+                "GrimTest2" ->{
+                    if(mc.thePlayer.motionY < 0){
+                        mc.thePlayer.movementInput.moveForward = 0F
+                        mc.thePlayer.movementInput.moveStrafe = 0F
+                    }
+                    if(mc.thePlayer.fallDistance > 0){
+                        lockRotation = RotationUtils.getDirectionToBlock(blockData?.blockPos?.x!!.toDouble(), blockData.blockPos.y.toDouble(), blockData.blockPos.z.toDouble(), blockData.enumFacing)
                         faceBlock = true
                     }else{
                         lockRotation = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
