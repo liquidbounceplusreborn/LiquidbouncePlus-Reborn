@@ -489,6 +489,13 @@ public class Fly extends Module {
         if (modeValue.get().equalsIgnoreCase("aac5-vanilla") && aac5NoClipValue.get())
             mc.thePlayer.noClip = true;
 
+
+        if (modeValue.isMode("GrimTNT")) {
+            if(event.getEventState() == EventState.PRE) {
+                    mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX + 1000, mc.thePlayer.posY, mc.thePlayer.posZ + 1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+            }
+        }
+
         switch (modeValue.get().toLowerCase()) {
             case "motion":
             case "blockdrop":
@@ -941,12 +948,6 @@ public class Fly extends Module {
         if (bobbingValue.get()) {
             mc.thePlayer.cameraYaw = bobbingAmountValue.get();
             mc.thePlayer.prevCameraYaw = bobbingAmountValue.get();
-        }
-
-        if (modeValue.isMode("GrimTNT")) {
-            if(event.getEventState() == EventState.PRE) {
-                    mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX + 1000, mc.thePlayer.posY, mc.thePlayer.posZ + 1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
-            }
         }
 
         if (modeValue.get().equalsIgnoreCase("boosthypixel")) {
