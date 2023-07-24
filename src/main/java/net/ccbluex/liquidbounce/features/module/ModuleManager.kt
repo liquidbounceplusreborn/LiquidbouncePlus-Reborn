@@ -220,7 +220,7 @@ class ModuleManager : Listenable {
             ResetVL::class.java,
             SpeedMine::class.java,
             ViaVersionFix::class.java,
-
+            FreeLook::class.java,
         )
         registerModule(AntiBot)
         registerModule(Breaker)

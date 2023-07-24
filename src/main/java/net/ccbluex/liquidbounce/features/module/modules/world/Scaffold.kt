@@ -575,18 +575,6 @@ class Scaffold : Module() {
                 }
 
                 "Intave" -> {
-                    val entity = EntityPig(mc.theWorld)
-                    if (blockData != null) {
-                        entity.posX = blockData.blockPos.x.toDouble()
-                    }
-                    if (blockData != null) {
-                        entity.posY = blockData.blockPos.y.toDouble()
-                    }
-                    if (blockData != null) {
-                        entity.posZ = blockData.blockPos.z.toDouble()
-                    }
-
-                    lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, RotationUtils.getAngles(entity).pitch)
                     faceBlock = true
                 }
                 "GrimTest" ->{
@@ -751,16 +739,8 @@ class Scaffold : Module() {
         if (shouldGoDown) {
             launchY = mc.thePlayer.posY.toInt() - 1
         } else if (!sameYValue.get()) {
-            if (!autoJumpValue.get() && !(smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(
-                    Speed::class.java
-                )!!.state) || GameSettings.isKeyDown(
-                    mc.gameSettings.keyBindJump
-                ) || mc.thePlayer.posY < launchY
-            ) launchY = mc.thePlayer.posY.toInt()
-            if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(
-                    Speed::class.java
-                )!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround
-            ) {
+            if (!autoJumpValue.get() && !(smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state) || GameSettings.isKeyDown(mc.gameSettings.keyBindJump) || mc.thePlayer.posY < launchY) launchY = mc.thePlayer.posY.toInt()
+            if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround) {
                 mc.thePlayer.jump()
             }
         }
@@ -1645,6 +1625,9 @@ class Scaffold : Module() {
                 currRotation, placeRotation.rotation, RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get())
             )
 
+            if(rotationsValue.get() && rotationModeValue.isMode("Intave")){
+                lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, placeRotation.rotation.pitch)
+            }
         }
         targetPlace = placeRotation.placeInfo
         return true

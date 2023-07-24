@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import com.google.common.base.Predicates;
 import net.ccbluex.liquidbounce.event.FogColorEvent;
+import net.ccbluex.liquidbounce.features.module.modules.render.FreeLook;
 import net.ccbluex.liquidbounce.utils.Interpolator;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
@@ -26,6 +27,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -45,6 +47,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -54,6 +57,8 @@ import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import static org.objectweb.asm.Opcodes.GETFIELD;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
@@ -679,4 +684,28 @@ public abstract class MixinEntityRenderer {
         GlStateManager.enableFog();
         GlStateManager.colorMaterial(1028, 4608);
     }
+    @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;inGameHasFocus:Z", opcode = GETFIELD))
+    public boolean updateCameraAndRender(Minecraft minecraft) {
+        return FreeLook.overrideMouse();
+    }
+
+    @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;rotationYaw:F", opcode = GETFIELD))
+    public float getRotationYaw(Entity entity) {
+        return FreeLook.perspectiveToggled ? FreeLook.cameraYaw : entity.rotationYaw;
+    }
+
+    @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevRotationYaw:F", opcode = GETFIELD))
+    public float getPrevRotationYaw(Entity entity) {
+        return FreeLook.perspectiveToggled ? FreeLook.cameraYaw : entity.prevRotationYaw;
+    }
+    @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;rotationPitch:F", opcode = GETFIELD))
+    public float getRotationPitch(Entity entity) {
+        return FreeLook.perspectiveToggled ? FreeLook.cameraPitch : entity.rotationPitch;
+    }
+
+    @Redirect(method = "orientCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevRotationPitch:F"))
+    public float getPrevRotationPitch(Entity entity) {
+        return FreeLook.perspectiveToggled ? FreeLook.cameraPitch : entity.prevRotationPitch;
+    }
+
 }

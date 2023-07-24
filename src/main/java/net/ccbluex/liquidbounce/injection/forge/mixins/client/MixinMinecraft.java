@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.BowAimbot;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly;
 import net.ccbluex.liquidbounce.features.module.modules.player.Patcher;
+import net.ccbluex.liquidbounce.features.module.modules.render.FreeLook;
 import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.render.SpinBot;
 import net.ccbluex.liquidbounce.features.module.modules.world.*;
@@ -55,6 +56,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.nio.ByteBuffer;
+
+import static org.objectweb.asm.Opcodes.PUTFIELD;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
@@ -312,6 +315,15 @@ public abstract class MixinMinecraft {
             } else if (!LiquidBounce.moduleManager.getModule(AbortBreaking.class).getState()) {
                 this.playerController.resetBlockRemoving();
             }
+        }
+    }
+
+    @Redirect(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;thirdPersonView:I", opcode = PUTFIELD))
+    public void setThirdPersonView(GameSettings gameSettings, int value) {
+        if (FreeLook.perspectiveToggled) {
+            FreeLook.resetPerspective();
+        } else {
+            gameSettings.thirdPersonView = value;
         }
     }
 
