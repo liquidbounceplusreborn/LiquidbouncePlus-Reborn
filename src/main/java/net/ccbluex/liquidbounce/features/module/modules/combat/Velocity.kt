@@ -317,7 +317,6 @@ class Velocity : Module() {
                     if(mc.thePlayer.onGround || mc.thePlayer.fallDistance > 0.0) {
                         mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
                     }
-                        MovementUtils.strafe(0.4f)
                         event.cancelEvent()
                 }
                 "aac4reduce" -> {
