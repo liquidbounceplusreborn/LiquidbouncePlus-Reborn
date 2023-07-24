@@ -759,10 +759,9 @@ class Scaffold : Module() {
             ) launchY = mc.thePlayer.posY.toInt()
             if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(
                     Speed::class.java
-                )!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround && mc.thePlayer.jumpTicks == 0
+                )!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround
             ) {
                 mc.thePlayer.jump()
-                mc.thePlayer.jumpTicks = 10
             }
         }
     }
