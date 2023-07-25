@@ -75,6 +75,8 @@ class NoSlow : Module() {
     }
 
     override fun onDisable() {
+        packetBuf.clear()
+        nextTemp = false
         blinkPackets.forEach {
             PacketUtils.sendPacketNoEvent(it)
         }
