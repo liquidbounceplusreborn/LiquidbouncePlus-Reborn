@@ -116,7 +116,8 @@ class NoSlow : Module() {
     fun onUpdate(event: UpdateEvent) {
         when (modeValue.get()) {
             "WatchdogTest" -> {
-                    if (msTimer.hasTimePassed(230) && nextTemp && (lastBlockingStat || isBlocking)) {
+                if ((lastBlockingStat || isBlocking)) {
+                    if (msTimer.hasTimePassed(230) && nextTemp) {
                         nextTemp = false
                         PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
                         PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
@@ -134,17 +135,27 @@ class NoSlow : Module() {
                             packetBuf.clear()
                         }
                     }
-                    if(!nextTemp) {
+                    if (!nextTemp) {
                         lastBlockingStat = isBlocking
                         if (!isBlocking) {
                             return
                         }
-                        PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
+                        PacketUtils.sendPacketNoEvent(
+                            C08PacketPlayerBlockPlacement(
+                                BlockPos(-1, -1, -1),
+                                255,
+                                mc.thePlayer.inventory.getCurrentItem(),
+                                0f,
+                                0f,
+                                0f
+                            )
+                        )
                         nextTemp = true
                         msTimer.reset()
                     }
                 }
             }
+        }
     }
 
     private val isBlocking: Boolean
