@@ -6,11 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.EventState
-import net.ccbluex.liquidbounce.event.MotionEvent
-import net.ccbluex.liquidbounce.event.SlowDownEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -26,17 +22,14 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.item.*
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
-import net.minecraft.network.play.client.C0BPacketEntityAction
-import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
-import net.minecraft.network.play.client.C07PacketPlayerDigging
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import java.util.*
 
 @ModuleInfo(name = "NoSlow", spacedName = "No Slow", category = ModuleCategory.MOVEMENT, description = "Prevent you from getting slowed down by items (swords, foods, etc.) and liquids.")
 class NoSlow : Module() {
@@ -71,6 +64,10 @@ class NoSlow : Module() {
     private var fasterDelay = false
     private var placeDelay = 0L
     private val timer = MSTimer()
+
+    private var nextTemp = false
+    private var packetBuf = LinkedList<Packet<INetHandlerPlayServer>>()
+    private var lastBlockingStat = false
 
     override fun onEnable() {
         blinkPackets.clear()
@@ -112,6 +109,45 @@ class NoSlow : Module() {
             }
         }
     }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        when (modeValue.get()) {
+            "WatchdogTest" -> {
+                    if (msTimer.hasTimePassed(230) && nextTemp && (lastBlockingStat || isBlocking)) {
+                        nextTemp = false
+                        PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
+                        PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+
+                        if (packetBuf.isNotEmpty()) {
+                            var canAttack = false
+                            for (packet in packetBuf) {
+                                if (packet is C03PacketPlayer) {
+                                    canAttack = true
+                                }
+                                if (!((packet is C02PacketUseEntity || packet is C0APacketAnimation) && !canAttack)) {
+                                    PacketUtils.sendPacketNoEvent(packet)
+                                }
+                            }
+                            packetBuf.clear()
+                        }
+                    }
+                    if(!nextTemp) {
+                        lastBlockingStat = isBlocking
+                        if (!isBlocking) {
+                            return
+                        }
+                        PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
+                        nextTemp = true
+                        msTimer.reset()
+                    }
+                }
+            }
+    }
+
+    private val isBlocking: Boolean
+        get() = (mc.thePlayer.isUsingItem || LiquidBounce.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
+
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
@@ -170,6 +206,14 @@ class NoSlow : Module() {
                 }
             }
         }
+        if(modeValue.equals("WatchdogTest") && nextTemp) {
+            if((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlocking) {
+                event.cancelEvent()
+            }else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
+                packetBuf.add(packet as Packet<INetHandlerPlayServer>)
+                event.cancelEvent()
+            }
+        }
     }
 
     @EventTarget
@@ -181,27 +225,6 @@ class NoSlow : Module() {
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
 
         when (modeValue.get().toLowerCase()) {
-            "watchdogtest"-> {
-                if (mc.thePlayer.isUsingItem && mc.thePlayer.isBlocking && MovementUtils.isMoving()) {
-                    if (event.eventState == EventState.POST) {
-                        mc.netHandler.addToSendQueue(
-                            C08PacketPlayerBlockPlacement(
-                                BlockPos(-1, -1, -1),
-                                255,
-                                mc.thePlayer.inventory.getCurrentItem(),
-                                0f,
-                                0f,
-                                0f
-                            )
-                        )
-                    }
-                    if (event.eventState == EventState.PRE) {
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                    }
-                }
-            }
-
             "aac5" -> if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockingStatus)) {
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
             }
