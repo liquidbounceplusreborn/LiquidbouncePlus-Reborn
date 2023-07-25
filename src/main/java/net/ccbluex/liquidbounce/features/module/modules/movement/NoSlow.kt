@@ -65,9 +65,6 @@ class NoSlow : Module() {
     private var placeDelay = 0L
     private val timer = MSTimer()
 
-    private var nextTemp = false
-    private var packetBuf = LinkedList<Packet<INetHandlerPlayServer>>()
-    private var lastBlockingStat = false
 
     override fun onEnable() {
         blinkPackets.clear()
@@ -75,8 +72,6 @@ class NoSlow : Module() {
     }
 
     override fun onDisable() {
-        packetBuf.clear()
-        nextTemp = false
         blinkPackets.forEach {
             PacketUtils.sendPacketNoEvent(it)
         }
@@ -111,56 +106,6 @@ class NoSlow : Module() {
             }
         }
     }
-
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        when (modeValue.get()) {
-            "WatchdogTest" -> {
-                if ((lastBlockingStat || isBlocking)) {
-                    if (msTimer.hasTimePassed(230) && nextTemp) {
-                        nextTemp = false
-                        PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
-                        PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-
-                        if (packetBuf.isNotEmpty()) {
-                            var canAttack = false
-                            for (packet in packetBuf) {
-                                if (packet is C03PacketPlayer) {
-                                    canAttack = true
-                                }
-                                if (!((packet is C02PacketUseEntity || packet is C0APacketAnimation) && !canAttack)) {
-                                    PacketUtils.sendPacketNoEvent(packet)
-                                }
-                            }
-                            packetBuf.clear()
-                        }
-                    }
-                    if (!nextTemp) {
-                        lastBlockingStat = isBlocking
-                        if (!isBlocking) {
-                            return
-                        }
-                        PacketUtils.sendPacketNoEvent(
-                            C08PacketPlayerBlockPlacement(
-                                BlockPos(-1, -1, -1),
-                                255,
-                                mc.thePlayer.inventory.getCurrentItem(),
-                                0f,
-                                0f,
-                                0f
-                            )
-                        )
-                        nextTemp = true
-                        msTimer.reset()
-                    }
-                }
-            }
-        }
-    }
-
-    private val isBlocking: Boolean
-        get() = (mc.thePlayer.isUsingItem || LiquidBounce.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
-
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
@@ -217,14 +162,6 @@ class NoSlow : Module() {
                         blinkPackets.clear()
                     }
                 }
-            }
-        }
-        if(modeValue.equals("WatchdogTest") && nextTemp) {
-            if((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlocking) {
-                event.cancelEvent()
-            }else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
-                packetBuf.add(packet as Packet<INetHandlerPlayServer>)
-                event.cancelEvent()
             }
         }
     }
