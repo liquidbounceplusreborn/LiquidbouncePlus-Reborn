@@ -218,6 +218,19 @@ class KillAura : Module() {
         }
     }
     private val shakeValue = BoolValue("Shake", false)
+    private val randomCenterNewValue = BoolValue("NewCalc", true, { rotations.get().equals("vanilla", true) && shakeValue.get() })
+    private val minRand: FloatValue = object : FloatValue("MinMultiply", 0.8f, 0f, 2f, "x", { rotations.get().equals("vanilla", true) && shakeValue.get() }) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = maxRand.get()
+            if (v < newValue) set(v)
+        }
+    }
+    private val maxRand: FloatValue = object : FloatValue("MaxMultiply", 0.8f, 0f, 2f, "x", { rotations.get().equals("vanilla", true) && shakeValue.get() }) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = minRand.get()
+            if (v > newValue) set(v)
+        }
+    }
 
     // Bypass
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f)
@@ -877,11 +890,12 @@ class KillAura : Module() {
         if (rotations.get().equals("Vanilla", ignoreCase = true)){
             val (_, rotation) = RotationUtils.searchCenter(
                 boundingBox,
-                shakeValue.get() && !attackTimer.hasTimePassed(attackDelay / 2),
                 false,
+                shakeValue.get(),
                 predictValue.get(),
                 mc.thePlayer!!.getDistanceToEntityBox(entity) < throughWallsRangeValue.get(),
-                maxRange
+                maxRange,RandomUtils.nextFloat(minRand.get(), maxRand.get()),
+                randomCenterNewValue.get()
             )
             return RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation,
                 (Math.random() * (yawMaxTurnSpeed.get() - yawMinTurnSpeed.get()) + yawMinTurnSpeed.get()).toFloat(),
