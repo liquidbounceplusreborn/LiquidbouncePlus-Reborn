@@ -25,7 +25,7 @@ class Hanabi(inst: Target): TargetStyle("Hanabi", inst, true) {
         var hpPercentage: Double
         val hurt: Color
         val healthStr: String
-        val width = (38 + Fonts.font40.getStringWidth(entity.name))
+        val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
             .coerceAtLeast(140)
             .toFloat()
         health = entity.getHealth()
@@ -71,13 +71,13 @@ class Hanabi(inst: Target): TargetStyle("Hanabi", inst, true) {
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
         Fonts.fontSFUI35.drawStringWithShadow("❤", 112F, 28F, hurt.rgb)
         Fonts.fontSFUI35.drawStringWithShadow(healthStr, 120F, 28F, Color.WHITE.rgb)
-        Fonts.font35.drawString(
+        Fonts.fontSFUI35.drawString(
             "XYZ:" + entity.posX.toInt() + " " + entity.posY.toInt() + " " + entity.posZ.toInt() + " | " + "Hurt:" + (entity.hurtTime > 0),
             38F,
             15f,
             blackcolor2
         )
-        Fonts.font40.drawString(entity.getName(), 38.0f, 4.0f, blackcolor2)
+        Fonts.fontSFUI40.drawString(entity.getName(), 38.0f, 4.0f, blackcolor2)
         mc.textureManager.bindTexture((entity as AbstractClientPlayer).locationSkin)
         Gui.drawScaledCustomSizeModalRect(3, 3, 8.0f, 8.0f, 8, 8, 32, 32, 64f, 64f)
     }

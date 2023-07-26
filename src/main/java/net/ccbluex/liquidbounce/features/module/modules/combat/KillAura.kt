@@ -118,36 +118,34 @@ class KillAura : Module() {
     }
 
     // Modes
-    private val rotations = ListValue("RotationMode", arrayOf("Vanilla", "BackTrack","Grim", "Spin", "Shake", "None"), "BackTrack")
+    private val rotations = ListValue("RotationMode", arrayOf("Vanilla", "Grim","Novoline","None"), "BackTrack")
 
-    private val spinHurtTimeValue = IntegerValue("Spin-HitHurtTime", 10, 0, 10, { rotations.get().equals("spin", true) })
 
-    // Spin Speed
-    private val maxSpinSpeed: FloatValue = object : FloatValue("MaxSpinSpeed", 180f, 0f, 180f, "°", { rotations.get().equals("spin", true) }) {
+    // Turn Speed
+    private val yawMaxTurnSpeed: FloatValue = object : FloatValue("YawMaxTurnSpeed", 180f, 0f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = minSpinSpeed.get()
+            val v = yawMinTurnSpeed.get()
             if (v > newValue) set(v)
         }
     }
 
-    private val minSpinSpeed: FloatValue = object : FloatValue("MinSpinSpeed", 180f, 0f, 180f, "°", { rotations.get().equals("spin", true) }) {
+    private val yawMinTurnSpeed: FloatValue = object : FloatValue("YawMinTurnSpeed", 180f, 0f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = maxSpinSpeed.get()
+            val v = yawMaxTurnSpeed.get()
             if (v < newValue) set(v)
         }
     }
 
-    // Turn Speed
-    private val maxTurnSpeed: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { !rotations.get().equals("none", true) }) {
+    private val pitchMaxTurnSpeed: FloatValue = object : FloatValue("PitchMaxTurnSpeed", 180f, 0f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = minTurnSpeed.get()
+            val v = pitchMinTurnSpeed.get()
             if (v > newValue) set(v)
         }
     }
 
-    private val minTurnSpeed: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 0f, 180f, "°", { !rotations.get().equals("none", true) }) {
+    private val pitchMinTurnSpeed: FloatValue = object : FloatValue("PitchMinTurnSpeed", 180f, 0f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = maxTurnSpeed.get()
+            val v = pitchMaxTurnSpeed.get()
             if (v < newValue) set(v)
         }
     }
@@ -155,7 +153,6 @@ class KillAura : Module() {
     private val roundTurnAngle = BoolValue("RoundAngle", false, { !rotations.get().equals("none", true) })
     private val roundAngleDirs = IntegerValue("RoundAngle-Directions", 4, 2, 90, { !rotations.get().equals("none", true) && roundTurnAngle.get() })
 
-    private val noSendRot = BoolValue("NoSendRotation", true, { rotations.get().equals("spin", true) })
     private val noHitCheck = BoolValue("NoHitCheck", false, { !rotations.get().equals("none", true) })
 
     private val blinkCheck = BoolValue("BlinkCheck", true)
@@ -220,22 +217,7 @@ class KillAura : Module() {
             if (v < newValue) set(v)
         }
     }
-
-    private val randomCenterValue = BoolValue("RandomCenter", false, { !rotations.get().equals("none", true) })
-    private val randomCenterNewValue = BoolValue("NewCalc", true, { !rotations.get().equals("none", true) && randomCenterValue.get() })
-    private val minRand: FloatValue = object : FloatValue("MinMultiply", 0.8f, 0f, 2f, "x", { !rotations.get().equals("none", true) && randomCenterValue.get() }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = maxRand.get()
-            if (v < newValue) set(v)
-        }
-    }
-    private val maxRand: FloatValue = object : FloatValue("MaxMultiply", 0.8f, 0f, 2f, "x", { !rotations.get().equals("none", true) && randomCenterValue.get() }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = minRand.get()
-            if (v > newValue) set(v)
-        }
-    }
-    private val outborderValue = BoolValue("Outborder", false)
+    private val shakeValue = BoolValue("Shake", false)
 
     // Bypass
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f)
@@ -246,7 +228,6 @@ class KillAura : Module() {
 
     // idk
     private val noScaffValue = BoolValue("NoScaffold", true)
-    private val debugValue = BoolValue("Debug", false)
 
     // Visuals
     private val circleValue = BoolValue("Circle", true)
@@ -752,12 +733,6 @@ class KillAura : Module() {
         }
 
         if (found) {
-            if (rotations.get().equals("spin", true)) {
-                spinYaw += RandomUtils.nextFloat(minSpinSpeed.get(), maxSpinSpeed.get())
-                spinYaw = MathHelper.wrapAngleTo180_float(spinYaw)
-                val rot = Rotation(spinYaw, 90F)
-                RotationUtils.setTargetRotation(rot, 0)
-            }
             return
         }
 
@@ -817,16 +792,6 @@ class KillAura : Module() {
 
         if (autoBlockModeValue.equals("Vanilla") && (mc.thePlayer.isBlocking || blockingStatus)) {
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
-        }
-
-        // Get rotation and send packet if possible
-        if (rotations.get().equals("spin", true) && !noSendRot.get())
-        {
-            val targetedRotation = getTargetRotation(entity) ?: return
-            mc.netHandler.addToSendQueue(C03PacketPlayer.C05PacketPlayerLook(targetedRotation.yaw, targetedRotation.pitch, mc.thePlayer.onGround))
-
-            if (debugValue.get())
-                ClientUtils.displayChatMessage("[KillAura] Silent rotation change.")
         }
 
         // Attack target
@@ -890,7 +855,7 @@ class KillAura : Module() {
             defRotation.yaw = RotationUtils.roundRotation(defRotation.yaw, roundAngleDirs.get())
 
         if (silentRotationValue.get()) {
-            RotationUtils.setTargetRotation(defRotation, if (aacValue.get() && !rotations.get().equals("Spin", ignoreCase = true)) 15 else 0)
+            RotationUtils.setTargetRotation(defRotation, if (aacValue.get()) 15 else 0)
         } else {
             defRotation.toPlayer(mc.thePlayer!!)
         }
@@ -899,96 +864,60 @@ class KillAura : Module() {
     }
 
     private fun getTargetRotation(entity: Entity): Rotation? {
+
         var boundingBox = entity.entityBoundingBox
+
+        if (predictValue.get())
+            boundingBox = boundingBox.offset(
+                (entity.posX - entity.prevPosX - (mc.thePlayer!!.posX - mc.thePlayer!!.prevPosX)) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
+                (entity.posY - entity.prevPosY - (mc.thePlayer!!.posY - mc.thePlayer!!.prevPosY)) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
+                (entity.posZ - entity.prevPosZ - (mc.thePlayer!!.posZ - mc.thePlayer!!.prevPosZ)) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
+            )
+
         if (rotations.get().equals("Vanilla", ignoreCase = true)){
-            if (maxTurnSpeed.get() <= 0F)
-                return RotationUtils.serverRotation
-
-            if (predictValue.get())
-                boundingBox = boundingBox.offset(
-                    (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
-                )
-
             val (_, rotation) = RotationUtils.searchCenter(
                 boundingBox,
-                outborderValue.get() && !attackTimer.hasTimePassed(attackDelay / 2),
-                randomCenterValue.get(),
+                shakeValue.get() && !attackTimer.hasTimePassed(attackDelay / 2),
+                false,
                 predictValue.get(),
                 mc.thePlayer!!.getDistanceToEntityBox(entity) < throughWallsRangeValue.get(),
-                maxRange,
-                RandomUtils.nextFloat(minRand.get(), maxRand.get()),
-                randomCenterNewValue.get()
-            ) ?: return null
-
-            val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation,
-                (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
-
-            return limitedRotation
-        }
-        if (rotations.get().equals("Spin", ignoreCase = true)){
-            if (maxTurnSpeed.get() <= 0F)
-                return RotationUtils.serverRotation
-
-            if (predictValue.get())
-                boundingBox = boundingBox.offset(
-                    (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
-                )
-
-            val (_, rotation) = RotationUtils.searchCenter(
-                boundingBox,
-                false,
-                false,
-                false,
-                mc.thePlayer!!.getDistanceToEntityBox(entity) < throughWallsRangeValue.get(),
                 maxRange
-            ) ?: return null
+            )
+            return RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation,
+                (Math.random() * (yawMaxTurnSpeed.get() - yawMinTurnSpeed.get()) + yawMinTurnSpeed.get()).toFloat(),
+                (Math.random() * (pitchMaxTurnSpeed.get() - pitchMinTurnSpeed.get()) + pitchMinTurnSpeed.get()).toFloat()
+            )
 
-            return rotation
-        }
-        if (rotations.get().equals("BackTrack", ignoreCase = true)) {
-            if (predictValue.get())
-                boundingBox = boundingBox.offset(
-                    (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
-                )
-
-            val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation,
-                RotationUtils.OtherRotation(boundingBox,RotationUtils.getCenter(entity.entityBoundingBox), predictValue.get(),
-                    mc.thePlayer!!.getDistanceToEntityBox(entity) < throughWallsRangeValue.get(),maxRange), (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
-
-            return limitedRotation
         }
         if (rotations.get().equals("Grim", ignoreCase = true)) {
-            var rotation: Rotation?
-            rotation = RotationUtils.calculate(getNearestPointBB(mc.thePlayer.getPositionEyes(1F), boundingBox))
-        return rotation
+            val bb : AxisAlignedBB = entity.entityBoundingBox
+            val thePlayer = mc.thePlayer
+            val random = Random()
+            var lastHitVec = Vec3(0.0, 0.0, 0.0)
+            return RotationUtils.limitAngleChange(
+                RotationUtils.serverRotation,
+                RotationUtils.OtherRotation(
+                    boundingBox,
+                    if (shakeValue.get()) {
+                        if (RotationUtils.targetRotation == null || (random.nextBoolean() && !attackTimer.hasTimePassed(attackDelay / 2))) {
+                            lastHitVec = Vec3(
+                                MathHelper.clamp_double(thePlayer.posX, bb.minX, bb.maxX) + RandomUtils.nextDouble(-0.2, 0.2),
+                                MathHelper.clamp_double(thePlayer.posY + 1.62F, bb.minY, bb.maxY) + RandomUtils.nextDouble(-0.2, 0.2),
+                                MathHelper.clamp_double(thePlayer.posZ, bb.minZ, bb.maxZ) + RandomUtils.nextDouble(-0.2, 0.2)
+                            )
+                        }
+                        lastHitVec
+                    } else getNearestPointBB(mc.thePlayer.getPositionEyes(1f), entity.entityBoundingBox),
+                    predictValue.get(),
+                    mc.thePlayer!!.getDistanceToEntityBox(entity) < throughWallsRangeValue.get(),
+                    maxRange
+                ),
+                (Math.random() * (yawMaxTurnSpeed.get() - yawMinTurnSpeed.get()) + yawMinTurnSpeed.get()).toFloat(),
+                (Math.random() * (pitchMaxTurnSpeed.get() - pitchMinTurnSpeed.get()) + pitchMinTurnSpeed.get()).toFloat()
+            )
         }
-        if (rotations.get().equals("Shake", ignoreCase = true)) {
-            if (predictValue.get())
-                boundingBox = boundingBox.offset(
-                    (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
-                    (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get())
-                )
-
-            val targetH = boundingBox.maxY - boundingBox.minY
-
-            val targetX = boundingBox.maxX - (boundingBox.maxX - boundingBox.minX) / 2
-            val targetY = (boundingBox.maxY - targetH / 2) - (((targetH - 0.2) / 2) * yJitter)
-            val targetZ = boundingBox.maxZ - (boundingBox.maxZ - boundingBox.minZ) / 2
-
-            val rotToTarget = RotationUtils.getRotations(targetX, targetY, targetZ)
-
-            val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotToTarget, (Math.random() * (maxTurnSpeed.get() - minTurnSpeed.get()) + minTurnSpeed.get()).toFloat())
-
-            if (debugValue.get()) ClientUtils.displayChatMessage("[Rot] ${limitedRotation.yaw} ${limitedRotation.pitch}")
-
-            return limitedRotation
+        if (rotations.get().equals("Novoline", ignoreCase = true)) {
+            return RotationUtils.getAngles(entity)
         }
         return RotationUtils.serverRotation
     }
@@ -1004,14 +933,8 @@ class KillAura : Module() {
 
         val disabler = LiquidBounce.moduleManager.getModule(Disabler::class.java)!! as Disabler
 
-        // Modify hit check for some situations
-        if (rotations.get().equals("spin", true)) {
-            hitable = target!!.hurtTime <= spinHurtTimeValue.get()
-            return
-        }
-
         // Completely disable rotation check if turn speed equals to 0 or NoHitCheck is enabled
-        if(maxTurnSpeed.get() <= 0F || noHitCheck.get() || disabler.canModifyRotation) {
+        if(yawMaxTurnSpeed.get() <= 0F || noHitCheck.get() || disabler.canModifyRotation) {
             hitable = true
             return
         }
@@ -1028,7 +951,7 @@ class KillAura : Module() {
                 && (LiquidBounce.moduleManager[NoFriends::class.java]!!.state || !EntityUtils.isFriend(raycastedEntity)))
                 currentTarget = raycastedEntity
 
-            hitable = if(maxTurnSpeed.get() > 0F) currentTarget == raycastedEntity else true
+            hitable = if(yawMaxTurnSpeed.get() > 0F) currentTarget == raycastedEntity else true
         } else
             hitable = RotationUtils.isFaced(currentTarget, reach)
     }

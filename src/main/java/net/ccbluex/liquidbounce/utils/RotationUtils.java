@@ -46,6 +46,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     public static Rotation OtherRotation(final AxisAlignedBB bb,final Vec3 vec, final boolean predict,final boolean throughWalls, final float distance) {
         final Vec3 eyesPos = new Vec3(mc.thePlayer.posX, mc.thePlayer.getEntityBoundingBox().minY +
                 mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ);
+        /*
         final Vec3 eyes = mc.thePlayer.getPositionEyes(1F);
         VecRotation vecRotation = null;
         for(double xSearch = 0.15D; xSearch < 0.85D; xSearch += 0.1D) {
@@ -68,9 +69,12 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                 }
             }
         }
-
-
+        */
         if(predict) eyesPos.addVector(mc.thePlayer.motionX, mc.thePlayer.motionY, mc.thePlayer.motionZ);
+
+        if (!throughWalls && !isVisible(vec)) {
+            return null;
+        }
 
         final double diffX = vec.xCoord - eyesPos.xCoord;
         final double diffY = vec.yCoord - eyesPos.yCoord;
@@ -319,6 +323,17 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                 ));
     }
 
+    @NotNull
+    public static Rotation limitAngleChange(final Rotation currentRotation, final Rotation targetRotation, final float horizontalSpeed, final float verticalSpeed) {
+        final float yawDifference = getAngleDifference(targetRotation.getYaw(), currentRotation.getYaw());
+        final float pitchDifference = getAngleDifference(targetRotation.getPitch(), currentRotation.getPitch());
+
+        return new Rotation(
+                currentRotation.getYaw() + (yawDifference > horizontalSpeed ? horizontalSpeed : Math.max(yawDifference, -horizontalSpeed)),
+                currentRotation.getPitch() + (pitchDifference > verticalSpeed ? verticalSpeed : Math.max(pitchDifference, -verticalSpeed))
+        );
+    }
+
     /**
      * Calculate difference between two angle points
      *
@@ -503,7 +518,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         return calculate(mc.thePlayer.getPositionVector().add(new Vec3(0, mc.thePlayer.getEyeHeight(), 0)), new Vec3(to.xCoord, to.yCoord, to.zCoord));
     }
 
-    public static Rotation getAngles(EntityLivingBase entity) {
+    public static Rotation getAngles(Entity entity) {
         if (entity == null)
             return null;
         final EntityPlayerSP thePlayer = mc.thePlayer;
