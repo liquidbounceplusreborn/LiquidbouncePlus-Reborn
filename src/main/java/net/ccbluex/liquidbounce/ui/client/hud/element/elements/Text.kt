@@ -70,6 +70,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
     private val displayString = TextValue("DisplayText", "")
     private val backgroundValue = BoolValue("Background", true)
+    private val roundBackgroundValue = BoolValue("RoundBackground", true)
     private val skeetRectValue = BoolValue("SkeetRect", false)
     private val onetapRectValue = BoolValue("OneTapRect", false)
     private val lineValue = BoolValue("Line", true)
@@ -230,6 +231,10 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
 
         if (backgroundValue.get()) {
             RenderUtils.drawRect(-2F, -2F, fontRenderer.getStringWidth(displayText) + 2F, fontRenderer.FONT_HEIGHT + 0F, Color(bgredValue.get(), bggreenValue.get(), bgblueValue.get(), bgalphaValue.get()))
+        }
+
+        if (backgroundValue.get()) {
+            RenderUtils.drawRoundedRect(-2F, -2F, fontRenderer.getStringWidth(displayText) + 2F, fontRenderer.FONT_HEIGHT + 0F,2f, Color(bgredValue.get(), bggreenValue.get(), bgblueValue.get(), bgalphaValue.get()).rgb)
         }
 
         if (skeetRectValue.get()) {

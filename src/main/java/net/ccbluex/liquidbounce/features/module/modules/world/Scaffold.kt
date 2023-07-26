@@ -1624,11 +1624,11 @@ class Scaffold : Module() {
             lockRotation = RotationUtils.limitAngleChange(
                 currRotation, placeRotation.rotation, RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get())
             )
-
+        }
             if(rotationsValue.get() && rotationModeValue.isMode("Intave")){
                 lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, placeRotation.rotation.pitch)
             }
-        }
+
         targetPlace = placeRotation.placeInfo
         return true
     }

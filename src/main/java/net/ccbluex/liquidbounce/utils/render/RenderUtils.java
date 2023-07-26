@@ -327,14 +327,6 @@ public final class RenderUtils extends MinecraftInstance {
 
         GL11.glScissor(x * scaleFactor, mc.displayHeight - (y + height2) * scaleFactor, width * scaleFactor, height2 * scaleFactor);
     }
-
-
-    public static void drawRoundedRect(float x, float y, float x1, float y1, int borderC, int insideC) {
-        drawRect(x + 0.5F, y, x1 - 0.5F, y + 0.5F, insideC);
-        drawRect(x + 0.5F, y1 - 0.5F, x1 - 0.5F, y1, insideC);
-        drawRect(x, y + 0.5F, x1, y1 - 0.5F, insideC);
-    }
-
     public static void circle(float x, float y, float radius, int fill) {
         arc(x, y, 0.0F, 360.0F, radius, fill);
     }
