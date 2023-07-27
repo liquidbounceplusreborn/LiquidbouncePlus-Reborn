@@ -245,8 +245,10 @@ class Scaffold : Module() {
 
     // Safety
     private val sameYValue = BoolValue("SameY", false) { !towerEnabled.get() }
-    private val autoJumpValue = BoolValue("AutoJump", false) { !isTowerOnly }
-    private val smartSpeedValue = BoolValue("SmartSpeed", false) { !isTowerOnly }
+    private val autoJumpValue = BoolValue("AutoJump", false)
+    private val motionY = BoolValue("MotionY", false)
+    private val motionYValue = FloatValue("MotionYValue", 0.42f, 0f, 0.84f) { motionY.get() }
+    private val smartSpeedValue = BoolValue("SmartSpeed", false)
     private val safeWalkValue = BoolValue("SafeWalk", true)
     private val airSafeValue = BoolValue("AirSafe", false) { safeWalkValue.get() }
     private val autoDisableSpeedValue = BoolValue("AutoDisable-Speed", true)
@@ -744,6 +746,11 @@ class Scaffold : Module() {
             if (!autoJumpValue.get() && !(smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state) || GameSettings.isKeyDown(mc.gameSettings.keyBindJump) || mc.thePlayer.posY < launchY) launchY = mc.thePlayer.posY.toInt()
             if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround) {
                 mc.thePlayer.jump()
+            }
+        }
+        if(motionY.get()){
+            if(mc.thePlayer.onGround && MovementUtils.isMoving()){
+                mc.thePlayer.motionY = motionYValue.get().toDouble()
             }
         }
     }
