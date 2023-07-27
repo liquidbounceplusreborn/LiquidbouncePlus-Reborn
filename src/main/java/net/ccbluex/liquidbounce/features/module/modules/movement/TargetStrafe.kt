@@ -34,7 +34,7 @@ import java.awt.Color
 class TargetStrafe : Module() {
     val behind = BoolValue("Behind",false)
     val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
-    val lowSpeed = FloatValue("Radius", 0.0f, 0.0f, 4.0f)
+    val lowSpeed = FloatValue("LowSpeed", 0.0f, 0.0f, 4.0f)
     private val render = BoolValue("Render", true)
     private val alwaysRender = BoolValue("Always-Render", true, { render.get() })
     private val modeValue = ListValue("KeyMode", arrayOf("Jump", "None"), "None")
