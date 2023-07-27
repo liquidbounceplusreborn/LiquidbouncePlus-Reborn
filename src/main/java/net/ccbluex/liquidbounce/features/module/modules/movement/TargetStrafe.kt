@@ -34,6 +34,7 @@ import java.awt.Color
 class TargetStrafe : Module() {
     val behind = BoolValue("Behind",false)
     val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
+    val lowSpeed = FloatValue("Radius", 0.0f, 0.0f, 4.0f)
     private val render = BoolValue("Render", true)
     private val alwaysRender = BoolValue("Always-Render", true, { render.get() })
     private val modeValue = ListValue("KeyMode", arrayOf("Jump", "None"), "None")
@@ -43,7 +44,8 @@ class TargetStrafe : Module() {
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val safewalk = BoolValue("SafeWalk", true)
     val thirdPerson = BoolValue("ThirdPerson", true)
-    val onground = BoolValue("GroundStrafe",false)
+    val onground = BoolValue("Ground",false)
+    val air = BoolValue("Air",false)
     private val accuracyValue = IntegerValue("Accuracy", 0, 0, 59)
     private val thicknessValue = FloatValue("Thickness", 1F, 0.1F, 5F)
     private val mixerSecondsValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
@@ -109,23 +111,18 @@ class TargetStrafe : Module() {
 
         val rotYaw = RotationUtils.getRotationsEntity(killAura.target).yaw
 
-        if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
-            MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 0.0)
-        else
-            MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 1.0)
-
         if (behind.get()) {
             val xPos: Double = target!!.posX + -Math.sin(Math.toRadians(target.rotationYaw.toDouble())) * -2
             val zPos: Double = target!!.posZ + Math.cos(Math.toRadians(target.rotationYaw.toDouble())) * -2
-            event.setX(moveSpeed * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+            event.setX((moveSpeed - lowSpeed.get()) * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
                 .toFloat()))
-            event.setZ(moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+            event.setZ((moveSpeed - lowSpeed.get()) * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
                 .toFloat()))
         } else {
             if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
-                MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 0.0)
+                MovementUtils.setSpeed(event, (moveSpeed - lowSpeed.get()), rotYaw, direction.toDouble(), 0.0)
             else
-                MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 1.0)
+                MovementUtils.setSpeed(event, (moveSpeed - lowSpeed.get()), rotYaw, direction.toDouble(), 1.0)
         }
 
     }
@@ -138,7 +135,7 @@ class TargetStrafe : Module() {
         }
 
     val canStrafe: Boolean
-        get() = (state && (speed.state || fly.state || onground.get()) && killAura.state && killAura.target != null && !mc.thePlayer.isSneaking && keyMode)
+        get() = (state && (speed.state || fly.state || onground.get() && mc.thePlayer.onGround || !mc.thePlayer.onGround && air.get()) && killAura.state && killAura.target != null && !mc.thePlayer.isSneaking && keyMode)
 
     private fun checkVoid(): Boolean {
         for (x in -1..0) {
