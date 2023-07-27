@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.potion.Potion
 
-class HypixelYPort : SpeedMode("HypixelYPort") {
+class HypixelNew : SpeedMode("HypixelNew") {
 
     private var oldMotionX = 0.0
     private var oldMotionZ = 0.0
@@ -39,7 +39,9 @@ class HypixelYPort : SpeedMode("HypixelYPort") {
                 mc.thePlayer.motionZ *= (1.0 + speedModule.customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(
                     Potion.moveSpeed).amplifier + 1))
             }
-
+            if(mc.thePlayer.fallDistance > 0){
+                MovementUtils.strafe()
+            }
         }
     }
 

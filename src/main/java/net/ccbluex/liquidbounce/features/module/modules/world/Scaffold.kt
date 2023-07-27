@@ -78,7 +78,7 @@ class Scaffold : Module() {
             "AAC3.3.9",
             "AAC3.6.4",
             "Verus",
-            "Hypixel"
+            "Hypixel",
         ), "Motion"
     ) { towerEnabled.get() }
     private val noMoveOnlyValue = BoolValue("NoMove", true) { towerEnabled.get() }
@@ -314,6 +314,8 @@ class Scaffold : Module() {
     private var verusState = 0
     private var verusJumped = false
     private var offGroundTicks = 0
+    private var onGroundTicks = 0
+
     private val isTowerOnly: Boolean
         get() = towerEnabled.get()
 
@@ -856,10 +858,6 @@ class Scaffold : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
 
-        if (towerActivation()) {
-            move(event)
-        }
-
         // XZReducer
         mc.thePlayer.motionX *= xzMultiplier.get().toDouble()
         mc.thePlayer.motionZ *= xzMultiplier.get().toDouble()
@@ -906,6 +904,12 @@ class Scaffold : Module() {
         }
         mc.timer.timerSpeed = towerTimerValue.get()
         if (placeModeValue.get().equals(eventState.stateName, ignoreCase = true)) place()
+
+        if(event.eventState == EventState.POST){
+            if (towerActivation()) {
+                move(event)
+            }
+        }
     }
 
     /**
