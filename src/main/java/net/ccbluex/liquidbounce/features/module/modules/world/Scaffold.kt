@@ -744,7 +744,7 @@ class Scaffold : Module() {
             launchY = mc.thePlayer.posY.toInt() - 1
         } else if (!sameYValue.get()) {
             if (!autoJumpValue.get() && !(smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state) || GameSettings.isKeyDown(mc.gameSettings.keyBindJump) || mc.thePlayer.posY < launchY) launchY = mc.thePlayer.posY.toInt()
-            if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround) {
+            if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state  && mc.thePlayer.onGround) {
                 mc.thePlayer.jump()
             }
         }
