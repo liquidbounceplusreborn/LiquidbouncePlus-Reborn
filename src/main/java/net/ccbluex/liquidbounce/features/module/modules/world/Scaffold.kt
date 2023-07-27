@@ -186,6 +186,7 @@ class Scaffold : Module() {
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val keepRotation = BoolValue("KeepRotation", false) { rotationsValue.get() }
     private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() && (rotationModeValue.isMode("Normal") ||rotationModeValue.isMode("GrimTest") ) }
+    private val grimLock = BoolValue("GrimLock", true){ rotationsValue.get() && rotationModeValue.isMode("GrimTest") }
     private val rotationModeValue = ListValue(
         "RotationMode",
         arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","GrimTest","Rise","Rise2"),
@@ -244,11 +245,13 @@ class Scaffold : Module() {
     private val customMoveSpeedValue = FloatValue("CustomMoveSpeed", 0.3f, 0f, 5f) { customSpeedValue.get() }
 
     // Safety
+
     private val sameYValue = BoolValue("SameY", false) { !towerEnabled.get() }
     private val autoJumpValue = BoolValue("AutoJump", false)
     private val motionY = BoolValue("MotionY", false)
     private val motionYValue = FloatValue("MotionYValue", 0.42f, 0f, 0.84f) { motionY.get() }
     private val smartSpeedValue = BoolValue("SmartSpeed", false)
+    private val parkourValue = BoolValue("Parkour", true)
     private val safeWalkValue = BoolValue("SafeWalk", true)
     private val airSafeValue = BoolValue("AirSafe", false) { safeWalkValue.get() }
     private val autoDisableSpeedValue = BoolValue("AutoDisable-Speed", true)
@@ -585,7 +588,12 @@ class Scaffold : Module() {
                     if(offGroundTicks >= 3){
                         faceBlock = true
                     }else{
-                        lockRotation = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+                        lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
+                            85f
+                        } else{
+                            mc.thePlayer.rotationPitch
+                        }
+                        )
                         faceBlock = false
                     }
                 }
@@ -752,6 +760,12 @@ class Scaffold : Module() {
             if(mc.thePlayer.onGround && MovementUtils.isMoving()){
                 mc.thePlayer.motionY = motionYValue.get().toDouble()
             }
+        }
+        if(parkourValue.get()){
+            if (MovementUtils.isMoving() && mc.thePlayer.onGround && !mc.thePlayer.isSneaking && !mc.gameSettings.keyBindSneak.isKeyDown && !mc.gameSettings.keyBindJump.isKeyDown &&
+                mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox
+                    .offset(0.0, -0.5, 0.0).expand(-0.001, 0.0, -0.001)).isEmpty())
+                mc.thePlayer.jump()
         }
     }
 
