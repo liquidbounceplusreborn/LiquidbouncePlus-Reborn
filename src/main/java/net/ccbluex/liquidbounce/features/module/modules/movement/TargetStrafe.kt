@@ -44,6 +44,7 @@ class TargetStrafe : Module() {
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
     private val safewalk = BoolValue("SafeWalk", true)
     val thirdPerson = BoolValue("ThirdPerson", true)
+    val always = BoolValue("Always",false)
     val onground = BoolValue("Ground",false)
     val air = BoolValue("Air",false)
     private val accuracyValue = IntegerValue("Accuracy", 0, 0, 59)
@@ -96,13 +97,13 @@ class TargetStrafe : Module() {
     @EventTarget
     fun onMove(event: MoveEvent) {
         if (canStrafe) {
-            strafe(event, MovementUtils.getSpeed(event.x, event.z))
+            strafe(event, MovementUtils.getSpeed(event.x  - lowSpeed.get() , event.z- lowSpeed.get()))
 
             if (safewalk.get() && checkVoid()) {
                 event.isSafeWalk = true
             }
-            }
         }
+    }
 
 
     fun strafe(event: MoveEvent, moveSpeed: Double) {
@@ -114,15 +115,15 @@ class TargetStrafe : Module() {
         if (behind.get()) {
             val xPos: Double = target!!.posX + -Math.sin(Math.toRadians(target.rotationYaw.toDouble())) * -2
             val zPos: Double = target!!.posZ + Math.cos(Math.toRadians(target.rotationYaw.toDouble())) * -2
-            event.setX((moveSpeed - lowSpeed.get()) * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+            event.setX(moveSpeed * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
                 .toFloat()))
-            event.setZ((moveSpeed - lowSpeed.get()) * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+            event.setZ(moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
                 .toFloat()))
         } else {
             if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
-                MovementUtils.setSpeed(event, (moveSpeed - lowSpeed.get()), rotYaw, direction.toDouble(), 0.0)
+                MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 0.0)
             else
-                MovementUtils.setSpeed(event, (moveSpeed - lowSpeed.get()), rotYaw, direction.toDouble(), 1.0)
+                MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 1.0)
         }
 
     }
@@ -135,7 +136,7 @@ class TargetStrafe : Module() {
         }
 
     val canStrafe: Boolean
-        get() = (state && (speed.state || fly.state || onground.get() && mc.thePlayer.onGround || !mc.thePlayer.onGround && air.get()) && killAura.state && killAura.target != null && !mc.thePlayer.isSneaking && keyMode)
+        get() = (state && (speed.state || fly.state || always.get()) && (onground.get() && mc.thePlayer.onGround || !mc.thePlayer.onGround && air.get()) && killAura.state && killAura.target != null && !mc.thePlayer.isSneaking && keyMode)
 
     private fun checkVoid(): Boolean {
         for (x in -1..0) {
