@@ -39,9 +39,9 @@ class HypixelNew : SpeedMode("HypixelNew") {
                 mc.thePlayer.motionZ *= (1.0 + speedModule.customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(
                     Potion.moveSpeed).amplifier + 1))
             }
-            if(mc.thePlayer.fallDistance > 0){
-                MovementUtils.strafe()
-            }
+        }
+        if(mc.thePlayer.fallDistance > 0){
+            MovementUtils.strafe()
         }
     }
 
