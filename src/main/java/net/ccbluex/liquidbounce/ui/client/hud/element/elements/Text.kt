@@ -233,7 +233,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
             RenderUtils.drawRect(-2F, -2F, fontRenderer.getStringWidth(displayText) + 2F, fontRenderer.FONT_HEIGHT + 0F, Color(bgredValue.get(), bggreenValue.get(), bgblueValue.get(), bgalphaValue.get()))
         }
 
-        if (backgroundValue.get()) {
+        if (roundBackgroundValue.get()) {
             RenderUtils.drawRoundedRect(-2F, -2F, fontRenderer.getStringWidth(displayText) + 2F, fontRenderer.FONT_HEIGHT + 0F,2f, Color(bgredValue.get(), bggreenValue.get(), bgblueValue.get(), bgalphaValue.get()).rgb)
         }
 

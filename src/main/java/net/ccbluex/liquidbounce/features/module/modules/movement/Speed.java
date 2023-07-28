@@ -119,7 +119,8 @@ public class Speed extends Module {
             new MatrixTimerBalance(),
             new MatrixMultiply(),
             new MatrixDynamic(),
-            new Matrix692()
+            new Matrix692(),
+            new MatrixLowHop()
     };
 
     public final ListValue typeValue = new ListValue("Type", new String[]{"NCP", "AAC", "Spartan", "Spectre", "Hypixel", "Verus", "Vulcan", "Matrix", "Custom", "Other"}, "NCP") {
@@ -266,7 +267,7 @@ public class Speed extends Module {
         }
     };
 
-    public final ListValue matrixModeValue = new ListValue("Matrix-Mode", new String[]{"Matrix6.9.2", "MatrixSemiStrafe", "MatrixTimerBalance", "MatrixMultiply", "MatrixDynamic"}, "MatrixSemiStrafe", () -> typeValue.get().equalsIgnoreCase("matrix")) {
+    public final ListValue matrixModeValue = new ListValue("Matrix-Mode", new String[]{"Matrix6.9.2", "MatrixSemiStrafe", "MatrixTimerBalance", "MatrixMultiply", "MatrixDynamic","MatrixLowHop"}, "MatrixSemiStrafe", () -> typeValue.get().equalsIgnoreCase("matrix")) {
 
         @Override
         protected void onChange(final String oldValue, final String newValue) {
