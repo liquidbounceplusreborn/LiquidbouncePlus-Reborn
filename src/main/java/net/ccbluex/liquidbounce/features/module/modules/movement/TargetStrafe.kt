@@ -22,7 +22,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
@@ -32,7 +31,7 @@ import java.awt.Color
 
 @ModuleInfo(name = "TargetStrafe", description = "Strafe around your target. (Require Fly or Speed to be enabled)", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
-    val behind = BoolValue("Behind",false)
+    private val radiusMode = ListValue("StrafeMode", arrayOf("TrueRadius", "Simple","Behind"), "Behind")
     val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
     private val render = BoolValue("Render", true)
     private val alwaysRender = BoolValue("Always-Render", true, { render.get() })
@@ -61,6 +60,17 @@ class TargetStrafe : Module() {
     var lastView: Int = 0
     var hasChangedThirdPerson: Boolean = true
 
+    val cansize: Float
+        get() = when {
+            radiusMode.get().toLowerCase() == "simple" ->
+                45f / mc.thePlayer!!.getDistance(killAura.target!!.posX, mc.thePlayer!!.posY, killAura.target!!.posZ).toFloat()
+            else -> 45f
+        }
+    val Enemydistance: Double
+        get() = mc.thePlayer!!.getDistance(killAura.target!!.posX, mc.thePlayer!!.posY, killAura.target!!.posZ)
+
+    val algorithm: Float
+        get() = Math.max(Enemydistance - radius.get(), Enemydistance - (Enemydistance - radius.get() / (radius.get() * 2))).toFloat()
 
 
     override fun onEnable() {
@@ -111,21 +121,67 @@ class TargetStrafe : Module() {
 
         val rotYaw = RotationUtils.getRotationsEntity(killAura.target).yaw
 
-        if (behind.get()) {
-            val xPos: Double = target!!.posX + -Math.sin(Math.toRadians(target.rotationYaw.toDouble())) * -2
-            val zPos: Double = target!!.posZ + Math.cos(Math.toRadians(target.rotationYaw.toDouble())) * -2
-            event.setX(moveSpeed * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
-                .toFloat()))
-            event.setZ(moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
-                .toFloat()))
-        } else {
-            if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
-                MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 0.0)
-            else
-                MovementUtils.setSpeed(event, moveSpeed, rotYaw, direction.toDouble(), 1.0)
+        when (radiusMode.get()){
+            "TrueRadius" -> {
+                if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
+                    setSpeed(event, moveSpeed, rotYaw, direction, 0.0)
+                else
+                    setSpeed(event, moveSpeed, rotYaw, direction, 1.0)
+            }
+            "Simple" -> {
+                if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
+                    setSpeed(event, moveSpeed, rotYaw, direction, 0.0)
+                else
+                    setSpeed(event, moveSpeed, rotYaw, direction, 1.0)
+            }
+            "Behind" -> {
+                val xPos: Double = target!!.posX + -Math.sin(Math.toRadians(target.rotationYaw.toDouble())) * -2
+                val zPos: Double = target.posZ + Math.cos(Math.toRadians(target.rotationYaw.toDouble())) * -2
+                event.setX(moveSpeed * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+                    .toFloat()))
+                event.setZ(moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+                    .toFloat()))
+            }
         }
-
     }
+
+    fun setSpeed(
+        moveEvent: MoveEvent, moveSpeed: Double, pseudoYaw: Float, pseudoStrafe: Int,
+        pseudoForward: Double) {
+        var yaw = pseudoYaw
+        var forward = pseudoForward
+        var strafe = pseudoStrafe
+        var strafe2 = 0f
+
+        if (forward != 0.0) {
+            if (strafe > 0.0) {
+                if (radiusMode.get().toLowerCase() == "trueradius")
+                    yaw += (if (forward > 0.0) -cansize else cansize)
+                strafe2 += (if (forward > 0.0) -45 / algorithm else 45 / algorithm)
+            } else if (strafe < 0.0) {
+                if (radiusMode.get().toLowerCase() == "trueradius")
+                    yaw += (if (forward > 0.0) cansize else -cansize)
+                strafe2 += (if (forward > 0.0) 45 / algorithm else -45 / algorithm)
+            }
+            strafe = 0
+            if (forward > 0.0)
+                forward = 1.0
+            else if (forward < 0.0)
+                forward = -1.0
+
+        }
+        if (strafe > 0.0)
+            strafe = 1
+        else if (strafe < 0.0)
+            strafe = -1
+
+
+        val mx = Math.cos(Math.toRadians(yaw + 90.0 + strafe2))
+        val mz = Math.sin(Math.toRadians(yaw + 90.0 + strafe2))
+        moveEvent.x = forward * moveSpeed * mx + strafe * moveSpeed * mz
+        moveEvent.z = forward * moveSpeed * mz - strafe * moveSpeed * mx
+    }
+
 
     val keyMode: Boolean
         get() = when (modeValue.get().toLowerCase()) {
