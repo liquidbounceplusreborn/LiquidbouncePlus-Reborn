@@ -40,9 +40,6 @@ class HypixelNew : SpeedMode("HypixelNew") {
                     Potion.moveSpeed).amplifier + 1))
             }
         }
-        if(mc.thePlayer.fallDistance > 0){
-            MovementUtils.strafe()
-        }
     }
 
     override fun onMove(event: MoveEvent?) {
