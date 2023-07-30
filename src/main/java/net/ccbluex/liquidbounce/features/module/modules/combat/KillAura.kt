@@ -171,7 +171,7 @@ class KillAura : Module() {
 
 
     // AutoBlock
-    private val autoBlockModeValue = ListValue("AutoBlock", arrayOf("None", "Packet", "AfterTick", "NCP", "OldHypixel", "TestHypixel","Vanilla","Hypixel"), "None")
+    private val autoBlockModeValue = ListValue("AutoBlock", arrayOf("None", "Packet", "AfterTick", "NCP", "OldHypixel", "TestHypixel","Vanilla"), "None")
 
     private val displayAutoBlockSettings = BoolValue("Open-AutoBlock-Settings", false, { !autoBlockModeValue.get().equals("None", true) })
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true, { !autoBlockModeValue.get().equals("None", true) && displayAutoBlockSettings.get() })
@@ -800,13 +800,6 @@ class KillAura : Module() {
 
         // Call attack event
         LiquidBounce.eventManager.callEvent(AttackEvent(entity))
-        if (mc.thePlayer.isBlocking || blockingStatus) {
-            if (autoBlockModeValue.isMode("Hypixel")) {
-                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
-                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                blockingStatus = false
-            }
-        }
 
         markEntity = entity
 
@@ -838,14 +831,6 @@ class KillAura : Module() {
         } else {
             if (mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR)
                 mc.thePlayer.attackTargetEntityWithCurrentItem(entity)
-        }
-        if (mc.thePlayer.isBlocking || canBlock) {
-            if (autoBlockModeValue.isMode("Hypixel")) {
-                startBlocking(
-                    entity,
-                    interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange)
-                )
-            }
         }
         // Extra critical effects
         val criticals = LiquidBounce.moduleManager[Criticals::class.java] as Criticals

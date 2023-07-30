@@ -11,9 +11,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.extensions.rayTraceCustom
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -26,11 +25,12 @@ import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.*
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.MovingObjectPosition
 
 @ModuleInfo(name = "NoSlow", spacedName = "No Slow", category = ModuleCategory.MOVEMENT, description = "Prevent you from getting slowed down by items (swords, foods, etc.) and liquids.")
 class NoSlow : Module() {
     private val msTimer = MSTimer()
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "Blink", "Intave", "NCP", "AAC", "AAC5", "Custom","OldIntave"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "Blink", "Intave", "NCP", "AAC", "AAC5", "Custom","OldIntave","Watchdog"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
@@ -165,6 +165,36 @@ class NoSlow : Module() {
                 }
             }
         }
+        if(modeValue.isMode("Watchdog")){
+            if (packet is C08PacketPlayerBlockPlacement) {
+                if (mc.gameSettings.keyBindUseItem.isKeyDown && mc.thePlayer.heldItem != null && (mc.thePlayer.heldItem.item is ItemFood || mc.thePlayer.heldItem.item is ItemBucketMilk || mc.thePlayer.heldItem.item is ItemPotion && !ItemPotion.isSplash(mc.thePlayer.heldItem.metadata) || mc.thePlayer.heldItem.item is ItemBow)) {
+                    if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit === MovingObjectPosition.MovingObjectType.BLOCK && (packet as C08PacketPlayerBlockPlacement).position != BlockPos(-1, -1, 1)) return
+                    event.cancelEvent()
+                    val position: MovingObjectPosition = mc.thePlayer.rayTraceCustom(
+                        mc.playerController.blockReachDistance.toDouble(), mc.thePlayer.rotationYaw, 90f)
+                        ?: return
+                    val rot = Rotation(mc.thePlayer.rotationYaw, 90f)
+                    RotationUtils.setTargetRotation(rot)
+                    sendUseItem(position)
+                }
+            }
+        }
+    }
+
+    private fun sendUseItem(mouse: MovingObjectPosition) {
+        val facingX = (mouse.hitVec.xCoord - mouse.blockPos.x.toDouble()).toFloat()
+        val facingY = (mouse.hitVec.yCoord - mouse.blockPos.y.toDouble()).toFloat()
+        val facingZ = (mouse.hitVec.zCoord - mouse.blockPos.z.toDouble()).toFloat()
+        PacketUtils.sendPacketNoEvent(
+            C08PacketPlayerBlockPlacement(
+                mouse.blockPos,
+                mouse.sideHit.index,
+                mc.thePlayer.heldItem,
+                facingX,
+                facingY,
+                facingZ
+            )
+        )
     }
 
     @EventTarget
@@ -242,6 +272,17 @@ class NoSlow : Module() {
                                 ).stack
                             )
                         )
+                    }
+                }
+            }
+            "watchdog" -> {
+                if ((mc.thePlayer.isUsingItem || killAura.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
+                    if (event.eventState == EventState.PRE){
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    }
+                    if(event.eventState == EventState.POST){
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
                     }
                 }
             }
