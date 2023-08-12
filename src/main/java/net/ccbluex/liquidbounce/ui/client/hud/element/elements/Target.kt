@@ -94,6 +94,7 @@ class Target : Element() {
     init {
         styleValue = ListValue("Style", addStyles(
             Astolfo(this),
+            Astolfo2(this),
             AsuidBounce(this),
             Chill(this),
             Distance(this),
