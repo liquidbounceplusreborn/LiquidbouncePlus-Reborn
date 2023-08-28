@@ -79,6 +79,7 @@ class Scaffold : Module() {
             "AAC3.6.4",
             "Verus",
             "Hypixel",
+            "BlocksMC",
         ), "Motion"
     ) { towerEnabled.get() }
     private val noMoveOnlyValue = BoolValue("NoMove", true) { towerEnabled.get() }
@@ -516,6 +517,22 @@ class Scaffold : Module() {
 
             "hypixel" -> {
                 hypixelTower()
+            }
+            "blocksmc" -> {
+                if (mc.thePlayer.posY % 1 <= 0.00153598) {
+                    mc.thePlayer.setPosition(
+                        mc.thePlayer.posX,
+                        floor(mc.thePlayer.posY),
+                        mc.thePlayer.posZ
+                    )
+                    mc.thePlayer.motionY = 0.42
+                } else if (mc.thePlayer.posY % 1 < 0.1 && offGroundTicks != 0) {
+                    mc.thePlayer.setPosition(
+                        mc.thePlayer.posX,
+                        floor(mc.thePlayer.posY),
+                        mc.thePlayer.posZ
+                    )
+                }
             }
         }
     }
