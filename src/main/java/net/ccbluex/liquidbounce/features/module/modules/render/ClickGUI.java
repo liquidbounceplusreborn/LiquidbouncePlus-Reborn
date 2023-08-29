@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.dropdown.DropdownGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.FluxClassic;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
@@ -28,7 +29,7 @@ public class ClickGUI extends Module {
     public float animationHeight = 0;
 
     public String configName = "Basic";
-    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap"}, "Null") {
+    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap","DropDown"}, "Null") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -53,7 +54,7 @@ public class ClickGUI extends Module {
     public final ListValue animationValue = new ListValue("Animation", new String[]{"Azura", "Slide", "SlideBounce", "Zoom", "ZoomBounce", "None"}, "Azura");
     public final FloatValue animSpeedValue = new FloatValue("AnimSpeed", 1F, 0.01F, 5F, "x");
 
-    public final BoolValue getClosePrevious = (BoolValue) new BoolValue("ClosePrevious",false);
+    public final BoolValue getGetClosePrevious = new BoolValue("ClosePrevious",false);
    public final BoolValue disp = new BoolValue("DisplayValue", false);
 
     public static Color generateColor() {
@@ -81,6 +82,8 @@ public class ClickGUI extends Module {
         return c;
     }
 
+    DropdownGUI dropdownGUI = new DropdownGUI();
+
     @Override
     public void onEnable() {
         if (styleValue.get().contains("Novoline")) {
@@ -101,6 +104,9 @@ public class ClickGUI extends Module {
                         } else {
                             if (styleValue.get().equalsIgnoreCase("Chocolate")) {
                                 mc.displayGuiScreen(new SkeetStyle());
+                            }
+                            if (styleValue.get().equalsIgnoreCase("DropDown")) {
+                                mc.displayGuiScreen(dropdownGUI);
                             }else {
                                     updateStyle();
                                     mc.displayGuiScreen(LiquidBounce.clickGui);
