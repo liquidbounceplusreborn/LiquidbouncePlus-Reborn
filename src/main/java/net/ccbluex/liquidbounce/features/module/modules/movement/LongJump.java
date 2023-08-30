@@ -6,13 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.EventTarget;
-import net.ccbluex.liquidbounce.event.JumpEvent;
-import net.ccbluex.liquidbounce.event.MotionEvent;
-import net.ccbluex.liquidbounce.event.MoveEvent;
-import net.ccbluex.liquidbounce.event.UpdateEvent;
-import net.ccbluex.liquidbounce.event.PacketEvent;
-import net.ccbluex.liquidbounce.event.Render3DEvent;
+import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
@@ -35,7 +29,7 @@ import net.minecraft.util.EnumFacing;
 @ModuleInfo(name = "LongJump", spacedName = "Long Jump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT)
 public class LongJump extends Module {
 
-    private final ListValue modeValue = new ListValue("Mode", new String[] {"NCP", "Damage", "AACv1", "AACv2", "AACv3", "AACv4", "Mineplex", "Mineplex2", "Mineplex3", "RedeskyMaki", "Redesky", "InfiniteRedesky", "MatrixFlag", "VerusDmg", "Pearl"}, "NCP");
+    private final ListValue modeValue = new ListValue("Mode", new String[] {"NCP", "Damage", "AACv1", "AACv2", "AACv3", "AACv4", "Mineplex", "Mineplex2", "Mineplex3", "RedeskyMaki", "Redesky", "InfiniteRedesky", "MatrixFlag", "VerusDmg", "Pearl","WatchdogDmg"}, "NCP");
     private final BoolValue autoJumpValue = new BoolValue("AutoJump", false);
 
     private final FloatValue ncpBoostValue = new FloatValue("NCPBoost", 4.25F, 1F, 10F, () -> modeValue.get().equalsIgnoreCase("ncp"));
@@ -97,6 +91,10 @@ public class LongJump extends Module {
 
     private MSTimer dmgTimer = new MSTimer();
     private PosLookInstance posLookInstance = new PosLookInstance();
+
+    private int stage;
+    private boolean watchdogDmged;
+    private double speed;
 
     private void debug(String message) {
         if (matrixDebugValue.get())
@@ -402,6 +400,39 @@ public class LongJump extends Module {
     }
 
     @EventTarget
+    private void onMotion(MotionEvent event) {
+        if (event.getEventState() == EventState.PRE) {
+            if (modeValue.isMode("WatchdogDmg")) {
+                if (mc.thePlayer.onGround) {
+                    stage++;
+                    if (stage <= 3)
+                        mc.thePlayer.jump();
+                    //if (stage > 5 && damaged)
+                        //toggle();
+                }
+                if (stage <= 3) {
+                    event.setOnGround(false);
+                    //mc.thePlayer.posY = y;
+                    mc.timer.timerSpeed = 1.2f;
+                    speed = 1.2;
+                }
+                if (mc.thePlayer.hurtTime > 0) {
+                    watchdogDmged = true;
+                    ticks++;
+                    if (ticks < 2)
+                        mc.thePlayer.motionY = 0.41999998688698;
+                    MovementUtils.setSpeed(MovementUtils.getBaseMoveSpeed() * speed);
+                    speed -= 0.01;
+                    mc.timer.timerSpeed = 1;
+                }
+                if (watchdogDmged) {
+                    mc.thePlayer.motionY += 0.0049;
+                }
+            }
+        }
+    }
+
+    @EventTarget
     public void onMove(final MoveEvent event) {
         final String mode = modeValue.get();
 
@@ -414,7 +445,7 @@ public class LongJump extends Module {
             event.zeroXZ();
         }
 
-        if ((mode.equalsIgnoreCase("damage") && damageNoMoveValue.get() && !damaged) || (mode.equalsIgnoreCase("verusdmg") && !verusDmged))
+        if ((mode.equalsIgnoreCase("damage") && damageNoMoveValue.get() && !damaged) || (mode.equalsIgnoreCase("verusdmg") && !verusDmged) || (modeValue.isMode("WatchdogDmg") && !watchdogDmged))
             event.zeroXZ();
 
         if (mode.equalsIgnoreCase("pearl") && pearlState != 2)
