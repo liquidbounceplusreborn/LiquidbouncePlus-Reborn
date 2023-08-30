@@ -50,6 +50,11 @@ class HypixelCustom: SpeedMode("HypixelCustom") {
             thePlayer.motionX *= 0.0
             thePlayer.motionZ *= 0.0
         }
+        if (!(mc.thePlayer!!.movementInput.moveForward != 0F || mc.thePlayer!!.movementInput.moveStrafe != 0F)) {
+                mc.thePlayer!!.motionX = 0.0
+                mc.thePlayer!!.motionZ = 0.0
+            return
+        }
     }
 
     override fun onMove(event: MoveEvent) {
