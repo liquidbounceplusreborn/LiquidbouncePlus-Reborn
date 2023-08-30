@@ -25,12 +25,22 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", description = "Opens the ClickGUI.", category = ModuleCategory.RENDER, keyBind = Keyboard.KEY_RSHIFT, forceNoSound = true, onlyEnable = true)
 public class ClickGUI extends Module {
-
-    public ModuleCategory moduleCategory = ModuleCategory.COMBAT;
-    public float animationHeight = 0;
-
-    public String configName = "Basic";
-    private final ListValue styleValue = new ListValue("Style", new String[]{"LiquidBounce", "Null", "Slowly", "Black", "White", "Astolfo", "Test", "Novoline", "Flux","Zeroday","Chocolate", "OneTap","DropDown"}, "Null") {
+    private final ListValue styleValue = new ListValue("Style",
+            new String[]{
+                    "LiquidBounce",
+                    "Null",
+                    "Slowly",
+                    "Black",
+                    "White",
+                    "Astolfo",
+                    "Test",
+                    "Novoline",
+                    "Flux",
+                    "Zeroday",
+                    "Chocolate",
+                    "OneTap",
+                    "DropDown"},
+            "LiquidBounce") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -41,9 +51,9 @@ public class ClickGUI extends Module {
     public final IntegerValue maxElementsValue = new IntegerValue("MaxElements", 15, 1, 20);
 
     public static final ListValue colorModeValue = new ListValue("Color", new String[]{"Custom", "Sky", "Rainbow", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
-    public static final IntegerValue colorRedValue = new IntegerValue("Red", 0, 0, 255);
-    public static final IntegerValue colorGreenValue = new IntegerValue("Green", 160, 0, 255);
-    public static final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
+    public static final IntegerValue colorRedValue = new IntegerValue("Red", 0, 0, 255, () -> colorModeValue.get().equalsIgnoreCase("custom"));
+    public static final IntegerValue colorGreenValue = new IntegerValue("Green", 160, 0, 255, () -> colorModeValue.get().equalsIgnoreCase("custom"));
+    public static final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255, () -> colorModeValue.get().equalsIgnoreCase("custom"));
     public static final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
     public static final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
     public static final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
@@ -56,10 +66,12 @@ public class ClickGUI extends Module {
     public final FloatValue animSpeedValue = new FloatValue("AnimSpeed", 1F, 0.01F, 5F, "x");
 
     public final FloatValue scale = new FloatValue("AstolfoScale", 1f, 0f, 10f, () -> styleValue.get().equalsIgnoreCase("astolfo"));;
-
     public final FloatValue scroll = new FloatValue("Scroll", 20f, 0f, 200f, () -> styleValue.get().equalsIgnoreCase("astolfo"));;
-    public final BoolValue getGetClosePrevious = new BoolValue("ClosePrevious",false, () -> styleValue.get().equalsIgnoreCase("dropdown"));;
-   public final BoolValue disp = new BoolValue("DisplayValue", false, () -> styleValue.get().equalsIgnoreCase("onetap"));
+    public final BoolValue getGetClosePrevious = new BoolValue("ClosePrevious",false, () -> styleValue.get().equalsIgnoreCase("dropdown"));
+    public final BoolValue disp = new BoolValue("DisplayValue", false, () -> styleValue.get().equalsIgnoreCase("onetap"));
+
+    DropdownGUI dropdownGUI = null;
+    AstolfoClickGui astolfoClickGui = null;
 
     public static Color generateColor() {
         Color c = new Color(255, 255, 255, 255);
@@ -86,49 +98,54 @@ public class ClickGUI extends Module {
         return c;
     }
 
-    DropdownGUI dropdownGUI = new DropdownGUI();
+    private DropdownGUI getDropdownGUI() {
+        if (dropdownGUI == null)
+            dropdownGUI = new DropdownGUI();
+        return dropdownGUI;
+    }
 
-    AstolfoClickGui astolfoClickGui = new AstolfoClickGui();
+    private AstolfoClickGui getAstolfoClickGui() {
+        if (astolfoClickGui == null)
+            astolfoClickGui = new AstolfoClickGui();
+        return astolfoClickGui;
+    }
+
 
     @Override
     public void onEnable() {
-        if (styleValue.get().contains("Novoline")) {
-            mc.displayGuiScreen(new ClickyUI());
-            this.setState(false);
-        } else {
-            if (styleValue.get().contains("Flux")) {
+        switch (styleValue.get().toLowerCase()) {
+            case "novoline":
+                mc.displayGuiScreen(new ClickyUI());
+                this.setState(false);
+                break;
+            case "flux":
                 mc.displayGuiScreen(new FluxClassic());
                 this.setState(false);
-            } else {
-                if (styleValue.get().contains("Zeroday")) {
-                    mc.displayGuiScreen(new ClickUI());
-                    this.setState(false);
-                } else {
-                    if (styleValue.get().contains("OneTap")) {
-                        mc.displayGuiScreen(new OtcClickGUi());
-                        this.setState(false);
-                    } else {
-                        if (styleValue.get().equalsIgnoreCase("Chocolate")) {
-                            mc.displayGuiScreen(new SkeetStyle());
-                        } else {
-                            if (styleValue.get().equalsIgnoreCase("DropDown")) {
-                                mc.displayGuiScreen(dropdownGUI);
-                            } else {
-                                if (styleValue.get().equalsIgnoreCase("Astolfo")) {
-                                    mc.displayGuiScreen(astolfoClickGui);
-                                } else {
-                                    updateStyle();
-                                    mc.displayGuiScreen(LiquidBounce.clickGui);
-                                    LiquidBounce.clickGui.progress = 0;
-                                    LiquidBounce.clickGui.slide = 0;
-                                    LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
-                                    mc.displayGuiScreen(LiquidBounce.clickGui);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+                break;
+            case "zeroday":
+                mc.displayGuiScreen(new ClickUI());
+                this.setState(false);
+                break;
+            case "onetap":
+                mc.displayGuiScreen(new OtcClickGUi());
+                this.setState(false);
+                break;
+            case "chocolate":
+                mc.displayGuiScreen(new SkeetStyle());
+                break;
+            case "dropdown":
+                mc.displayGuiScreen(getDropdownGUI());
+                break;
+            case "astolfo":
+                mc.displayGuiScreen(getAstolfoClickGui());
+                break;
+            default:
+                updateStyle();
+                mc.displayGuiScreen(LiquidBounce.clickGui);
+                LiquidBounce.clickGui.progress = 0;
+                LiquidBounce.clickGui.slide = 0;
+                LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
+                mc.displayGuiScreen(LiquidBounce.clickGui);
         }
     }
 

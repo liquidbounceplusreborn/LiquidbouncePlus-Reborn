@@ -22,7 +22,7 @@ class AstolfoCategoryPanel(x: Float, y: Float, var category: ModuleCategory, var
 
   init {
     val startY = y + height
-    for ((count, mod) in LiquidBounce.moduleManager.modules.filter { it.category === category }.withIndex()) {
+    for ((count, mod) in LiquidBounce.moduleManager.modules.filter { it.category.displayName.equals(this.category.displayName, true)}.withIndex()) {
       ClientUtils.getLogger().info("Added ${mod.name} to ${this.category.displayName}")
       moduleButtons.add(AstolfoModuleButton(x, startY + height * count, width, height, mod, color))
     }
