@@ -4,9 +4,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI
 import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI.generateColor
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.AstolfoConstants
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.buttons.AstolfoCategoryPanel
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
@@ -19,7 +17,7 @@ import kotlin.math.roundToInt
  * Astolfo Click GUI
  *
  * Designed in a way that only this class know about scale and scrolling.
- * @author shoutoGG
+ * @author pii4
  * @property panels  the categories
  * @property scale scale factor
  * @property scroll scroll amount
@@ -41,10 +39,10 @@ class AstolfoClickGui : GuiScreen() {
   }
 
   init {
-    var count = 0
+    var xPos = 4f
     for (cat in ModuleCategory.values()) {
-      panels.add(AstolfoCategoryPanel(count.toFloat(), 4f, cat,generateColor()))
-      count += AstolfoConstants.PANEL_WIDTH.toInt() + 10
+      panels.add(AstolfoCategoryPanel(xPos, 4f, cat,generateColor()))
+      xPos += AstolfoConstants.PANEL_WIDTH.toInt() + 10
     }
   }
 
@@ -102,44 +100,10 @@ class AstolfoClickGui : GuiScreen() {
 
   @Throws(IOException::class)
   override fun mouseClicked(mouseXIn: Int, mouseYIn: Int, mouseButton: Int) {
-    mouseAction(mouseXIn, mouseYIn, mouseButton, true)/*
-        val mouseX = (mouseXIn / scale).roundToInt()
-        val mouseY = (mouseYIn / scale).roundToInt()
-
-        for (panel in panels) {
-          panel.mouseAction(mouseX, mouseY, true, mouseButton)
-          if (panel.open) {
-            for (moduleButton in panel.moduleButtons) {
-              moduleButton.mouseAction(mouseX, mouseY, true, mouseButton)
-              if (moduleButton.open) {
-                for (pan in moduleButton.valueButtons) {
-                  pan.mouseAction(mouseX, mouseY, true, mouseButton)
-                }
-              }
-            }
-          }
-        }
-    */
+    mouseAction(mouseXIn, mouseYIn, mouseButton, true)
   }
 
   override fun mouseReleased(mouseXIn: Int, mouseYIn: Int, mouseButton: Int) {
-    mouseAction(mouseXIn, mouseYIn, mouseButton, false)/*
-        val mouseX = (mouseXIn / scale).roundToInt()
-        val mouseY = (mouseYIn / scale).roundToInt()
-
-        for (panel in panels) {
-          panel.mouseAction(mouseX, mouseY, false, mouseButton)
-          if (panel.open) {
-            for (moduleButton in panel.moduleButtons) {
-              moduleButton.mouseAction(mouseX, mouseY, false, mouseButton)
-              if (moduleButton.open) {
-                for (valueButton in moduleButton.valueButtons) {
-                  valueButton.mouseAction(mouseX, mouseY, false, mouseButton)
-                }
-              }
-            }
-          }
-        }
-    */
+    mouseAction(mouseXIn, mouseYIn, mouseButton, false)
   }
 }
