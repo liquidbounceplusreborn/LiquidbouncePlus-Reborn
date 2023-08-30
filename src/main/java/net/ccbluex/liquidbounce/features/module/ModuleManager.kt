@@ -251,6 +251,7 @@ class ModuleManager : Listenable {
             registerModule(moduleClass.newInstance())
         } catch (e: Throwable) {
             ClientUtils.getLogger().error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
+            e.printStackTrace();
         }
     }
 
