@@ -171,7 +171,7 @@ class KillAura : Module() {
 
 
     // AutoBlock
-    private val autoBlockModeValue = ListValue("AutoBlock", arrayOf("None", "Packet", "AfterTick", "NCP", "OldHypixel", "TestHypixel","Vanilla"), "None")
+    private val autoBlockModeValue = ListValue("AutoBlock", arrayOf("None", "Packet", "AfterTick", "NCP", "OldHypixel","Vanilla","Hypixel"), "None")
 
     private val displayAutoBlockSettings = BoolValue("Open-AutoBlock-Settings", false, { !autoBlockModeValue.get().equals("None", true) })
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true, { !autoBlockModeValue.get().equals("None", true) && displayAutoBlockSettings.get() })
@@ -344,12 +344,6 @@ class KillAura : Module() {
             if (autoBlockModeValue.get().equals("AfterTick", true) && canBlock)
                 startBlocking(currentTarget!!, hitable)
         }
-        if (autoBlockModeValue.get().equals("TestHypixel", true) && canBlock)
-            if (mc.thePlayer.swingProgressInt == 1) {
-                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
-            } else if (mc.thePlayer.swingProgressInt == 2) {
-                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()))
-            }
 
         if (rotationStrafeValue.get().equals("Off", true))
             update()
@@ -798,13 +792,27 @@ class KillAura : Module() {
         if (mc.thePlayer.isBlocking || blockingStatus)
             stopBlocking()
 
+        if (mc.thePlayer.isBlocking || blockingStatus) {
+            if (autoBlockModeValue.isMode("Hypixel"))
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
+            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+            blockingStatus = false
+        }
+
+
         // Call attack event
         LiquidBounce.eventManager.callEvent(AttackEvent(entity))
 
         markEntity = entity
 
         if (autoBlockModeValue.equals("Vanilla") && (mc.thePlayer.isBlocking || blockingStatus)) {
-            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+            mc.netHandler.addToSendQueue(
+                C07PacketPlayerDigging(
+                    C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                    BlockPos.ORIGIN,
+                    EnumFacing.DOWN
+                )
+            )
         }
 
         // Attack target
@@ -819,7 +827,8 @@ class KillAura : Module() {
         if (keepSprintValue.get()) {
             // Critical Effect
             if (mc.thePlayer.fallDistance > 0F && !mc.thePlayer.onGround && !mc.thePlayer.isOnLadder &&
-                !mc.thePlayer.isInWater && !mc.thePlayer.isPotionActive(Potion.blindness) && !mc.thePlayer.isRiding)
+                !mc.thePlayer.isInWater && !mc.thePlayer.isPotionActive(Potion.blindness) && !mc.thePlayer.isRiding
+            )
                 mc.thePlayer.onCriticalHit(entity)
 
             // Enchant Effect
@@ -837,17 +846,35 @@ class KillAura : Module() {
 
         for (i in 0..2) {
             // Critical Effect
-            if (mc.thePlayer.fallDistance > 0F && !mc.thePlayer.onGround && !mc.thePlayer.isOnLadder && !mc.thePlayer.isInWater && !mc.thePlayer.isPotionActive(Potion.blindness) && mc.thePlayer.ridingEntity == null || criticals.state && criticals.msTimer.hasTimePassed(criticals.delayValue.get().toLong()) && !mc.thePlayer.isInWater && !mc.thePlayer.isInLava && !mc.thePlayer.isInWeb)
+            if (mc.thePlayer.fallDistance > 0F && !mc.thePlayer.onGround && !mc.thePlayer.isOnLadder && !mc.thePlayer.isInWater && !mc.thePlayer.isPotionActive(
+                    Potion.blindness
+                ) && mc.thePlayer.ridingEntity == null || criticals.state && criticals.msTimer.hasTimePassed(
+                    criticals.delayValue.get().toLong()
+                ) && !mc.thePlayer.isInWater && !mc.thePlayer.isInLava && !mc.thePlayer.isInWeb
+            )
                 mc.thePlayer.onCriticalHit(target)
 
             // Enchant Effect
-            if (EnchantmentHelper.getModifierForCreature(mc.thePlayer.heldItem, target!!.creatureAttribute) > 0.0f || (fakeSharpValue.get() && (!fakeSharpSword.get() || canBlock)))
+            if (EnchantmentHelper.getModifierForCreature(
+                    mc.thePlayer.heldItem,
+                    target!!.creatureAttribute
+                ) > 0.0f || (fakeSharpValue.get() && (!fakeSharpSword.get() || canBlock))
+            )
                 mc.thePlayer.onEnchantmentCritical(target)
         }
 
         // Start blocking after attack
-        if ((!afterTickPatchValue.get() || !autoBlockModeValue.get().equals("AfterTick", true)) && (mc.thePlayer.isBlocking || canBlock))
+        if ((!afterTickPatchValue.get() || !autoBlockModeValue.get()
+                .equals("AfterTick", true)) && (mc.thePlayer.isBlocking || canBlock)
+        )
             startBlocking(entity, interactAutoBlockValue.get())
+
+        if (mc.thePlayer.isBlocking || canBlock) {
+            if (autoBlockModeValue.isMode("Hypixel")) {
+                startBlocking(entity,(mc.thePlayer.getDistanceToEntityBox(entity) < maxRange)
+                )
+            }
+        }
     }
 
     /**
