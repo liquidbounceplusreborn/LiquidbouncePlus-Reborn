@@ -217,7 +217,9 @@ open class ColorValue(name: String, value: Int, displayable: () -> Boolean) : Va
  */
 class FontValue(valueName: String, value: FontRenderer, displayable: () -> Boolean) : Value<FontRenderer>(valueName, value, displayable) {
 
-    constructor(valueName: String, value: FontRenderer): this(valueName, value, { true } )
+    var openList = false
+
+    constructor(valueName: String, value: FontRenderer) : this(valueName, value, { true })
 
     override fun toJson(): JsonElement? {
         val fontDetails = Fonts.getFontDetails(value) ?: return null
@@ -238,7 +240,9 @@ class FontValue(valueName: String, value: FontRenderer, displayable: () -> Boole
  * Block value represents a value with a block
  */
 class BlockValue(name: String, value: Int, displayable: () -> Boolean) : IntegerValue(name, value, 1, 197, displayable) {
-    constructor(name: String, value: Int): this(name, value, { true } )
+    var openList = false
+
+    constructor(name: String, value: Int) : this(name, value, { true })
 }
 
 /**
@@ -290,11 +294,15 @@ open class ListValue(name: String, val values: Array<String>, value: String, dis
         }
     }
 
+    fun nextValue() {
+        var index = values.indexOf(value) + 1
+        if (index > values.size - 1) index = 0
+        value = values[index]
+    }
+
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive) changeValue(element.asString)
     }
-
-
 }

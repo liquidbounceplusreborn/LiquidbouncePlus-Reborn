@@ -193,7 +193,6 @@ class ModuleManager : Listenable {
             ComboOneHit::class.java,
             AutoLeave::class.java,
             BedGodMode::class.java,
-            Damage::class.java,
             Ghost::class.java,
             NoBob::class.java,
             GodMode::class.java,

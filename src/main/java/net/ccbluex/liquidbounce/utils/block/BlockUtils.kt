@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.block.Block
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
+import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
@@ -138,4 +139,23 @@ object BlockUtils : MinecraftInstance() {
 
     @JvmStatic
     fun floorVec3(vec3: Vec3) = Vec3(floor(vec3.xCoord),floor(vec3.yCoord),floor(vec3.zCoord))
+
+    private val blockNames = mutableListOf<Pair<String, Int>>()
+
+    fun getBlockNamesAndIDs(): Array<Pair<String, Int>> {
+        if (blockNames.isEmpty()) {
+            for (id in 0..32768) { // arbitrary
+                val block = Block.getBlockById(id)
+                if (block === Blocks.air) continue
+
+                blockNames.add(block.registryName.replace(Regex("^minecraft:"), "") to id)
+            }
+            blockNames.sortBy { it.first }
+        }
+        return blockNames.toTypedArray()
+    }
+
+    fun getBlockName2(id: Int): String {
+        return Block.getBlockById(id).registryName.replace(Regex("^minecraft:"), "")
+    }
 }

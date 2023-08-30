@@ -2073,6 +2073,10 @@ public final class RenderUtils extends MinecraftInstance {
         disableBlend();
     }
 
+    public static void drawRect(net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.geom.Rectangle rect , int color) {
+        drawRect(rect.getX(), rect.getY(), rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight(), color);
+    }
+
     /**
      * Like {@link #drawRect(float, float, float, float, int)}, but without setup
      */

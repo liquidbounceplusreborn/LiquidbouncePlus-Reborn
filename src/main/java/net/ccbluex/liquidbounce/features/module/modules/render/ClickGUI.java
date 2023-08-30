@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.AstolfoClickGui;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.dropdown.DropdownGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.FluxClassic;
 import net.ccbluex.liquidbounce.features.module.Module;
@@ -54,8 +55,11 @@ public class ClickGUI extends Module {
     public final ListValue animationValue = new ListValue("Animation", new String[]{"Azura", "Slide", "SlideBounce", "Zoom", "ZoomBounce", "None"}, "Azura");
     public final FloatValue animSpeedValue = new FloatValue("AnimSpeed", 1F, 0.01F, 5F, "x");
 
-    public final BoolValue getGetClosePrevious = new BoolValue("ClosePrevious",false);
-   public final BoolValue disp = new BoolValue("DisplayValue", false);
+    public final FloatValue scale = new FloatValue("AstolfoScale", 1f, 0f, 10f, () -> styleValue.get().equalsIgnoreCase("astolfo"));;
+
+    public final FloatValue scroll = new FloatValue("Scroll", 20f, 0f, 200f, () -> styleValue.get().equalsIgnoreCase("astolfo"));;
+    public final BoolValue getGetClosePrevious = new BoolValue("ClosePrevious",false, () -> styleValue.get().equalsIgnoreCase("dropdown"));;
+   public final BoolValue disp = new BoolValue("DisplayValue", false, () -> styleValue.get().equalsIgnoreCase("onetap"));
 
     public static Color generateColor() {
         Color c = new Color(255, 255, 255, 255);
@@ -84,42 +88,49 @@ public class ClickGUI extends Module {
 
     DropdownGUI dropdownGUI = new DropdownGUI();
 
+    AstolfoClickGui astolfoClickGui = new AstolfoClickGui();
+
     @Override
     public void onEnable() {
         if (styleValue.get().contains("Novoline")) {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
         } else {
-                if (styleValue.get().contains("Flux")) {
-                    mc.displayGuiScreen(new FluxClassic());
+            if (styleValue.get().contains("Flux")) {
+                mc.displayGuiScreen(new FluxClassic());
+                this.setState(false);
+            } else {
+                if (styleValue.get().contains("Zeroday")) {
+                    mc.displayGuiScreen(new ClickUI());
                     this.setState(false);
                 } else {
-                    if (styleValue.get().contains("Zeroday")) {
-                        mc.displayGuiScreen(new ClickUI());
+                    if (styleValue.get().contains("OneTap")) {
+                        mc.displayGuiScreen(new OtcClickGUi());
                         this.setState(false);
                     } else {
-                        if (styleValue.get().contains("OneTap")) {
-                            mc.displayGuiScreen(new OtcClickGUi());
-                            this.setState(false);
+                        if (styleValue.get().equalsIgnoreCase("Chocolate")) {
+                            mc.displayGuiScreen(new SkeetStyle());
                         } else {
-                            if (styleValue.get().equalsIgnoreCase("Chocolate")) {
-                                mc.displayGuiScreen(new SkeetStyle());
-                            }
                             if (styleValue.get().equalsIgnoreCase("DropDown")) {
                                 mc.displayGuiScreen(dropdownGUI);
-                            }else {
+                            } else {
+                                if (styleValue.get().equalsIgnoreCase("Astolfo")) {
+                                    mc.displayGuiScreen(astolfoClickGui);
+                                } else {
                                     updateStyle();
                                     mc.displayGuiScreen(LiquidBounce.clickGui);
                                     LiquidBounce.clickGui.progress = 0;
                                     LiquidBounce.clickGui.slide = 0;
                                     LiquidBounce.clickGui.lastMS = System.currentTimeMillis();
                                     mc.displayGuiScreen(LiquidBounce.clickGui);
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
 
     private void updateStyle() {
         switch(styleValue.get().toLowerCase()) {
@@ -137,9 +148,6 @@ public class ClickGUI extends Module {
                 break;
             case "white":
                 LiquidBounce.clickGui.style = new WhiteStyle();
-                break;
-            case "astolfo":
-                LiquidBounce.clickGui.style = new AstolfoStyle();
                 break;
             case "test":
                 LiquidBounce.clickGui.style = new TestStyle();
