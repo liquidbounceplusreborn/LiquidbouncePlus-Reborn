@@ -1044,11 +1044,10 @@ class Scaffold : Module() {
                 mc.thePlayer.motionX *= modifier.toDouble()
                 mc.thePlayer.motionZ *= modifier.toDouble()
             }
-            if (sprintModeValue.get().equals("PlaceOff", ignoreCase = true)) {
+            if (sprintModeValue.isMode("Off")) {
                 mc.thePlayer.isSprinting = false
-
             }
-            if (sprintModeValue.get().equals("PlaceOn", ignoreCase = true)) {
+            if (sprintModeValue.isMode("PlaceOn")) {
                 mc.thePlayer.isSprinting = true
             }
             if (swingValue.get()) mc.thePlayer.swingItem() else mc.netHandler.addToSendQueue(C0APacketAnimation())
