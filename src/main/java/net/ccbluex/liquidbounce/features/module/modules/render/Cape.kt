@@ -18,7 +18,9 @@ import java.io.File
 @ModuleInfo(name = "Cape", description = "LiquidBounce+ capes.", category = ModuleCategory.RENDER)
 class Cape : Module() {
 
-    val styleValue = ListValue("Style", arrayOf("Sunny","Rainbow","Astolfo","Chicken","Chick","Hatch","Cry","Dark", "Darker", "Light", "Special1", "Special2","Dark2"), "Dark")
+    val styleValue = ListValue("Style", arrayOf("Sunny","Rainbow","Astolfo","Chicken","Chick","Hatch","Cry","Dark", "Darker", "Light", "Special1", "Special2","Dark2","Exhibition"), "Dark")
+
+    val movingModeValue = ListValue("MovingMode", arrayOf("Smooth", "Vanilla"), "Smooth")
 
     private val capeCache = hashMapOf<String, CapeStyle>()
 
@@ -46,7 +48,8 @@ class Cape : Module() {
         DARK2(ResourceLocation("liquidbounce+/cape/dark2.png")),
         LIGHT(ResourceLocation("liquidbounce+/cape/light.png")),
         SPECIAL1(ResourceLocation("liquidbounce+/cape/special1.png")),
-        SPECIAL2(ResourceLocation("liquidbounce+/cape/special2.png"));
+        SPECIAL2(ResourceLocation("liquidbounce+/cape/special2.png")),
+        EXHIBITION(ResourceLocation("liquidbounce+/cape/base.png"));
     }
 
     override val tag: String
