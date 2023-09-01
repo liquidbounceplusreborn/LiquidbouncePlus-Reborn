@@ -35,7 +35,7 @@ import net.minecraft.util.EnumFacing;
 @ModuleInfo(name = "LongJump", spacedName = "Long Jump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT)
 public class LongJump extends Module {
 
-    private final ListValue modeValue = new ListValue("Mode", new String[] {"NCP", "Damage", "AACv1", "AACv2", "AACv3", "AACv4", "Mineplex", "Mineplex2", "Mineplex3", "RedeskyMaki", "Redesky", "InfiniteRedesky", "MatrixFlag", "VerusDmg", "Pearl"}, "NCP");
+    private final ListValue modeValue = new ListValue("Mode", new String[] {"NCP", "Damage", "AACv1", "AACv2", "AACv3", "AACv4", "Mineplex", "Mineplex2", "Mineplex3", "RedeskyMaki", "Redesky", "InfiniteRedesky", "MatrixFlag", "VerusDmg", "Pearl","Hycraft"}, "NCP");
     private final BoolValue autoJumpValue = new BoolValue("AutoJump", false);
 
     private final FloatValue ncpBoostValue = new FloatValue("NCPBoost", 4.25F, 1F, 10F, () -> modeValue.get().equalsIgnoreCase("ncp"));
@@ -392,6 +392,14 @@ public class LongJump extends Module {
 
                     MovementUtils.strafe((float) Math.min(0.85, Math.max(0.25, MovementUtils.getSpeed() * 1.05878)));
                     break;
+                case "hycraft":
+                    if(mc.thePlayer.motionY < 0) {
+                        mc.thePlayer.motionY *= 0.75f;
+                        mc.thePlayer.jumpMovementFactor = 0.055f;
+                    } else {
+                        mc.thePlayer.motionY += 0.02f;
+                        mc.thePlayer.jumpMovementFactor = 0.08f;
+                    }
             }
         }
 
