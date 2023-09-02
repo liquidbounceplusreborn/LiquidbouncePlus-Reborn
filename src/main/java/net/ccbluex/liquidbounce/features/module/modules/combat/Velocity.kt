@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
@@ -37,7 +38,7 @@ class Velocity : Module() {
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
     private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple","Hypixel","AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero",
-            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine","GrimAC","AllAC","Intave"), "Cancel") // later
+            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine","GrimAC","AllAC","Intave","Smart"), "Cancel") // later
 
     private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
@@ -85,6 +86,7 @@ class Velocity : Module() {
     var grimTCancel = 0
     var updates = 0
 
+    private var jumped = 0
 
     override val tag: String
         get() = if (modeValue.get() == "Simple")
@@ -283,9 +285,28 @@ class Velocity : Module() {
                     mc.thePlayer.isAirBorne = true
                 }
             }
-            "intave" -> {
+            "intave" -> if (velocityInput) {
                 if (mc.thePlayer.hurtTime == 9) {
-                    mc.thePlayer.movementInput.jump = true
+                    if (++jumped % 2 == 0 && mc.thePlayer.onGround && mc.thePlayer.isSprinting && mc.currentScreen == null) {
+                        mc.gameSettings.keyBindJump.pressed = true
+                        jumped = 0 // reset
+                    }
+                } else {
+                    mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                    velocityInput = false
+                }
+            }
+            "smart" -> if (velocityInput) {
+                if (mc.thePlayer.onGround && mc.thePlayer.hurtTime == 9 && mc.thePlayer.isSprinting && mc.currentScreen == null) {
+                    if (jumped > 2) {
+                        jumped = 0
+                    } else {
+                        ++jumped
+                        if (mc.thePlayer.ticksExisted % 5 != 0) mc.gameSettings.keyBindJump.pressed = true
+                    }
+                } else if (mc.thePlayer.hurtTime == 8) {
+                    mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                    velocityInput = false
                 }
             }
         }
@@ -325,11 +346,15 @@ class Velocity : Module() {
                     packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
                 }
 
-                "aac", "aac5reduce", "reverse", "aacv4", "smoothreverse", "aaczero" -> velocityInput = true
+                "aac", "aac5reduce", "reverse", "aacv4", "smoothreverse", "aaczero","intave" -> velocityInput = true
 
                 "aac5.2.0" -> {
                     event.cancelEvent()
                     if (!mc.isIntegratedServerRunning && (!aac5KillAuraValue.get() || killAura.target != null)) mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,1.7976931348623157E+308,mc.thePlayer.posZ,true))
+                }
+
+                "smart" -> {
+                    if (packet.motionX * packet.motionX + packet.motionZ * packet.motionZ + packet.motionY * packet.motionY > 640000) velocityInput = true
                 }
 
                 "glitch" -> {
