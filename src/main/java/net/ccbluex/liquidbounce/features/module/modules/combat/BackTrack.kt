@@ -1,6 +1,4 @@
-/*
- * Originally made by LuckySynx#2351 and GOOSE(RIP)
- */
+//from kevin client
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.LiquidBounce
