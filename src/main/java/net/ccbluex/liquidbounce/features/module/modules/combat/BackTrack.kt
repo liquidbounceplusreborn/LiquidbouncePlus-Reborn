@@ -34,7 +34,7 @@ import org.lwjgl.opengl.GL11.*
 import kotlin.math.ceil
 
 
-@ModuleInfo(name = "BackTrack", description = "Suspends all movement packets.", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "BackTrack", description = "Lets you attack people in their previous locations.", category = ModuleCategory.COMBAT)
 class BackTrack : Module() {
 
     private val minDistance: FloatValue = object : FloatValue("MinDistance", 2.9f, 1f, 4f) {

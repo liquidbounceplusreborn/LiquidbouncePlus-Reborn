@@ -169,7 +169,7 @@ class NoSlow : Module() {
         }
         if(modeValue.isMode("Watchdog")){
             if (packet is C08PacketPlayerBlockPlacement) {
-                if (mc.gameSettings.keyBindUseItem.isKeyDown && mc.thePlayer.heldItem != null && (mc.thePlayer.heldItem.item is ItemFood || mc.thePlayer.heldItem.item is ItemBucketMilk || mc.thePlayer.heldItem.item is ItemPotion && !ItemPotion.isSplash(mc.thePlayer.heldItem.metadata) || mc.thePlayer.heldItem.item is ItemBow)) {
+                if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem != null && (mc.thePlayer.heldItem.item is ItemFood || mc.thePlayer.heldItem.item is ItemBucketMilk || mc.thePlayer.heldItem.item is ItemPotion && !ItemPotion.isSplash(mc.thePlayer.heldItem.metadata) || mc.thePlayer.heldItem.item is ItemBow)) {
                     if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit === MovingObjectPosition.MovingObjectType.BLOCK && (packet as C08PacketPlayerBlockPlacement).position != BlockPos(-1, -1, 1)) return
                     event.cancelEvent()
                     val position: MovingObjectPosition = mc.thePlayer.rayTraceCustom(

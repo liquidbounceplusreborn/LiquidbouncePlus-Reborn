@@ -193,7 +193,7 @@ class KillAura : Module() {
     // AutoBlock
     private val autoBlockModeValue = ListValue(
         "AutoBlock",
-        arrayOf("None", "Packet", "AfterTick", "NCP", "OldHypixel", "Vanilla", "Hypixel", "Polar"),
+        arrayOf("None", "Packet", "AfterTick", "NCP", "OldHypixel", "Vanilla", "Hypixel"),
         "None"
     )
 
@@ -920,13 +920,6 @@ class KillAura : Module() {
         if (mc.thePlayer.isBlocking || blockingStatus)
             stopBlocking()
 
-        if (mc.thePlayer.isBlocking || blockingStatus) {
-            if (autoBlockModeValue.isMode("Hypixel"))
-                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
-            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-            blockingStatus = false
-        }
-
 
         // Call attack event
         LiquidBounce.eventManager.callEvent(AttackEvent(entity))
@@ -1004,11 +997,11 @@ class KillAura : Module() {
                 )
             }
         }
-        if (autoBlockModeValue.isMode("Polar")) {
+        /*if (autoBlockModeValue.isMode("Polar")) {
             if (mc.thePlayer.hurtTime < 8 && mc.thePlayer.hurtTime != 1 && mc.thePlayer.fallDistance > 0) {
                 startBlocking(entity, interactAutoBlockValue.get())
             }
-        }
+        }*/
     }
 
     /**
@@ -1134,7 +1127,6 @@ class KillAura : Module() {
      * Start blocking
      */
 
-
     private fun startBlocking(interactEntity: Entity, interact: Boolean) {
         if (!canSmartBlock || autoBlockModeValue.get().equals("none", true) || !(blockRate.get() > 0 && Random().nextInt(100) <= blockRate.get()))
             return
@@ -1157,6 +1149,19 @@ class KillAura : Module() {
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0.0f, 0.0f, 0.0f))
             blockingStatus = true
             return
+        }
+
+
+        if (autoBlockModeValue.get().equals("packet", true)) {
+            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+            blockingStatus = true
+        }
+
+        if (mc.thePlayer.isBlocking || blockingStatus) {
+            if (autoBlockModeValue.isMode("Hypixel")) {
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
+                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+            }
         }
 
         if (interact) {
@@ -1185,8 +1190,8 @@ class KillAura : Module() {
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
         }
 
-        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
-        blockingStatus = true
+        //mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+        //blockingStatus = true
     }
 
     /**
@@ -1198,9 +1203,15 @@ class KillAura : Module() {
         if (blockingStatus) {
             if (autoBlockModeValue.get().equals("oldhypixel", true))
                 mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(1.0, 1.0, 1.0), EnumFacing.DOWN))
-            else
-                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
-
+            else if(!autoBlockModeValue.isMode("Hypixel")) {
+                mc.netHandler.addToSendQueue(
+                    C07PacketPlayerDigging(
+                        C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                        BlockPos.ORIGIN,
+                        EnumFacing.DOWN
+                    )
+                )
+            }
             blockingStatus = false
         }
     }
