@@ -137,6 +137,13 @@ data class Rotation(var yaw: Float, var pitch: Float) {
             player.motionZ += calcForward * yawCos + calcStrafe * yawSin.toDouble()
         }
     }
+    fun toDirection(): Vec3 {
+        val f: Float = MathHelper.cos(-yaw * 0.017453292f - Math.PI.toFloat())
+        val f1: Float = MathHelper.sin(-yaw * 0.017453292f - Math.PI.toFloat())
+        val f2: Float = -MathHelper.cos(-pitch * 0.017453292f)
+        val f3: Float = MathHelper.sin(-pitch * 0.017453292f)
+        return Vec3((f1 * f2).toDouble(), f3.toDouble(), (f * f2).toDouble())
+    }
 }
 
 /**

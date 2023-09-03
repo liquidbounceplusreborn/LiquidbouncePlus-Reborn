@@ -1,6 +1,8 @@
 package net.ccbluex.liquidbounce.utils.extensions
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.Rotation
+import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.Entity
@@ -50,4 +52,9 @@ fun Entity.rayTraceCustom(blockReachDistance: Double, yaw: Float, pitch: Float):
 }
 fun Entity.getLookCustom(yaw: Float, pitch: Float): Vec3 {
     return this.getVectorForRotation(pitch, yaw)
+}
+fun Entity.getLookDistanceToEntityBox(entity: Entity=this, rotation: Rotation? = null, range: Double=10.0): Double {
+    val eyes = this.getPositionEyes(1F)
+    val end = (rotation?: RotationUtils.targetRotation).toDirection().multiply(range).add(eyes)
+    return entity.entityBoundingBox.calculateIntercept(eyes, end)?.hitVec?.distanceTo(eyes) ?: Double.MAX_VALUE
 }
