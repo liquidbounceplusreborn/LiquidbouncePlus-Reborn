@@ -1723,7 +1723,7 @@ class Scaffold : Module() {
 
         var rotation = RotationUtils.toRotation(vec, false)
 
-        rotation = if (stabilizedRotation.get()) {
+        rotation = if (stabilizedRotation.get() || mc.thePlayer.hurtTime == 0 && rotationModeValue.isMode("GrimTest")) {
             Rotation(round(rotation.yaw / 45f) * 45f, rotation.pitch)
         } else {
             rotation

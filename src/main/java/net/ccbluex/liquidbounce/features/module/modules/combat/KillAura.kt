@@ -312,6 +312,8 @@ class KillAura : Module() {
         }
     }
 
+    private val shakeAmout = FloatValue("NovolineShakeAmoutTest",4f,0f,10f,{rotations.isMode("Novoline")})
+
     // Bypass
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f)
     private val fakeSwingValue = BoolValue("FakeSwing", true)
@@ -1033,6 +1035,8 @@ class KillAura : Module() {
 
         var boundingBox = entity.entityBoundingBox
 
+        var amount = shakeAmout.get()
+
         if (predictValue.get())
             boundingBox = boundingBox.offset(
                 (entity.posX - entity.prevPosX - (mc.thePlayer!!.posX - mc.thePlayer!!.prevPosX)) * RandomUtils.nextFloat(minPredictSize.get(), maxPredictSize.get()),
@@ -1084,7 +1088,11 @@ class KillAura : Module() {
             )
         }
         if (rotations.get().equals("Novoline", ignoreCase = true)) {
-            return RotationUtils.getAngles(entity)
+            val rot = Rotation(
+                (RotationUtils.getAngles(entity).yaw + Math.random() * amount - amount / 2).toFloat(),
+                (RotationUtils.getAngles(entity).pitch + Math.random() * amount - amount / 2).toFloat()
+            )
+            return rot
         }
         return RotationUtils.serverRotation
     }
