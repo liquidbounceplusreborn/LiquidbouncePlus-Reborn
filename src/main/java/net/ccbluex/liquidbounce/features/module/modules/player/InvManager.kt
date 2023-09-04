@@ -28,6 +28,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import org.checkerframework.common.value.qual.BoolVal
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
@@ -71,6 +72,7 @@ class InvManager : Module() {
     private val itemDelayValue = IntegerValue("ItemDelay", 0, 0, 5000, "ms")
     private val ignoreVehiclesValue = BoolValue("IgnoreVehicles", false)
     private val onlyPositivePotionValue = BoolValue("OnlyPositivePotion", false)
+    private val delayOnStart = BoolValue("DelayOnStart",true)
 
     // NBT
     private val nbtGoalValue = ListValue("NBTGoal", ItemHelper.EnumNBTPriorityType.values().map { it.toString() }.toTypedArray(), "NONE")
@@ -139,6 +141,11 @@ class InvManager : Module() {
     fun onMotion(event: MotionEvent) {
         if (eventModeValue.get().equals("motion${event.eventState.stateName}", true))
             performManager()
+    }
+
+    @EventTarget(ignoreCondition = true)
+    fun onOpen(event: ScreenEvent) {
+        if (delayOnStart.get()) InventoryUtils.CLICK_TIMER.reset()
     }
 
     fun performManager() {
