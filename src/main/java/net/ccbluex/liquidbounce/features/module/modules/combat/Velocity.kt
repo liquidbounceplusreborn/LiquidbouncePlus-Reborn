@@ -123,15 +123,6 @@ class Velocity : Module() {
                 }
             }
         }
-        if(modeValue.get() == "GrimAC2"){
-            val blockPos = BlockPos(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
-            //val blockPos2 = BlockPos(mc.thePlayer.posX,mc.thePlayer.posY - 0.5,mc.thePlayer.posZ)
-            //val idk = BlockSlab();
-            if(onVelocity){
-                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,blockPos,
-                    EnumFacing.NORTH))
-            }
-        }
         if (mc.thePlayer.hurtTime <= 0) shouldAffect = (Math.random().toFloat() < reduceChance.get() / 100F)
         if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || !shouldAffect)
             return
@@ -470,6 +461,26 @@ class Velocity : Module() {
             }
             "aaczero" -> if (mc.thePlayer.hurtTime > 0)
                 event.cancelEvent()
+        }
+    }
+
+    @EventTarget
+    fun onMotion(event:MotionEvent){
+        if (event.eventState == EventState.PRE) {
+        if(modeValue.get() == "GrimAC2") {
+                val blockPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+                //val blockPos2 = BlockPos(mc.thePlayer.posX,mc.thePlayer.posY - 0.5,mc.thePlayer.posZ)
+                //val idk = BlockSlab();
+                if (onVelocity) {
+                    onVelocity = false
+                    mc.netHandler.addToSendQueue(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, blockPos,
+                            EnumFacing.NORTH
+                        )
+                    )
+                }
+            }
         }
     }
 }
