@@ -88,7 +88,7 @@ class Velocity : Module() {
     var resetPersec = 8
     var grimTCancel = 0
     var updates = 0
-    var onVelocity = false
+    var shouldSendC07PacketPlayerDigging = false
 
     private var jumped = 0
 
@@ -313,6 +313,18 @@ class Velocity : Module() {
                     velocityInput = false
                 }
             }
+            "grimac2" -> {
+                if (!(mc.theWorld.getBlockState(mc.thePlayer.position.down()).block is BlockSlab) && shouldSendC07PacketPlayerDigging){
+                    mc.netHandler.addToSendQueue(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+                            BlockPos(mc.thePlayer),
+                            EnumFacing.DOWN
+                        )
+                    )
+                    shouldSendC07PacketPlayerDigging = false
+                }
+            }
         }
     }
 
@@ -379,13 +391,16 @@ class Velocity : Module() {
                     grimTCancel = cancelPacket
                 }
                 "grimac2" -> {
-                    event.cancelEvent()
-                    onVelocity = true
+                    if (mc.theWorld.getBlockState(mc.thePlayer.position.down()).block !is BlockSlab) {
+                        shouldSendC07PacketPlayerDigging = true
+                        event.cancelEvent()
+                    }
                 }
             }
         }
 
         if (packet is S27PacketExplosion) {
+            shouldSendC07PacketPlayerDigging = true
             mc.thePlayer.motionX = mc.thePlayer.motionX + packet.func_149149_c() * (horizontalExplosionValue.get())
             mc.thePlayer.motionY = mc.thePlayer.motionY + packet.func_149144_d() * (verticalExplosionValue.get())
             mc.thePlayer.motionZ = mc.thePlayer.motionZ + packet.func_149147_e() * (horizontalExplosionValue.get())
@@ -461,26 +476,6 @@ class Velocity : Module() {
             }
             "aaczero" -> if (mc.thePlayer.hurtTime > 0)
                 event.cancelEvent()
-        }
-    }
-
-    @EventTarget
-    fun onMotion(event:MotionEvent){
-        if (event.eventState == EventState.PRE) {
-        if(modeValue.get() == "GrimAC2") {
-                val blockPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
-                //val blockPos2 = BlockPos(mc.thePlayer.posX,mc.thePlayer.posY - 0.5,mc.thePlayer.posZ)
-                //val idk = BlockSlab();
-                if (onVelocity) {
-                    onVelocity = false
-                    mc.netHandler.addToSendQueue(
-                        C07PacketPlayerDigging(
-                            C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, blockPos,
-                            EnumFacing.NORTH
-                        )
-                    )
-                }
-            }
         }
     }
 }
