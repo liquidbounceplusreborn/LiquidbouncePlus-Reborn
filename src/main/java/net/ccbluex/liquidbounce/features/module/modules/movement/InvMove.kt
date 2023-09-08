@@ -28,33 +28,15 @@ import net.minecraft.client.settings.GameSettings
 @ModuleInfo(name = "InvMove", spacedName = "Inv Move", description = "Allows you to walk while an inventory is opened.", category = ModuleCategory.MOVEMENT)
 class InvMove : Module() {
 
+    val whenMove = ListValue("WhenMove", arrayOf("Inventory", "Chest", "All"), "Vanilla")
     val modeValue = ListValue("Mode", arrayOf("Vanilla", "Silent", "Blink"), "Vanilla")
-    val sprintModeValue = ListValue("InvSprint", arrayOf("AACAP", "Stop", "Keep"), "Keep")
-    val noDetectableValue = BoolValue("NoDetectable", false)
     val noMoveClicksValue = BoolValue("NoMoveClicks", false)
 
     private val playerPackets = mutableListOf<C03PacketPlayer>()
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val speedModule = LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed
-        if (mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)) {
-            mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
-            mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
-            mc.gameSettings.keyBindRight.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindRight)
-            mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
-            if (!speedModule.state || !speedModule.getMode().modeName.equals("Legit", true)) 
-                mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-            mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint)
-
-            if (sprintModeValue.get().equals("stop", true))
-                mc.thePlayer.setSprinting(false)
-        }
-    }
-
-    @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (event.eventState == EventState.PRE && playerPackets.size > 0 && (mc.currentScreen == null || mc.currentScreen is GuiChat || mc.currentScreen is GuiIngameMenu || (noDetectableValue.get() && mc.currentScreen is GuiContainer))) {
+        if (event.eventState == EventState.PRE && playerPackets.size > 0 && (mc.currentScreen == null || mc.currentScreen is GuiChat || mc.currentScreen is GuiIngameMenu)) {
             playerPackets.forEach { mc.netHandler.addToSendQueue(it) }
             playerPackets.clear()
         }
@@ -71,27 +53,10 @@ class InvMove : Module() {
         val packet = event.packet
         when (modeValue.get().toLowerCase()) {
             "silent" -> if (packet is C16PacketClientStatus && packet.getStatus() == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) event.cancelEvent()
-            "blink" -> if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer) && packet is C03PacketPlayer) {
+            "blink" -> if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && packet is C03PacketPlayer) {
                 event.cancelEvent()
                 playerPackets.add(packet)
             }
         }
     }
-
-    override fun onDisable() {
-        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindForward) || mc.currentScreen != null)
-            mc.gameSettings.keyBindForward.pressed = false
-        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindBack) || mc.currentScreen != null)
-            mc.gameSettings.keyBindBack.pressed = false
-        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindRight) || mc.currentScreen != null)
-            mc.gameSettings.keyBindRight.pressed = false
-        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindLeft) || mc.currentScreen != null)
-            mc.gameSettings.keyBindLeft.pressed = false
-        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindJump) || mc.currentScreen != null)
-            mc.gameSettings.keyBindJump.pressed = false
-        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSprint) || mc.currentScreen != null)
-            mc.gameSettings.keyBindSprint.pressed = false
-    }
-
-    fun isAACAP(): Boolean = sprintModeValue.get().equals("aacap", true) && mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)
 }

@@ -32,8 +32,6 @@ class Sprint : Module() {
     val checkServerSide = BoolValue("CheckServerSide", false)
     val checkServerSideGround = BoolValue("CheckServerSideOnlyGround", false)
 
-    private var modified = false
-
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet

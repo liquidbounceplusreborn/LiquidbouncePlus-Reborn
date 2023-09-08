@@ -32,13 +32,13 @@ public class ClickGUI extends Module {
                     "Slowly",
                     "Black",
                     "White",
-                    "Astolfo",
                     "Test",
                     "Novoline",
                     "Flux",
                     "Zeroday",
                     "Chocolate",
                     "OneTap",
+                    "Astolfo",
                     "DropDown"},
             "LiquidBounce") {
         @Override
