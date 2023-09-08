@@ -17,12 +17,15 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.BlockSlab
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
 import kotlin.math.cos
 import kotlin.math.sin
@@ -38,7 +41,7 @@ class Velocity : Module() {
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
     private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple","Hypixel","AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero",
-            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine","GrimAC","AllAC","Intave","Smart"), "Cancel") // later
+            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine","GrimAC","GrimAC2","AllAC","Intave","Smart"), "Cancel") // later
 
     private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
@@ -85,6 +88,7 @@ class Velocity : Module() {
     var resetPersec = 8
     var grimTCancel = 0
     var updates = 0
+    var onVelocity = false
 
     private var jumped = 0
 
@@ -117,6 +121,15 @@ class Velocity : Module() {
                         grimTCancel--
                     }
                 }
+            }
+        }
+        if(modeValue.get() == "GrimAC2"){
+            val blockPos = BlockPos(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ)
+            //val blockPos2 = BlockPos(mc.thePlayer.posX,mc.thePlayer.posY - 0.5,mc.thePlayer.posZ)
+            //val idk = BlockSlab();
+            if(onVelocity){
+                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,blockPos,
+                    EnumFacing.NORTH))
             }
         }
         if (mc.thePlayer.hurtTime <= 0) shouldAffect = (Math.random().toFloat() < reduceChance.get() / 100F)
@@ -373,6 +386,10 @@ class Velocity : Module() {
                 "grimac" -> {
                     event.cancelEvent()
                     grimTCancel = cancelPacket
+                }
+                "grimac2" -> {
+                    event.cancelEvent()
+                    onVelocity = true
                 }
             }
         }
