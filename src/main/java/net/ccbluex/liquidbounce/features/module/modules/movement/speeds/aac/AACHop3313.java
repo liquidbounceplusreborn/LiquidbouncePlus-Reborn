@@ -37,7 +37,7 @@ public class AACHop3313 extends SpeedMode {
             mc.thePlayer.motionX -= MathHelper.sin(yawRad) * 0.202F;
             mc.thePlayer.motionZ += MathHelper.cos(yawRad) * 0.202F;
             mc.thePlayer.motionY = 0.405F;
-            LiquidBounce.eventManager.callEvent(new JumpEvent(0.405F));
+            LiquidBounce.eventManager.callEvent(new JumpEvent(0.405F,mc.thePlayer.rotationYaw));
             MovementUtils.strafe();
         } else if (mc.thePlayer.fallDistance < 0.31F) {
             if (BlockUtils.getBlock(mc.thePlayer.getPosition()) instanceof BlockCarpet) // why?
