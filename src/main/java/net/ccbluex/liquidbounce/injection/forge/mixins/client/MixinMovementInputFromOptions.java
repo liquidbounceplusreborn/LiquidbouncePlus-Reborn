@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.event.MovementInputUpdateEvent;
 import net.ccbluex.liquidbounce.features.module.modules.movement.InvMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -40,10 +41,14 @@ public class MixinMovementInputFromOptions extends MovementInput {
     }
     /**
      * @author Randomguy
-     * @reason InvMove Inventory Chest Option
+     * @reason InvMove & MoveCorrection
      */
     @Overwrite
     public void updatePlayerMoveState() {
+
+        final MovementInputUpdateEvent event = new MovementInputUpdateEvent(moveStrafe, moveForward, jump, sneak);
+        LiquidBounce.eventManager.callEvent(event);
+
         if(this.shouldMove()) {
 
             moveStrafe = 0.0F;

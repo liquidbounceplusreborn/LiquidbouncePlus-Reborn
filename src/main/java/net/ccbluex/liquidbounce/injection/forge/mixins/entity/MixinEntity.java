@@ -211,7 +211,7 @@ public abstract class MixinEntity {
         if ((Entity) (Object) this != Minecraft.getMinecraft().thePlayer)
             return;
 
-        final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
+        final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction, rotationYaw);
         LiquidBounce.eventManager.callEvent(strafeEvent);
 
         if (strafeEvent.isCancelled())

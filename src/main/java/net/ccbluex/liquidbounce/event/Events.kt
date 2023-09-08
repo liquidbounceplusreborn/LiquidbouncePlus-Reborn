@@ -39,6 +39,8 @@ class FogColorEvent(var red: Float, var green: Float, var blue: Float, var alpha
     }
 }
 
+class MovementInputUpdateEvent(var strafe: Float, var forward: Float, var jump: Boolean, var sneak: Boolean) : Event()
+
 /**
  * Called when minecraft get bounding box of block
  *
@@ -90,7 +92,7 @@ class UpdateModelEvent(val player: EntityPlayer, val model: ModelPlayer) : Event
  *
  * @param motion jump motion (y motion)
  */
-class JumpEvent(var motion: Float) : CancellableEvent()
+class JumpEvent(var motion: Float, var yaw: Float) : CancellableEvent()
 
 /**
  * Called when user press a key once
@@ -127,7 +129,7 @@ class SlowDownEvent(var strafe: Float, var forward: Float) : Event()
 /**
  * Called in "moveFlying"
  */
-class StrafeEvent(val strafe: Float, val forward: Float, val friction: Float) : CancellableEvent()
+class StrafeEvent(var strafe: Float, var forward: Float, var friction: Float, var yaw: Float) : CancellableEvent()
 
 /**
  * Called when player moves

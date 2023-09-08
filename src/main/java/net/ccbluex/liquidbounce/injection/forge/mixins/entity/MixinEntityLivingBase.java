@@ -143,7 +143,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
      */
     @Overwrite
     protected void jump() {
-        final JumpEvent jumpEvent = new JumpEvent(this.getJumpUpwardsMotion());
+        final JumpEvent jumpEvent = new JumpEvent(this.getJumpUpwardsMotion(), this.rotationYaw);
         LiquidBounce.eventManager.callEvent(jumpEvent);
         if (jumpEvent.isCancelled())
             return;

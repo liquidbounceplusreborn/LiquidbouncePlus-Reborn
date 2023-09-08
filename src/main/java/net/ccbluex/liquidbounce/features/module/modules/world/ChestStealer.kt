@@ -69,6 +69,7 @@ class ChestStealer : Module() {
     public val silenceValue = BoolValue("SilentMode", true)
     public val showStringValue = BoolValue("Silent-ShowString", false, { silenceValue.get() })
     public val stillDisplayValue = BoolValue("Silent-StillDisplay", false, { silenceValue.get() })
+    private val delayOnStart = BoolValue("delayOnStart",true)
 
     private val autoCloseMaxDelayValue: IntegerValue = object : IntegerValue("AutoCloseMaxDelay", 0, 0, 400, "ms") {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -117,6 +118,14 @@ class ChestStealer : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+
+        if (mc.currentScreen !is GuiChest || mc.currentScreen == null) {
+            if (delayOnStart.get())
+                delayTimer.reset()
+                autoCloseTimer.reset()
+                return
+        }
+
         if (instantexploit.get()) {
             if (mc.currentScreen is GuiChest) {
                 val chest = mc.currentScreen as GuiChest
@@ -233,6 +242,7 @@ class ChestStealer : Module() {
         if (packet is S30PacketWindowItems)
             contentReceived = packet.func_148911_c()
     }
+
 
     private fun move(screen: GuiChest, slot: Slot) {
         screen.handleMouseClick(slot, slot.slotNumber, 0, 1)
