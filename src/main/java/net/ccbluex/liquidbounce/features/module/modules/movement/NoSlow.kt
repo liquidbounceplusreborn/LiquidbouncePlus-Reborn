@@ -108,6 +108,10 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
+
+        if(sword.get() && mc.thePlayer.heldItem.item !is ItemSword|| bow.get() && mc.thePlayer.heldItem.item !is ItemBow|| food.get() && (mc.thePlayer.heldItem.item !is ItemFood || mc.thePlayer.heldItem.item !is ItemPotion))
+            return
+
         val packet = event.packet
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
 
@@ -203,7 +207,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (!MovementUtils.isMoving() && !modeValue.get().equals("blink", true) || sword.get() && mc.thePlayer.heldItem.item !is ItemSword|| bow.get() && mc.thePlayer.heldItem.item !is ItemBow|| food.get() && (mc.thePlayer.heldItem.item !is ItemFood || mc.thePlayer.heldItem.item !is ItemPotion))
+        if (!MovementUtils.isMoving() && !modeValue.get().equals("blink", true) && (sword.get() && mc.thePlayer.heldItem.item !is ItemSword|| bow.get() && mc.thePlayer.heldItem.item !is ItemBow|| food.get() && (mc.thePlayer.heldItem.item !is ItemFood || mc.thePlayer.heldItem.item !is ItemPotion)))
             return
 
         val heldItem = mc.thePlayer.heldItem
