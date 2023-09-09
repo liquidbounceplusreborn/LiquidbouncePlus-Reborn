@@ -46,6 +46,9 @@ class NoSlow : Module() {
     private val customDelayValue = IntegerValue("CustomDelay", 60, 0, 1000, "ms", { modeValue.get().equals("custom", true) })
     private val ciucValue = BoolValue("CheckInUseCount", true, { modeValue.get().equals("blink", true) })
     private val packetTriggerValue = ListValue("PacketTrigger", arrayOf("PreRelease", "PostRelease"), "PostRelease", { modeValue.get().equals("blink", true) })
+    private val sword = BoolValue("Sword", false)
+    private val food = BoolValue("Food", false)
+    private val bow = BoolValue("Bow", false)
     private val debugValue = BoolValue("Debug", false, {modeValue.get().equals("blink", true) })
 
     // Soulsand
@@ -200,7 +203,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (!MovementUtils.isMoving() && !modeValue.get().equals("blink", true))
+        if (!MovementUtils.isMoving() && !modeValue.get().equals("blink", true) || sword.get() && mc.thePlayer.heldItem.item !is ItemSword|| bow.get() && mc.thePlayer.heldItem.item !is ItemBow|| food.get() && (mc.thePlayer.heldItem.item !is ItemFood || mc.thePlayer.heldItem.item !is ItemPotion))
             return
 
         val heldItem = mc.thePlayer.heldItem

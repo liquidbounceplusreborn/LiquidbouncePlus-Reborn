@@ -41,7 +41,7 @@ class Velocity : Module() {
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
     private val modeValue = ListValue("Mode", arrayOf("Cancel", "Simple","Hypixel","AACv4", "AAC4Reduce", "AAC5Reduce", "AAC5.2.0", "AAC", "AACPush", "AACZero",
-            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine","GrimAC","GrimAC2","AllAC","Intave","Smart"), "Cancel") // later
+            "Reverse", "SmoothReverse", "Jump", "Glitch", "Phase", "Matrix", "Legit",  "AEMine","GrimAC","HYT","AllAC","Intave","Smart"), "Cancel") // later
 
     private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
@@ -313,7 +313,7 @@ class Velocity : Module() {
                     velocityInput = false
                 }
             }
-            "grimac2" -> {
+            "HYT" -> {
                 if (!(mc.theWorld.getBlockState(mc.thePlayer.position.down()).block is BlockSlab) && shouldSendC07PacketPlayerDigging){
                     mc.netHandler.addToSendQueue(
                         C07PacketPlayerDigging(
@@ -390,7 +390,7 @@ class Velocity : Module() {
                     event.cancelEvent()
                     grimTCancel = cancelPacket
                 }
-                "grimac2" -> {
+                "HYT" -> {
                     if (mc.theWorld.getBlockState(mc.thePlayer.position.down()).block !is BlockSlab) {
                         shouldSendC07PacketPlayerDigging = true
                         event.cancelEvent()
