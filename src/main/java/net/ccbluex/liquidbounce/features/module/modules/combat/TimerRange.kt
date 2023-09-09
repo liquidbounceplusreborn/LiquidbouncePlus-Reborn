@@ -1,64 +1,42 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.TimerRangeUtils
+import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.entity.EntityLivingBase
 
 @ModuleInfo(
     name = "TimerRange",
-    description = "Automatically speeds up when you are near an enemy",
+    description = "Automatically speeds up/down when you are near an enemy.",
     category = ModuleCategory.COMBAT
 )
 class TimerRange : Module() {
-    private val timerBalanceValue = FloatValue("TimerBalance", 0f, 0f, 50f, "")
-    private val distanceToSpeedUp = FloatValue("DistanceToSpeedUp", 0f, 0f, 10f, "")
-    private var balanceTimer = 0f
-    private val speedValue = FloatValue("normalSpeed", 2F, 0.1F, 10F, "")
-    private val boostSpeedValue = FloatValue("BoostTimer", 2F, 0.1F, 10F, "")
-    private var reachedTheLimit = false
-    override fun onEnable() {
-        balanceTimer = timerBalanceValue.get()
-        super.onEnable()
+    private val distance = FloatValue("ClosestDistance", 1.75f, 0f, 8f, "")
+    private val distanceToTimer = FloatValue("ClosestDistanceTimer", 0.4f, 0.1f, 10f, "")
+    private val distance2: FloatValue = object : FloatValue("NormalDistance", 4f, 0f, 8f, ""){
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val a = distance.get()
+            if (a > newValue) set(a)
+        }
     }
+    private val normalTimer = FloatValue("NormalTimer", 1.2f, 0.1f, 10f, "")
 
-    val timerRangeUtils = TimerRangeUtils()
     @EventTarget
-    fun onUpdate(@Suppress("UNUSED_PARAMETER") event: UpdateEvent) {
-        if (balanceTimer > 0 || mc.timer.timerSpeed - 1 > 0) {
-            balanceTimer += mc.timer.timerSpeed - 1
-        }
-        if (balanceTimer <= 0) {
-            reachedTheLimit = false
-        }
+    fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer != null) {
-            if (timerRangeUtils.closestPersonsDistance() < distanceToSpeedUp.get()) {
-                if (!reachedTheLimit) {
-                    if (balanceTimer < timerBalanceValue.get() * 2) {
-                        mc.timer.timerSpeed = boostSpeedValue.get()
-                    } else {
-                        reachedTheLimit = true
-                        mc.timer.timerSpeed = speedValue.get()
+            mc.timer.timerSpeed = 1f
+            for (entity in mc.theWorld.loadedEntityList)
+                if (entity is EntityLivingBase && EntityUtils.isSelected(entity, true)) {
+                    if (mc.thePlayer.getDistanceToEntity(entity) <= distance.get()) {
+                        mc.timer.timerSpeed = distanceToTimer.get()
+                    } else if (mc.thePlayer.getDistanceToEntity(entity) <= distance2.get()) {
+                        mc.timer.timerSpeed = normalTimer.get()
                     }
-                } else {
-                    mc.timer.timerSpeed = 1f
                 }
-            } else {
-                mc.timer.timerSpeed = speedValue.get()
-            }
-        }
-    }
-
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        if (event.packet is S08PacketPlayerPosLook) {
-            balanceTimer = timerBalanceValue.get() * 2
-            // Stops speeding up when you got flagged
         }
     }
 
@@ -66,7 +44,4 @@ class TimerRange : Module() {
         mc.timer.timerSpeed = 1f
         super.onDisable()
     }
-
-    override val tag: String
-        get() = balanceTimer.toString()
 }
