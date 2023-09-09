@@ -69,21 +69,41 @@ public class MixinMovementInputFromOptions extends MovementInput {
 
             jump = gameSettings.keyBindJump.isKeyDown();
         } else {
+            this.moveStrafe = 0.0F;
+            this.moveForward = 0.0F;
+
+            if (this.gameSettings.keyBindForward.isKeyDown()) {
+                ++this.moveForward;
+            }
+
+            if (this.gameSettings.keyBindBack.isKeyDown()) {
+                --this.moveForward;
+            }
+
+            if (this.gameSettings.keyBindLeft.isKeyDown()) {
+                ++this.moveStrafe;
+            }
+
+            if (this.gameSettings.keyBindRight.isKeyDown()) {
+                --this.moveStrafe;
+            }
+
+            this.jump = this.gameSettings.keyBindJump.isKeyDown();
+            this.sneak = this.gameSettings.keyBindSneak.isKeyDown();
 
             final MovementInputUpdateEvent event = new MovementInputUpdateEvent(moveStrafe, moveForward, jump, sneak);
+
             LiquidBounce.eventManager.callEvent(event);
 
-            moveStrafe = 0.0F;
-            moveForward = 0.0F;
-            if (gameSettings.keyBindForward.isKeyDown()) ++moveForward;
-            if (gameSettings.keyBindBack.isKeyDown()) --moveForward;
-            if (gameSettings.keyBindLeft.isKeyDown()) ++moveStrafe;
-            if (gameSettings.keyBindRight.isKeyDown()) --moveStrafe;
-            jump = gameSettings.keyBindJump.isKeyDown();
-            sneak = gameSettings.keyBindSneak.isKeyDown();
-            if (sneak) {
-                moveStrafe = (float) ((double) moveStrafe * (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoSlow.class)).getState() ? Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoSlow.class)).getSneakStrafeMultiplier().get() : 0.3D));
-                moveForward = (float) ((double) moveForward * (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoSlow.class)).getState() ? Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoSlow.class)).getSneakForwardMultiplier().get() : 0.3D));
+            this.moveForward = event.getForward();
+            this.moveStrafe = event.getStrafe();
+
+            this.jump = event.getJump();
+            this.sneak = event.getSneak();
+
+            if (this.sneak) {
+                this.moveStrafe = (float) ((double) this.moveStrafe * 0.3D);
+                this.moveForward = (float) ((double) this.moveForward * 0.3D);
             }
         }
         super.updatePlayerMoveState();
