@@ -46,6 +46,9 @@ class NoSlow : Module() {
     private val customDelayValue = IntegerValue("CustomDelay", 60, 0, 1000, "ms", { modeValue.get().equals("custom", true) })
     private val ciucValue = BoolValue("CheckInUseCount", true, { modeValue.get().equals("blink", true) })
     private val packetTriggerValue = ListValue("PacketTrigger", arrayOf("PreRelease", "PostRelease"), "PostRelease", { modeValue.get().equals("blink", true) })
+    private val sword = BoolValue("Sword", false)
+    private val food = BoolValue("Food", false)
+    private val bow = BoolValue("Bow", false)
     private val debugValue = BoolValue("Debug", false, {modeValue.get().equals("blink", true) })
 
     // Soulsand
@@ -105,6 +108,11 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
+
+        mc.thePlayer.heldItem ?: return
+        val itemType = mc.thePlayer.heldItem.item ?: return
+        if ((!sword.get() && itemType is ItemSword) || (!bow.get() && itemType is ItemBow) || (!food.get() && (itemType is ItemFood || itemType is ItemPotion)))
+            return
 
         val packet = event.packet
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
@@ -201,6 +209,10 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+        mc.thePlayer.heldItem ?: return
+        val itemType = mc.thePlayer.heldItem.item ?: return
+        if ((!sword.get() && itemType is ItemSword) || (!bow.get() && itemType is ItemBow) || (!food.get() && (itemType is ItemFood || itemType is ItemPotion)))
+            return
         if (!MovementUtils.isMoving() && !modeValue.get().equals("blink", true))
             return
 
