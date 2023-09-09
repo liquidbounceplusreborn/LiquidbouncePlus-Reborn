@@ -606,7 +606,7 @@ class Scaffold : Module() {
                         faceBlock = true
                     }else{
                         lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
-                            85f
+                            80f
                         } else{
                             mc.thePlayer.rotationPitch
                         }
@@ -619,7 +619,7 @@ class Scaffold : Module() {
                         faceBlock = true
                     }else{
                         lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
-                            85f
+                            80f
                         } else{
                             mc.thePlayer.rotationPitch
                         }
