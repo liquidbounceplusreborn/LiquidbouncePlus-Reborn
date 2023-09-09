@@ -46,9 +46,6 @@ public class MixinMovementInputFromOptions extends MovementInput {
     @Overwrite
     public void updatePlayerMoveState() {
 
-        final MovementInputUpdateEvent event = new MovementInputUpdateEvent(moveStrafe, moveForward, jump, sneak);
-        LiquidBounce.eventManager.callEvent(event);
-
         if(this.shouldMove()) {
 
             moveStrafe = 0.0F;
@@ -72,6 +69,10 @@ public class MixinMovementInputFromOptions extends MovementInput {
 
             jump = gameSettings.keyBindJump.isKeyDown();
         } else {
+
+            final MovementInputUpdateEvent event = new MovementInputUpdateEvent(moveStrafe, moveForward, jump, sneak);
+            LiquidBounce.eventManager.callEvent(event);
+
             moveStrafe = 0.0F;
             moveForward = 0.0F;
             if (gameSettings.keyBindForward.isKeyDown()) ++moveForward;
