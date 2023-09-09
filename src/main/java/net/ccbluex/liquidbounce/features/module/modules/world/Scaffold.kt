@@ -186,11 +186,11 @@ class Scaffold : Module() {
     private val rotationsValue = BoolValue("Rotations", true)
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val keepRotation = BoolValue("KeepRotation", false) { rotationsValue.get() }
-    private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() && (rotationModeValue.isMode("Normal") ||rotationModeValue.isMode("GrimTest") ) }
-    private val grimLock = BoolValue("GrimLock", true){ rotationsValue.get() && rotationModeValue.isMode("GrimTest") }
+    private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() && (rotationModeValue.isMode("Normal") ||rotationModeValue.isMode("GrimTest") || rotationModeValue.isMode("GrimTest2") ) }
+    private val grimLock = BoolValue("GrimLock", true){ rotationsValue.get() && (rotationModeValue.isMode("GrimTest") || rotationModeValue.isMode("GrimTest2")) }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","GrimTest","Rise","Rise2"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","GrimTest","GrimTest2","Rise","Rise2"),
         "Normal") // searching reason
     private val maxTurnSpeed: FloatValue =
         object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() }) {
@@ -603,6 +603,19 @@ class Scaffold : Module() {
                 }
                 "GrimTest" ->{
                     if(offGroundTicks >= 3){
+                        faceBlock = true
+                    }else{
+                        lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
+                            85f
+                        } else{
+                            mc.thePlayer.rotationPitch
+                        }
+                        )
+                        faceBlock = false
+                    }
+                }
+                "GrimTest2" ->{
+                    if(!mc.thePlayer.onGround){
                         faceBlock = true
                     }else{
                         lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
@@ -1661,7 +1674,7 @@ class Scaffold : Module() {
 
         placeRotation ?: return false
 
-        if (rotationsValue.get() && (rotationModeValue.isMode("Normal") || rotationModeValue.isMode("GrimTest") && offGroundTicks >= 3)) {
+        if (rotationsValue.get() && (rotationModeValue.isMode("Normal") || rotationModeValue.isMode("GrimTest") && offGroundTicks >= 3 || rotationModeValue.isMode("GrimTest2") && !mc.thePlayer.onGround)) {
             lockRotation = RotationUtils.limitAngleChange(
                 currRotation, placeRotation.rotation, RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get())
             )
@@ -1723,13 +1736,13 @@ class Scaffold : Module() {
 
         var rotation = RotationUtils.toRotation(vec, false)
 
-        rotation = if (stabilizedRotation.get() || mc.thePlayer.hurtTime == 0 && rotationModeValue.isMode("GrimTest")) {
+        rotation = if (stabilizedRotation.get()) {
             Rotation(round(rotation.yaw / 45f) * 45f, rotation.pitch)
         } else {
             rotation
         }
 
-        if (rotationModeValue.isMode("Normal") || (rotationModeValue.isMode("GrimTest") && offGroundTicks >= 3)) {
+        if (rotationModeValue.isMode("Normal") || (rotationModeValue.isMode("GrimTest") && offGroundTicks >= 3) || (rotationModeValue.isMode("GrimTest2") && !mc.thePlayer.onGround)) {
             lockRotation = rotation
         }
 
