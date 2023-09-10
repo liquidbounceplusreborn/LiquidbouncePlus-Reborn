@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -313,18 +314,6 @@ class Velocity : Module() {
                     velocityInput = false
                 }
             }
-            "HYT" -> {
-                if (!(mc.theWorld.getBlockState(mc.thePlayer.position.down()).block is BlockSlab) && shouldSendC07PacketPlayerDigging){
-                    mc.netHandler.addToSendQueue(
-                        C07PacketPlayerDigging(
-                            C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
-                            BlockPos(mc.thePlayer),
-                            EnumFacing.DOWN
-                        )
-                    )
-                    shouldSendC07PacketPlayerDigging = false
-                }
-            }
         }
     }
 
@@ -390,7 +379,7 @@ class Velocity : Module() {
                     event.cancelEvent()
                     grimTCancel = cancelPacket
                 }
-                "HYT" -> {
+                "hyt" -> {
                     if (mc.theWorld.getBlockState(mc.thePlayer.position.down()).block !is BlockSlab) {
                         shouldSendC07PacketPlayerDigging = true
                         event.cancelEvent()
@@ -476,6 +465,23 @@ class Velocity : Module() {
             }
             "aaczero" -> if (mc.thePlayer.hurtTime > 0)
                 event.cancelEvent()
+        }
+    }
+    @EventTarget
+    fun onMotion(event:MotionEvent) {
+        if (modeValue.isMode("HYT")) {
+            if (event.eventState == EventState.PRE) {
+                if (mc.theWorld.getBlockState(mc.thePlayer.position.down()).block !is BlockSlab && shouldSendC07PacketPlayerDigging) {
+                    PacketUtils.sendPacketNoEvent(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
+                            BlockPos(mc.thePlayer),
+                            EnumFacing.DOWN
+                        )
+                    )
+                    shouldSendC07PacketPlayerDigging = false
+                }
+            }
         }
     }
 }

@@ -65,7 +65,8 @@ class Disabler : Module() {
 			"Matrix", // re
 			"Watchdog", // $100k anticheat
 			"RotDesync", // Dort, again.
-			"Vulcan"// FDP
+			"Vulcan",// FDP
+			"Grim"//made by 吸尘器（人名/name)
 		), "SpartanCombat")
 
 	// PingSpoof (idfk what's this purpose but i will keep it here.)
@@ -125,7 +126,11 @@ class Disabler : Module() {
 	private val vulcanStrafe = BoolValue ("Strafe", true, { modeValue.get().equals("vulcan", true) })
 	private val vulcanStrafe2 = BoolValue ("Test", true, { modeValue.get().equals("vulcan", true) })
 
-
+	//grim
+	private val post = BoolValue("Post",true, { modeValue.get().equals("grim", true) })
+	private val c0e = BoolValue("ChestStealer",false, { modeValue.get().equals("grim", true) && post.get() })
+	private val c08 = BoolValue("PlaceBlock",false, { modeValue.get().equals("grim", true) && post.get() })
+	private val c0b = BoolValue("C0B",false, { modeValue.get().equals("grim", true) && post.get() })
 
 	// debug
 	private val debugValue = BoolValue("Debug", false)
@@ -137,6 +142,8 @@ class Disabler : Module() {
 	private val anotherQueue = LinkedList<C00PacketKeepAlive>()
 	private val playerQueue = LinkedList<C03PacketPlayer>()
 	private val packets: LinkedBlockingQueue<Any?> = LinkedBlockingQueue<Any?>()
+
+	private val packetsG = LinkedBlockingQueue<Packet<*>>()
 
 	private val packetBus = hashMapOf<Long, Packet<INetHandlerPlayServer>>()
 	private val queueBus = LinkedList<Packet<INetHandlerPlayServer>>()
@@ -182,6 +189,8 @@ class Disabler : Module() {
 	private var lastMotionY = 0.0;
 	private var lastMotionZ = 0.0;
 	private var pendingFlagApplyPacket = false;
+
+	private var pre = false
 
 	val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!!
 
@@ -369,14 +378,14 @@ class Disabler : Module() {
 						val diff = Math.sqrt(x * x + y * y + z * z)
 						if (diff <= 4) {
 							PacketUtils.sendPacketNoEvent(
-									C06PacketPlayerPosLook(
-											packet.getX(),
-											packet.getY(),
-											packet.getZ(),
-											packet.getYaw(),
-											packet.getPitch(),
-											true
-									)
+								C06PacketPlayerPosLook(
+									packet.getX(),
+									packet.getY(),
+									packet.getZ(),
+									packet.getYaw(),
+									packet.getPitch(),
+									true
+								)
 							)
 						}
 					}
@@ -393,7 +402,8 @@ class Disabler : Module() {
 					event.cancelEvent()
 				}
 			}
- 			"matrixgeyser" -> if (packet is C03PacketPlayer && mc.thePlayer.ticksExisted % 15 == 0) {
+
+			"matrixgeyser" -> if (packet is C03PacketPlayer && mc.thePlayer.ticksExisted % 15 == 0) {
 				try {
 					val b = ByteArrayOutputStream()
 					val _out = DataOutputStream(b)
@@ -407,6 +417,7 @@ class Disabler : Module() {
 					debug("Error occurred.")
 				}
 			}
+
 			"spartancombat" -> {
 				if (packet is C00PacketKeepAlive && (keepAlives.size <= 0 || packet != keepAlives[keepAlives.size - 1])) {
 					debug("c00 added")
@@ -419,6 +430,7 @@ class Disabler : Module() {
 					event.cancelEvent()
 				}
 			}
+
 			"latestverus" -> { // liulihaocai
 				if (!shouldRun()) {
 					msTimer.reset()
@@ -429,10 +441,16 @@ class Disabler : Module() {
 				if (packet is C0FPacketConfirmTransaction && !isInventory(packet.uid)) {
 					packetQueue.add(packet)
 					event.cancelEvent()
-					if(packetQueue.size > verusBufferSizeValue.get()) {
-						if(!shouldActive) {
+					if (packetQueue.size > verusBufferSizeValue.get()) {
+						if (!shouldActive) {
 							shouldActive = true
-							LiquidBounce.hud.addNotification(Notification("Disabler","Successfully put Verus into sleep.",NotifyType.SUCCESS))
+							LiquidBounce.hud.addNotification(
+								Notification(
+									"Disabler",
+									"Successfully put Verus into sleep.",
+									NotifyType.SUCCESS
+								)
+							)
 						}
 						PacketUtils.sendPacketNoEvent(packetQueue.poll())
 					}
@@ -445,7 +463,7 @@ class Disabler : Module() {
 				}
 
 				if (packet is C03PacketPlayer) {
-					if(verusFlagValue.get() && mc.thePlayer.ticksExisted % verusFlagDelayValue.get() == 0) {
+					if (verusFlagValue.get() && mc.thePlayer.ticksExisted % verusFlagDelayValue.get() == 0) {
 						debug("modified c03")
 						packet.y -= 11.015625 // just phase into ground instead (minimum to flag)
 						packet.onGround = false
@@ -468,10 +486,20 @@ class Disabler : Module() {
 						event.cancelEvent()
 						// verus, why
 						debug("flag silent accept")
-						PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.getYaw(), packet.getPitch(), false))
+						PacketUtils.sendPacketNoEvent(
+							C06PacketPlayerPosLook(
+								packet.x,
+								packet.y,
+								packet.z,
+								packet.getYaw(),
+								packet.getPitch(),
+								false
+							)
+						)
 					}
 				}
 			}
+
 			"oldverus" -> {
 				if (packet is C03PacketPlayer) {
 					val yPos = round(mc.thePlayer.posY / 0.015625) * 0.015625
@@ -479,9 +507,30 @@ class Disabler : Module() {
 
 					if (mc.thePlayer.ticksExisted % 45 == 0) {
 						debug("flag")
-						PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
-						PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY - 11.725, mc.thePlayer.posZ, false))
-						PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, true))
+						PacketUtils.sendPacketNoEvent(
+							C04PacketPlayerPosition(
+								mc.thePlayer.posX,
+								mc.thePlayer.posY,
+								mc.thePlayer.posZ,
+								true
+							)
+						)
+						PacketUtils.sendPacketNoEvent(
+							C04PacketPlayerPosition(
+								mc.thePlayer.posX,
+								mc.thePlayer.posY - 11.725,
+								mc.thePlayer.posZ,
+								false
+							)
+						)
+						PacketUtils.sendPacketNoEvent(
+							C04PacketPlayerPosition(
+								mc.thePlayer.posX,
+								mc.thePlayer.posY,
+								mc.thePlayer.posZ,
+								true
+							)
+						)
 					}
 				}
 
@@ -494,20 +543,30 @@ class Disabler : Module() {
 					var diff = sqrt(x * x + y * y + z * z)
 					if (diff <= 8) {
 						event.cancelEvent()
-						PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch(), true))
+						PacketUtils.sendPacketNoEvent(
+							C06PacketPlayerPosLook(
+								packet.getX(),
+								packet.getY(),
+								packet.getZ(),
+								packet.getYaw(),
+								packet.getPitch(),
+								true
+							)
+						)
 
 						debug("silent s08 accept")
 					}
 				}
 
 				if (packet is C0FPacketConfirmTransaction && !isInventory(packet.uid)) {
-					repeat (4) {
+					repeat(4) {
 						packetQueue.add(packet)
 					}
 					event.cancelEvent()
 					debug("c0f dupe: 4x")
 				}
 			}
+
 			"blocksmc" -> {
 				if (!shouldRun()) {
 					queueBus.clear()
@@ -521,7 +580,16 @@ class Disabler : Module() {
 
 				if (packet is S08PacketPlayerPosLook) {
 					if (mc.thePlayer.getDistance(packet.x, packet.y, packet.z) < 8) {
-						PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.x, packet.y, packet.z, packet.yaw, packet.pitch, false))
+						PacketUtils.sendPacketNoEvent(
+							C06PacketPlayerPosLook(
+								packet.x,
+								packet.y,
+								packet.z,
+								packet.yaw,
+								packet.pitch,
+								false
+							)
+						)
 						event.cancelEvent()
 						debug("silent flag")
 					}
@@ -553,9 +621,13 @@ class Disabler : Module() {
 					}
 				}
 			}
+
 			"flag" -> {
-				if (packet is C03PacketPlayer && flagMode.get().equals("edit", true) && mc.thePlayer.ticksExisted > 0 && mc.thePlayer.ticksExisted % flagTick.get() == 0)
-				{
+				if (packet is C03PacketPlayer && flagMode.get().equals(
+						"edit",
+						true
+					) && mc.thePlayer.ticksExisted > 0 && mc.thePlayer.ticksExisted % flagTick.get() == 0
+				) {
 					packet.isMoving = false
 					packet.onGround = false
 					packet.y = -0.08
@@ -571,12 +643,22 @@ class Disabler : Module() {
 					var diff = sqrt(x * x + y * y + z * z)
 					if (diff <= 8) {
 						event.cancelEvent()
-						PacketUtils.sendPacketNoEvent(C06PacketPlayerPosLook(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch(), true))
+						PacketUtils.sendPacketNoEvent(
+							C06PacketPlayerPosLook(
+								packet.getX(),
+								packet.getY(),
+								packet.getZ(),
+								packet.getYaw(),
+								packet.getPitch(),
+								true
+							)
+						)
 
 						debug("silent s08 accept")
 					}
 				}
 			}
+
 			"pingspoof" -> {
 				if (packet is C0FPacketConfirmTransaction && !isInventory(packet.uid)) {
 					queueBus.add(packet)
@@ -591,8 +673,12 @@ class Disabler : Module() {
 					debug("c00 added, key ${packet.key}")
 				}
 			}
+
 			"matrix" -> {
-				if (matrixNoCheck.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state || LiquidBounce.moduleManager.getModule(Fly::class.java)!!.state) {
+				if (matrixNoCheck.get() || LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state || LiquidBounce.moduleManager.getModule(
+						Fly::class.java
+					)!!.state
+				) {
 					if (packet is C03PacketPlayer) {
 						if (matrixNoMovePacket.get() && !packet.isMoving) {
 							event.cancelEvent()
@@ -609,12 +695,12 @@ class Disabler : Module() {
 							}
 						}
 						if (matrixNewMoveFix.get()) {
-							if (packet is C06PacketPlayerPosLook && pendingFlagApplyPacket ) {
+							if (packet is C06PacketPlayerPosLook && pendingFlagApplyPacket) {
 								pendingFlagApplyPacket = false;
 								mc.thePlayer.motionX = lastMotionX;
 								mc.thePlayer.motionY = lastMotionY;
 								mc.thePlayer.motionZ = lastMotionZ;
-							} else if (packet is S08PacketPlayerPosLook ) {
+							} else if (packet is S08PacketPlayerPosLook) {
 								pendingFlagApplyPacket = true
 								lastMotionX = mc.thePlayer.motionX;
 								lastMotionY = mc.thePlayer.motionY;
@@ -624,11 +710,21 @@ class Disabler : Module() {
 					}
 				}
 			}
+
 			"watchdog" -> {
 				if (mc.isSingleplayer()) return
 
-				if (autoAlert.get() && packet is S02PacketChat && packet.getChatComponent().getUnformattedText().contains("Cages opened!", true))
-					LiquidBounce.hud.addNotification(Notification("Disabler","Speed is bannable until this notification disappears.",NotifyType.SUCCESS, 20000))
+				if (autoAlert.get() && packet is S02PacketChat && packet.getChatComponent().getUnformattedText()
+						.contains("Cages opened!", true)
+				)
+					LiquidBounce.hud.addNotification(
+						Notification(
+							"Disabler",
+							"Speed is bannable until this notification disappears.",
+							NotifyType.SUCCESS,
+							20000
+						)
+					)
 
 				if (testFeature.get() && !ServerUtils.isHypixelLobby()) {
 					if (packet is C0FPacketConfirmTransaction && (!checkValid.get() || !isInventory(packet.uid))) {
@@ -641,7 +737,15 @@ class Disabler : Module() {
 							shouldActive = true
 							debug("activated")
 							when (waitingDisplayMode.get().lowercase()) {
-								"notification" -> LiquidBounce.hud.addNotification(Notification("Disabler","Activated Disabler.", NotifyType.SUCCESS, 2000))
+								"notification" -> LiquidBounce.hud.addNotification(
+									Notification(
+										"Disabler",
+										"Activated Disabler.",
+										NotifyType.SUCCESS,
+										2000
+									)
+								)
+
 								"chat" -> debug("Activated Disabler.", true)
 							}
 						}
@@ -674,6 +778,7 @@ class Disabler : Module() {
 						event.cancelEvent()
 				}
 			}
+
 			"rotdesync" -> {
 				if (packet is S08PacketPlayerPosLook) {
 					if (!mc.netHandler.doneLoadingTerrain) {
@@ -684,6 +789,29 @@ class Disabler : Module() {
 					PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(packet.x, packet.y, packet.z, false))
 					mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
 					debug("silent setback")
+				}
+			}
+
+			"grim" -> {
+				if (post.get()) {
+					if (packet is C0EPacketClickWindow && c0e.get()) {
+						if (!pre) {
+							event.cancelEvent()
+							packetsG.add(packet)
+						}
+					}
+					if (packet is C0BPacketEntityAction && c0b.get()) {
+						if (!pre) {
+							event.cancelEvent()
+							packetsG.add(packet)
+						}
+					}
+					if (packet is C08PacketPlayerBlockPlacement && c08.get()) {
+						if (!pre) {
+							event.cancelEvent()
+							packetsG.add(packet)
+						}
+					}
 				}
 			}
 		}
@@ -824,6 +952,21 @@ class Disabler : Module() {
 								EnumFacing.UP
 							)
 						)
+					}
+				}
+			}
+		}
+		if(modeValue.isMode("Grim")) {
+
+			if (post.get()) {
+				pre = event.eventState == EventState.PRE
+				if (event.eventState == EventState.PRE) {
+					try {
+						while (!packetsG.isEmpty()) {
+							mc.netHandler!!.addToSendQueue(packetsG.take())
+						}
+					} catch (e: Exception) {
+						e.printStackTrace()
 					}
 				}
 			}
