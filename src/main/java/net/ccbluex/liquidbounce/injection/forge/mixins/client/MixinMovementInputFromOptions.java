@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.MovementInputUpdateEvent;
 import net.ccbluex.liquidbounce.features.module.modules.movement.InvMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.minecraft.client.gui.inventory.GuiChest;
@@ -25,23 +24,21 @@ import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
 
 @Mixin(MovementInputFromOptions.class)
 public class MixinMovementInputFromOptions extends MovementInput {
-
     public MixinMovementInputFromOptions(GameSettings gameSettings) {
         this.gameSettings = gameSettings;
     }
-
     @Shadow
     private final GameSettings gameSettings;
-    
-    private final InvMove invMove = LiquidBounce.moduleManager.getModule(InvMove.class);
+
+    final InvMove invMove = LiquidBounce.moduleManager.getModule(InvMove.class);
 
     private boolean shouldMove() {
         assert invMove != null;
-        return invMove.getState() && (Objects.equals(invMove.getWhenMove().get(), "Inventory") && mc.currentScreen instanceof GuiInventory || Objects.equals(invMove.getWhenMove().get(), "Chest") && mc.currentScreen instanceof GuiChest || Objects.equals(invMove.getWhenMove().get(), "All") && (mc.currentScreen instanceof GuiChest || mc.currentScreen instanceof GuiInventory));
+        return invMove.getState() && (invMove.getWhenMove().isMode("Inventory") && mc.currentScreen instanceof GuiInventory || invMove.getWhenMove().isMode("Chest") && mc.currentScreen instanceof GuiChest || invMove.getWhenMove().isMode("All") && (mc.currentScreen instanceof GuiChest || mc.currentScreen instanceof GuiInventory));
     }
     /**
      * @author Randomguy
-     * @reason InvMove & MoveCorrection
+     * @reason InvMove & Event
      */
     @Overwrite
     public void updatePlayerMoveState() {
@@ -51,61 +48,51 @@ public class MixinMovementInputFromOptions extends MovementInput {
             moveStrafe = 0.0F;
             moveForward = 0.0F;
 
-            if (gameSettings.keyBindForward.isKeyDown()){
+            if (Keyboard.isKeyDown(mc.gameSettings.keyBindForward.getKeyCode())) {
                 ++moveForward;
             }
 
-            if (gameSettings.keyBindBack.isKeyDown()){
+            if (Keyboard.isKeyDown(mc.gameSettings.keyBindBack.getKeyCode())) {
                 --moveForward;
             }
 
-            if (gameSettings.keyBindLeft.isKeyDown()){
+            if (Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.getKeyCode())) {
                 ++moveStrafe;
             }
 
-            if (gameSettings.keyBindRight.isKeyDown()){
+            if (Keyboard.isKeyDown(mc.gameSettings.keyBindRight.getKeyCode())) {
+                --moveStrafe;
+            }
+
+            jump = Keyboard.isKeyDown(mc.gameSettings.keyBindJump.getKeyCode());
+        } else {
+            moveStrafe = 0.0F;
+            moveForward = 0.0F;
+
+            if (gameSettings.keyBindForward.isKeyDown()) {
+                ++moveForward;
+            }
+
+            if (gameSettings.keyBindBack.isKeyDown()) {
+                --moveForward;
+            }
+
+            if (gameSettings.keyBindLeft.isKeyDown()) {
+                ++moveStrafe;
+            }
+
+            if (gameSettings.keyBindRight.isKeyDown()) {
                 --moveStrafe;
             }
 
             jump = gameSettings.keyBindJump.isKeyDown();
-        } else {
-            this.moveStrafe = 0.0F;
-            this.moveForward = 0.0F;
+            sneak = gameSettings.keyBindSneak.isKeyDown();
 
-            if (this.gameSettings.keyBindForward.isKeyDown()) {
-                ++this.moveForward;
-            }
-
-            if (this.gameSettings.keyBindBack.isKeyDown()) {
-                --this.moveForward;
-            }
-
-            if (this.gameSettings.keyBindLeft.isKeyDown()) {
-                ++this.moveStrafe;
-            }
-
-            if (this.gameSettings.keyBindRight.isKeyDown()) {
-                --this.moveStrafe;
-            }
-
-            this.jump = this.gameSettings.keyBindJump.isKeyDown();
-            this.sneak = this.gameSettings.keyBindSneak.isKeyDown();
-
-            final MovementInputUpdateEvent event = new MovementInputUpdateEvent(moveStrafe, moveForward, jump, sneak);
-
-            LiquidBounce.eventManager.callEvent(event);
-
-            this.moveForward = event.getForward();
-            this.moveStrafe = event.getStrafe();
-
-            this.jump = event.getJump();
-            this.sneak = event.getSneak();
-
-            if (this.sneak) {
-                this.moveStrafe = (float) ((double) this.moveStrafe * 0.3D);
-                this.moveForward = (float) ((double) this.moveForward * 0.3D);
+            if (sneak) {
+                moveStrafe = (float) ((double) moveStrafe * (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoSlow.class)).getState() ? Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoSlow.class)).getSneakStrafeMultiplier().get() : 0.3D));
+                moveForward = (float) ((double) moveForward * (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoSlow.class)).getState() ? Objects.requireNonNull(LiquidBounce.moduleManager.getModule(NoSlow.class)).getSneakForwardMultiplier().get() : 0.3D));
             }
         }
-        super.updatePlayerMoveState();
+        //super.updatePlayerMoveState();
     }
 }
