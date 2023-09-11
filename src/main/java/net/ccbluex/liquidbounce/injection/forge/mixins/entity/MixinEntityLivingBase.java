@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.player.Patcher;
-import net.ccbluex.liquidbounce.features.module.modules.player.ViaVersionFix;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
 import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
@@ -162,7 +161,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
                     yaw = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getYaw() : (RotationUtils.serverRotation != null ? RotationUtils.serverRotation.getYaw() : yaw);
                                 else if (sprintMod.getState() && sprintMod.getAllDirectionsValue().get() && sprintMod.getMoveDirPatchValue().get())
                     yaw = MovementUtils.getRawDirection();
-            float f = yaw * 0.017453292F;
+            float f = jumpEvent.getYaw() * ((float)Math.PI / 180F);
             this.motionX -= (double) (MathHelper.sin(f) * 0.2F);
             this.motionZ += (double) (MathHelper.cos(f) * 0.2F);
         }

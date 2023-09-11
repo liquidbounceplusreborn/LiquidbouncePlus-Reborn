@@ -219,9 +219,7 @@ class ModuleManager : Listenable {
             NewGUI::class.java,
             ResetVL::class.java,
             SpeedMine::class.java,
-            ViaVersionFix::class.java,
             FreeLook::class.java,
-            MovementCorrection::class.java,
         )
         registerModule(AntiBot)
         registerModule(Breaker)

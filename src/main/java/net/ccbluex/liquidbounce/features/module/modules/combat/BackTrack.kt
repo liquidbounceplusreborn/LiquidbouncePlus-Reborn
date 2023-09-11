@@ -30,7 +30,6 @@ import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import net.minecraft.util.AxisAlignedBB
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.*
 import kotlin.math.ceil
 
 
