@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.player.Patcher;
+import net.ccbluex.liquidbounce.features.module.modules.player.ViaVersionFix;
 import net.ccbluex.liquidbounce.features.module.modules.render.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
 import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
@@ -175,13 +176,6 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             jumpTicks = 0;
     }
 
-    @ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))
-    private double refactor1_9MovementThreshold(double constant) {
-        if (ViaForge.getInstance().getVersion() <= 47)
-            return 0.005D;
-        return 0.003D;
-    }
-
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
     private void onJumpSection(CallbackInfo callbackInfo) {
         if (LiquidBounce.moduleManager.getModule(AirJump.class).getState() && isJumping && this.jumpTicks == 0) {
@@ -228,5 +222,4 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             return 0.003D;
         return 0.005D;
     }
-
 }
