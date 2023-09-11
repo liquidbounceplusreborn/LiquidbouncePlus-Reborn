@@ -957,6 +957,7 @@ class Disabler : Module() {
 			}
 		}
 		if(modeValue.isMode("Grim")) {
+
 			if (post.get()) {
 				pre = event.eventState == EventState.PRE
 				if (event.eventState == EventState.PRE) {

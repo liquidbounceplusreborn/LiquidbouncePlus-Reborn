@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
-import de.enzaxd.viaforge.ViaForge;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.movement.FastClimb;
+import net.ccbluex.liquidbounce.features.module.modules.player.ViaVersionFix;
 import net.minecraft.block.BlockLadder;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
@@ -58,8 +58,8 @@ public abstract class MixinBlockLadder extends MixinBlock {
     }
     @ModifyConstant(method = "setBlockBoundsBasedOnState", constant = @Constant(floatValue = 0.125F))
     private float ViaVersion_LadderBB(float constant) {
-        if (ViaForge.getInstance().getVersion() <= 47)
-            return 0.125F;
-        return 0.1875F;
+        if (Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ViaVersionFix.class)).getState())
+            return 0.1875F;
+        return 0.125F;
     }
 }

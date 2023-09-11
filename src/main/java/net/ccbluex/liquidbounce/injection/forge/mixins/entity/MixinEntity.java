@@ -5,10 +5,10 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import de.enzaxd.viaforge.ViaForge;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
+import net.ccbluex.liquidbounce.features.module.modules.player.ViaVersionFix;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -193,14 +193,15 @@ public abstract class MixinEntity {
     @Inject(method = "getCollisionBorderSize", at = @At("HEAD"), cancellable = true)
     private void getCollisionBorderSize(final CallbackInfoReturnable<Float> callbackInfoReturnable) {
         final HitBox hitBox = LiquidBounce.moduleManager.getModule(HitBox.class);
+        final ViaVersionFix viaVersionFix = LiquidBounce.moduleManager.getModule(ViaVersionFix.class);
 
         if (hitBox.getState() && EntityUtils.isSelected(((Entity)((Object)this)),true)) {
-            if (ViaForge.getInstance().getVersion() <= 47){
-                callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());
-            } else {
+            if (viaVersionFix.getState()) {
                 callbackInfoReturnable.setReturnValue(hitBox.getSizeValue().get());
+            } else {
+                callbackInfoReturnable.setReturnValue(0.1F + hitBox.getSizeValue().get());
             }
-        } else if (ViaForge.getInstance().getVersion() <= 47) {
+        } else if (viaVersionFix.getState()) {
             callbackInfoReturnable.setReturnValue(0.0F);
         }
     }

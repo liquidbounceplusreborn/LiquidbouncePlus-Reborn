@@ -490,16 +490,6 @@ class KillAura : Module() {
     }
 
 
-    @EventTarget
-    fun onJump(event: JumpEvent) {
-        if (rotationStrafeValue.isMode("Strict")) {
-            if (currentTarget != null && RotationUtils.targetRotation != null) {
-                event.yaw = RotationUtils.targetRotation.yaw
-            }
-        }
-    }
-
-
     fun update() {
         if (cancelRun || (noInventoryAttackValue.get() && (mc.currentScreen is GuiContainer ||
                     System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get()))
