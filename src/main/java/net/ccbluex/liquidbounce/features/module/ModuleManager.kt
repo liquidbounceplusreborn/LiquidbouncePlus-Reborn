@@ -221,8 +221,8 @@ class ModuleManager : Listenable {
             SpeedMine::class.java,
             FreeLook::class.java,
             ViaVersionFix::class.java,
+            AntiBot::class.java,
         )
-        registerModule(AntiBot)
         registerModule(Breaker)
         registerModule(ChestAura)
 
