@@ -40,7 +40,7 @@ public final class EntityUtils extends MinecraftInstance {
                     final EntityPlayer entityPlayer = (EntityPlayer) entity;
 
                     if(canAttackCheck) {
-                        if(AntiBot.isBot(entityPlayer))
+                        if(AntiBot.Companion.isBot(entityPlayer))
                             return false;
 
                         if (isFriend(entityPlayer) && !LiquidBounce.moduleManager.getModule(NoFriends.class).getState())
