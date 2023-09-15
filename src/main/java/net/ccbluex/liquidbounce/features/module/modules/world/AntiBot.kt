@@ -68,6 +68,8 @@ class AntiBot : Module() {
     private val spawnInCombatValue = BoolValue("SpawnInCombat", false)
     private val removeFromWorld = BoolValue("RemoveFromWorld", false)
     private val removeIntervalValue = IntegerValue("Remove-Interval", 20, 1, 100, " tick")
+    private val fastDamageValue = BoolValue("FastDamage", false)
+    private val fastDamageTicksValue = IntegerValue("FastDamageTicks", 5, 1, 20,{ fastDamageValue.get() })
     private val debugValue = BoolValue("Debug", false)
     private val ground: MutableList<Int> = ArrayList()
     private val air: MutableList<Int> = ArrayList()
@@ -79,6 +81,8 @@ class AntiBot : Module() {
     private val regex = Regex("\\w{3,16}")
     private val hasRemovedEntities = mutableListOf<Int>()
     private val spawnInCombat = mutableListOf<Int>()
+    private val lastDamage = mutableMapOf<Int, Int>()
+    private val lastDamageVl = mutableMapOf<Int, Float>()
 
     override fun onDisable() {
         clearAll()
@@ -160,8 +164,21 @@ class AntiBot : Module() {
             if(LiquidBounce.combatManager.inCombat && !hasRemovedEntities.contains(packet.entityID)) {
                 spawnInCombat.add(packet.entityID)
             }
-        } else if (packet is S13PacketDestroyEntities) {
+        }
+        if (packet is S13PacketDestroyEntities) {
             hasRemovedEntities.addAll(packet.entityIDs.toTypedArray())
+        }
+        if (packet is S19PacketEntityStatus && packet.opCode.toInt() == 2 || packet is S0BPacketAnimation && packet.animationType == 1) {
+            val entity = if (packet is S19PacketEntityStatus) { packet.getEntity(mc.theWorld) } else if (packet is S0BPacketAnimation) { mc.theWorld.getEntityByID(packet.entityID) } else { null } ?: return
+
+            if (entity is EntityPlayer) {
+                lastDamageVl[entity.entityId] = lastDamageVl.getOrDefault(entity.entityId, 0f) + if (entity.ticksExisted - lastDamage.getOrDefault(entity.entityId, 0) <= fastDamageTicksValue.get()) {
+                    1f
+                } else {
+                    -0.5f
+                }
+                lastDamage[entity.entityId] = entity.ticksExisted
+            }
         }
     }
 
@@ -184,6 +201,9 @@ class AntiBot : Module() {
         invisible.clear()
         hasRemovedEntities.clear()
         spawnInCombat.clear()
+        lastDamage.clear()
+        lastDamageVl.clear()
+
     }
 
     companion object {
@@ -275,6 +295,10 @@ class AntiBot : Module() {
             if (antiBot.spawnInCombatValue.get() && antiBot.spawnInCombat.contains(entity.entityId)) {
                 return true
             }
+            if (antiBot.fastDamageValue.get() && antiBot.lastDamageVl.getOrDefault(entity.entityId, 0f) > 0) {
+                return true
+            }
+
             return entity.getName().isEmpty() || entity.getName() == mc.thePlayer.name
         }
 
