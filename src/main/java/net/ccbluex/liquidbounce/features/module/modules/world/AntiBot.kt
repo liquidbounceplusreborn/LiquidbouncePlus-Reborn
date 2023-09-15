@@ -21,10 +21,7 @@ import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.network.play.server.S0BPacketAnimation
-import net.minecraft.network.play.server.S14PacketEntity
-import net.minecraft.network.play.server.S38PacketPlayerListItem
-import net.minecraft.network.play.server.S41PacketServerDifficulty
+import net.minecraft.network.play.server.*
 import net.minecraft.world.WorldSettings
 import java.util.*
 import java.util.function.Consumer
@@ -57,6 +54,8 @@ class AntiBot : Module() {
     private val maxHealthValue = FloatValue("MaxHealth", 20f, 0f, 100f)
     private val derpValue = BoolValue("Derp", true)
     private val wasInvisibleValue = BoolValue("WasInvisible", false)
+    private val validNameValue = BoolValue("ValidName", true)
+    private val hiddenNameValue = BoolValue("HiddenName", false)
     private val armorValue = BoolValue("Armor", false)
     private val pingValue = BoolValue("Ping", false)
     private val needHitValue = BoolValue("NeedHit", false)
@@ -65,6 +64,8 @@ class AntiBot : Module() {
     private val duplicateInTabValue = BoolValue("DuplicateInTab", false)
     private val experimentalNPCDetection = BoolValue("ExperimentalNPCDetection", false)
     private val illegalName = BoolValue("IllegalName", false)
+    private val reusedEntityIdValue = BoolValue("ReusedEntityId", false)
+    private val spawnInCombatValue = BoolValue("SpawnInCombat", false)
     private val removeFromWorld = BoolValue("RemoveFromWorld", false)
     private val removeIntervalValue = IntegerValue("Remove-Interval", 20, 1, 100, " tick")
     private val debugValue = BoolValue("Debug", false)
@@ -75,6 +76,10 @@ class AntiBot : Module() {
     private val invisible: MutableList<Int> = ArrayList()
     private val hitted: MutableList<Int> = ArrayList()
     private var wasAdded = mc.thePlayer != null
+    private val regex = Regex("\\w{3,16}")
+    private val hasRemovedEntities = mutableListOf<Int>()
+    private val spawnInCombat = mutableListOf<Int>()
+
     override fun onDisable() {
         clearAll()
         super.onDisable()
@@ -151,6 +156,13 @@ class AntiBot : Module() {
                 entity.getEntityId()
             )
         }
+        if (packet is S0CPacketSpawnPlayer) {
+            if(LiquidBounce.combatManager.inCombat && !hasRemovedEntities.contains(packet.entityID)) {
+                spawnInCombat.add(packet.entityID)
+            }
+        } else if (packet is S13PacketDestroyEntities) {
+            hasRemovedEntities.addAll(packet.entityIDs.toTypedArray())
+        }
     }
 
     @EventTarget
@@ -170,6 +182,8 @@ class AntiBot : Module() {
         ground.clear()
         invalidGround.clear()
         invisible.clear()
+        hasRemovedEntities.clear()
+        spawnInCombat.clear()
     }
 
     companion object {
@@ -248,6 +262,18 @@ class AntiBot : Module() {
                         }
                         .count() > 1
                 ) return true
+            }
+            if (antiBot.validNameValue.get() && !entity.name.matches(antiBot.regex)) {
+                return true
+            }
+            if (antiBot.hiddenNameValue.get() && ( entity.getName().contains("\u00A7") || (entity.hasCustomName() && entity.getCustomNameTag().contains(entity.getName()) ))){
+                return true
+            }
+            if(antiBot.reusedEntityIdValue.get() && antiBot.hasRemovedEntities.contains(entity.entityId)) {
+                return false
+            }
+            if (antiBot.spawnInCombatValue.get() && antiBot.spawnInCombat.contains(entity.entityId)) {
+                return true
             }
             return entity.getName().isEmpty() || entity.getName() == mc.thePlayer.name
         }
