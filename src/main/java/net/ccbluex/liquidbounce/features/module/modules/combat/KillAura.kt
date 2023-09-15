@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.features.module.modules.world.*
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.getNearestPointBB
+import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils
@@ -1043,7 +1044,7 @@ class KillAura : Module() {
 
     private fun getTargetRotation(entity: Entity): Rotation? {
 
-        var boundingBox = entity.entityBoundingBox
+        var boundingBox = entity.hitBox
 
         var amount = shakeAmout.get()
 

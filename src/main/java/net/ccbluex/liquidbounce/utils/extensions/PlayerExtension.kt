@@ -94,5 +94,11 @@ private fun EntityPlayer.customGetLook(partialTicks: Float, yaw: Float, pitch: F
     return this.getVectorForRotation(f, f2)
 }
 
+val Entity.hitBox: AxisAlignedBB
+    get() {
+        val borderSize = collisionBorderSize.toDouble()
+        return entityBoundingBox.expand(borderSize, borderSize, borderSize)
+    }
+
 val Entity.rotation: Rotation
     get() = Rotation(rotationYaw, rotationPitch)
