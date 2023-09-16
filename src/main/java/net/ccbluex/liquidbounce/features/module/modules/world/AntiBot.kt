@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
@@ -25,7 +24,6 @@ import net.minecraft.network.play.server.*
 import net.minecraft.world.WorldSettings
 import java.util.*
 import java.util.function.Consumer
-import java.util.stream.Stream
 
 @ModuleInfo(
     name = "AntiBot",
@@ -59,17 +57,17 @@ class AntiBot : Module() {
     private val armorValue = BoolValue("Armor", false)
     private val pingValue = BoolValue("Ping", false)
     private val needHitValue = BoolValue("NeedHit", false)
-    private val duplicateInWorldValue = BoolValue("DuplicateInWorld", false)
-    private val drvcValue = BoolValue("ReverseCheck", true) { duplicateInWorldValue.get() }
-    private val duplicateInTabValue = BoolValue("DuplicateInTab", false)
     private val experimentalNPCDetection = BoolValue("ExperimentalNPCDetection", false)
     private val illegalName = BoolValue("IllegalName", false)
     private val reusedEntityIdValue = BoolValue("ReusedEntityId", false)
     private val spawnInCombatValue = BoolValue("SpawnInCombat", false)
+    private val duplicateInWorldValue = BoolValue("DuplicateInWorld", false)
+    private val duplicateInTabValue = BoolValue("DuplicateInTab", false)
+    private val duplicateCompareModeValue = ListValue("DuplicateCompareMode", arrayOf("OnTime", "WhenSpawn"), "OnTime") { duplicateInTabValue.get() || duplicateInWorldValue.get() }
     private val removeFromWorld = BoolValue("RemoveFromWorld", false)
     private val removeIntervalValue = IntegerValue("Remove-Interval", 20, 1, 100, " tick")
     private val fastDamageValue = BoolValue("FastDamage", false)
-    private val fastDamageTicksValue = IntegerValue("FastDamageTicks", 5, 1, 20,{ fastDamageValue.get() })
+    private val fastDamageTicksValue = IntegerValue("FastDamageTicks", 5, 1, 20) { fastDamageValue.get() }
     private val debugValue = BoolValue("Debug", false)
     private val ground: MutableList<Int> = ArrayList()
     private val air: MutableList<Int> = ArrayList()
@@ -83,6 +81,7 @@ class AntiBot : Module() {
     private val spawnInCombat = mutableListOf<Int>()
     private val lastDamage = mutableMapOf<Int, Int>()
     private val lastDamageVl = mutableMapOf<Int, Float>()
+    private val duplicate = mutableListOf<UUID>()
 
     override fun onDisable() {
         clearAll()
@@ -153,19 +152,29 @@ class AntiBot : Module() {
                 if (entity.isInvisible() && !invisible.contains(entity.getEntityId())) invisible.add(entity.getEntityId())
             }
         }
+
         if (packet is S0BPacketAnimation) {
-            val packetAnimation = event.packet as S0BPacketAnimation
-            val entity = mc.theWorld.getEntityByID(packetAnimation.entityID)
-            if (entity is EntityLivingBase && packetAnimation.animationType == 0 && !swing.contains(entity.getEntityId())) swing.add(
-                entity.getEntityId()
-            )
-        }
-        if (packet is S0CPacketSpawnPlayer) {
+            val entity = mc.theWorld.getEntityByID(packet.entityID)
+
+            if (entity != null && entity is EntityLivingBase && packet.animationType == 0 &&
+                !swing.contains(entity.entityId)) {
+                swing.add(entity.entityId)
+            }
+        } else if (packet is S38PacketPlayerListItem) {
+            if (duplicateCompareModeValue.equals("WhenSpawn") && packet.action == S38PacketPlayerListItem.Action.ADD_PLAYER) {
+                packet.entries.forEach { entry ->
+                    val name = entry.profile.name
+                    if (duplicateInWorldValue.get() && mc.theWorld.playerEntities.any { it.name == name } ||
+                        duplicateInTabValue.get() && mc.netHandler.playerInfoMap.any { it.gameProfile.name == name }) {
+                        duplicate.add(entry.profile.id)
+                    }
+                }
+            }
+        } else if (packet is S0CPacketSpawnPlayer) {
             if(LiquidBounce.combatManager.inCombat && !hasRemovedEntities.contains(packet.entityID)) {
                 spawnInCombat.add(packet.entityID)
             }
-        }
-        if (packet is S13PacketDestroyEntities) {
+        } else if (packet is S13PacketDestroyEntities) {
             hasRemovedEntities.addAll(packet.entityIDs.toTypedArray())
         }
         if (packet is S19PacketEntityStatus && packet.opCode.toInt() == 2 || packet is S0BPacketAnimation && packet.animationType == 1) {
@@ -203,7 +212,7 @@ class AntiBot : Module() {
         spawnInCombat.clear()
         lastDamage.clear()
         lastDamageVl.clear()
-
+        duplicate.clear()
     }
 
     companion object {
@@ -257,32 +266,6 @@ class AntiBot : Module() {
                     return true
                 }
             }
-            if (antiBot.duplicateInWorldValue.get()) {
-                if (antiBot.drvcValue.get() && reverse(mc.theWorld.loadedEntityList.stream())
-                        .filter { currEntity: Entity? ->
-                            currEntity is EntityPlayer && currEntity
-                                .displayNameString == currEntity.displayNameString
-                        }
-                        .count() > 1
-                ) return true
-                if (mc.theWorld.loadedEntityList.stream()
-                        .filter { currEntity: Entity? ->
-                            currEntity is EntityPlayer && currEntity
-                                .displayNameString == currEntity.displayNameString
-                        }
-                        .count() > 1
-                ) return true
-            }
-            if (antiBot.duplicateInTabValue.get()) {
-                if (mc.netHandler.playerInfoMap.stream()
-                        .filter { networkPlayer: NetworkPlayerInfo? ->
-                            entity.getName() == stripColor(
-                                EntityUtils.getName(networkPlayer)
-                            )
-                        }
-                        .count() > 1
-                ) return true
-            }
             if (antiBot.validNameValue.get() && !entity.name.matches(antiBot.regex)) {
                 return true
             }
@@ -299,13 +282,19 @@ class AntiBot : Module() {
                 return true
             }
 
-            return entity.getName().isEmpty() || entity.getName() == mc.thePlayer.name
-        }
+            if (antiBot.duplicateInWorldValue.get() && antiBot.duplicateCompareModeValue.equals("OnTime") && mc.theWorld.loadedEntityList.count { it is EntityPlayer && it.name == it.name } > 1) {
+                return true
+            }
 
-        private fun <T> reverse(stream: Stream<T>): Stream<T> { // from Don't Panic!
-            val stack = LinkedList<T>()
-            stream.forEach { e: T -> stack.push(e) }
-            return stack.stream()
+            if (antiBot.duplicateInTabValue.get() && antiBot.duplicateCompareModeValue.equals("OnTime") && mc.netHandler.playerInfoMap.count { entity.name == it.gameProfile.name } > 1) {
+                return true
+            }
+
+            if (antiBot.duplicateCompareModeValue.equals("WhenSpawn") && antiBot.duplicate.contains(entity.gameProfile.id)) {
+                return true
+            }
+
+            return entity.name.isEmpty() || entity.name == mc.thePlayer.name
         }
     }
 }
