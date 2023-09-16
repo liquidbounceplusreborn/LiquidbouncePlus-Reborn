@@ -193,7 +193,10 @@ class Target : Element() {
         val calcTranslateX = borderWidth / 2F * calcScaleX
         val calcTranslateY = borderHeight / 2F * calcScaleY
 
-        if (shadowValue.get() && mainStyle.shaderSupport) {
+        val idkWidth = returnBorder.x2
+        val idkHeight = returnBorder.y2
+
+            if (shadowValue.get() && mainStyle.shaderSupport) {
             val floatX = renderX.toFloat()
             val floatY = renderY.toFloat()
 
@@ -204,7 +207,7 @@ class Target : Element() {
                 GL11.glPushMatrix()
                 GL11.glTranslated(renderX, renderY, 0.0)
                 if (fadeValue.get()) {
-                    RenderUtils.scaleStart((3F + calcTranslateX + 36F)/2, (2F + 36F)/2,animation.output.toFloat())
+                    RenderUtils.scaleStart(idkWidth/2, idkHeight/2,animation.output.toFloat())
                 }
                 mainStyle.handleShadow(convertTarget)
                 GL11.glPopMatrix()
@@ -212,7 +215,7 @@ class Target : Element() {
                 GL11.glPushMatrix()
                 GL11.glTranslated(renderX, renderY, 0.0)
                 if (fadeValue.get()) {
-                    RenderUtils.scaleStart((3F + calcTranslateX + 36F)/2, (2F + 36F)/2,animation.output.toFloat())
+                    RenderUtils.scaleStart(idkWidth/2, idkHeight/2,animation.output.toFloat())
                 }
                 mainStyle.handleShadowCut(convertTarget)
                 GL11.glPopMatrix()
@@ -232,7 +235,7 @@ class Target : Element() {
                 GL11.glPushMatrix()
                 GL11.glTranslated(renderX, renderY, 0.0)
                 if (fadeValue.get()) {
-                    RenderUtils.scaleStart((3F + calcTranslateX + 36F)/2, (2F + 36F)/2,animation.output.toFloat())
+                    RenderUtils.scaleStart(idkWidth/2, idkHeight/2,animation.output.toFloat())
                 }
                 mainStyle.handleBlur(convertTarget)
                 GL11.glPopMatrix()
@@ -242,7 +245,7 @@ class Target : Element() {
         }
 
         if (fadeValue.get()) {
-            RenderUtils.scaleStart((3F + calcTranslateX + 36F)/2, (2F + 36F)/2,animation.output.toFloat())
+            RenderUtils.scaleStart(idkWidth/2, idkHeight/2,animation.output.toFloat())
         }
         
         if (mainStyle is Chill)
