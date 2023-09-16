@@ -165,7 +165,7 @@ class Scaffold : Module() {
 
     //make sprint compatible with tower.add sprint tricks
     val sprintModeValue =
-        ListValue("SprintMode", arrayOf("Same", "Ground", "Air","NoPacket", "PlaceOff", "PlaceOn", "FallDownOff","GrimOff", "Off"), "Off")
+        ListValue("SprintMode", arrayOf("Same", "Ground", "Air","NoPacket", "PlaceOff", "PlaceOn", "FallDownOff","GrimOff","Legit", "Off"), "Off")
 
     // Basic stuff
     private val swingValue = BoolValue("Swing", true)
@@ -776,7 +776,8 @@ class Scaffold : Module() {
                 .equals("ground", ignoreCase = true) && !mc.thePlayer.onGround || sprintModeValue.get()
                 .equals("air", ignoreCase = true) && mc.thePlayer.onGround || sprintModeValue.get()
                 .equals("falldownoff", ignoreCase = true) && mc.thePlayer.fallDistance > 0 ||
-                sprintModeValue.get().equals("grimoff", ignoreCase = true) && offGroundTicks >= 3
+                sprintModeValue.get().equals("grimoff", ignoreCase = true) && offGroundTicks >= 3 ||
+                sprintModeValue.get().equals("legit", ignoreCase = true) && abs(MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) - MathHelper.wrapAngleTo180_float(RotationUtils.targetRotation.yaw)) > 90
         ) {
             mc.thePlayer.isSprinting = false
         }
