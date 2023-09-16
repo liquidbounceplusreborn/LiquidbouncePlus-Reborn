@@ -159,6 +159,10 @@ class Scaffold : Module() {
         !autoBlockMode.get().equals("off", ignoreCase = true)
     }
 
+    private val sortByHighestAmount = BoolValue("SortByHighestAmount", false) {
+        !autoBlockMode.get().equals("off", ignoreCase = true)
+    }
+
     //make sprint compatible with tower.add sprint tricks
     val sprintModeValue =
         ListValue("SprintMode", arrayOf("Same", "Ground", "Air","NoPacket", "PlaceOff", "PlaceOn", "FallDownOff","GrimOff", "Off"), "Off")
@@ -939,9 +943,14 @@ class Scaffold : Module() {
             place()
         }
         if (eventState === EventState.PRE) {
-            if (!shouldPlace() || (if (!autoBlockMode.get()
-                        .equals("Off", ignoreCase = true)
-                ) InventoryUtils.findAutoBlockBlock() == -1 else mc.thePlayer.heldItem == null ||
+            if (!shouldPlace() || (if (!autoBlockMode.get().equals("Off", ignoreCase = true))
+                if(sortByHighestAmount.get()){
+                    InventoryUtils.findLargestBlockStackInHotbar()!! == -1
+                }else{
+                    InventoryUtils.findBlockInHotbar()!! == -1
+                }
+                else
+                    mc.thePlayer.heldItem == null ||
                         mc.thePlayer.heldItem.item !is ItemBlock)
             ) return
             findBlock(mode == "Expand" && expandLengthValue.get() > 1, area = true)
@@ -1022,7 +1031,11 @@ class Scaffold : Module() {
         var itemStack = mc.thePlayer.heldItem
         if (mc.thePlayer.heldItem == null || mc.thePlayer.heldItem.item !is ItemBlock) {
             if (autoBlockMode.get().equals("Off", ignoreCase = true)) return
-            blockSlot = InventoryUtils.findAutoBlockBlock()
+            blockSlot = if(sortByHighestAmount.get()){
+                InventoryUtils.findLargestBlockStackInHotbar()!!
+            }else{
+                InventoryUtils.findBlockInHotbar()!!
+            }
             if (blockSlot == -1) return
             if (autoBlockMode.get().equals("Spoof", ignoreCase = true)) {
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(blockSlot - 36))
