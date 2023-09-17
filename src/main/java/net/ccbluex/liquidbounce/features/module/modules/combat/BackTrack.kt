@@ -6,8 +6,11 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -23,13 +26,17 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.Packet
 import net.minecraft.network.ThreadQuickExitException
 import net.minecraft.network.play.INetHandlerPlayClient
+import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.C02PacketUseEntity
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 import kotlin.math.ceil
 
 
@@ -73,16 +80,29 @@ class BackTrack : Module() {
     private val resetOnLagging = BoolValue("ResetOnLagging", true)
     private val rangeCheckMode = ListValue("RangeCheckMode", arrayOf("RayCast", "DirectDistance"), "DirectDistance")
 
+    private val reverse = BoolValue("Reverse", false)
+    private val reverseRange = FloatValue("ReverseStartRange", 2.9f, 1f, 6f)
+
+    private val reverseMaxRange = FloatValue("ReverseMaxRange", 3.0f, 1f, 6f)
+    private val reverseSelfMaxHurtTime = IntegerValue("ReverseSelfMaxHurtTime", 1, 0, 10)
+    private val reverseTargetMaxHurtTime = IntegerValue("ReverseTargetMaxHurtTime", 10, 0, 10)
+    private val maxReverseTime = IntegerValue("MaxReverseTime", 100, 1, 500)
+
     private val espMode = ListValue("ESPMode", arrayOf("FullBox", "OutlineBox", "NormalBox", "OtherOutlineBox", "OtherFullBox", "Model", "None"), "Box")
 
+    private val storageSendPackets = ArrayList<Packet<INetHandlerPlayServer>>()
     private val storagePackets = ArrayList<Packet<INetHandlerPlayClient>>()
     private val storageEntities = ArrayList<Entity>()
 
     private val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)
     private var timer = MSTimer()
+    private val reverseTimer = MSTimer()
+    private var hasAttackInReversing = false
+    private var lastPosition = Vec3(0.0, 0.0, 0.0)
     private var attacked : Entity? = null
 
     var needFreeze = false
+    var reversing = false
 
     //    @EventTarget
     // for safety, see in met.minecraft.network.NetworkManager
@@ -92,7 +112,7 @@ class BackTrack : Module() {
         val theWorld = mc.theWorld!!
         if (packet.javaClass.name.contains("net.minecraft.network.play.server.", true)) {
             if (packet is S14PacketEntity) {
-                val entity = packet.getEntity(theWorld)?: return
+                val entity = packet.getEntity(theWorld) ?: return
                 if (entity !is EntityLivingBase) return
                 if (onlyPlayer.get() && entity !is EntityPlayer) return
                 entity.serverPosX += packet.func_149062_c().toInt()
@@ -105,14 +125,15 @@ class BackTrack : Module() {
                     val afterBB = AxisAlignedBB(x - 0.4F, y - 0.1F, z - 0.4F, x + 0.4F, y + 1.9F, z + 0.4F)
                     var afterRange: Double
                     var beforeRange: Double
-                    if (rangeCheckMode .get() ==  "RayCast") {
+                    if (rangeCheckMode.get() == "RayCast") {
                         afterRange = afterBB.getLookingTargetRange(mc.thePlayer!!)
                         beforeRange = entity.getLookDistanceToEntityBox()
                         if (afterRange == Double.MAX_VALUE) {
                             val eyes = mc.thePlayer!!.getPositionEyes(1F)
                             afterRange = getNearestPointBB(eyes, afterBB).distanceTo(eyes) + 0.075
                         }
-                        if (beforeRange == Double.MAX_VALUE) beforeRange = mc.thePlayer!!.getDistanceToEntityBox(entity) + 0.075
+                        if (beforeRange == Double.MAX_VALUE) beforeRange =
+                            mc.thePlayer!!.getDistanceToEntityBox(entity) + 0.075
                     } else {
                         val eyes = mc.thePlayer!!.getPositionEyes(1F)
                         afterRange = getNearestPointBB(eyes, afterBB).distanceTo(eyes)
@@ -124,6 +145,7 @@ class BackTrack : Module() {
                             if (!needFreeze) {
                                 timer.reset()
                                 needFreeze = true
+                                stopReverse()
                             }
                             if (!storageEntities.contains(entity)) storageEntities.add(entity)
                             event.cancelEvent()
@@ -131,7 +153,7 @@ class BackTrack : Module() {
                         }
                     } else {
                         if (smartPacket.get()) {
-                            if (afterRange <= beforeRange) {
+                            if (afterRange < beforeRange) {
                                 if (needFreeze) releasePackets()
                             }
                         }
@@ -144,8 +166,10 @@ class BackTrack : Module() {
                 }
                 if (!event.isCancelled && !needFreeze) {
                     LiquidBounce.eventManager.callEvent(EntityMovementEvent(entity))
-                    val f = if (packet.func_149060_h()) (packet.func_149066_f() * 360).toFloat() / 256.0f else entity.rotationYaw
-                    val f1 = if (packet.func_149060_h()) (packet.func_149063_g() * 360).toFloat() / 256.0f else entity.rotationPitch
+                    val f =
+                        if (packet.func_149060_h()) (packet.func_149066_f() * 360).toFloat() / 256.0f else entity.rotationYaw
+                    val f1 =
+                        if (packet.func_149060_h()) (packet.func_149063_g() * 360).toFloat() / 256.0f else entity.rotationPitch
                     entity.setPositionAndRotation2(x, y, z, f, f1, 3, false)
                     entity.onGround = packet.onGround
                 }
@@ -166,9 +190,60 @@ class BackTrack : Module() {
                     event.cancelEvent()
                 }
             }
-        } else if (packet is C02PacketUseEntity) {
-            if (packet.action == C02PacketUseEntity.Action.ATTACK && needFreeze) {
-                attacked = packet.getEntityFromWorld(theWorld)
+        } else {
+            if (reversing) {
+                event.cancelEvent()
+                storageSendPackets.add(packet as Packet<INetHandlerPlayServer>)
+                if (reverseTimer.hasTimePassed(maxReverseTime.get().toLong())) {
+                    stopReverse()
+                }
+            }
+            if (packet is C02PacketUseEntity) {
+                if (packet.action == C02PacketUseEntity.Action.ATTACK) {
+                    if (needFreeze) attacked = packet.getEntityFromWorld(theWorld)
+                    if (reversing) hasAttackInReversing = true
+                }
+            } else if (packet is C03PacketPlayer) {
+                if (!needFreeze && reverse.get()) {
+                    val vec = Vec3(packet.x, packet.y, packet.z)
+                    LiquidBounce.combatManager.target?.let {
+                        val loc = Vec3(it.posX, it.posY + it.eyeHeight, it.posZ)
+                        val bp = getNearestPointBB(loc, mc.thePlayer.entityBoundingBox.expand(0.1, 0.1, 0.1))
+                        val distance = loc.distanceTo(bp)
+                        if (reversing) {
+                            val lastBB = AxisAlignedBB(
+                                lastPosition.xCoord - 0.4f,
+                                lastPosition.yCoord - 0.1f,
+                                lastPosition.zCoord - 0.4f,
+                                lastPosition.xCoord + 0.4f,
+                                lastPosition.yCoord + 1.9f,
+                                lastPosition.zCoord + 0.4f
+                            )
+                            val d = getNearestPointBB(loc, lastBB).distanceTo(loc)
+                            if (distance > d || distance > reverseMaxRange.get() || (it.hurtTime <= (1 + (mc.thePlayer.getPing() / 50.0).toInt()) && hasAttackInReversing)) {
+                                stopReverse()
+                            } else {
+                                val rot =
+                                    Rotation(it.rotationYaw, it.rotationPitch).toDirection().multiply(4.0).add(loc)
+                                val movingObjectPosition = lastBB.calculateIntercept(loc, rot) ?: return@let
+                                val m2 =
+                                    mc.thePlayer.entityBoundingBox.expand(0.1, 0.1, 0.1).calculateIntercept(loc, rot)
+                                if (movingObjectPosition.hitVec != null) {
+                                    val d2 = movingObjectPosition.hitVec.distanceTo(loc)
+                                    if (d2 <= 3.0 && (m2?.hitVec == null || m2.hitVec.distanceTo(loc) > d2)) stopReverse()
+                                }
+                            }
+                        } else if (distance <= reverseRange.get() &&
+                            it.hurtTime <= reverseTargetMaxHurtTime.get() && mc.thePlayer.hurtTime <= reverseSelfMaxHurtTime.get() &&
+                            loc.distanceTo(bp) >= distance && (!onlyKillAura.get() || killAura!!.state)
+                        ) {
+                            reversing = true
+                            lastPosition = vec
+                            hasAttackInReversing = false
+                            reverseTimer.reset()
+                        }
+                    }
+                }
             }
         }
     }
@@ -217,13 +292,21 @@ class BackTrack : Module() {
     }
 
     @EventTarget fun onRender3D(event: Render3DEvent) {
+
+        if (reversing) {
+            val renderManager = mc.renderManager
+
+            val vec = lastPosition.addVector(-renderManager.renderPosX, -renderManager.renderPosY, -renderManager.renderPosZ)
+            RenderUtils.drawAxisAlignedBB(AxisAlignedBB(vec.xCoord - 0.4, vec.yCoord + 0.2, vec.zCoord - 0.4, vec.xCoord + 0.4, vec.yCoord, vec.zCoord + 0.4), Color(37, 126, 255, 70))
+        }
+
         if (espMode.get() == "None" || !needFreeze) return
 
         if (espMode.get() ==  "Model") {
             GL11.glPushMatrix()
             GL11.glDisable(GL11.GL_TEXTURE_2D)
             GL11.glDisable(GL11.GL_DEPTH_TEST)
-//            GlStateManager.disableAlpha()
+            GlStateManager.disableAlpha()
             for (entity in storageEntities) {
                 if (entity !is EntityOtherPlayerMP) return
                 val mp = EntityOtherPlayerMP(mc.theWorld, entity.gameProfile)
@@ -249,7 +332,7 @@ class BackTrack : Module() {
                 mp.hurtResistantTime = entity.hurtResistantTime
                 mc.renderManager.renderEntitySimple(mp, event.partialTicks)
             }
-//            GlStateManager.enableAlpha()
+            GlStateManager.enableAlpha()
             GL11.glEnable(GL11.GL_TEXTURE_2D)
             GL11.glEnable(GL11.GL_DEPTH_TEST)
             GlStateManager.resetColor()
@@ -358,6 +441,27 @@ class BackTrack : Module() {
             }
         }
         needFreeze = false
+    }
+
+    fun stopReverse() {
+        if (storageSendPackets.isEmpty()) return
+        while (storageSendPackets.isNotEmpty()) {
+            storageSendPackets.removeAt(0).let {
+                try {
+                    val packetEvent = PacketEvent(it)
+                    if (!PacketUtils.packets.contains(it)) LiquidBounce.eventManager.callEvent(packetEvent)
+                    if (!packetEvent.isCancelled) PacketUtils.sendPacketNoEvent(it)
+                } catch (e: Exception) {
+                    LiquidBounce.hud.addNotification(Notification( "BackTrack","Something went wrong when sending packet reversing",NotifyType.ERROR))
+                }
+                // why kotlin
+                return@let
+            }
+        }
+        if (storageSendPackets.isEmpty()) {
+            reversing = false
+            hasAttackInReversing = false
+        }
     }
 
     private val calculatedMaxHurtTime : Int
