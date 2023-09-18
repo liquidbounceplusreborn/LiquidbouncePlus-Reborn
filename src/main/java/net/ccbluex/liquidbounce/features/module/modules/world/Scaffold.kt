@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.canBeClicked
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isReplaceable
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
@@ -165,7 +166,7 @@ class Scaffold : Module() {
 
     //make sprint compatible with tower.add sprint tricks
     val sprintModeValue =
-        ListValue("SprintMode", arrayOf("Same", "Ground", "Air","NoPacket", "PlaceOff", "PlaceOn", "FallDownOff","GrimOff","Legit", "Off"), "Off")
+        ListValue("SprintMode", arrayOf("Same", "Ground", "Air","NoPacket", "PlaceOff", "PlaceOn", "FallDownOff","TellyTicks","Legit", "Off"), "Off")
 
     // Basic stuff
     private val swingValue = BoolValue("Swing", true)
@@ -190,11 +191,11 @@ class Scaffold : Module() {
     private val rotationsValue = BoolValue("Rotations", true)
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val keepRotation = BoolValue("KeepRotation", false) { rotationsValue.get() }
-    private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() && (rotationModeValue.isMode("Normal") ||rotationModeValue.isMode("GrimTest") || rotationModeValue.isMode("GrimTest2") ) }
-    private val grimLock = BoolValue("GrimLock", true){ rotationsValue.get() && (rotationModeValue.isMode("GrimTest") || rotationModeValue.isMode("GrimTest2")) }
+    private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() && (rotationModeValue.isMode("Normal") ||rotationModeValue.isMode("Telly") || rotationModeValue.isMode("Grim") ) }
+    private val grimLock = BoolValue("TellyLock", true){ rotationsValue.get() && (rotationModeValue.isMode("Telly") || rotationModeValue.isMode("Grim")) }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","GrimTest","GrimTest2","Rise","Rise2"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","Telly","Grim","Rise","Rise2"),
         "Normal") // searching reason
     private val maxTurnSpeed: FloatValue =
         object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() }) {
@@ -222,6 +223,8 @@ class Scaffold : Module() {
     private val speenPitchValue = FloatValue("Spin-Pitch", 90f, -90f, 90f, "°") {
         rotationModeValue.get().equals("spin", ignoreCase = true)
     }
+
+    private val tellyTicks = IntegerValue("TellyTicks", 3, 1, 5) {rotationsValue.get() && rotationModeValue.get() == "Telly"}
 
     private val placeConditionValue =
         ListValue("Place-Condition", arrayOf("Air", "FallDown", "NegativeMotion", "Always"), "Always")
@@ -324,7 +327,6 @@ class Scaffold : Module() {
     private var verusState = 0
     private var verusJumped = false
     private var offGroundTicks = 0
-    private var onGroundTicks = 0
 
     private val isTowerOnly: Boolean
         get() = towerEnabled.get()
@@ -605,8 +607,8 @@ class Scaffold : Module() {
                 "Intave" -> {
                     faceBlock = true
                 }
-                "GrimTest" ->{
-                    if(offGroundTicks >= 3){
+                "Telly" ->{
+                    if(offGroundTicks >= tellyTicks.get()){
                         faceBlock = true
                     }else{
                         lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
@@ -618,7 +620,7 @@ class Scaffold : Module() {
                         faceBlock = false
                     }
                 }
-                "GrimTest2" ->{
+                "Grim" ->{
                     if(!mc.thePlayer.onGround){
                         faceBlock = true
                     }else{
@@ -692,6 +694,7 @@ class Scaffold : Module() {
         if (mc.thePlayer.onGround) {
             offGroundTicks = 0
         } else offGroundTicks++
+
         if (sprintModeValue.get().equals("PlaceOff", ignoreCase = true)) {
             mc.thePlayer.isSprinting = true
         }
@@ -776,7 +779,7 @@ class Scaffold : Module() {
                 .equals("ground", ignoreCase = true) && !mc.thePlayer.onGround || sprintModeValue.get()
                 .equals("air", ignoreCase = true) && mc.thePlayer.onGround || sprintModeValue.get()
                 .equals("falldownoff", ignoreCase = true) && mc.thePlayer.fallDistance > 0 ||
-                sprintModeValue.get().equals("grimoff", ignoreCase = true) && offGroundTicks >= 3 ||
+                sprintModeValue.get().equals("tellyticks", ignoreCase = true) && offGroundTicks >= tellyTicks.get() ||
                 sprintModeValue.get().equals("legit", ignoreCase = true) && abs(MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) - MathHelper.wrapAngleTo180_float(RotationUtils.targetRotation.yaw)) > 90
         ) {
             mc.thePlayer.isSprinting = false
@@ -1002,7 +1005,18 @@ class Scaffold : Module() {
                     return
                 }
             }
-        } else {
+        }
+        if (rotationModeValue.get() == "Telly") {
+            val (x, z) = player.horizontalFacing.directionVec.x to player.horizontalFacing.directionVec.z
+
+            for (i in (-3..3).sortedBy { BlockUtils.getCenterDistance(blockPos.add(x * it, 0, z * it)) }) {
+                if (search(blockPos.add(x * i, 0, z * i), !shouldGoDown, area)) {
+                    return
+                }
+            }
+
+            return
+        }else {
             for (x in -1..1) {
                 for (z in -1..1) {
                     if (search(blockPos.add(x, 0, z), !shouldGoDown, area)) {
@@ -1688,7 +1702,7 @@ class Scaffold : Module() {
 
         placeRotation ?: return false
 
-        if (rotationsValue.get() && (rotationModeValue.isMode("Normal") || rotationModeValue.isMode("GrimTest") && offGroundTicks >= 3 || rotationModeValue.isMode("GrimTest2") && !mc.thePlayer.onGround)) {
+        if (rotationsValue.get() && (rotationModeValue.isMode("Normal") || rotationModeValue.isMode("Telly") && offGroundTicks >= tellyTicks.get() || rotationModeValue.isMode("Grim") && !mc.thePlayer.onGround)) {
             lockRotation = RotationUtils.limitAngleChange(
                 currRotation, placeRotation.rotation, RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get())
             )
@@ -1756,7 +1770,7 @@ class Scaffold : Module() {
             rotation
         }
 
-        if (rotationModeValue.isMode("Normal") || (rotationModeValue.isMode("GrimTest") && offGroundTicks >= 3) || (rotationModeValue.isMode("GrimTest2") && !mc.thePlayer.onGround)) {
+        if (rotationModeValue.isMode("Normal") || (rotationModeValue.isMode("Telly") && offGroundTicks >= tellyTicks.get()) || (rotationModeValue.isMode("Grim") && !mc.thePlayer.onGround)) {
             lockRotation = rotation
         }
 
