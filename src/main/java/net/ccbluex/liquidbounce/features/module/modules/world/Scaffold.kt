@@ -192,10 +192,10 @@ class Scaffold : Module() {
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val keepRotation = BoolValue("KeepRotation", false) { rotationsValue.get() }
     private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() }
-    private val grimLock = BoolValue("TellyLock", true){ rotationsValue.get() && (rotationModeValue.isMode("Telly") || rotationModeValue.isMode("Grim")) }
+    private val grimLock = BoolValue("TellyLock", true){ rotationsValue.get() && (rotationModeValue.isMode("Telly")) }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","Telly","Grim","Rise","Rise2"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","Telly","Rise","Rise2"),
         "Normal") // searching reason
     private val maxTurnSpeed: FloatValue =
         object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() }) {
@@ -610,19 +610,6 @@ class Scaffold : Module() {
             }
             "Telly" ->{
                 if(offGroundTicks >= tellyTicks.get()){
-                    faceBlock = true
-                }else{
-                    lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
-                        80f
-                    } else{
-                        mc.thePlayer.rotationPitch
-                    }
-                    )
-                    faceBlock = false
-                }
-            }
-            "Grim" ->{
-                if(!mc.thePlayer.onGround){
                     faceBlock = true
                 }else{
                     lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
@@ -1709,7 +1696,7 @@ class Scaffold : Module() {
 
         placeRotation ?: return false
 
-        if (rotationsValue.get() && (rotationModeValue.isMode("Normal") || rotationModeValue.isMode("Telly") && offGroundTicks >= tellyTicks.get() || rotationModeValue.isMode("Grim") && !mc.thePlayer.onGround)) {
+        if (rotationsValue.get() && (rotationModeValue.isMode("Normal") || rotationModeValue.isMode("Telly") && offGroundTicks >= tellyTicks.get())) {
             lockRotation = RotationUtils.limitAngleChange(
                 currRotation, placeRotation.rotation, RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get())
             )
@@ -1777,7 +1764,7 @@ class Scaffold : Module() {
             rotation
         }
 
-        if (rotationModeValue.isMode("Normal") || (rotationModeValue.isMode("Telly") && offGroundTicks >= tellyTicks.get()) || (rotationModeValue.isMode("Grim") && !mc.thePlayer.onGround)) {
+        if (rotationModeValue.isMode("Normal") || (rotationModeValue.isMode("Telly") && offGroundTicks >= tellyTicks.get())) {
             lockRotation = rotation
         }
 
