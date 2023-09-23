@@ -20,7 +20,7 @@ import java.security.PublicKey;
 
 public final class ClientUtils extends MinecraftInstance {
 
-    private static final Logger logger = LogManager.getLogger("LiquidBounce");
+    public static final Logger logger = LogManager.getLogger("LiquidBounce");
 
     private static Field fastRenderField;
 
