@@ -1015,7 +1015,7 @@ class Scaffold : Module() {
             return
         }
 
-        val (f, g) = if (modeValue.get() == "Telly") 5 to 3 else 1 to 1
+        val (f, g) = if (rotationModeValue.get() == "Telly") 5 to 3 else 1 to 1
 
         (-f..f).flatMap { x ->
             (0 downTo -g).flatMap { y ->
