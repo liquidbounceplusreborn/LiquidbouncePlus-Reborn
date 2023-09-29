@@ -1012,24 +1012,22 @@ class Scaffold : Module() {
                     return
                 }
             }
+            return
         }
-        if (rotationModeValue.get() == "Telly") {
-            val (x, z) = player.horizontalFacing.directionVec.x to player.horizontalFacing.directionVec.z
 
-            for (i in (-3..3).sortedBy { BlockUtils.getCenterDistance(blockPos.add(x * it, 0, z * it)) }) {
-                if (search(blockPos.add(x * i, 0, z * i), !shouldGoDown, area)) {
-                    return
+        val (f, g) = if (modeValue.get() == "Telly") 5 to 3 else 1 to 1
+
+        (-f..f).flatMap { x ->
+            (0 downTo -g).flatMap { y ->
+                (-f..f).map { z ->
+                    Vec3i(x, y, z)
                 }
             }
-
-            return
-        }else {
-            for (x in -1..1) {
-                for (z in -1..1) {
-                    if (search(blockPos.add(x, 0, z), !shouldGoDown, area)) {
-                        return
-                    }
-                }
+        }.sortedBy {
+            BlockUtils.getCenterDistance(blockPos.add(it))
+        }.forEach {
+            if (canBeClicked(blockPos.add(it)) || search(blockPos.add(it), !shouldGoDown, area)) {
+                return
             }
         }
     }
