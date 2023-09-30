@@ -102,6 +102,7 @@ class Velocity : Module() {
     private val s32 = BoolValue("S32", true, { modeValue.isMode("GrimAC") })
     private val c03 = BoolValue("C03", true, { modeValue.isMode("GrimAC") })
     private val c06 = BoolValue("C06", true, { modeValue.isMode("GrimAC") && c03.get() })
+    private val worldValue = BoolValue("BreakOnWorld", true, { modeValue.isMode("GrimAC") })
 
     /**
      * VALUES
@@ -540,7 +541,7 @@ class Velocity : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (modeValue.isMode("GrimAC")) {
+        /*if (modeValue.isMode("GrimAC")) {
             if (c07.get()) {
                 if (event.eventState == EventState.PRE) {
                     if (mc.theWorld.getBlockState(mc.thePlayer.position.down()).block !is BlockSlab && gotVelo) {
@@ -555,7 +556,7 @@ class Velocity : Module() {
                     }
                 }
             }
-        }
+        }*/
     }
 
     @EventTarget
@@ -563,21 +564,27 @@ class Velocity : Module() {
         if (modeValue.isMode("GrimAC")) {
             if (c03.get()) {
                 if (gotVelo) {
-                    if (c06.get())
-                        mc.netHandler.addToSendQueue(
-                            C03PacketPlayer.C06PacketPlayerPosLook(
-                                mc.thePlayer.posX,
-                                mc.thePlayer.posY,
-                                mc.thePlayer.posZ,
-                                mc.thePlayer.rotationYaw,
-                                mc.thePlayer.rotationPitch,
-                                mc.thePlayer.onGround
-                            )
-                        )
-                    else
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    val pos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+                    if (checkBlock(pos) || checkBlock(pos.up())) {
+                        gotVelo = false
+                    }
                 }
             }
         }
+    }
+    fun checkBlock(pos: BlockPos): Boolean {
+        if (mc.theWorld.isAirBlock(pos)) {
+            if (c03.get()) {
+                if (c06.get())
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, mc.thePlayer.onGround))
+                else
+                    mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+            }
+            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, EnumFacing.DOWN))
+            if (worldValue.get())
+                mc.theWorld.setBlockToAir(pos)
+            return true
+        }
+        return false
     }
 }
