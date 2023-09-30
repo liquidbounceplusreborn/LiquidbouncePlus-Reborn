@@ -38,9 +38,6 @@ class FogColorEvent(var red: Float, var green: Float, var blue: Float, var alpha
         this.blue = blue.toFloat()
     }
 }
-
-class MovementInputUpdateEvent(var strafe: Float, var forward: Float, var jump: Boolean, var sneak: Boolean) : Event()
-
 /**
  * Called when minecraft get bounding box of block
  *
