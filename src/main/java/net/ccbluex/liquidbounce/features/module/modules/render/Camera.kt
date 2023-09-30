@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.render
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.FogColorEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.TickEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -14,8 +15,10 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+
 
 @ModuleInfo(name = "Camera", description = "Allows you to see through walls in third person view.", category = ModuleCategory.RENDER)
 class Camera : Module(){
@@ -65,6 +68,9 @@ class Camera : Module(){
     private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f){ fpsHurtCam.get() }
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f){ fpsHurtCam.get() }
     private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10){ fpsHurtCam.get() }
+
+    private val motionBlur = BoolValue("Motionblur",false)
+    private val blurAmount = IntegerValue("BlurAmount",2,1,10){ motionBlur.get() }
     //FPSHurtCam
     @EventTarget
     private fun renderHud(event: Render2DEvent) {
@@ -98,6 +104,27 @@ class Camera : Module(){
                     Color(color.red,color.green,color.blue, 0).rgb
                 )
             }
+        }
+    }
+
+    @EventTarget
+    fun onTick(event:TickEvent){
+        try {
+
+                if (mc.thePlayer != null) {
+                    if (motionBlur.get()) {
+                        if (mc.entityRenderer.shaderGroup == null) mc.entityRenderer.loadShader(ResourceLocation("minecraft", "shaders/post/motion_blur.json"))
+                        val uniform = 1f - (blurAmount.get() / 10f).coerceAtMost(0.9f)
+                        if (mc.entityRenderer.shaderGroup != null) {
+                            mc.entityRenderer.shaderGroup.listShaders[0].shaderManager.getShaderUniform("Phosphor").set(uniform, 0f, 0f)
+                        }
+                    } else {
+                        if (mc.entityRenderer.isShaderActive) mc.entityRenderer.stopUseShader()
+                    }
+                }
+
+        } catch (a: Exception) {
+            a.printStackTrace()
         }
     }
 
