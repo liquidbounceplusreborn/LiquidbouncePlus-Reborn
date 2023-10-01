@@ -119,7 +119,7 @@ class KillAura : Module() {
     }
 
     // Modes
-    private val rotations = ListValue("RotationMode", arrayOf("Vanilla", "Grim", "Novoline", "None"), "BackTrack")
+    private val rotations = ListValue("RotationMode", arrayOf("Vanilla", "Grim", "Novoline", "None"), "Vanilla")
 
 
     // Turn Speed
@@ -272,7 +272,6 @@ class KillAura : Module() {
         )
     }
     private val ignoreTickRule = BoolValue("IgnoreTickRule", false) { autoBlock.get() != "Off" && releaseAutoBlock.get() }
-    private val interactAutoBlock = BoolValue("InteractAutoBlock", true) { autoBlock.get() !in arrayOf("Off", "Fake") }
     private val interactAutoBlock = BoolValue("InteractAutoBlock", true) { autoBlock.get() !in arrayOf("Off") }
 
     // AutoBlock conditions
