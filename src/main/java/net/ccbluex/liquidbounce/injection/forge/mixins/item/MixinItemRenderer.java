@@ -392,11 +392,11 @@ public abstract class MixinItemRenderer {
             if (this.itemToRender.getItem() instanceof ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
             } else if (abstractclientplayer.getItemInUseCount() > 0 
-                        || (itemToRender.getItem() instanceof ItemSword && (killAura.getBlockingStatus() || killAura.getFakeBlock()))
+                        || (itemToRender.getItem() instanceof ItemSword && (killAura.getBlockStatus() || killAura.getFakeBlock()))
                         || (itemToRender.getItem() instanceof ItemSword && LiquidBounce.moduleManager.getModule(Animations.class).getState() 
                             && Animations.fakeBlock.get() && killAura.getTarget() != null) || canBlockEverything) {
 
-                EnumAction enumaction = (killAura.getBlockingStatus() || canBlockEverything) ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
+                EnumAction enumaction = (killAura.getBlockStatus() || canBlockEverything) ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
 
                 switch (enumaction) {
                     case NONE:

@@ -308,7 +308,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         final NoSlow noSlow = LiquidBounce.moduleManager.getModule(NoSlow.class);
         final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
 
-        if (getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && killAura.getBlockingStatus())) && !this.isRiding()) {
+        if (getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && killAura.getBlockStatus())) && !this.isRiding()) {
             final SlowDownEvent slowDownEvent = new SlowDownEvent(0.2F, 0.2F);
             LiquidBounce.eventManager.callEvent(slowDownEvent);
             this.movementInput.moveStrafe *= slowDownEvent.getStrafe();

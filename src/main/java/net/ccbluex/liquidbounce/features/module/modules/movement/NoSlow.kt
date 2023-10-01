@@ -120,7 +120,7 @@ class NoSlow : Module() {
         if (modeValue.get().equals(
                 "blink",
                 true
-            ) && !(killAura.state && killAura.blockingStatus) && mc.thePlayer.itemInUse != null && mc.thePlayer.itemInUse.item != null
+            ) && !(killAura.state && killAura.blockStatus) && mc.thePlayer.itemInUse != null && mc.thePlayer.itemInUse.item != null
         ) {
             val item = mc.thePlayer.itemInUse.item
             if (mc.thePlayer.isUsingItem && (item is ItemFood || item is ItemBucketMilk || item is ItemPotion) && (!ciucValue.get() || mc.thePlayer.itemInUseCount >= 1)) {
@@ -220,7 +220,7 @@ class NoSlow : Module() {
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
 
         when (modeValue.get().toLowerCase()) {
-            "aac5" -> if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockingStatus)) {
+            "aac5" -> if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockStatus)) {
                 mc.netHandler.addToSendQueue(
                     C08PacketPlayerBlockPlacement(
                         BlockPos(-1, -1, -1),
@@ -290,20 +290,20 @@ class NoSlow : Module() {
                 }
             }
             "watchdog" -> {
-                if ((mc.thePlayer.isUsingItem || killAura.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
+                if ((mc.thePlayer.isUsingItem || killAura.blockStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
                     if(event.eventState == EventState.POST){
                         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
                     }
                 }
             }
             "switchitem" -> {
-                if (mc.thePlayer.isUsingItem || killAura.blockingStatus) {
+                if (mc.thePlayer.isUsingItem || killAura.blockStatus) {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                 }
             }
             else -> {
-                if (!mc.thePlayer.isBlocking && !killAura.blockingStatus)
+                if (!mc.thePlayer.isBlocking && !killAura.blockStatus)
                     return
                 when (modeValue.get().toLowerCase()) {
                     "aac" -> {
