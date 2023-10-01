@@ -2,6 +2,7 @@
 
 package net.ccbluex.liquidbounce.utils.math
 
+import net.minecraft.util.Vec3
 import java.math.RoundingMode
 import kotlin.math.*
 
@@ -40,3 +41,8 @@ fun gaussian(x: Int, sigma: Float): Float {
 }
 fun Float.toRadians() = this * 0.017453292f
 fun Float.toRadiansD() = toRadians().toDouble()
+
+operator fun Vec3.plus(vec: Vec3): Vec3 = add(vec)
+operator fun Vec3.minus(vec: Vec3): Vec3 = subtract(vec)
+operator fun Vec3.times(number: Double) = Vec3(xCoord * number, yCoord * number, zCoord * number)
+operator fun Vec3.div(number: Double) = times(1 / number)

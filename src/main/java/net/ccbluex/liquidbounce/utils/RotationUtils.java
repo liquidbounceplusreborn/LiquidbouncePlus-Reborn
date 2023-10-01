@@ -351,12 +351,20 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      * @param rotation your rotation
      * @return target vector
      */
-    public static Vec3 getVectorForRotation(final Rotation rotation) {
+    /*public static Vec3 getVectorForRotation(final Rotation rotation) {
         float yawCos = MathHelper.cos(-rotation.getYaw() * 0.017453292F - (float) Math.PI);
         float yawSin = MathHelper.sin(-rotation.getYaw() * 0.017453292F - (float) Math.PI);
         float pitchCos = -MathHelper.cos(-rotation.getPitch() * 0.017453292F);
         float pitchSin = MathHelper.sin(-rotation.getPitch() * 0.017453292F);
         return new Vec3(yawSin * pitchCos, pitchSin, yawCos * pitchCos);
+    }*/
+
+    public static Vec3 getVectorForRotation(final Rotation rotation) {
+        float f = MathHelper.cos((float) (-rotation.getYaw()* 0.017453292f - PI));
+        float f1 = MathHelper.sin((float) (-rotation.getYaw()* 0.017453292f - PI));
+        float f2 = -MathHelper.cos(-rotation.getPitch()* 0.017453292f);
+        float f3 = MathHelper.sin(-rotation.getPitch()* 0.017453292f);
+        return new Vec3((f1 * f2), f3, (f * f2));
     }
 
     /**
