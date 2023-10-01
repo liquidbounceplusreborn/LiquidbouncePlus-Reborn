@@ -265,15 +265,15 @@ class KillAura : Module() {
         { !autoBlockModeValue.get().equals("None", true) && displayAutoBlockSettings.get() })*/
 
     // AutoBlock
-    private val autoBlock = ListValue("AutoBlock", arrayOf("Off", "Packet", "Fake"), "Packet")
+    private val autoBlock = ListValue("AutoBlock", arrayOf("Off", "Packet"), "Packet")
     private val releaseAutoBlock = BoolValue("ReleaseAutoBlock", true) {
         autoBlock.get() !in arrayOf(
-                "Off",
-                "Fake"
+                "Off"
         )
     }
     private val ignoreTickRule = BoolValue("IgnoreTickRule", false) { autoBlock.get() != "Off" && releaseAutoBlock.get() }
     private val interactAutoBlock = BoolValue("InteractAutoBlock", true) { autoBlock.get() !in arrayOf("Off", "Fake") }
+    private val interactAutoBlock = BoolValue("InteractAutoBlock", true) { autoBlock.get() !in arrayOf("Off") }
 
     // AutoBlock conditions
     private val smartAutoBlock = BoolValue("SmartAutoBlock", false) { autoBlock.get() != "Off" }
