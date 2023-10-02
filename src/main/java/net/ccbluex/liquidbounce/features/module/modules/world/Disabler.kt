@@ -128,9 +128,10 @@ class Disabler : Module() {
 
 	//grim
 	private val post = BoolValue("Post",true, { modeValue.get().equals("grim", true) })
-	private val c0e = BoolValue("ChestStealer",false, { modeValue.get().equals("grim", true) && post.get() })
-	private val c08 = BoolValue("PlaceBlock",false, { modeValue.get().equals("grim", true) && post.get() })
-	private val c0b = BoolValue("C0B",false, { modeValue.get().equals("grim", true) && post.get() })
+	private val c0e = BoolValue("ChestStealer",true, { modeValue.get().equals("grim", true) && post.get() })
+	private val c08 = BoolValue("PlaceBlock",true, { modeValue.get().equals("grim", true) && post.get() })
+	private val c0b = BoolValue("C0B",true, { modeValue.get().equals("grim", true) && post.get() })
+	private val fastBreak = BoolValue("FastBreak",true, { modeValue.get().equals("grim", true) })
 
 	// debug
 	private val debugValue = BoolValue("Debug", false)
@@ -191,6 +192,8 @@ class Disabler : Module() {
 	private var pendingFlagApplyPacket = false;
 
 	private var pre = false
+	private var blockPos: BlockPos? = null
+	private var enumFacing: EnumFacing? = null
 
 	val speed = LiquidBounce.moduleManager.getModule(Speed::class.java)!!
 
@@ -1035,6 +1038,20 @@ class Disabler : Module() {
 					debug("flagged")
 				}
 			}
+		}
+	}
+	@EventTarget
+	fun onClickBlock(event: ClickBlockEvent){
+		blockPos = event.clickedBlock
+		enumFacing = event.enumFacing
+		if (fastBreak.get()){
+			mc.netHandler.addToSendQueue(
+					C07PacketPlayerDigging(
+							C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,
+							blockPos,
+							enumFacing
+					)
+			)
 		}
 	}
 }
