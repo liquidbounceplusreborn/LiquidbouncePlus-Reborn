@@ -33,6 +33,8 @@ import java.awt.Color
 class TargetStrafe : Module() {
     private val radiusMode = ListValue("StrafeMode", arrayOf("TrueRadius", "Simple","Behind"), "Behind")
     val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
+    val customSpeed = BoolValue("CustomSpeed",false)
+    val speedValue = FloatValue("Speed", 0.3f, 0.1f, 0.5f)
     private val render = BoolValue("Render", true)
     private val alwaysRender = BoolValue("Always-Render", true, { render.get() })
     private val modeValue = ListValue("KeyMode", arrayOf("Jump", "None"), "None")
@@ -124,22 +126,22 @@ class TargetStrafe : Module() {
         when (radiusMode.get()){
             "TrueRadius" -> {
                 if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
-                    setSpeed(event, moveSpeed, rotYaw, direction, 0.0)
+                    setSpeed(event, if(customSpeed.get()) speedValue.get().toDouble() else moveSpeed, rotYaw, direction, 0.0)
                 else
-                    setSpeed(event, moveSpeed, rotYaw, direction, 1.0)
+                    setSpeed(event, if(customSpeed.get()) speedValue.get().toDouble() else moveSpeed, rotYaw, direction, 1.0)
             }
             "Simple" -> {
                 if (mc.thePlayer.getDistanceToEntity(target) <= radius.get())
-                    setSpeed(event, moveSpeed, rotYaw, direction, 0.0)
+                    setSpeed(event, if(customSpeed.get()) speedValue.get().toDouble() else moveSpeed, rotYaw, direction, 0.0)
                 else
-                    setSpeed(event, moveSpeed, rotYaw, direction, 1.0)
+                    setSpeed(event, if(customSpeed.get()) speedValue.get().toDouble() else moveSpeed, rotYaw, direction, 1.0)
             }
             "Behind" -> {
                 val xPos: Double = target!!.posX + -Math.sin(Math.toRadians(target.rotationYaw.toDouble())) * -2
                 val zPos: Double = target.posZ + Math.cos(Math.toRadians(target.rotationYaw.toDouble())) * -2
-                event.setX(moveSpeed * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+                event.setX(if(customSpeed.get()) speedValue.get().toDouble() else moveSpeed * -MathHelper.sin(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
                     .toFloat()))
-                event.setZ(moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
+                event.setZ(if(customSpeed.get()) speedValue.get().toDouble() else moveSpeed * MathHelper.cos(Math.toRadians(RotationUtils.getRotations1(xPos, target.posY, zPos)[0].toDouble())
                     .toFloat()))
             }
         }

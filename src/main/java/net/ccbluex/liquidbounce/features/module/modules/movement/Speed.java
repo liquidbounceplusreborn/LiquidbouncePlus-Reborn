@@ -102,6 +102,7 @@ public class Speed extends Module {
             new HiveHop(),
             new MineplexGround(),
             new TeleportCubeCraft(),
+            new GrimCombat(),
         
             // Verus
             new VerusHop(),
@@ -222,7 +223,7 @@ public class Speed extends Module {
         }
     };
 
-    public final ListValue otherModeValue = new ListValue("Other-Mode", new String[]{"YPort", "YPort2", "Boost", "Frame", "MiJump", "OnGround", "SlowHop", "Jump", "Legit", "AEMine", "GWEN", "HiveHop", "MineplexGround", "TeleportCubeCraft"}, "Boost", () -> typeValue.get().equalsIgnoreCase("other")) {
+    public final ListValue otherModeValue = new ListValue("Other-Mode", new String[]{"YPort", "YPort2", "Boost", "Frame", "MiJump", "OnGround", "SlowHop", "Jump", "Legit", "AEMine", "GWEN", "HiveHop", "MineplexGround", "TeleportCubeCraft","GrimCombat"}, "Boost", () -> typeValue.get().equalsIgnoreCase("other")) {
 
         @Override
         protected void onChange(final String oldValue, final String newValue) {
@@ -317,6 +318,12 @@ public class Speed extends Module {
     public final FloatValue aacGroundTimerValue = new FloatValue("AACGround-Timer", 3F, 1.1F, 10F, () -> typeValue.get().equalsIgnoreCase("aac"));
     public final FloatValue cubecraftPortLengthValue = new FloatValue("CubeCraft-PortLength", 1F, 0.1F, 2F, () -> getModeName().equalsIgnoreCase("teleportcubecraft"));
     public final FloatValue mineplexGroundSpeedValue = new FloatValue("MineplexGround-Speed", 0.5F, 0.1F, 1F, () -> getModeName().equalsIgnoreCase("mineplexground"));
+
+    public final BoolValue onlyAir = new BoolValue("OnlyAir",false, () -> getModeName().equalsIgnoreCase("grimcombat"));
+    public final BoolValue  okstrafe = new BoolValue("Strafe",false, () -> getModeName().equalsIgnoreCase("grimcombat"));
+    public final BoolValue speedUp = new BoolValue("SpeedUp",false, () -> getModeName().equalsIgnoreCase("grimcombat"));
+    public final IntegerValue speed = new IntegerValue("Speed", 0, 0, 15, () -> getModeName().equalsIgnoreCase("grimcombat"));
+    public final FloatValue distance = new FloatValue("Range", 0f, 0f, 2f, () -> getModeName().equalsIgnoreCase("grimcombat"));
     public final ListValue tagDisplay = new ListValue("Tag", new String[] { "Type", "FullName", "All" }, "Type");
 
     private int offGroundTicks = 0;
