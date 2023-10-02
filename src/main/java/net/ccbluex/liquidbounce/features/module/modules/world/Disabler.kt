@@ -1041,17 +1041,19 @@ class Disabler : Module() {
 		}
 	}
 	@EventTarget
-	fun onClickBlock(event: ClickBlockEvent){
+	fun onClickBlock(event: ClickBlockEvent) {
 		blockPos = event.clickedBlock
 		enumFacing = event.enumFacing
-		if (fastBreak.get()){
-			mc.netHandler.addToSendQueue(
-					C07PacketPlayerDigging(
-							C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,
-							blockPos,
-							enumFacing
-					)
-			)
+		if (modeValue.get() == "Grim") {
+			if (fastBreak.get()) {
+				mc.netHandler.addToSendQueue(
+						C07PacketPlayerDigging(
+								C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK,
+								blockPos,
+								enumFacing
+						)
+				)
+			}
 		}
 	}
 }
