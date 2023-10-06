@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -32,7 +33,7 @@ import java.awt.Color
 @ModuleInfo(name = "TargetStrafe", description = "Strafe around your target. (Require Fly or Speed to be enabled)", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
     private val radiusMode = ListValue("StrafeMode", arrayOf("TrueRadius", "Simple","Behind"), "Behind")
-    val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
+    val radius = FloatValue("Radius", 2.0f, 0.1f, 4.0f){!grim.get()}
     val customSpeed = BoolValue("CustomSpeed",false)
     val speedValue = FloatValue("Speed", 0.3f, 0.1f, 0.5f)
     private val render = BoolValue("Render", true)
@@ -47,6 +48,8 @@ class TargetStrafe : Module() {
     val always = BoolValue("Always",false)
     val onground = BoolValue("Ground",false)
     val air = BoolValue("Air",false)
+    val grim = BoolValue("Grim",false)
+
     private val accuracyValue = IntegerValue("Accuracy", 0, 0, 59)
     private val thicknessValue = FloatValue("Thickness", 1F, 0.1F, 5F)
     private val mixerSecondsValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
@@ -61,6 +64,7 @@ class TargetStrafe : Module() {
     var direction: Int = 1
     var lastView: Int = 0
     var hasChangedThirdPerson: Boolean = true
+    var idk = false
 
     val cansize: Float
         get() = when {
@@ -72,8 +76,7 @@ class TargetStrafe : Module() {
         get() = mc.thePlayer!!.getDistance(killAura.target!!.posX, mc.thePlayer!!.posY, killAura.target!!.posZ)
 
     val algorithm: Float
-        get() = Math.max(Enemydistance - radius.get(), Enemydistance - (Enemydistance - radius.get() / (radius.get() * 2))).toFloat()
-
+        get() = Math.max(Enemydistance - if(grim.get()) 0.1f else radius.get(), Enemydistance - (Enemydistance - if(grim.get()) 0.1f else radius.get() / (if(grim.get()) 0.1f else radius.get() * 2))).toFloat()
 
     override fun onEnable() {
         hasChangedThirdPerson = true
@@ -108,14 +111,23 @@ class TargetStrafe : Module() {
     @EventTarget
     fun onMove(event: MoveEvent) {
         if (canStrafe) {
-            strafe(event, MovementUtils.getSpeed(event.x, event.z))
+            if(grim.get()) {
+                if (mc.thePlayer.getDistanceToEntityBox(killAura.target!!) < 1.25) {
+                    idk = true
+                    mc.thePlayer.isSprinting = false
+                    mc.thePlayer.serverSprintState = false
+                    strafe(event, MovementUtils.getSpeed(event.x, event.z))
+                }
+            }else{
+                strafe(event, MovementUtils.getSpeed(event.x, event.z))
+                idk = false
+            }
 
             if (safewalk.get() && checkVoid()) {
                 event.isSafeWalk = true
             }
         }
     }
-
 
     fun strafe(event: MoveEvent, moveSpeed: Double) {
         if (killAura.target == null) return
