@@ -12,22 +12,21 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.block.BlockSlab
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.network.play.client.C07PacketPlayerDigging
+import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
+import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -42,7 +41,7 @@ class Velocity : Module() {
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
     private val modeValue = ListValue(
-        "Mode", arrayOf(
+            "Mode", arrayOf(
             "Cancel",
             "Simple",
             "Hypixel",
@@ -65,11 +64,11 @@ class Velocity : Module() {
             "AllAC",
             "Intave",
             "Smart"
-        ), "Cancel"
+    ), "Cancel"
     ) // later
 
     private val aac5KillAuraValue =
-        BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
+            BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
     // Affect chance
     private val reduceChance = FloatValue("Reduce-Chance", 100F, 0F, 100F, "%")
@@ -77,13 +76,13 @@ class Velocity : Module() {
 
     // Reverse
     private val reverseStrengthValue =
-        FloatValue("ReverseStrength", 1F, 0.1F, 1F, "x", { modeValue.get().equals("reverse", true) })
+            FloatValue("ReverseStrength", 1F, 0.1F, 1F, "x", { modeValue.get().equals("reverse", true) })
     private val reverse2StrengthValue =
-        FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F, "x", { modeValue.get().equals("smoothreverse", true) })
+            FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F, "x", { modeValue.get().equals("smoothreverse", true) })
 
     // AAC Push
     private val aacPushXZReducerValue =
-        FloatValue("AACPushXZReducer", 2F, 1F, 3F, "x", { modeValue.get().equals("aacpush", true) })
+            FloatValue("AACPushXZReducer", 2F, 1F, 3F, "x", { modeValue.get().equals("aacpush", true) })
     private val aacPushYReducerValue = BoolValue("AACPushYReducer", true, { modeValue.get().equals("aacpush", true) })
 
     // legit
@@ -95,14 +94,7 @@ class Velocity : Module() {
 
     //epic
     private val phaseOffsetValue =
-        FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m", { modeValue.get().equals("phase", true) })
-
-    //grim
-    private val c07 = BoolValue("C07", true, { modeValue.isMode("GrimAC") })
-    private val s32 = BoolValue("S32", true, { modeValue.isMode("GrimAC") })
-    private val c03 = BoolValue("C03", true, { modeValue.isMode("GrimAC") })
-    private val c06 = BoolValue("C06", true, { modeValue.isMode("GrimAC") && c03.get() })
-    private val worldValue = BoolValue("BreakOnWorld", true, { modeValue.isMode("GrimAC") })
+            FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m", { modeValue.get().equals("phase", true) })
 
     /**
      * VALUES
@@ -119,12 +111,9 @@ class Velocity : Module() {
     // AACPush
     private var jump = false
 
-    //Grim
-    var cancelPacket = 6
-    var resetPersec = 8
-    var grimTCancel = 0
-    var updates = 0
-    var gotVelo = false
+    // Grim
+    private val transactionQueue: Queue<Short> = ConcurrentLinkedQueue()
+    private var grimPacket = false
 
     private var jumped = 0
 
@@ -136,11 +125,11 @@ class Velocity : Module() {
 
     override fun onDisable() {
         mc.thePlayer?.speedInAir = 0.02F
-        gotVelo = false
+        grimPacket = false
+        transactionQueue.clear()
     }
 
     override fun onEnable() {
-        grimTCancel = 0
     }
 
     /*
@@ -151,17 +140,7 @@ class Velocity : Module() {
     */
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (modeValue.get() == "GrimAC") {
-            updates++
-            if (resetPersec > 0) {
-                if (updates >= 0 || updates >= resetPersec) {
-                    updates = 0
-                    if (grimTCancel > 0) {
-                        grimTCancel--
-                    }
-                }
-            }
-        }
+
         if (mc.thePlayer.hurtTime <= 0) shouldAffect = (Math.random().toFloat() < reduceChance.get() / 100F)
         if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || !shouldAffect)
             return
@@ -208,15 +187,15 @@ class Velocity : Module() {
 
             "aac4reduce" -> {
                 if (mc.thePlayer.hurtTime > 0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(
-                        80L
-                    )
+                                80L
+                        )
                 ) {
                     mc.thePlayer.motionX *= 0.62
                     mc.thePlayer.motionZ *= 0.62
                 }
                 if (velocityInput && (mc.thePlayer.hurtTime < 4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(
-                        120L
-                    )
+                                120L
+                        )
                 ) {
                     velocityInput = false
                 }
@@ -228,8 +207,8 @@ class Velocity : Module() {
                     mc.thePlayer.motionZ *= 0.81
                 }
                 if (velocityInput && (mc.thePlayer.hurtTime < 5 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(
-                        120L
-                    )
+                                120L
+                        )
                 ) {
                     velocityInput = false
                 }
@@ -274,7 +253,7 @@ class Velocity : Module() {
 
                     // Reduce Y
                     if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get()
-                        && !LiquidBounce.moduleManager[Speed::class.java]!!.state
+                            && !LiquidBounce.moduleManager[Speed::class.java]!!.state
                     )
                         mc.thePlayer.motionY -= 0.014999993
                 }
@@ -340,6 +319,9 @@ class Velocity : Module() {
                 }
             }
 
+            "GrimAC" ->
+                if (transactionQueue.isEmpty() && grimPacket) grimPacket = false
+
             "intave" -> if (velocityInput) {
                 if (mc.thePlayer.hurtTime == 9) {
                     if (++jumped % 2 == 0 && mc.thePlayer.onGround && mc.thePlayer.isSprinting && mc.currentScreen == null) {
@@ -376,7 +358,7 @@ class Velocity : Module() {
         if (packet is S12PacketEntityVelocity) {
 
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID)
-                    ?: return) != mc.thePlayer || !shouldAffect
+                            ?: return) != mc.thePlayer || !shouldAffect
             )
                 return
 
@@ -411,18 +393,18 @@ class Velocity : Module() {
                 "aac5.2.0" -> {
                     event.cancelEvent()
                     if (!mc.isIntegratedServerRunning && (!aac5KillAuraValue.get() || killAura.target != null)) mc.netHandler.addToSendQueue(
-                        C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            1.7976931348623157E+308,
-                            mc.thePlayer.posZ,
-                            true
-                        )
+                            C03PacketPlayer.C04PacketPlayerPosition(
+                                    mc.thePlayer.posX,
+                                    1.7976931348623157E+308,
+                                    mc.thePlayer.posZ,
+                                    true
+                            )
                     )
                 }
 
                 "smart" -> {
                     if (packet.motionX * packet.motionX + packet.motionZ * packet.motionZ + packet.motionY * packet.motionY > 640000) velocityInput =
-                        true
+                            true
                 }
 
                 "glitch" -> {
@@ -434,9 +416,9 @@ class Velocity : Module() {
                 }
 
                 "phase" -> mc.thePlayer.setPositionAndUpdate(
-                    mc.thePlayer.posX,
-                    mc.thePlayer.posY + phaseOffsetValue.get().toDouble(),
-                    mc.thePlayer.posZ
+                        mc.thePlayer.posX,
+                        mc.thePlayer.posY + phaseOffsetValue.get().toDouble(),
+                        mc.thePlayer.posZ
                 )
 
                 "legit" -> {
@@ -445,27 +427,26 @@ class Velocity : Module() {
 
                 "grimac" -> {
                     event.cancelEvent()
-                    if (s32.get()) {
-                        grimTCancel = cancelPacket
-                    }
-                    if (c07.get()) {
-                        if (mc.theWorld.getBlockState(mc.thePlayer.position.down()).block !is BlockSlab) {
-                            gotVelo = true
-                        }
-                    }
+                    grimPacket = true
                 }
             }
 
             if (packet is S27PacketExplosion) {
-                gotVelo = true
                 mc.thePlayer.motionX = mc.thePlayer.motionX + packet.func_149149_c() * (horizontalExplosionValue.get())
                 mc.thePlayer.motionY = mc.thePlayer.motionY + packet.func_149144_d() * (verticalExplosionValue.get())
                 mc.thePlayer.motionZ = mc.thePlayer.motionZ + packet.func_149147_e() * (horizontalExplosionValue.get())
                 event.cancelEvent()
             }
-            if (packet is S32PacketConfirmTransaction && grimTCancel > 0 && modeValue.get() == "GrimAC" && s32.get()) {
+        }
+        if (modeValue.get() == "GrimAC") {
+            if (packet is S32PacketConfirmTransaction) {
+                if (!grimPacket) return
                 event.cancelEvent()
-                grimTCancel--
+                transactionQueue.add(packet.actionNumber)
+            }
+            if (packet is C0FPacketConfirmTransaction) {
+                if (!grimPacket || transactionQueue.isEmpty()) return
+                if (transactionQueue.remove(packet.getUid())) event.cancelEvent()
             }
         }
     }
@@ -537,54 +518,5 @@ class Velocity : Module() {
             "aaczero" -> if (mc.thePlayer.hurtTime > 0)
                 event.cancelEvent()
         }
-    }
-
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
-        /*if (modeValue.isMode("GrimAC")) {
-            if (c07.get()) {
-                if (event.eventState == EventState.PRE) {
-                    if (mc.theWorld.getBlockState(mc.thePlayer.position.down()).block !is BlockSlab && gotVelo) {
-                        PacketUtils.sendPacketNoEvent(
-                            C07PacketPlayerDigging(
-                                C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
-                                BlockPos(mc.thePlayer),
-                                EnumFacing.DOWN
-                            )
-                        )
-                        gotVelo = false
-                    }
-                }
-            }
-        }*/
-    }
-
-    @EventTarget
-    fun onTick(event: TickEvent) {
-        if (modeValue.isMode("GrimAC")) {
-            if (c03.get()) {
-                if (gotVelo) {
-                    val pos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
-                    if (checkBlock(pos) || checkBlock(pos.up())) {
-                        gotVelo = false
-                    }
-                }
-            }
-        }
-    }
-    fun checkBlock(pos: BlockPos): Boolean {
-        if (mc.theWorld.isAirBlock(pos)) {
-            if (c03.get()) {
-                if (c06.get())
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, mc.thePlayer.onGround))
-                else
-                    mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-            }
-            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, pos, EnumFacing.DOWN))
-            if (worldValue.get())
-                mc.theWorld.setBlockToAir(pos)
-            return true
-        }
-        return false
     }
 }
