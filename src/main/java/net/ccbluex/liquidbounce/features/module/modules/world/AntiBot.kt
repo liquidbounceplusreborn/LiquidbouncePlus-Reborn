@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.item.ItemArmor
 import net.minecraft.network.play.server.*
 import net.minecraft.world.WorldSettings
 import java.util.*
@@ -36,6 +37,7 @@ class AntiBot : Module() {
     private val czechHekPingCheckValue = BoolValue("PingCheck", true) { czechHekValue.get() }
     private val czechHekGMCheckValue = BoolValue("GamemodeCheck", true) { czechHekValue.get() }
     private val matrixIllegalNameValue = BoolValue("MatrixIllegalName", false)
+    private val pieMatrixBedwars = BoolValue("PieMatrixBedwars", false)
     private val tabValue = BoolValue("Tab", true)
     private val tabModeValue = ListValue("TabMode", arrayOf("Equals", "Contains"), "Contains")
     private val entityIDValue = BoolValue("EntityID", true)
@@ -292,6 +294,20 @@ class AntiBot : Module() {
 
             if (antiBot.duplicateCompareModeValue.equals("WhenSpawn") && antiBot.duplicate.contains(entity.gameProfile.id)) {
                 return true
+            }
+
+            if (antiBot.pieMatrixBedwars.get()) {
+                val helmet = entity.inventory.armorInventory[3]
+                val chestplate = entity.inventory.armorInventory[2]
+
+                if (helmet == null || chestplate == null)
+                    return true
+                if (helmet.item == null || chestplate.item == null)
+                    return true
+
+                val helmetColor = (helmet.item as ItemArmor).getColor(helmet)
+                val chestplateColor = (chestplate.item as ItemArmor).getColor(chestplate)
+                return !(chestplateColor > 0 && helmetColor > 0 && chestplateColor == helmetColor)
             }
 
             return entity.name.isEmpty() || entity.name == mc.thePlayer.name
