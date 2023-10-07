@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.utils.extensions.getLookDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -29,6 +30,7 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MathHelper
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.max
 
 @ModuleInfo(name = "TargetStrafe", description = "Strafe around your target. (Require Fly or Speed to be enabled)", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
@@ -64,7 +66,6 @@ class TargetStrafe : Module() {
     var direction: Int = 1
     var lastView: Int = 0
     var hasChangedThirdPerson: Boolean = true
-    var idk = false
 
     val cansize: Float
         get() = when {
@@ -76,7 +77,7 @@ class TargetStrafe : Module() {
         get() = mc.thePlayer!!.getDistance(killAura.target!!.posX, mc.thePlayer!!.posY, killAura.target!!.posZ)
 
     val algorithm: Float
-        get() = Math.max(Enemydistance - if(grim.get()) 0.1f else radius.get(), Enemydistance - (Enemydistance - if(grim.get()) 0.1f else radius.get() / (if(grim.get()) 0.1f else radius.get() * 2))).toFloat()
+        get() = Math.max(Enemydistance - if(grim.get()) 0.8f else radius.get(), Enemydistance - (Enemydistance - if(grim.get()) 0.8f else radius.get() / (if(grim.get()) 0.8f else radius.get() * 2))).toFloat()
 
     override fun onEnable() {
         hasChangedThirdPerson = true
@@ -112,15 +113,13 @@ class TargetStrafe : Module() {
     fun onMove(event: MoveEvent) {
         if (canStrafe) {
             if(grim.get()) {
-                if (mc.thePlayer.getDistanceToEntityBox(killAura.target!!) < 1.25) {
-                    idk = true
-                    mc.thePlayer.isSprinting = false
-                    mc.thePlayer.serverSprintState = false
+                if (mc.thePlayer.getDistanceSqToEntity(killAura.target!!) < 1.25f) {
+                    //mc.thePlayer.isSprinting = false
+                    //mc.thePlayer.serverSprintState = false
                     strafe(event, MovementUtils.getSpeed(event.x, event.z))
                 }
             }else{
                 strafe(event, MovementUtils.getSpeed(event.x, event.z))
-                idk = false
             }
 
             if (safewalk.get() && checkVoid()) {
