@@ -1,14 +1,7 @@
-# LiquidBounce+ Reborn(Unofficial)
+# LiquidBounce+ Reborn
 
-The End Of Legacy(https://liquidbounceplus.github.io/)
-
-The Reborn Of Legacy??(lbpr se)(liquidbounce plus reborn skidded edition)
-
-A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
-### LiquidBounce+ Reborn contact info
-Discord server:https://discord.gg/BrXGxGeY8r
-QQ群 : 713315328
-Website:https://liquidbounceplusreborn.github.io/
+read https://liquidbounceplus.github.io/
+Website: https://liquidbounceplusreborn.github.io/
 
 ### LiquidBounce's contact info
 Website: https://liquidbounce.net \
