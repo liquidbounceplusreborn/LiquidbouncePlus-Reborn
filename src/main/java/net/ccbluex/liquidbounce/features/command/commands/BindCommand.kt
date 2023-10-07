@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import org.lwjgl.input.Keyboard
+import java.util.*
 
 class BindCommand : Command("bind", emptyArray()) {
     /**
@@ -17,20 +18,25 @@ class BindCommand : Command("bind", emptyArray()) {
      */
     override fun execute(args: Array<String>) {
         if (args.size > 2) {
-            // Get module by name
             val module = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
                 chat("Module §a§l" + args[1] + "§3 not found.")
                 return
             }
-            // Find key by name and change
-            val key = Keyboard.getKeyIndex(args[2].toUpperCase())
+
+            val key = Keyboard.getKeyIndex(args[2].uppercase())
+            val keyName = Keyboard.getKeyName(key)
             module.keyBind = key
 
-            // Response to user
-            chat("Bound module §a§l${module.name}§3 to key §a§l${Keyboard.getKeyName(key)}§3.")
-            LiquidBounce.hud.addNotification(Notification("Bind","Bound ${module.name} to ${Keyboard.getKeyName(key)}", NotifyType.SUCCESS))
+            if (key == Keyboard.KEY_NONE) {
+                chat("§fRemoved §b§l${module.name}§r's bind.")
+                LiquidBounce.hud.addNotification(Notification("Bind","Removed ${module.name}'s bind", NotifyType.SUCCESS))
+            } else {
+                chat("§b§l${module.name}§r is now bound to §9$keyName.")
+                LiquidBounce.hud.addNotification(Notification("Bind","${module.name} bound to $keyName", NotifyType.SUCCESS))
+            }
+
             playEdit()
             return
         }
@@ -45,9 +51,9 @@ class BindCommand : Command("bind", emptyArray()) {
 
         return when (args.size) {
             1 -> LiquidBounce.moduleManager.modules
-                    .map { it.name }
-                    .filter { it.startsWith(moduleName, true) }
-                    .toList()
+                .map { it.name }
+                .filter { it.startsWith(moduleName, true) }
+                .toList()
             else -> emptyList()
         }
     }
