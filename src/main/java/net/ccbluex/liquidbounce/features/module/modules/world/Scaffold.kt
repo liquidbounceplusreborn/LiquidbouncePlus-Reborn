@@ -925,9 +925,9 @@ class Scaffold : Module() {
         if (eventState === EventState.PRE) {
             if (!shouldPlace() || (if (!autoBlockMode.get().equals("Off", ignoreCase = true))
                     if(sortByHighestAmount.get()){
-                        InventoryUtils.findLargestBlockStackInHotbar()!! == -1
+                        InventoryUtils.findLargestBlockStackInHotbar() == -1
                     }else{
-                        InventoryUtils.findBlockInHotbar()!! == -1
+                        InventoryUtils.findBlockInHotbar() == -1
                     }
                 else
                     mc.thePlayer.heldItem == null ||

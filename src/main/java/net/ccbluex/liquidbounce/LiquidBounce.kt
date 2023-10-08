@@ -88,6 +88,8 @@ object LiquidBounce {
         // Crate event manager
         eventManager = EventManager()
 
+        combatManager = CombatManager()
+
         // Register listeners
         eventManager.registerListener(RotationUtils())
         eventManager.registerListener(AntiForge())
@@ -97,6 +99,7 @@ object LiquidBounce {
         eventManager.registerListener(PacketUtils())
         eventManager.registerListener(SessionUtils())
         eventManager.registerListener(MacroManager)
+        eventManager.registerListener(combatManager)
 
         // Init Discord RPC
         clientRichPresence = ClientRichPresence()

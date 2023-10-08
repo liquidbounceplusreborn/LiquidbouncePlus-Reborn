@@ -101,8 +101,8 @@ class InventoryUtils : MinecraftInstance(), Listenable {
             return false
         }
 
-        fun findBlockInHotbar(): Int? {
-            val player = mc.thePlayer ?: return null
+        fun findBlockInHotbar(): Int {
+            val player = mc.thePlayer ?: return -1
             val inventory = player.inventoryContainer
 
             return (36..44).filter {
@@ -110,11 +110,11 @@ class InventoryUtils : MinecraftInstance(), Listenable {
                 val block = if (stack.item is ItemBlock) (stack.item as ItemBlock).block else return@filter false
 
                 stack.item is ItemBlock && stack.stackSize > 0 && block !in BLOCK_BLACKLIST && block !is BlockBush
-            }.minByOrNull { (inventory.getSlot(it).stack.item as ItemBlock).block.isFullCube }
+            }.minByOrNull { (inventory.getSlot(it).stack.item as ItemBlock).block.isFullCube } ?: -1
         }
 
-        fun findLargestBlockStackInHotbar(): Int? {
-            val player = mc.thePlayer ?: return null
+        fun findLargestBlockStackInHotbar(): Int {
+            val player = mc.thePlayer ?: return -1
             val inventory = player.inventoryContainer
 
             return (36..44).filter {
@@ -122,7 +122,7 @@ class InventoryUtils : MinecraftInstance(), Listenable {
                 val block = if (stack.item is ItemBlock) (stack.item as ItemBlock).block else return@filter false
 
                 stack.item is ItemBlock && stack.stackSize > 0 && block.isFullCube && block !in BLOCK_BLACKLIST && block !is BlockBush
-            }.maxByOrNull { inventory.getSlot(it).stack.stackSize }
+            }.maxByOrNull { inventory.getSlot(it).stack.stackSize } ?: -1
         }
     }
 }
