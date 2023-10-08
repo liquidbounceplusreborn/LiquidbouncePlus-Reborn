@@ -72,8 +72,8 @@ class AutoLogin : Module() {
 		val packet = event.packet
 
     	if (packet is S45PacketTitle) {
-			val messageOrigin = packet.getMessage() ?: return
-    		var message : String = messageOrigin.getUnformattedText()
+			val messageOrigin = packet.message ?: return
+    		val message : String = messageOrigin.unformattedText
 
     		if (message.contains(loginRegex.get(), true))
     			sendLogin(loginCmd.get().replace("%p", password.get(), true))
@@ -83,7 +83,7 @@ class AutoLogin : Module() {
     	}
 
     	if (packet is S02PacketChat) {
-    		var message : String = packet.getChatComponent().getUnformattedText()
+    		val message : String = packet.chatComponent.unformattedText
 
     		if (message.contains(loginRegex.get(), true))
     			sendLogin(loginCmd.get().replace("%p", password.get(), true))
@@ -101,9 +101,5 @@ class AutoLogin : Module() {
 		loginPackets.clear()
 		regTimer.reset()
 		logTimer.reset()
-	}    
-
-    override val tag: String?
-        get() = password.get()
-
+	}
 }
