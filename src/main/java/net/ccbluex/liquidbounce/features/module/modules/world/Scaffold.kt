@@ -638,37 +638,6 @@ class Scaffold : Module() {
                 lockRotation = RotationUtils.getDirectionToBlock(blockData?.blockPos?.x!!.toDouble(), blockData.blockPos.y.toDouble(), blockData.blockPos.z.toDouble(), blockData.enumFacing)
                 faceBlock = true
             }
-            "Rise2" ->{
-                var found = false
-                var possibleYaw = mc.thePlayer.rotationYaw - 180
-                while (possibleYaw <= mc.thePlayer.rotationYaw + 360 - 180 && !found) {
-                    var possiblePitch = 90f
-                    while (possiblePitch > 30 && !found) {
-                        if (overBlock(
-                                Rotation(possibleYaw, possiblePitch),
-                                blockData!!.enumFacing,
-                                blockData.blockPos,
-                                true
-                            )
-                        ) {
-                            lockRotation!!.yaw = possibleYaw
-                            lockRotation!!.pitch = possiblePitch
-                            found = true
-                        }
-                        possiblePitch -= (if (possiblePitch > (if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) 60 else 80)) 1 else 10).toFloat()
-                    }
-                    possibleYaw += 45f
-                }
-                if (!found) {
-                    val rotations: Rotation = RotationUtils.calculate(
-                        Vec3(blockData!!.blockPos.x.toDouble(), blockData.blockPos.y.toDouble(), blockData.blockPos.z.toDouble()),
-                        blockData.enumFacing
-                    )
-                    lockRotation!!.pitch = rotations.pitch
-                    lockRotation!!.yaw = rotations.yaw
-                }
-                faceBlock = true
-            }
         }
         var rotation = lockRotation
         rotation = if (stabilizedRotation.get() && (!rotationModeValue.isMode("Normal") || !rotationModeValue.isMode("Telly"))) {
@@ -964,7 +933,7 @@ class Scaffold : Module() {
                     mc.thePlayer.heldItem == null ||
                             mc.thePlayer.heldItem.item !is ItemBlock)
             ) return
-            findBlock(mode == "Expand" && expandLengthValue.get() > 1, area = true)
+            findBlock(mode == "Expand" && expandLengthValue.get() > 1, (rotationModeValue.get() == "Novoline" || rotationModeValue.get() == "Rise" || rotationModeValue.get() == "Intave"))
         }
         if (targetPlace == null) {
             if (placeableDelay.get()) delayTimer.reset()
