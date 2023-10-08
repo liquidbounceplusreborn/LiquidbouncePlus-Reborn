@@ -58,7 +58,7 @@ class AutoLogin : Module() {
 		else if (logTimer.hasTimePassed(delayValue.get().toLong())) {
 			for (packet in loginPackets)
 				PacketUtils.sendPacketNoEvent(packet)
-			LiquidBounce.hud.addNotification(Notification("AutoLogin","Successfully logined.", NotifyType.SUCCESS))
+			LiquidBounce.hud.addNotification(Notification("AutoLogin","Successfully logged in.", NotifyType.SUCCESS))
 			loginPackets.clear()
 			logTimer.reset()
 		}

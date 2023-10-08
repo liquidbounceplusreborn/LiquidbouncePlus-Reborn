@@ -16,6 +16,7 @@ import java.awt.Color
 class AstolfoCategoryPanel(x: Float, y: Float, var category: ModuleCategory, var color: Color) : AstolfoButton(x, y, PANEL_WIDTH, PANEL_HEIGHT) {
   var open = false
   var moduleButtons = ArrayList<AstolfoModuleButton>()
+  val name = category.displayName
   private var dragged = false
   private var mouseX2 = 0
   private var mouseY2 = 0
@@ -23,7 +24,6 @@ class AstolfoCategoryPanel(x: Float, y: Float, var category: ModuleCategory, var
   init {
     val startY = y + height
     for ((count, mod) in LiquidBounce.moduleManager.modules.filter { it.category.displayName.equals(this.category.displayName, true)}.withIndex()) {
-      ClientUtils.getLogger().info("Added ${mod.name} to ${this.category.displayName}")
       moduleButtons.add(AstolfoModuleButton(x, startY + height * count, width, height, mod, color))
     }
   }

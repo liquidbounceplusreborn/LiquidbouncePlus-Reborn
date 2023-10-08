@@ -424,8 +424,20 @@ public class ClickGui extends GuiScreen {
         super.updateScreen();
     }
 
+    public static boolean isUsingSpecialStyle() {
+        String style = ((ClickGUI) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUI.class))).styleValue.get();
+        String[] specialModes = {"astolfo", "zeroday"};
+        for (String specialMode: specialModes) {
+            if (style.equalsIgnoreCase(specialMode))
+                return true;
+        }
+        return false;
+    }
+
     @Override
     public void onGuiClosed() {
+        if (isUsingSpecialStyle())
+            return;
         LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.clickGuiConfig);
     }
 
