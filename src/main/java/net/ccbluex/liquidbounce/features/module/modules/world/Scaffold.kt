@@ -195,7 +195,7 @@ class Scaffold : Module() {
     private val grimLock = BoolValue("TellyLock", true){ rotationsValue.get() && (rotationModeValue.isMode("Telly") || rotationModeValue.isMode("Grim")) }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","Telly","Grim","Rise","Rise2"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","Telly","Grim","Rise"),
         "Normal") // searching reason
     private val maxTurnSpeed: FloatValue =
         object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() }) {
@@ -933,7 +933,7 @@ class Scaffold : Module() {
                     mc.thePlayer.heldItem == null ||
                             mc.thePlayer.heldItem.item !is ItemBlock)
             ) return
-            findBlock(mode == "Expand" && expandLengthValue.get() > 1, (rotationModeValue.get() == "Novoline" || rotationModeValue.get() == "Rise" || rotationModeValue.get() == "Intave"))
+            findBlock(mode == "Expand" && expandLengthValue.get() > 1, !(rotationModeValue.get() == "Novoline" || rotationModeValue.get() == "Rise" || rotationModeValue.get() == "Intave"))
         }
         if (targetPlace == null) {
             if (placeableDelay.get()) delayTimer.reset()
