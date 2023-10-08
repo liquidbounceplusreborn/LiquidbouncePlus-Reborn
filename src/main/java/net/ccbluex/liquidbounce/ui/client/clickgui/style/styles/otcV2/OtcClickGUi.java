@@ -1,11 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2;
 
-import kotlin.jvm.JvmStatic;
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
-import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
-import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Utils.OtcScroll;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;

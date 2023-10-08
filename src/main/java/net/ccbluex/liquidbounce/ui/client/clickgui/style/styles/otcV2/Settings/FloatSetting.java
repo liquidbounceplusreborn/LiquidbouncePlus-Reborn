@@ -1,8 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI;
-import net.ccbluex.liquidbounce.features.module.modules.render.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.*;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.math.MathUtil;

@@ -7,16 +7,14 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import io.netty.buffer.Unpooled;
 import java.util.UUID;
-import java.util.List;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.EntityDamageEvent;
 import net.ccbluex.liquidbounce.event.EntityMovementEvent;
-import net.ccbluex.liquidbounce.features.module.modules.player.NoRotate;
-import net.ccbluex.liquidbounce.features.module.modules.player.Patcher;
-import net.ccbluex.liquidbounce.features.module.modules.world.AntiExploit;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.NoRotate;
+import net.ccbluex.liquidbounce.features.module.modules.misc.AntiExploit;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
@@ -24,7 +22,6 @@ import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.TransferUtils;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiDownloadTerrain;
@@ -32,12 +29,9 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
-import net.minecraft.entity.DataWatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.PacketThreadUtil;
@@ -79,46 +73,6 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Shadow
     public abstract NetworkPlayerInfo getPlayerInfo(UUID p_175102_1_);
-
-    @Inject(method = "handleSpawnPlayer", at = @At("HEAD"), cancellable = true)
-    private void handleSpawnPlayer(S0CPacketSpawnPlayer packetIn, CallbackInfo callbackInfo) {
-        if (Patcher.silentNPESP.get()) {
-            try {
-                PacketThreadUtil.checkThreadAndEnqueue(packetIn, (NetHandlerPlayClient) (Object) this, gameController);
-                double d0 = (double)packetIn.getX() / 32.0D;
-                double d1 = (double)packetIn.getY() / 32.0D;
-                double d2 = (double)packetIn.getZ() / 32.0D;
-                float f = (float)(packetIn.getYaw() * 360) / 256.0F;
-                float f1 = (float)(packetIn.getPitch() * 360) / 256.0F;
-                EntityOtherPlayerMP entityotherplayermp = new EntityOtherPlayerMP(gameController.theWorld, getPlayerInfo(packetIn.getPlayer()).getGameProfile());
-                entityotherplayermp.prevPosX = entityotherplayermp.lastTickPosX = (double)(entityotherplayermp.serverPosX = packetIn.getX());
-                entityotherplayermp.prevPosY = entityotherplayermp.lastTickPosY = (double)(entityotherplayermp.serverPosY = packetIn.getY());
-                entityotherplayermp.prevPosZ = entityotherplayermp.lastTickPosZ = (double)(entityotherplayermp.serverPosZ = packetIn.getZ());
-                int i = packetIn.getCurrentItemID();
-
-                if (i == 0)
-                {
-                    entityotherplayermp.inventory.mainInventory[entityotherplayermp.inventory.currentItem] = null;
-                }
-                else
-                {
-                    entityotherplayermp.inventory.mainInventory[entityotherplayermp.inventory.currentItem] = new ItemStack(Item.getItemById(i), 1, 0);
-                }
-
-                entityotherplayermp.setPositionAndRotation(d0, d1, d2, f, f1);
-                clientWorldController.addEntityToWorld(packetIn.getEntityID(), entityotherplayermp);
-                List<DataWatcher.WatchableObject> list = packetIn.func_148944_c();
-
-                if (list != null)
-                {
-                    entityotherplayermp.getDataWatcher().updateWatchedObjectsFromList(list);
-                }
-            } catch (Exception e) {
-                // ignore
-            }
-            callbackInfo.cancel();
-        }
-    }
 
     @Inject(method = "handleCloseWindow", at = @At("HEAD"), cancellable = true)
     private void handleCloseWindow(final S2EPacketCloseWindow packetIn, final CallbackInfo callbackInfo) {

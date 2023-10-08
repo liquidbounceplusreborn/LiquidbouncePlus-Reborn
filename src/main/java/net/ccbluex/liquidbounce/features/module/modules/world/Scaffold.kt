@@ -161,7 +161,7 @@ class Scaffold : Module() {
     }
 
     private val sortByHighestAmount = BoolValue("SortByHighestAmount", false) {
-        !autoBlockMode.get().equals("off", ignoreCase = true)
+        autoBlockMode.get().equals("spoof", ignoreCase = true)
     }
 
     //make sprint compatible with tower.add sprint tricks
@@ -333,7 +333,7 @@ class Scaffold : Module() {
         get() = towerEnabled.get()
 
 
-    private fun towerActivation(): Boolean {
+    private fun towering(): Boolean {
         return towerEnabled.get() && mc.gameSettings.keyBindJump.isKeyDown
     }
 
@@ -570,7 +570,7 @@ class Scaffold : Module() {
         val sameY = sameYValue.get()
         val smartSpeed = smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state
         val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-        val blockPos = BlockPos(mc.thePlayer.posX, if ((!towerActivation() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0, mc.thePlayer.posZ)
+        val blockPos = BlockPos(mc.thePlayer.posX, if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0, mc.thePlayer.posZ)
         val blockData = get(blockPos)
         when (rotationModeValue.get()) {
             "Novoline" -> {
@@ -694,7 +694,7 @@ class Scaffold : Module() {
         if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock || !keepRotation.get()) && placeModeValue.get() === "Legit") {
             place()
         }
-        if (towerActivation()) {
+        if (towering()) {
             shouldGoDown = false
             mc.gameSettings.keyBindSneak.pressed = false
         }
@@ -918,7 +918,7 @@ class Scaffold : Module() {
         val placeWhenFall = placeConditionValue.get().equals("falldown", ignoreCase = true)
         val placeWhenNegativeMotion = placeConditionValue.get().equals("negativemotion", ignoreCase = true)
         val alwaysPlace = placeConditionValue.get().equals("always", ignoreCase = true)
-        return towerActivation() || alwaysPlace || placeWhenAir && !mc.thePlayer.onGround || placeWhenFall && mc.thePlayer.fallDistance > 0 || placeWhenNegativeMotion && mc.thePlayer.motionY < 0
+        return towering() || alwaysPlace || placeWhenAir && !mc.thePlayer.onGround || placeWhenFall && mc.thePlayer.fallDistance > 0 || placeWhenNegativeMotion && mc.thePlayer.motionY < 0
     }
 
     @EventTarget
@@ -949,7 +949,7 @@ class Scaffold : Module() {
             place()
         }
         if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock || !keepRotation.get()) && placeModeValue.get()
-                .equals(eventState.stateName, ignoreCase = true) && towerActivation()
+                .equals(eventState.stateName, ignoreCase = true) && towering()
         ) {
             place()
         }
@@ -964,12 +964,12 @@ class Scaffold : Module() {
                     mc.thePlayer.heldItem == null ||
                             mc.thePlayer.heldItem.item !is ItemBlock)
             ) return
-            findBlock(mode == "Expand" && expandLengthValue.get() > 1, area = true)
+            findBlock(mode == "Expand" && expandLengthValue.get() > 1 && !towering(), area = true)
         }
         if (targetPlace == null) {
             if (placeableDelay.get()) delayTimer.reset()
         }
-        if (!towerActivation()) {
+        if (!towering()) {
             verusState = 0
             return
         }
@@ -977,7 +977,7 @@ class Scaffold : Module() {
         if (placeModeValue.get().equals(eventState.stateName, ignoreCase = true)) place()
 
         if(event.eventState == EventState.POST){
-            if (towerActivation()) {
+            if (towering()) {
                 move(event)
             }
         }
@@ -994,7 +994,7 @@ class Scaffold : Module() {
         val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         val blockPos = BlockPos(
             mc.thePlayer.posX,
-            if ((!towerActivation() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY
+            if ((!towering() || smartSpeed || sameY) && launchY <= mc.thePlayer.posY
             ) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
             mc.thePlayer.posZ
         )
@@ -1041,7 +1041,7 @@ class Scaffold : Module() {
             return
         }
 
-        if (!towerActivation() && (!delayTimer.hasTimePassed(delay) || smartDelay.get() && mc.rightClickDelayTimer > 0 || (sameYValue.get() || (autoJumpValue.get() || smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(
+        if (!towering() && (!delayTimer.hasTimePassed(delay) || smartDelay.get() && mc.rightClickDelayTimer > 0 || (sameYValue.get() || (autoJumpValue.get() || smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(
                 Speed::class.java
             )!!.state) && !GameSettings.isKeyDown(
                 mc.gameSettings.keyBindJump
@@ -1156,7 +1156,7 @@ class Scaffold : Module() {
 
     @EventTarget
     fun onJump(event: JumpEvent) {
-        if (towerActivation()) {
+        if (towering()) {
             event.cancelEvent()
         }
     }
@@ -1433,7 +1433,7 @@ class Scaffold : Module() {
                     false
                 )
             } else {
-                if (towerActivation()) {
+                if (towering()) {
                     Fonts.minecraftFont.drawString(
                         "Tower",
                         (scaledResolution.scaledWidth / 2 - infoWidth2 / 2 - 1 + 16).toFloat(),
@@ -1619,14 +1619,14 @@ class Scaffold : Module() {
         val z = if (omniDirectionalExpand.get()) cos(yaw).roundToInt()
         else mc.thePlayer.horizontalFacing.directionVec.z
         for (i in 0 until if (modeValue.get()
-                .equals("Expand", ignoreCase = true) && !towerActivation()
+                .equals("Expand", ignoreCase = true) && !towering()
         ) expandLengthValue.get() + 1 else 2) {
             val sameY = sameYValue.get()
             val smartSpeed = smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state
             val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
             val blockPos = BlockPos(
                 mc.thePlayer.posX,
-                if ((!towerActivation() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY
+                if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY
                 ) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
                 mc.thePlayer.posZ
             )

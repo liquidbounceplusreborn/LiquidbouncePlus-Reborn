@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
-import net.ccbluex.liquidbounce.features.module.modules.world.Liquids;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.Liquids;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.util.Vec3;
 import org.spongepowered.asm.mixin.Mixin;

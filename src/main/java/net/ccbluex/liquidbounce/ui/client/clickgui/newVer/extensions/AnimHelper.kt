@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.newVer.extensions
 
-import net.ccbluex.liquidbounce.features.module.modules.render.NewGUI
+import net.ccbluex.liquidbounce.features.module.modules.client.NewGUI
 import net.ccbluex.liquidbounce.utils.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 

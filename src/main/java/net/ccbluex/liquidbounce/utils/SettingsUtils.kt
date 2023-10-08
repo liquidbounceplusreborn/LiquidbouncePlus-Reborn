@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.modules.render.NameProtect
+import net.ccbluex.liquidbounce.features.module.modules.client.NameProtect
 import net.ccbluex.liquidbounce.features.module.modules.world.Spammer
 import net.ccbluex.liquidbounce.features.special.MacroManager
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.get

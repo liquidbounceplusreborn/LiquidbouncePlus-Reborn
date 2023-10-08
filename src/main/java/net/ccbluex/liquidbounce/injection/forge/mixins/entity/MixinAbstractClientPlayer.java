@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
-import net.ccbluex.liquidbounce.features.module.modules.render.NameProtect;
-import net.ccbluex.liquidbounce.features.module.modules.render.Cape;
+import net.ccbluex.liquidbounce.features.module.modules.client.NameProtect;
+import net.ccbluex.liquidbounce.features.module.modules.client.Cape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;

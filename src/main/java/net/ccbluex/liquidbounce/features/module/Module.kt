@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.features.module.modules.world.AutoDisable.DisableEvent
+import net.ccbluex.liquidbounce.features.module.modules.client.AutoDisable.DisableEvent
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.AnimationHelper
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.MinecraftInstance

@@ -1,9 +1,7 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.features.module.modules.combat.NoFriends
-import net.ccbluex.liquidbounce.features.module.modules.world.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.world.Teams
-import net.ccbluex.liquidbounce.utils.EntityUtils.*
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.mc
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.extensions.isAnimal

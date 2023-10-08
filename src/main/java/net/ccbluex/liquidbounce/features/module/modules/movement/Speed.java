@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.V
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanLowHopSpeed;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanYPort2Speed;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanYPortSpeed;
-import net.ccbluex.liquidbounce.features.module.modules.world.Disabler;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.*;

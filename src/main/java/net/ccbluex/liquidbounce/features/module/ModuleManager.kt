@@ -9,7 +9,10 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.features.module.modules.client.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.*
+import net.ccbluex.liquidbounce.features.module.modules.exploit.*
+import net.ccbluex.liquidbounce.features.module.modules.misc.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.*
 import net.ccbluex.liquidbounce.features.module.modules.player.*
 import net.ccbluex.liquidbounce.features.module.modules.render.*
@@ -68,7 +71,6 @@ class ModuleManager : Listenable {
             JumpCircle::class.java,
             PlayerEdit::class.java,
             FastBreak::class.java,
-            Patcher::class.java,
             FastPlace::class.java,
             AutoPlace::class.java,
             ESP::class.java,
@@ -147,7 +149,6 @@ class ModuleManager : Listenable {
             CustomDisabler::class.java,
             AutoDisable::class.java,
             Crosshair::class.java,
-            VehicleOneHit::class.java,
             SpinBot::class.java,
             MultiActions::class.java,
             AntiFall::class.java,
@@ -189,13 +190,10 @@ class ModuleManager : Listenable {
             AutoPot::class.java,
             Ignite::class.java,
             AntiAFK::class.java,
-            AutoFish::class.java,
             ComboOneHit::class.java,
             AutoLeave::class.java,
-            BedGodMode::class.java,
             Ghost::class.java,
             NoBob::class.java,
-            GodMode::class.java,
             KeepContainer::class.java,
             Kick::class.java,
             AirLadder::class.java,
@@ -209,7 +207,6 @@ class ModuleManager : Listenable {
             PerfectHorseJump::class.java,
             KeepAlive::class.java,
             Zoot::class.java,
-            ProphuntESP::class.java,
             Liquids::class.java,
             HoverDetails::class.java,
             AutoBreak::class.java,

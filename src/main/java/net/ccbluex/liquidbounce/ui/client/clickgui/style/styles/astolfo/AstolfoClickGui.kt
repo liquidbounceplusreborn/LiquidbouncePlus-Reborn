@@ -2,8 +2,8 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI
-import net.ccbluex.liquidbounce.features.module.modules.render.ClickGUI.generateColor
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI.generateColor
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.buttons.AstolfoCategoryPanel
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard

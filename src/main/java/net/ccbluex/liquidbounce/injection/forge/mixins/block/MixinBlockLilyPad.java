@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.features.module.modules.player.ViaVersionFix;
+import net.ccbluex.liquidbounce.features.module.modules.misc.ViaVersionFix;
 import net.minecraft.block.BlockBush;
 import net.minecraft.block.BlockLilyPad;
 import net.minecraft.block.state.IBlockState;
