@@ -12,32 +12,36 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.PosLookInstance
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
-import net.minecraft.network.Packet
-import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.network.play.client.C03PacketPlayer.*
-import net.minecraft.network.play.client.C0BPacketEntityAction
-import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
+import net.minecraft.world.WorldSettings
 
-@ModuleInfo(name = "FreeCam", spacedName = "Free Cam", description = "Allows you to move out of your body.", category = ModuleCategory.RENDER)
+@ModuleInfo(
+    name = "FreeCam",
+    spacedName = "Free Cam",
+    description = "Allows you to move out of your body.",
+    category = ModuleCategory.RENDER
+)
 class FreeCam : Module() {
 
-    private val speedValue = FloatValue("Speed", 0.8F, 0.1F, 2F, "m")
+    private val horizontalSpeed = FloatValue("HorizontalSpeed", 0.8F, 0.1F, 2F, "bpt")
+    private val verticalSpeed = FloatValue("VerticalSpeed", 0.2F, 0.1F, 2F, "bpt")
     private val flyValue = BoolValue("Fly", true)
     private val noClipValue = BoolValue("NoClip", true)
-    val undetectableValue = BoolValue("Undetectable", true)
 
-    private var fakePlayer: EntityOtherPlayerMP? = null
+    private var originalPlayer: EntityOtherPlayerMP? = null
     private var oldX = 0.0
     private var oldY = 0.0
     private var oldZ = 0.0
+    private var oldYaw = 0f
+    private var oldPitch = 0f
+    private var oldGamemode = WorldSettings.GameType.NOT_SET
 
     private var lastOnGround = false
-
-    private val posLook = PosLookInstance()
 
     override fun onEnable() {
         mc.thePlayer ?: return
@@ -45,13 +49,18 @@ class FreeCam : Module() {
         oldX = mc.thePlayer.posX
         oldY = mc.thePlayer.posY
         oldZ = mc.thePlayer.posZ
+        oldYaw = mc.thePlayer.rotationYaw
+        oldPitch = mc.thePlayer.rotationPitch
         lastOnGround = mc.thePlayer.onGround
+        oldGamemode = mc.playerController.currentGameType
 
-        fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
-        fakePlayer!!.clonePlayer(mc.thePlayer, true)
-        fakePlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
-        fakePlayer!!.copyLocationAndAnglesFrom(mc.thePlayer)
-        mc.theWorld.addEntityToWorld(-1000, fakePlayer!!)
+        mc.playerController.currentGameType = WorldSettings.GameType.SPECTATOR
+
+        originalPlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
+        originalPlayer!!.clonePlayer(mc.thePlayer, true)
+        originalPlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
+        originalPlayer!!.copyLocationAndAnglesFrom(mc.thePlayer)
+        mc.theWorld.addEntityToWorld(-1000, originalPlayer!!)
 
         if (noClipValue.get())
             mc.thePlayer.noClip = true
@@ -59,17 +68,18 @@ class FreeCam : Module() {
 
     override fun onDisable() {
         mc.thePlayer ?: return
-        fakePlayer ?: return
+        originalPlayer ?: return
 
-        mc.thePlayer.posX = fakePlayer!!.posX
-        mc.thePlayer.posY = fakePlayer!!.posY
-        mc.thePlayer.posZ = fakePlayer!!.posZ
+        mc.thePlayer.copyLocationAndAnglesFrom(originalPlayer!!)
+        mc.thePlayer.onGround = originalPlayer!!.onGround
+        mc.playerController.currentGameType = oldGamemode
 
-        mc.theWorld.removeEntityFromWorld(fakePlayer!!.entityId)
-        fakePlayer = null
+        mc.theWorld.removeEntityFromWorld(originalPlayer!!.entityId)
+        originalPlayer = null
         mc.thePlayer.motionX = 0.0
         mc.thePlayer.motionY = 0.0
         mc.thePlayer.motionZ = 0.0
+        // TODO: fix DuplicateAim and GroudSpoof flag when disabling
     }
 
     @EventTarget
@@ -82,52 +92,40 @@ class FreeCam : Module() {
             mc.thePlayer.motionY = 0.0
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
-            if (mc.gameSettings.keyBindJump.isKeyDown())
-                mc.thePlayer.motionY += speedValue.get()
-            if (mc.gameSettings.keyBindSneak.isKeyDown())
-                mc.thePlayer.motionY -= speedValue.get()
-            MovementUtils.strafe(speedValue.get())
+            if (mc.gameSettings.keyBindJump.isKeyDown)
+                mc.thePlayer.motionY += verticalSpeed.get()
+            if (mc.gameSettings.keyBindSneak.isKeyDown)
+                mc.thePlayer.motionY -= verticalSpeed.get()
+            MovementUtils.strafe(horizontalSpeed.get())
         }
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        fakePlayer ?: return
+        originalPlayer ?: return
 
         val packet = event.packet
-        if (undetectableValue.get()) {
-            if (packet is C04PacketPlayerPosition || packet is C05PacketPlayerLook) {
-                event.cancelEvent()
-                mc.netHandler.addToSendQueue(C03PacketPlayer(lastOnGround))
-            } else if (packet is C06PacketPlayerPosLook) {
-                if (posLook.equalFlag(packet)) {
-                    fakePlayer!!.setPosition(packet.x, packet.y, packet.z)
-                    fakePlayer!!.onGround = packet.onGround
-                    lastOnGround = packet.onGround
-                    fakePlayer!!.rotationYaw = packet.yaw
-                    fakePlayer!!.rotationPitch = packet.pitch
-                    fakePlayer!!.rotationYawHead = packet.yaw
-                    posLook.reset()
-                } else if (mc.thePlayer.positionUpdateTicks >= 20) {
-                    packet.x = fakePlayer!!.posX
-                    packet.y = fakePlayer!!.posY
-                    packet.z = fakePlayer!!.posZ
-                    packet.onGround = lastOnGround
-                    packet.yaw = fakePlayer!!.rotationYaw
-                    packet.pitch = fakePlayer!!.rotationPitch
-                } else {
-                    event.cancelEvent()
-                    mc.netHandler.addToSendQueue(C03PacketPlayer(lastOnGround))
-                }
-            }
-        } else if (packet is C03PacketPlayer)
-            event.cancelEvent()
-        if (packet is C0BPacketEntityAction)
-            event.cancelEvent()
-        if (packet is S08PacketPlayerPosLook) {
-            event.cancelEvent()
-            posLook.set(packet)
-        }
-    }
 
+        // fix grim AimDuplicateLook
+        if (packet is C05PacketPlayerLook || packet is C06PacketPlayerPosLook) {
+            event.cancelEvent()
+            return
+        }
+
+        if (packet is C03PacketPlayer) {
+            packet.x = oldX
+            packet.y = oldY
+            packet.z = oldZ
+            packet.yaw = oldYaw
+            packet.pitch = oldPitch
+            packet.isMoving = false
+            packet.onGround = lastOnGround
+        }
+
+        // don't cancel keepalive because it flag BadPacketE on grim
+        if (packet is C08PacketPlayerBlockPlacement || packet is C07PacketPlayerDigging || packet is C0BPacketEntityAction ||
+            packet is C0APacketAnimation || packet is C02PacketUseEntity
+        )
+            event.cancelEvent()
+    }
 }
