@@ -40,8 +40,8 @@ class Criticals : Module() {
     private var counter = 0
 
     override fun onEnable() {
-        if (modeValue.get().equals("NoGround", ignoreCase = true))
-            mc.thePlayer.jump()
+//        if (modeValue.get().equals("NoGround", ignoreCase = true))
+//            mc.thePlayer.jump()
         canCrits = true
         counter = 0;
     }
