@@ -47,6 +47,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Mixin(EntityPlayerSP.class)
@@ -303,6 +304,12 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         float f = 0.8F;
         boolean flag2 = this.movementInput.moveForward >= f;
         this.movementInput.updatePlayerMoveState();
+
+        final float forward = this.movementInput.moveForward;
+        final float strafe = this.movementInput.moveStrafe;
+
+        final EventSilentMove eventSilentMove = new EventSilentMove(this.rotationYaw);
+        LiquidBounce.eventManager.callEvent(eventSilentMove);
 
         final NoSlow noSlow = LiquidBounce.moduleManager.getModule(NoSlow.class);
         final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);

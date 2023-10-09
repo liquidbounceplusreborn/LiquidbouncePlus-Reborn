@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.isReplaceable
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.get
 import net.ccbluex.liquidbounce.utils.extensions.eyes
+import net.ccbluex.liquidbounce.utils.extensions.getHorizontalFacing
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceCustom
 import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.math.toRadiansD
@@ -34,10 +35,12 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.material.Material
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.settings.GameSettings
+import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.passive.EntityPig
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -228,13 +231,15 @@ class Scaffold : Module() {
 
     private val placeConditionValue =
         ListValue("Place-Condition", arrayOf("Air", "FallDown", "NegativeMotion", "Always"), "Always")
-    private val rotationStrafeValue = BoolValue("RotationStrafe", false)
+    private val rotationStrafeValue =
+        ListValue("MovementCorrection", arrayOf("LiquidBounce", "Test","None"), "None") { !isTowerOnly && rotationsValue.get() }
+    private val testSilentValue = BoolValue("Test", true){ rotationStrafeValue.get() == "Test" && rotationsValue.get() }
     private val speedPotSlow = BoolValue("SpeedPotDetect", true)
 
     // Zitter
     private val zitterValue = BoolValue("Zitter", false) { !isTowerOnly }
     private val zitterModeValue =
-        ListValue("ZitterMode", arrayOf("Teleport", "Smooth"), "Teleport") { !isTowerOnly && zitterValue.get() }
+        ListValue("ZitterMode", arrayOf("Teleport", "Smooth","NewSmooth"), "Teleport") { !isTowerOnly && zitterValue.get() }
     private val zitterSpeed = FloatValue("ZitterSpeed", 0.13f, 0.1f, 0.3f) {
         !isTowerOnly && zitterValue.get() && zitterModeValue.get().equals("teleport", ignoreCase = true)
     }
@@ -566,11 +571,15 @@ class Scaffold : Module() {
         }
     }
 
-    private fun rotation(){
+    private fun rotation() {
         val sameY = sameYValue.get()
         val smartSpeed = smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state
         val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-        val blockPos = BlockPos(mc.thePlayer.posX, if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0, mc.thePlayer.posZ)
+        val blockPos = BlockPos(
+            mc.thePlayer.posX,
+            if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
+            mc.thePlayer.posZ
+        )
         val blockData = get(blockPos)
         when (rotationModeValue.get()) {
             "Novoline" -> {
@@ -608,45 +617,106 @@ class Scaffold : Module() {
             "Intave" -> {
                 faceBlock = true
             }
-            "Telly" ->{
-                if(offGroundTicks >= tellyTicks.get()){
+
+            "Telly" -> {
+                if (offGroundTicks >= tellyTicks.get()) {
                     faceBlock = true
-                }else{
-                    lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
-                        80f
-                    } else{
-                        mc.thePlayer.rotationPitch
-                    }
+                } else {
+                    lockRotation = Rotation(
+                        mc.thePlayer.rotationYaw, if (grimLock.get()) {
+                            80f
+                        } else {
+                            mc.thePlayer.rotationPitch
+                        }
                     )
                     faceBlock = false
                 }
             }
-            "Grim" ->{
-                if(!mc.thePlayer.onGround){
+
+            "Grim" -> {
+                if (!mc.thePlayer.onGround) {
                     faceBlock = true
-                }else{
-                    lockRotation = Rotation(mc.thePlayer.rotationYaw, if(grimLock.get()){
-                        80f
-                    } else{
-                        mc.thePlayer.rotationPitch
-                    }
+                } else {
+                    lockRotation = Rotation(
+                        mc.thePlayer.rotationYaw, if (grimLock.get()) {
+                            80f
+                        } else {
+                            mc.thePlayer.rotationPitch
+                        }
                     )
                     faceBlock = false
                 }
             }
-            "Rise" ->{
-                lockRotation = RotationUtils.getDirectionToBlock(blockData?.blockPos?.x!!.toDouble(), blockData.blockPos.y.toDouble(), blockData.blockPos.z.toDouble(), blockData.enumFacing)
+
+            "Rise" -> {
+                lockRotation = RotationUtils.getDirectionToBlock(
+                    blockData?.blockPos?.x!!.toDouble(),
+                    blockData.blockPos.y.toDouble(),
+                    blockData.blockPos.z.toDouble(),
+                    blockData.enumFacing
+                )
                 faceBlock = true
             }
         }
         var rotation = lockRotation
-        rotation = if (stabilizedRotation.get() && (!rotationModeValue.isMode("Normal") || !rotationModeValue.isMode("Telly"))) {
-            lockRotation?.let { Rotation(round(it.yaw / 45f) * 45f, it.pitch) }
-        } else {
-            rotation
-        }
+        rotation =
+            if (stabilizedRotation.get() && (!rotationModeValue.isMode("Normal") || !rotationModeValue.isMode("Telly"))) {
+                lockRotation?.let { Rotation(round(it.yaw / 45f) * 45f, it.pitch) }
+            } else {
+                rotation
+            }
         RotationUtils.setTargetRotation(rotation)
 
+    }
+
+    @EventTarget
+    fun onEventSilentMove(eventSilentMove: EventSilentMove) {
+        val sameY = sameYValue.get()
+        val smartSpeed = smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state
+        val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+        val blockPos = BlockPos(
+            mc.thePlayer.posX,
+            if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
+            mc.thePlayer.posZ
+        )
+        val blockData = get(blockPos)
+
+        if (zitterValue.get() && zitterModeValue.get() == "NewSmooth") {
+            if (mc.currentScreen == null && !Keyboard.isKeyDown(mc.gameSettings.keyBindJump.keyCodeDefault)) {
+                if (mc.thePlayer.getHorizontalFacing(lockRotation!!.yaw) == EnumFacing.EAST) {
+                    if (blockData!!.blockPos.z + 0.5 > mc.thePlayer.posZ) {
+                        mc.thePlayer.movementInput.moveStrafe = 1.0f
+                    } else {
+                        mc.thePlayer.movementInput.moveStrafe = -1.0f
+                    }
+                } else if (mc.thePlayer.getHorizontalFacing(lockRotation!!.yaw) == EnumFacing.WEST) {
+                    if (blockData!!.blockPos.z + 0.5 < mc.thePlayer.posZ) {
+                        mc.thePlayer.movementInput.moveStrafe = 1.0f
+                    } else {
+                        mc.thePlayer.movementInput.moveStrafe = -1.0f
+                    }
+                } else if (mc.thePlayer.getHorizontalFacing(lockRotation!!.yaw) == EnumFacing.SOUTH) {
+                    if (blockData!!.blockPos.x + 0.5 < mc.thePlayer.posX) {
+                        mc.thePlayer.movementInput.moveStrafe = 1.0f
+                    } else {
+                        mc.thePlayer.movementInput.moveStrafe = -1.0f
+                    }
+                } else if (blockData!!.blockPos.x + 0.5 > mc.thePlayer.posX) {
+                    mc.thePlayer.movementInput.moveStrafe = 1.0f
+                } else {
+                    mc.thePlayer.movementInput.moveStrafe = -1.0f
+                }
+            } else {
+                KeyBinding.setKeyBindState(
+                    mc.gameSettings.keyBindLeft.keyCode,
+                    Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.keyCode)
+                )
+                KeyBinding.setKeyBindState(
+                    mc.gameSettings.keyBindRight.keyCode,
+                    Keyboard.isKeyDown(mc.gameSettings.keyBindRight.keyCode)
+                )
+            }
+        }
     }
 
     /**
@@ -802,7 +872,7 @@ class Scaffold : Module() {
 
     @EventTarget //took it from applyrotationstrafe XD. staticyaw comes from bestnub.
     fun onStrafe(event: StrafeEvent) {
-        if (lockRotation != null && rotationStrafeValue.get()) {
+        if (lockRotation != null && rotationStrafeValue.get() == "LiquidBounce") {
             val dif =
                 ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - lockRotation!!.yaw - 23.5f - 135) + 180) / 45).toInt()
             val yaw = lockRotation!!.yaw
@@ -877,6 +947,51 @@ class Scaffold : Module() {
                 val yawCos = MathHelper.cos((yaw * Math.PI / 180f).toFloat())
                 mc.thePlayer.motionX += (calcStrafe * yawCos - calcForward * yawSin).toDouble()
                 mc.thePlayer.motionZ += (calcForward * yawCos + calcStrafe * yawSin).toDouble()
+            }
+            event.cancelEvent()
+        }
+        if (lockRotation != null && rotationStrafeValue.get() == "Test") {
+            val (yaw) = RotationUtils.targetRotation ?: return
+            var strafe = event.strafe
+            var forward = event.forward
+            var friction = event.friction
+            var factor = strafe * strafe + forward * forward
+
+            var angleDiff = ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
+            //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
+            var calcYaw = if(testSilentValue.get()) { yaw + 45.0f * angleDiff.toFloat() } else yaw
+
+            var calcMoveDir = Math.max(Math.abs(strafe), Math.abs(forward)).toFloat()
+            calcMoveDir = calcMoveDir * calcMoveDir
+            var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
+
+            if (testSilentValue.get()) {
+                when (angleDiff) {
+                    1, 3, 5, 7, 9 -> {
+                        if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
+                            friction = friction / calcMultiplier
+                        } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
+                            friction = friction * calcMultiplier
+                        }
+                    }
+                }
+            }
+            if (factor >= 1.0E-4F) {
+                factor = MathHelper.sqrt_float(factor)
+
+                if (factor < 1.0F) {
+                    factor = 1.0F
+                }
+
+                factor = friction / factor
+                strafe *= factor
+                forward *= factor
+
+                val yawSin = MathHelper.sin((calcYaw * Math.PI / 180F).toFloat())
+                val yawCos = MathHelper.cos((calcYaw * Math.PI / 180F).toFloat())
+
+                mc.thePlayer.motionX += strafe * yawCos - forward * yawSin
+                mc.thePlayer.motionZ += forward * yawCos + strafe * yawSin
             }
             event.cancelEvent()
         }

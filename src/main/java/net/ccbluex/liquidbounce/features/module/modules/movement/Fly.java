@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import static net.ccbluex.liquidbounce.utils.MovementUtils.isBlockUnder;
+
 @ModuleInfo(name = "Fly", description = "Allows you to fly in survival mode.", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_F)
 public class Fly extends Module {
 
@@ -110,7 +112,7 @@ public class Fly extends Module {
             "Jump",
             "Derp",
             "Collide",
-            "GrimTNT"
+            "BlocksMC"
     }, "Motion");
 
     private final FloatValue vanillaSpeedValue = new FloatValue("Speed", 2F, 0F, 5F, () -> {
@@ -237,6 +239,9 @@ public class Fly extends Module {
     private float freeHypixelYaw;
     private float freeHypixelPitch;
 
+    private double bmcSpeed;
+    private boolean started;
+
     private void doMove(double h, double v) {
         if (mc.thePlayer == null) return;
 
@@ -312,6 +317,9 @@ public class Fly extends Module {
         moveSpeed = 0;
         wdState = 0;
         wdTick = 0;
+
+        bmcSpeed = 0;
+        started = false;
 
         switch (mode.toLowerCase()) {
             case "ncp":
@@ -488,11 +496,6 @@ public class Fly extends Module {
         mc.thePlayer.noClip = false;
         if (modeValue.get().equalsIgnoreCase("aac5-vanilla") && aac5NoClipValue.get())
             mc.thePlayer.noClip = true;
-
-
-        if (modeValue.isMode("GrimTNT")) {
-                    mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX + 1000, mc.thePlayer.posY, mc.thePlayer.posZ + 1000, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
-        }
 
         switch (modeValue.get().toLowerCase()) {
             case "motion":
@@ -958,7 +961,7 @@ public class Fly extends Module {
                         hypixelTimer.reset();
                     }
 
-                    if(!failedStart) mc.thePlayer.motionY = 0D;
+                    if (!failedStart) mc.thePlayer.motionY = 0D;
                     break;
                 case POST:
                     double xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX;
@@ -997,7 +1000,7 @@ public class Fly extends Module {
                     mc.thePlayer.motionX = 0;
                     mc.thePlayer.motionZ = 0;
 
-                    MovementUtils.strafe((float)moveSpeed);
+                    MovementUtils.strafe((float) moveSpeed);
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY - 8e-6, mc.thePlayer.posZ);
                 }
                 break;
@@ -1024,7 +1027,7 @@ public class Fly extends Module {
 
                         mc.thePlayer.motionY = -0.0015F;
                     } else if (wdState < 3) {
-                        final Rotation rot = RotationUtils.getRotationFromPosition(mc.thePlayer.posX, mc.thePlayer.posZ, (int)mc.thePlayer.posY - 1);
+                        final Rotation rot = RotationUtils.getRotationFromPosition(mc.thePlayer.posX, mc.thePlayer.posZ, (int) mc.thePlayer.posY - 1);
                         RotationUtils.setTargetRotation(rot);
                         event.setYaw(rot.getYaw());
                         event.setPitch(rot.getPitch());
@@ -1034,17 +1037,36 @@ public class Fly extends Module {
                     if (mc.playerController.onPlayerRightClick(
                             mc.thePlayer, mc.theWorld,
                             mc.thePlayer.inventoryContainer.getSlot(expectItemStack).getStack(),
-                            new BlockPos(mc.thePlayer.posX, (int)mc.thePlayer.posY - 2, mc.thePlayer.posZ),
+                            new BlockPos(mc.thePlayer.posX, (int) mc.thePlayer.posY - 2, mc.thePlayer.posZ),
                             EnumFacing.UP,
-                            RotationUtils.getVectorForRotation(RotationUtils.getRotationFromPosition(mc.thePlayer.posX, mc.thePlayer.posZ, (int)mc.thePlayer.posY - 1))))
+                            RotationUtils.getVectorForRotation(RotationUtils.getRotationFromPosition(mc.thePlayer.posX, mc.thePlayer.posZ, (int) mc.thePlayer.posY - 1))))
                         mc.getNetHandler().addToSendQueue(new C0APacketAnimation());
 
                     wdState = 3;
                 }
                 break;
         }
-    }
+        if (modeValue.get() == "BlocksMC") {
+            if (event.getEventState() == EventState.PRE) {
+                final AxisAlignedBB bb = mc.thePlayer.getEntityBoundingBox().offset(0, 1, 0);
 
+                if (started) {
+                    mc.thePlayer.motionY += 0.025;
+                    MovementUtils.strafe((float) (bmcSpeed *= 0.935F));
+
+                    if (mc.thePlayer.motionY < -0.5 && !isBlockUnder()) {
+                        toggle();
+                    }
+                }
+
+                if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty() && !started) {
+                    started = true;
+                    mc.thePlayer.jump();
+                    MovementUtils.strafe((float) (bmcSpeed = 9));
+                }
+            }
+        }
+    }
     public float coerceAtMost(double value, double max) {
         return (float) Math.min(value, max);
     }
