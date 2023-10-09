@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 
-class FriendCommand : Command("friend", arrayOf("friends")) {
+class FriendCommand : Command("friend", arrayOf("friends", "f")) {
     /**
      * Execute commands with provided [args]
      */
