@@ -8,10 +8,7 @@ import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.MathHelper
-import net.minecraft.util.MovingObjectPosition
-import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 
 
 fun EntityPlayer.getEyeVec3(): Vec3 {
@@ -57,4 +54,8 @@ fun Entity.getLookDistanceToEntityBox(entity: Entity=this, rotation: Rotation? =
     val eyes = this.getPositionEyes(1F)
     val end = (rotation?: RotationUtils.targetRotation).toDirection().multiply(range).add(eyes)
     return entity.entityBoundingBox.calculateIntercept(eyes, end)?.hitVec?.distanceTo(eyes) ?: Double.MAX_VALUE
+}
+
+fun Entity.getHorizontalFacing(yaw: Float): EnumFacing {
+    return EnumFacing.getHorizontal(MathHelper.floor_double(yaw * 4.0f / 360.0f + 0.5) and 0x3)
 }
