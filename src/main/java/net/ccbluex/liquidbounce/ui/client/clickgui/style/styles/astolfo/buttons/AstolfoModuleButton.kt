@@ -29,6 +29,7 @@ class AstolfoModuleButton(x: Float, y: Float, width: Float, height: Float, var m
     val startY = y + height
     for ((count, v) in module.values.withIndex()) { // has to come before integer value
       when (v) {
+        is NoteValue -> valueButtons.add(NoteValueButton(x, startY + MODULE_HEIGHT * count, width, VALUE_HEIGHT, v, color))
         is BlockValue -> valueButtons.add(BlockValueButton(x, startY + MODULE_HEIGHT * count, width, VALUE_HEIGHT, v, color))
         is BoolValue -> valueButtons.add(BoolValueButton(x, startY + MODULE_HEIGHT * count, width, VALUE_HEIGHT, v, color))
         is ListValue -> valueButtons.add(ListValueButton(x, startY + MODULE_HEIGHT * count, width, VALUE_HEIGHT, v, color))
@@ -69,8 +70,15 @@ class AstolfoModuleButton(x: Float, y: Float, width: Float, height: Float, var m
     if (open) {
       val startY = y + height
       for (valueButton in valueButtons) {
-        if (!valueButton.canDisplay()) continue
-        if (!should) continue
+        if (!valueButton.canDisplay() || (!should && valueButton !is NoteValueButton)) {
+          valueButton.show = false
+          continue
+        }
+
+        if (valueButton is NoteValueButton)
+          should = valueButton.setting.open
+        else
+          valueButton.show = true
 
         valueButton.x = x
         valueButton.y = startY + used

@@ -46,6 +46,7 @@ class BlockValueButton(x: Float, y: Float, width: Float, height: Float, var sett
   }
 
   override fun mouseAction(mouseX: Int, mouseY: Int, click: Boolean, button: Int) {
+    if (!show) return
     if (click) {
       when (button) {
         MouseButtons.LEFT.ordinal -> {

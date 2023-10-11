@@ -28,6 +28,7 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
+        val values = values.filter { it !is NoteValue }
         val valueNames = values
             .filter { it !is FontValue }
             .joinToString(separator = "/") { it.name.toLowerCase() }
@@ -105,6 +106,7 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
 
     override fun tabComplete(args: Array<String>): List<String> {
         if (args.isEmpty()) return emptyList()
+        val values = values.filter { it !is NoteValue }
 
         return when (args.size) {
             1 -> values

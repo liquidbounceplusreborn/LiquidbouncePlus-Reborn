@@ -11,6 +11,7 @@ abstract class BaseValueButton(x: Float, y: Float, width: Float, height: Float, 
     get() = Rectangle(x, y, width, height)
   val hOffset: Float
     get() = (height - getHeight(FONT)) / 2 + 4
+  var show = true
 
   fun canDisplay() = value.canDisplay.invoke()
 }

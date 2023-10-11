@@ -161,7 +161,7 @@ open class Module : MinecraftInstance(), Listenable {
     /**
      * Get module by [valueName]
      */
-    open fun getValue(valueName: String) = values.find { it.name.equals(valueName, ignoreCase = true) }
+    open fun getValue(valueName: String) = values.find { it.name.equals(valueName, ignoreCase = true) && it !is NoteValue }
 
     val numberValues: List<Value<*>>
         get() = values.filter { it is IntegerValue || it is FloatValue }

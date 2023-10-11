@@ -24,10 +24,7 @@ import net.ccbluex.liquidbounce.utils.math.times
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.enchantment.EnchantmentHelper
@@ -52,12 +49,7 @@ import kotlin.math.min
 @ModuleInfo(name = "KillAura", spacedName = "Kill Aura", description = "Automatically attacks targets around you.",
         category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
-
-    /**
-     * OPTIONS
-     */
-
-    // CPS - Attack speed
+    private val attackNote = NoteValue("Attack") //region attack
     private val maxCPS: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minCPS.get()
@@ -78,6 +70,50 @@ class KillAura : Module() {
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
 
+    private val priorityValue = ListValue(
+        "Priority",
+        arrayOf(
+            "Health",
+            "Distance",
+            "Direction",
+            "LivingTime",
+            "Armor",
+            "HurtResistance",
+            "HurtTime",
+            "HealthAbsorption",
+            "RegenAmplifier"
+        ),
+        "Distance"
+    )
+    val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
+
+    //reverted in old LB. idk why they removed it.
+    private val switchDelayValue = IntegerValue("SwitchDelay", 1000, 1, 2000, "ms") { targetModeValue.get().equals("switch", true) }
+    private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50) { targetModeValue.get().equals("multi", true) }
+
+    private val noBlink = BoolValue("NoBlink", true)
+    private val noScaffValue = BoolValue("NoScaffold", true)
+
+    private val predictValue = BoolValue("Predict", true)
+
+    private val maxPredictSize: FloatValue =
+        object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f, { predictValue.get() }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val v = minPredictSize.get()
+                if (v > newValue) set(v)
+            }
+        }
+
+    private val minPredictSize: FloatValue =
+        object : FloatValue("MinPredictSize", 1f, 0.1f, 5f, { predictValue.get() }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val v = maxPredictSize.get()
+                if (v < newValue) set(v)
+            }
+        }
+    //endregion
+
+    private val rotationNote = NoteValue("Rotation") //region rotation
     private val rangeValue: FloatValue = object : FloatValue("Rotation-Range", 8f, 1f, 20f, "m") {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = attackRangeValue.get()
@@ -121,6 +157,7 @@ class KillAura : Module() {
     // Modes
     private val rotations = ListValue("RotationMode", arrayOf("Vanilla", "Grim", "Novoline", "None"), "Vanilla")
 
+    private val shakeAmout = FloatValue("NovolineShakeAmoutTest",4f,0f,10f) { rotations.isMode("Novoline") }
 
     // Turn Speed
     private val yawMaxTurnSpeed: FloatValue = object : FloatValue("YawMaxTurnSpeed", 180f, 0f, 180f) {
@@ -151,47 +188,39 @@ class KillAura : Module() {
         }
     }
 
-    private val roundTurnAngle = BoolValue("RoundAngle", false, { !rotations.get().equals("none", true) })
+    private val roundTurnAngle = BoolValue("RoundAngle", false) { !rotations.get().equals("none", true) }
     private val roundAngleDirs = IntegerValue(
             "RoundAngle-Directions",
             4,
             2,
-            90,
-            { !rotations.get().equals("none", true) && roundTurnAngle.get() })
+            90
+    ) { !rotations.get().equals("none", true) && roundTurnAngle.get() }
 
-    private val noHitCheck = BoolValue("NoHitCheck", false, { !rotations.get().equals("none", true) })
-
-    private val blinkCheck = BoolValue("BlinkCheck", true)
-
-    private val priorityValue = ListValue(
-            "Priority",
-            arrayOf(
-                    "Health",
-                    "Distance",
-                    "Direction",
-                    "LivingTime",
-                    "Armor",
-                    "HurtResistance",
-                    "HurtTime",
-                    "HealthAbsorption",
-                    "RegenAmplifier"
-            ),
-            "Distance"
-    )
-    val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
-
-    //reverted in old LB. idk why they removed it.
-    private val switchDelayValue =
-            IntegerValue("SwitchDelay", 1000, 1, 2000, "ms", { targetModeValue.get().equals("switch", true) })
-
-    // Bypass
-    private val swingValue = BoolValue("Swing", true)
-    private val swingOrderValue = BoolValue("1.9OrderCheck", true, { swingValue.get() })
-    private val keepSprintValue = BoolValue("KeepSprint", true)
-    public val nosprint = BoolValue("NoSprint", true, { keepSprintValue.get() })
+    private val shakeValue = BoolValue("Shake", false)
+    private val randomCenterNewValue =
+        BoolValue("NewCalc", true) { rotations.get().equals("vanilla", true) && shakeValue.get() }
+    private val minRand: FloatValue = object :
+        FloatValue("MinMultiply", 0.8f, 0f, 2f, "x", { rotations.get().equals("vanilla", true) && shakeValue.get() }) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = maxRand.get()
+            if (v < newValue) set(v)
+        }
+    }
+    private val maxRand: FloatValue = object :
+        FloatValue("MaxMultiply", 0.8f, 0f, 2f, "x", { rotations.get().equals("vanilla", true) && shakeValue.get() }) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = minRand.get()
+            if (v > newValue) set(v)
+        }
+    }
 
 
-    /*// AutoBlock
+    private val noHitCheck = BoolValue("NoHitCheck", false) { !rotations.get().equals("none", true) }
+    private val silentRotationValue = BoolValue("SilentRotation", true) { !rotations.get().equals("none", true) }
+    private val fovValue = FloatValue("FOV", 180f, 0f, 360f)
+    //endregion
+
+    /*// old AutoBlock
     private val autoBlockModeValue = ListValue(
         "AutoBlock",
         arrayOf("None", "Packet", "AfterTick", "NCP", "OldHypixel", "Vanilla", "Hypixel"),
@@ -264,13 +293,9 @@ class KillAura : Module() {
         "%",
         { !autoBlockModeValue.get().equals("None", true) && displayAutoBlockSettings.get() })*/
 
-    // AutoBlock
+    private val autoblockNote = NoteValue("Autoblock") //region autoblock
     private val autoBlock = ListValue("AutoBlock", arrayOf("Off", "Packet"), "Packet")
-    private val releaseAutoBlock = BoolValue("ReleaseAutoBlock", true) {
-        autoBlock.get() !in arrayOf(
-                "Off"
-        )
-    }
+    private val releaseAutoBlock = BoolValue("ReleaseAutoBlock", true) { !autoBlock.equals("Off") }
     private val ignoreTickRule = BoolValue("IgnoreTickRule", false) { autoBlock.get() != "Off" && releaseAutoBlock.get() }
     private val interactAutoBlock = BoolValue("InteractAutoBlock", true) { autoBlock.get() !in arrayOf("Off") }
 
@@ -296,84 +321,41 @@ class KillAura : Module() {
     private val maxOwnHurtTime = IntegerValue("MaxOwnHurtTime", 3, 0,10) { autoBlock.get() != "Off" && smartAutoBlock.get() }
 
     // Don't block if target isn't looking at you
-    private val maxDirectionDiff = FloatValue("MaxOpponentDirectionDiff", 60f, 30f,180f) { autoBlock.get() != "Off" && smartAutoBlock.get() }
+    private val maxDirectionDiff = FloatValue("MaxEnemyDirectionDiff", 60f, 30f,180f) { autoBlock.get() != "Off" && smartAutoBlock.get() }
 
     // Don't block if target is swinging an item and therefore cannot attack
-    private val maxSwingProgress = IntegerValue("MaxOpponentSwingProgress", 1, 0,5) { autoBlock.get() != "Off" && smartAutoBlock.get() }
+    private val maxSwingProgress = IntegerValue("MaxEnemySwingProgress", 1, 0,5) { autoBlock.get() != "Off" && smartAutoBlock.get() }
     private val blockRate = IntegerValue("BlockRate", 100, 1,100) { autoBlock.get() != "Off" && releaseAutoBlock.get() }
 
-    // Raycast
+    //endregion
+
+    private val bypassNote = NoteValue("Bypass") //region bypass
     private val raycastValue = BoolValue("RayCast", true)
-    private val raycastIgnoredValue = BoolValue("RayCastIgnored", false)
-    private val livingRaycastValue = BoolValue("LivingRayCast", true)
-
-    // Bypass
+    private val raycastIgnoredValue = BoolValue("RayCastIgnored", false) { raycastValue.get() }
+    private val livingRaycastValue = BoolValue("LivingRayCast", true) { raycastValue.get() }
     private val aacValue = BoolValue("AAC", false)
-
-    private val silentRotationValue = BoolValue("SilentRotation", true, { !rotations.get().equals("none", true) })
-    val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
-
-    private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
-
-    // Predict
-    private val predictValue = BoolValue("Predict", true)
-
-    private val maxPredictSize: FloatValue =
-            object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f, { predictValue.get() }) {
-                override fun onChanged(oldValue: Float, newValue: Float) {
-                    val v = minPredictSize.get()
-                    if (v > newValue) set(v)
-                }
-            }
-
-    private val minPredictSize: FloatValue =
-            object : FloatValue("MinPredictSize", 1f, 0.1f, 5f, { predictValue.get() }) {
-                override fun onChanged(oldValue: Float, newValue: Float) {
-                    val v = maxPredictSize.get()
-                    if (v < newValue) set(v)
-                }
-            }
-    private val shakeValue = BoolValue("Shake", false)
-    private val randomCenterNewValue =
-            BoolValue("NewCalc", true, { rotations.get().equals("vanilla", true) && shakeValue.get() })
-    private val minRand: FloatValue = object :
-            FloatValue("MinMultiply", 0.8f, 0f, 2f, "x", { rotations.get().equals("vanilla", true) && shakeValue.get() }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = maxRand.get()
-            if (v < newValue) set(v)
-        }
-    }
-    private val maxRand: FloatValue = object :
-            FloatValue("MaxMultiply", 0.8f, 0f, 2f, "x", { rotations.get().equals("vanilla", true) && shakeValue.get() }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = minRand.get()
-            if (v > newValue) set(v)
-        }
-    }
-
-    private val shakeAmout = FloatValue("NovolineShakeAmoutTest",4f,0f,10f,{rotations.isMode("Novoline")})
-
-    // Bypass
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f)
     private val fakeSwingValue = BoolValue("FakeSwing", true)
     private val noInventoryAttackValue = BoolValue("NoInvAttack", false)
-    private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500, "ms", { noInventoryAttackValue.get() })
-    private val limitedMultiTargetsValue =
-            IntegerValue("LimitedMultiTargets", 0, 0, 50, { targetModeValue.get().equals("multi", true) })
+    private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500, "ms") { noInventoryAttackValue.get() }
+    private val swingValue = BoolValue("Swing", true)
+    private val swingOrderValue = BoolValue("1.9OrderCheck", true) { swingValue.get() }
+    private val keepSprintValue = BoolValue("KeepSprint", true)
+    private val nosprint = BoolValue("NoSprint", true) { keepSprintValue.get() }
+    //endregion
 
-    // idk
-    private val noScaffValue = BoolValue("NoScaffold", true)
-
-    // Visuals
+    private val visualNote = NoteValue("Visual") //region visual
     private val circleValue = BoolValue("Circle", true)
-    private val accuracyValue = IntegerValue("Accuracy", 59, 0, 59, { circleValue.get() })
+    private val accuracyValue = IntegerValue("Accuracy", 59, 0, 59) { circleValue.get() }
+    private val thickness = FloatValue("Thickness", 2f, 0f, 20f) { circleValue.get() }
+    private val red = IntegerValue("Red", 255, 0, 255) { circleValue.get() }
+    private val green = IntegerValue("Green", 255, 0, 255) { circleValue.get() }
+    private val blue = IntegerValue("Blue", 255, 0, 255) { circleValue.get() }
+    private val alpha = IntegerValue("Alpha", 255, 0, 255) { circleValue.get() }
     private val fakeSharpValue = BoolValue("FakeSharp", true)
-    private val fakeSharpSword = BoolValue("FakeSharp-SwordOnly", true, { fakeSharpValue.get() })
-    private val red = IntegerValue("Red", 255, 0, 255, { circleValue.get() })
-    private val green = IntegerValue("Green", 255, 0, 255, { circleValue.get() })
-    private val blue = IntegerValue("Blue", 255, 0, 255, { circleValue.get() })
-    private val alpha = IntegerValue("Alpha", 255, 0, 255, { circleValue.get() })
-
+    private val fakeSharpSword = BoolValue("FakeSharp-SwordOnly", true) { fakeSharpValue.get() }
+    //endregion
 
     /**
      * MODULE
@@ -761,9 +743,9 @@ class KillAura : Module() {
         if (circleValue.get()) {
             GL11.glPushMatrix()
             GL11.glTranslated(
-                    mc.thePlayer.lastTickPosX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosX,
-                    mc.thePlayer.lastTickPosY + (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosY,
-                    mc.thePlayer.lastTickPosZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosZ
+                    mc.thePlayer.lastTickPosX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX,
+                    mc.thePlayer.lastTickPosY + (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * mc.timer.renderPartialTicks - mc.renderManager.renderPosY,
+                    mc.thePlayer.lastTickPosZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks - mc.renderManager.renderPosZ
             )
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glEnable(GL11.GL_LINE_SMOOTH)
@@ -771,7 +753,7 @@ class KillAura : Module() {
             GL11.glDisable(GL11.GL_DEPTH_TEST)
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
-            GL11.glLineWidth(1F)
+            GL11.glLineWidth(thickness.get())
             GL11.glColor4f(
                     red.get().toFloat() / 255.0F,
                     green.get().toFloat() / 255.0F,
@@ -1038,12 +1020,12 @@ class KillAura : Module() {
         }*/
 
         // Attack target
-        if (swingValue.get() && (!swingOrderValue.get() || ViaForge.getInstance().getVersion() <= 47)) // version fix
+        if (swingValue.get() && (!swingOrderValue.get() || ViaForge.getInstance().version <= 47)) // version fix
             mc.thePlayer.swingItem()
 
         mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
-        if (swingValue.get() && swingOrderValue.get() && ViaForge.getInstance().getVersion() > 47)
+        if (swingValue.get() && swingOrderValue.get() && ViaForge.getInstance().version > 47)
             mc.thePlayer.swingItem()
 
         if (keepSprintValue.get()) {
@@ -1285,7 +1267,7 @@ class KillAura : Module() {
      */
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
-                || (blinkCheck.get() && LiquidBounce.moduleManager[Blink::class.java]!!.state) || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
+                || (noBlink.get() && LiquidBounce.moduleManager[Blink::class.java]!!.state) || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
                 (noScaffValue.get() && (LiquidBounce.moduleManager[Scaffold::class.java]!!.state))
 
     /**

@@ -306,3 +306,10 @@ open class ListValue(name: String, val values: Array<String>, value: String, dis
         if (element.isJsonPrimitive) changeValue(element.asString)
     }
 }
+
+open class NoteValue(name: String) : Value<String>(name, name, { true }) {
+    var open = true
+    override fun toJson() = null
+
+    override fun fromJson(element: JsonElement) { }
+}

@@ -53,6 +53,7 @@ class IntegerValueButton(x: Float, y: Float, width: Float, height: Float, var se
   }
 
   override fun mouseAction(mouseX: Int, mouseY: Int, click: Boolean, button: Int) {
+    if (!show) return
     if (isHovered(mouseX, mouseY)) {
       dragged = true
     }
