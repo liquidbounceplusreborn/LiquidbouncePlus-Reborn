@@ -48,7 +48,6 @@ public class MixinNetworkManager {
             } catch (Exception e) {
                 //Minecraft.logger.error("Exception caught in BackTrack", e);
             }
-            if (event.isCancelled()) return;
         }
         LiquidBounce.eventManager.callEvent(event);
 
@@ -69,11 +68,6 @@ public class MixinNetworkManager {
         final PacketEvent event = new PacketEvent(packet);
         BackTrack backTrack = LiquidBounce.moduleManager.getModule(BackTrack.class);;
         assert backTrack != null;
-        LiquidBounce.eventManager.callEvent(event);
-
-        if(event.isCancelled())
-            callback.cancel();
-
         if (backTrack.getState()) {
             try {
                 backTrack.onPacket(event);
@@ -81,6 +75,10 @@ public class MixinNetworkManager {
                 //Minecraft.logger.error("Exception caught in BackTrack", e);
             }
         }
+        LiquidBounce.eventManager.callEvent(event);
+
+        if(event.isCancelled())
+            callback.cancel();
     }
 
     /**
