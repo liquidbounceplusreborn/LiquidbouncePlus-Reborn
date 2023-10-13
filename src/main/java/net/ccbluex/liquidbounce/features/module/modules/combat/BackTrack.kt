@@ -1,6 +1,7 @@
 //from kevin client
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import de.gerrygames.viarewind.utils.PacketUtil
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
@@ -10,6 +11,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils.packets
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -35,7 +37,7 @@ import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S19PacketEntityStatus
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.ceil
 
@@ -112,7 +114,7 @@ class BackTrack : Module() {
         val theWorld = mc.theWorld!!
         if (packet.javaClass.name.contains("net.minecraft.network.play.server.", true)) {
             if (packet is S14PacketEntity) {
-                val entity = packet.getEntity(theWorld) ?: return
+                val entity = packet.getEntity(theWorld)?: return
                 if (entity !is EntityLivingBase) return
                 if (onlyPlayer.get() && entity !is EntityPlayer) return
                 entity.serverPosX += packet.func_149062_c().toInt()
@@ -132,8 +134,7 @@ class BackTrack : Module() {
                             val eyes = mc.thePlayer!!.getPositionEyes(1F)
                             afterRange = getNearestPointBB(eyes, afterBB).distanceTo(eyes) + 0.075
                         }
-                        if (beforeRange == Double.MAX_VALUE) beforeRange =
-                            mc.thePlayer!!.getDistanceToEntityBox(entity) + 0.075
+                        if (beforeRange == Double.MAX_VALUE) beforeRange = mc.thePlayer!!.getDistanceToEntityBox(entity) + 0.075
                     } else {
                         val eyes = mc.thePlayer!!.getPositionEyes(1F)
                         afterRange = getNearestPointBB(eyes, afterBB).distanceTo(eyes)
@@ -166,10 +167,8 @@ class BackTrack : Module() {
                 }
                 if (!event.isCancelled && !needFreeze) {
                     LiquidBounce.eventManager.callEvent(EntityMovementEvent(entity))
-                    val f =
-                        if (packet.func_149060_h()) (packet.func_149066_f() * 360).toFloat() / 256.0f else entity.rotationYaw
-                    val f1 =
-                        if (packet.func_149060_h()) (packet.func_149063_g() * 360).toFloat() / 256.0f else entity.rotationPitch
+                    val f = if (packet.func_149060_h()) (packet.func_149066_f() * 360).toFloat() / 256.0f else entity.rotationYaw
+                    val f1 = if (packet.func_149060_h()) (packet.func_149063_g() * 360).toFloat() / 256.0f else entity.rotationPitch
                     entity.setPositionAndRotation2(x, y, z, f, f1, 3, false)
                     entity.onGround = packet.onGround
                 }
@@ -223,11 +222,9 @@ class BackTrack : Module() {
                             if (distance > d || distance > reverseMaxRange.get() || (it.hurtTime <= (1 + (mc.thePlayer.getPing() / 50.0).toInt()) && hasAttackInReversing)) {
                                 stopReverse()
                             } else {
-                                val rot =
-                                    Rotation(it.rotationYaw, it.rotationPitch).toDirection().multiply(4.0).add(loc)
+                                val rot = (if (it is EntityOtherPlayerMP) Rotation(it.otherPlayerMPYaw.toFloat(), it.otherPlayerMPPitch.toFloat()) else Rotation(it.rotationYaw, it.rotationPitch)).toDirection().multiply(4.0).add(loc)
                                 val movingObjectPosition = lastBB.calculateIntercept(loc, rot) ?: return@let
-                                val m2 =
-                                    mc.thePlayer.entityBoundingBox.expand(0.1, 0.1, 0.1).calculateIntercept(loc, rot)
+                                val m2 = mc.thePlayer.entityBoundingBox.expand(0.11, 0.1, 0.11).calculateIntercept(loc, rot)
                                 if (movingObjectPosition.hitVec != null) {
                                     val d2 = movingObjectPosition.hitVec.distanceTo(loc)
                                     if (d2 <= 3.0 && (m2?.hitVec == null || m2.hitVec.distanceTo(loc) > d2)) stopReverse()
@@ -235,8 +232,7 @@ class BackTrack : Module() {
                             }
                         } else if (distance <= reverseRange.get() &&
                             it.hurtTime <= reverseTargetMaxHurtTime.get() && mc.thePlayer.hurtTime <= reverseSelfMaxHurtTime.get() &&
-                            loc.distanceTo(bp) >= distance && (!onlyKillAura.get() || killAura!!.state)
-                        ) {
+                            loc.distanceTo(bp) >= distance && (!onlyKillAura.get() || killAura!!.state)) {
                             reversing = true
                             lastPosition = vec
                             hasAttackInReversing = false
@@ -292,7 +288,6 @@ class BackTrack : Module() {
     }
 
     @EventTarget fun onRender3D(event: Render3DEvent) {
-
         if (reversing) {
             val renderManager = mc.renderManager
 
@@ -302,10 +297,10 @@ class BackTrack : Module() {
 
         if (espMode.get() == "None" || !needFreeze) return
 
-        if (espMode.get() ==  "Model") {
-            GL11.glPushMatrix()
-            GL11.glDisable(GL11.GL_TEXTURE_2D)
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
+        if (espMode.get() == "Model") {
+            glPushMatrix()
+            glDisable(GL_TEXTURE_2D)
+            glDisable(GL_DEPTH_TEST)
             GlStateManager.disableAlpha()
             for (entity in storageEntities) {
                 if (entity !is EntityOtherPlayerMP) return
@@ -333,10 +328,10 @@ class BackTrack : Module() {
                 mc.renderManager.renderEntitySimple(mp, event.partialTicks)
             }
             GlStateManager.enableAlpha()
-            GL11.glEnable(GL11.GL_TEXTURE_2D)
-            GL11.glEnable(GL11.GL_DEPTH_TEST)
+            glEnable(GL_TEXTURE_2D)
+            glEnable(GL_DEPTH_TEST)
             GlStateManager.resetColor()
-            GL11.glPopMatrix()
+            glPopMatrix()
             return
         }
 
@@ -365,17 +360,17 @@ class BackTrack : Module() {
         }
 
         // pre draw
-        GL11.glPushMatrix()
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_DEPTH_TEST)
+        glPushMatrix()
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_DEPTH_TEST)
 
-        GL11.glDepthMask(false)
+        glDepthMask(false)
 
         if (outline) {
-            GL11.glLineWidth(1f)
-            GL11.glEnable(GL11.GL_LINE_SMOOTH)
+            glLineWidth(1f)
+            glEnable(GL_LINE_SMOOTH)
         }
         // drawing
         val renderManager = mc.renderManager
@@ -406,15 +401,15 @@ class BackTrack : Module() {
         }
 
         // post draw
-        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        GL11.glDepthMask(true)
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+        glDepthMask(true)
         if (outline) {
-            GL11.glDisable(GL11.GL_LINE_SMOOTH)
+            glDisable(GL_LINE_SMOOTH)
         }
-        GL11.glDisable(GL11.GL_BLEND)
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glEnable(GL11.GL_DEPTH_TEST)
-        GL11.glPopMatrix()
+        glDisable(GL_BLEND)
+        glEnable(GL_TEXTURE_2D)
+        glEnable(GL_DEPTH_TEST)
+        glPopMatrix()
     }
 
     fun releasePackets() {
@@ -425,7 +420,7 @@ class BackTrack : Module() {
             storagePackets.removeAt(0).let{
                 try {
                     val packetEvent = PacketEvent(it)
-                    if (!PacketUtils.packets.contains(it)) LiquidBounce.eventManager.callEvent(packetEvent)
+                    if (!packets.contains(it)) LiquidBounce.eventManager.callEvent(packetEvent)
                     if (!packetEvent.isCancelled) it.processPacket(netHandler)
                 } catch (_: ThreadQuickExitException) { }
             }
@@ -449,10 +444,10 @@ class BackTrack : Module() {
             storageSendPackets.removeAt(0).let {
                 try {
                     val packetEvent = PacketEvent(it)
-                    if (!PacketUtils.packets.contains(it)) LiquidBounce.eventManager.callEvent(packetEvent)
+                    if (!packets.contains(it)) LiquidBounce.eventManager.callEvent(packetEvent)
                     if (!packetEvent.isCancelled) PacketUtils.sendPacketNoEvent(it)
                 } catch (e: Exception) {
-                    LiquidBounce.hud.addNotification(Notification( "BackTrack","Something went wrong when sending packet reversing",NotifyType.ERROR))
+                    LiquidBounce.hud.addNotification(Notification("BackTrack","Something went wrong when sending packet reversing",NotifyType.ERROR))
                 }
                 // why kotlin
                 return@let
@@ -469,9 +464,9 @@ class BackTrack : Module() {
 
     fun update() {}
 
-    //init {
-      //  INetworkManager.backTrack = this
-    //}
+    /*init {
+        NetworkManager.backTrack = this
+    }*/
 //    val target: EntityLivingBase?
 //    get() = if (onlyKillAura.get()) {
 //        if (killAura.target is EntityLivingBase) killAura.target as EntityLivingBase?
