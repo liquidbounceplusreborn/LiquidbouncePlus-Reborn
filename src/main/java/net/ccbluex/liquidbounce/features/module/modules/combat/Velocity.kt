@@ -319,7 +319,7 @@ class Velocity : Module() {
                 }
             }
 
-            "GrimAC" ->
+            "grimac" ->
                 if (transactionQueue.isEmpty() && grimPacket) grimPacket = false
 
             "intave" -> if (velocityInput) {
