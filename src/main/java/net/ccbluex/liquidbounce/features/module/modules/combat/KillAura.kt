@@ -334,7 +334,8 @@ class KillAura : Module() {
     private val raycastIgnoredValue = BoolValue("RayCastIgnored", false) { raycastValue.get() }
     private val livingRaycastValue = BoolValue("LivingRayCast", true) { raycastValue.get() }
     private val aacValue = BoolValue("AAC", false)
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Off")
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent","Fdp"), "Off")
+    private val testSilentValue = BoolValue("SIlent", true){ rotationStrafeValue.get() == "Fdp" && !rotations.get().equals("none", true) }
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f)
     private val fakeSwingValue = BoolValue("FakeSwing", true)
     private val noInventoryAttackValue = BoolValue("NoInvAttack", false)
@@ -510,6 +511,52 @@ class KillAura : Module() {
                     RotationUtils.targetRotation.applyStrafeToPlayer(event)
                     event.cancelEvent()
                 }
+
+                "fdp" -> {
+                    val (yaw) = RotationUtils.targetRotation ?: return
+                    var strafe = event.strafe
+                    var forward = event.forward
+                    var friction = event.friction
+                    var factor = strafe * strafe + forward * forward
+
+                    var angleDiff = ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
+                    //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
+                    var calcYaw = if(testSilentValue.get()) { yaw + 45.0f * angleDiff.toFloat() } else yaw
+
+                    var calcMoveDir = Math.max(Math.abs(strafe), Math.abs(forward)).toFloat()
+                    calcMoveDir = calcMoveDir * calcMoveDir
+                    var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
+
+                    if (testSilentValue.get()) {
+                        when (angleDiff) {
+                            1, 3, 5, 7, 9 -> {
+                                if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
+                                    friction = friction / calcMultiplier
+                                } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
+                                    friction = friction * calcMultiplier
+                                }
+                            }
+                        }
+                    }
+                    if (factor >= 1.0E-4F) {
+                        factor = MathHelper.sqrt_float(factor)
+
+                        if (factor < 1.0F) {
+                            factor = 1.0F
+                        }
+
+                        factor = friction / factor
+                        strafe *= factor
+                        forward *= factor
+
+                        val yawSin = MathHelper.sin((calcYaw * Math.PI / 180F).toFloat())
+                        val yawCos = MathHelper.cos((calcYaw * Math.PI / 180F).toFloat())
+
+                        mc.thePlayer.motionX += strafe * yawCos - forward * yawSin
+                        mc.thePlayer.motionZ += forward * yawCos + strafe * yawSin
+                    }
+                    event.cancelEvent()
+                }
             }
         }
     }
@@ -517,7 +564,7 @@ class KillAura : Module() {
 
     @EventTarget
     fun onJump(event: JumpEvent) {
-        if (rotationStrafeValue.isMode("Strict")) {
+        if (rotationStrafeValue.isMode("Strict") || rotationStrafeValue.isMode("Fdp") && !testSilentValue.get()) {
             if (currentTarget != null && RotationUtils.targetRotation != null) {
                 event.yaw = RotationUtils.targetRotation.yaw
             }

@@ -232,8 +232,7 @@ class Scaffold : Module() {
     private val placeConditionValue =
         ListValue("Place-Condition", arrayOf("Air", "FallDown", "NegativeMotion", "Always"), "Always")
     private val rotationStrafeValue =
-        ListValue("MovementCorrection", arrayOf("LiquidBounce", "Test","None"), "None") { !isTowerOnly && rotationsValue.get() }
-    private val testSilentValue = BoolValue("Test", true){ rotationStrafeValue.get() == "Test" && rotationsValue.get() }
+        ListValue("MovementCorrection", arrayOf("LiquidBounce", "FDP","None"), "None") { !isTowerOnly && rotationsValue.get() }
     private val speedPotSlow = BoolValue("SpeedPotDetect", true)
 
     // Zitter
@@ -950,7 +949,7 @@ class Scaffold : Module() {
             }
             event.cancelEvent()
         }
-        if (lockRotation != null && rotationStrafeValue.get() == "Test") {
+        if (lockRotation != null && rotationStrafeValue.get() == "FDP") {
             val (yaw) = RotationUtils.targetRotation ?: return
             var strafe = event.strafe
             var forward = event.forward
@@ -959,13 +958,12 @@ class Scaffold : Module() {
 
             var angleDiff = ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
             //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
-            var calcYaw = if(testSilentValue.get()) { yaw + 45.0f * angleDiff.toFloat() } else yaw
+            var calcYaw = { yaw + 45.0f * angleDiff.toFloat() }.toString().toFloat()
 
             var calcMoveDir = Math.max(Math.abs(strafe), Math.abs(forward)).toFloat()
             calcMoveDir = calcMoveDir * calcMoveDir
             var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
 
-            if (testSilentValue.get()) {
                 when (angleDiff) {
                     1, 3, 5, 7, 9 -> {
                         if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
@@ -975,7 +973,7 @@ class Scaffold : Module() {
                         }
                     }
                 }
-            }
+
             if (factor >= 1.0E-4F) {
                 factor = MathHelper.sqrt_float(factor)
 
