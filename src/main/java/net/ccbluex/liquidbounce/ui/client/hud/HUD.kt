@@ -51,14 +51,25 @@ open class HUD : MinecraftInstance() {
          * Create default HUD
          */
         @JvmStatic
-        fun createDefault() = HUD()
+        fun createDefault(): HUD {
+            val hudd = HUD()
                 .addElement(Text.defaultClient())
-                .addElement(Arraylist())
                 .addElement(ScoreboardElement())
                 .addElement(Armor())
                 .addElement(Effects())
                 .addElement(Notifications())
-                .addElement(SpeedGraph())
+
+            val arraylist = Arraylist()
+            arraylist.colorModeValue.set("Sky")
+            arraylist.hAnimation.set("Astolfo")
+            arraylist.vAnimation.set("Astolfo")
+            arraylist.animationSpeed.set(0.5)
+            arraylist.saturationValue.set(0.47)
+
+            hudd.addElement(arraylist)
+
+            return hudd
+        }
     }
 
     /**

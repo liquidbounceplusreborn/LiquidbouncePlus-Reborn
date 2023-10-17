@@ -15,19 +15,32 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.TextValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 
 @ModuleInfo(name = "AutoLogin", spacedName = "Auto Login", description = "Automatically login into some servers for you.", category = ModuleCategory.WORLD)
 class AutoLogin : Module() {
 
-	private val password = TextValue("Password", "example@01")
-	private val regRegex = TextValue("Register-Regex", "/register")
-	private val loginRegex = TextValue("Login-Regex", "/login")
-	private val regCmd = TextValue("Register-Cmd", "/register %p %p")
-	private val loginCmd = TextValue("Login-Cmd", "/login %p")
+	private val password = TextValue("Password", "example@01") { true }
+	private val regRegex = TextValue("Register-Regex", "/register") { true }
+	private val loginRegex = TextValue("Login-Regex", "/login") { true }
+	private val regCmd = TextValue("Register-Cmd", "/register %p %p") { true }
+	private val loginCmd = TextValue("Login-Cmd", "/login %p") { true }
+	private val unique = BoolValue("Unique", false)
+	private val uniqueFormat = TextValue("UniqueFormat", "%name%_%p%_xx") { unique.get() }
+
+	private val uniqueHelp : BoolValue = object : BoolValue("ClickForFormatHelp", false, {unique.get()} ) {
+		override fun onChange(oldValue: Boolean, newValue: Boolean) {
+			ClientUtils.displayChatMessage("UniqueFormat placeholders:")
+			ClientUtils.displayChatMessage("  - %name%: username")
+			ClientUtils.displayChatMessage("  - %pass%: original password")
+			ClientUtils.displayChatMessage("  - More coming soon...")
+		}
+	}
 
 	private val delayValue = IntegerValue("Delay", 5000, 0, 5000, "ms")
 
@@ -37,6 +50,14 @@ class AutoLogin : Module() {
 	private val logTimer = MSTimer()
 
 	override fun onEnable() = resetEverything()
+
+	private fun getPassword(): String {
+		var pw = password.get()
+		if (unique.get())
+			pw = uniqueFormat.get().replace("%name%", mc.session.username).replace("%pass%", password.get())
+
+		return pw
+	}
 
 	@EventTarget
 	fun onWorld(event: WorldEvent) = resetEverything()
@@ -76,20 +97,20 @@ class AutoLogin : Module() {
     		val message : String = messageOrigin.unformattedText
 
     		if (message.contains(loginRegex.get(), true))
-    			sendLogin(loginCmd.get().replace("%p", password.get(), true))
+    			sendLogin(loginCmd.get().replace("%p", getPassword(), true))
 
     		if (message.contains(regRegex.get(), true))
-    			sendRegister(regCmd.get().replace("%p", password.get(), true))
+    			sendRegister(regCmd.get().replace("%p", getPassword(), true))
     	}
 
     	if (packet is S02PacketChat) {
     		val message : String = packet.chatComponent.unformattedText
 
     		if (message.contains(loginRegex.get(), true))
-    			sendLogin(loginCmd.get().replace("%p", password.get(), true))
+    			sendLogin(loginCmd.get().replace("%p", getPassword(), true))
 
     		if (message.contains(regRegex.get(), true))
-    			sendRegister(regCmd.get().replace("%p", password.get(), true))
+    			sendRegister(regCmd.get().replace("%p", getPassword(), true))
     	}
     }
 

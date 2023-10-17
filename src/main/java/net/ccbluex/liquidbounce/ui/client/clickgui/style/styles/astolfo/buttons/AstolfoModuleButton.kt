@@ -36,6 +36,7 @@ class AstolfoModuleButton(x: Float, y: Float, width: Float, height: Float, var m
         is IntegerValue -> valueButtons.add(IntegerValueButton(x, startY + MODULE_HEIGHT * count, width, VALUE_HEIGHT, v, color))
         is FloatValue -> valueButtons.add(FloatValueButton(x, startY + MODULE_HEIGHT * count, width, VALUE_HEIGHT, v, color))
         is FontValue -> valueButtons.add(FontValueButton(x, startY + MODULE_HEIGHT * count, width, VALUE_HEIGHT, v, color))
+        is TextValue -> valueButtons.add(TextValueButton(x, startY + MODULE_HEIGHT * count, width, VALUE_HEIGHT, v, color))
       }
     }
   }

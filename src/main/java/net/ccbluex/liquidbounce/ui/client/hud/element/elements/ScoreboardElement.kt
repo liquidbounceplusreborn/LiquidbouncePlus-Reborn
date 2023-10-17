@@ -75,7 +75,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
     private val delayValue = IntegerValue("Delay", 50, 0, 200)
 
     private val shadowValue = BoolValue("Shadow", false)
-    private val antiSnipeMatch = BoolValue("AntiSnipeMatch", true)
+    private val antiSnipeMatch = BoolValue("AntiSnipeMatch", false)
     private val changeDomain = BoolValue("ChangeDomain", false)
     private val showRedNumbersValue = BoolValue("ShowRedNumbers", false)
     private val fontValue = FontValue("Font", Fonts.minecraftFont)
