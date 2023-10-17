@@ -25,11 +25,11 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 @ModuleInfo(name = "AutoLogin", spacedName = "Auto Login", description = "Automatically login into some servers for you.", category = ModuleCategory.WORLD)
 class AutoLogin : Module() {
 
-	private val password = TextValue("Password", "example@01") { true }
-	private val regRegex = TextValue("Register-Regex", "/register") { true }
-	private val loginRegex = TextValue("Login-Regex", "/login") { true }
-	private val regCmd = TextValue("Register-Cmd", "/register %p %p") { true }
-	private val loginCmd = TextValue("Login-Cmd", "/login %p") { true }
+	private val password = TextValue("Password", "example@01")
+	private val regRegex = TextValue("Register-Regex", "/register")
+	private val loginRegex = TextValue("Login-Regex", "/login")
+	private val regCmd = TextValue("Register-Cmd", "/register %p %p")
+	private val loginCmd = TextValue("Login-Cmd", "/login %p")
 	private val unique = BoolValue("Unique", false)
 	private val uniqueFormat = TextValue("UniqueFormat", "%name%_%p%_xx") { unique.get() }
 
