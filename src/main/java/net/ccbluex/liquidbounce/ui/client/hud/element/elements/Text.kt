@@ -161,8 +161,8 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
             "mcps" -> return CPSCounter.getCPS(CPSCounter.MouseButton.MIDDLE).toString()
             "rcps" -> return CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString()
             "portalVersion" -> ProtocolCollection.getProtocolById(ViaForge.getInstance().version).getName()
-            "watchdogLastMin" -> BanChecker.WATCHDOG_BAN_LAST_MIN.toString()
-            "staffLastMin" -> BanChecker.STAFF_BAN_LAST_MIN.toString()
+            "watchdogLastMin" -> LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.watchdogLastMin.toString()
+            "staffLastMin" -> LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.staffLastMin.toString()
             "wdStatus" -> return if (PacketUtils.isWatchdogActive()) "Inactive" else "Active"
             "sessionTime" -> return SessionUtils.getFormatSessionTime()
             "worldTime" -> return SessionUtils.getFormatWorldTime()

@@ -17,19 +17,12 @@ import net.ccbluex.liquidbounce.features.special.MacroManager
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
-import net.ccbluex.liquidbounce.tabs.*
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.ClassUtils.hasForge
-import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.InventoryHelper
-import net.ccbluex.liquidbounce.utils.InventoryUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.SessionUtils
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.misc.sound.TipSoundManager
 import net.minecraft.util.ResourceLocation
 import kotlin.concurrent.thread
@@ -78,7 +71,7 @@ object LiquidBounce {
     fun startClient() {
         isStarting = true
 
-        ClientUtils.getLogger().info("Starting $CLIENT_NAME build $CLIENT_VERSION")
+        ClientUtils.getLogger().info("Starting $CLIENT_NAME version $CLIENT_VERSION")
         lastTick = System.currentTimeMillis()
         playTimeStart = System.currentTimeMillis()
 
@@ -140,13 +133,6 @@ object LiquidBounce {
         clickGui = ClickGui()
         fileManager.loadConfig(fileManager.clickGuiConfig)
 
-        // Tabs (Only for Forge!)
-        if (hasForge()) {
-            BlocksTab()
-            ExploitsTab()
-            HeadsTab()
-        }
-
         // Set HUD
         hud = createDefault()
         fileManager.loadConfig(fileManager.hudConfig)
@@ -165,7 +151,7 @@ object LiquidBounce {
             }
         }
 
-        ClientUtils.getLogger().info("Finished loading LiquidBounce+ in ${System.currentTimeMillis() - lastTick}ms.")
+        ClientUtils.getLogger().info("Finished loading $CLIENT_NAME version $CLIENT_VERSION in ${System.currentTimeMillis() - lastTick}ms.")
 
         // Set is starting status
         isStarting = false

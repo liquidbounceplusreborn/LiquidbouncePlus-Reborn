@@ -179,8 +179,8 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 }
             }
 
-            val watchdoglmbans = BanChecker.WATCHDOG_BAN_LAST_MIN.toString()
-            val stafflmbans = BanChecker.STAFF_BAN_LAST_MIN.toString()
+            val watchdoglmbans = LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.watchdogLastMin.toString()
+            val stafflmbans = LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.staffLastMin.toString()
             Fonts.fontSFUI35.drawStringWithShadow("Session Information", x2.toFloat() / 4f, -10f, Color.WHITE.rgb)
             Fonts.fontSFUI35.drawStringWithShadow("Play Time: ", 2f, fontRenderer.height + -6f, Color.WHITE.rgb)
             Fonts.fontSFUI35.drawStringWithShadow(time, 92f, fontRenderer.height + -6f, Color.WHITE.rgb)
