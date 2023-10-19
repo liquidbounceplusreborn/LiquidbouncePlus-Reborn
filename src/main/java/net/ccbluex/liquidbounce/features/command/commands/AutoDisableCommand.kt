@@ -9,29 +9,45 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AutoDisable.DisableEvent
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import java.util.*
 
 class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
 
+    private val autodisableModules : List<Module>
+        get() = LiquidBounce.moduleManager.modules.filter { it.autoDisables.size > 0 }
     /**
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
         if (args.size == 2) {
-            when (args[1].toLowerCase()) {
-                "list" -> {
-                    chat("§c§lAutoDisable modules:")
-                    LiquidBounce.moduleManager.modules.filter { it.autoDisables.size > 0 }.forEach {
-                        ClientUtils.displayChatMessage("§6> §c${it.name} §7| §a${it.autoDisables.map { d -> d.name.toLowerCase() }.joinToString()}")
+            when (args[1].lowercase(Locale.getDefault())) {
+                "list", "l" -> {
+                    if (autodisableModules.isEmpty())
+                        chat("AutoDisable trigger list is empty.")
+                    else {
+                        chat("${autodisableModules.size} module${if (autodisableModules.size > 1) "s" else ""} with AutoDisable trigger(s):")
+                        autodisableModules.forEach {
+                            chat(
+                                "> ${highlightModule(it)}: ${
+                                    it.autoDisables.joinToString { d ->
+                                        d.name.lowercase(Locale.getDefault())
+                                    }
+                                }"
+                            )
+                        }
                     }
                     return
                 }
-                "clear" -> {
-                    LiquidBounce.moduleManager.modules.filter { it.autoDisables.size > 0 }.forEach {
+                "clear", "c" -> {
+                    chat("Cleared the AutoDisable list (${autodisableModules.size} module${
+                        if (autodisableModules.size > 1) "s" else ""
+                    }).")
+                    autodisableModules.forEach {
                         it.autoDisables.clear()
                     }
-                    chat("Successfully cleared the AutoDisable list.")
                     return
                 }
             }
@@ -41,13 +57,13 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
             val module = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
-                chat("Module §a§l${args[1]}§3 not found.")
+                chat("Module ${highlightModule(args[1])} not found.")
                 return
             }
 
             if (args[2].equals("clear", true)) {
                 module.autoDisables.clear()
-                chat("Module §a§l${module.name}§3 has been removed from AutoDisable trigger list.")
+                chat("Removed ${highlightModule(module)} from AutoDisable trigger list.")
                 playEdit()
                 return
             }
@@ -55,10 +71,10 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
             try {
                 val disableWhen = DisableEvent.valueOf(args[2].toUpperCase())
 
-                var added = "will now"
+                var added = "§awill now§r"
                 if (module.autoDisables.contains(disableWhen)) {
                     if (module.autoDisables.remove(disableWhen)) {
-                        added = "will no longer"
+                        added = "§cwill no longer§r"
                     }
                 } else {
                     module.autoDisables.add(disableWhen)
@@ -68,21 +84,20 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
                     DisableEvent.FLAG -> "when you get flagged."
                     DisableEvent.WORLD_CHANGE -> "when you change the world."
                     DisableEvent.GAME_END -> "when the game end."
-                    else -> null
                 }
 
                 // Response to user
-                chat("Module §a§l${module.name}§3 $added be disabled $disableType")
+                chat("${highlightModule(module)} $added be disabled $disableType")
                 playEdit()
                 return
             } catch (e: IllegalArgumentException) {
-                chat("§c§lWrong auto disable type!")
+                chat("§cWrong auto disable type!")
                 chatSyntax("autodisable <module> <clear/flag/world_change/game_end>")
                 return
             }
         }
 
-        chatSyntax("autodisable <module/list> <clear/flag/world_change/game_end>")
+        chatSyntax(arrayOf("list", "<module> <clear/flag/world_change/game_end>"))
     }
 
     override fun tabComplete(args: Array<String>): List<String> {
@@ -95,7 +110,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
                     .map { it.name }
                     .filter { it.startsWith(moduleName, true) }
                     .toList()
-            2 -> listOf<String>("clear", "flag", "world_change", "game_end").filter { it.startsWith(args[1], true) }
+            2 -> listOf("clear", "flag", "world_change", "game_end").filter { it.startsWith(args[1], true) }
             else -> emptyList()
         }
     }

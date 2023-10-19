@@ -21,7 +21,7 @@ class BindCommand : Command("bind", emptyArray()) {
             val module = LiquidBounce.moduleManager.getModule(args[1])
 
             if (module == null) {
-                chat("Module §a§l" + args[1] + "§3 not found.")
+                chat("Module ${highlightModule(args[1])} not found.")
                 return
             }
 
@@ -30,10 +30,10 @@ class BindCommand : Command("bind", emptyArray()) {
             module.keyBind = key
 
             if (key == Keyboard.KEY_NONE) {
-                chat("§fRemoved §b§l${module.name}§r's bind.")
+                chat("Removed ${highlightModule(module)}'s bind.")
                 LiquidBounce.hud.addNotification(Notification("Bind","Removed ${module.name}'s bind", NotifyType.SUCCESS))
             } else {
-                chat("§b§l${module.name}§r is now bound to §9$keyName.")
+                chat("${highlightModule(module)} is now bound to §9$keyName.")
                 LiquidBounce.hud.addNotification(Notification("Bind","${module.name} bound to $keyName", NotifyType.SUCCESS))
             }
 
