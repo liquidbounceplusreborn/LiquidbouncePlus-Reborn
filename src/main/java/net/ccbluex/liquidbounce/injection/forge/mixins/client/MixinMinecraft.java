@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
-import de.enzaxd.viaforge.ViaForge;
-import de.enzaxd.viaforge.util.AttackOrder;
+import cc.paimonmc.viamcp.ViaMCP;
+import cc.paimonmc.viamcp.utils.AttackOrder;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
@@ -105,11 +105,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void injectConstructor(GameConfiguration p_i45547_1_, CallbackInfo ci) {
-        try {
-            ViaForge.getInstance().start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            ViaMCP.staticInit();
     }
 
     @Inject(method = "run", at = @At("HEAD"))

@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import de.enzaxd.viaforge.ViaForge
-import de.enzaxd.viaforge.protocol.ProtocolCollection
+import cc.paimonmc.viamcp.ViaMCP
+import cc.paimonmc.viamcp.protocols.ProtocolCollection
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer
 import net.ccbluex.liquidbounce.features.module.modules.world.BanChecker
@@ -156,7 +156,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F,
             "cps", "lcps" -> return CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString()
             "mcps" -> return CPSCounter.getCPS(CPSCounter.MouseButton.MIDDLE).toString()
             "rcps" -> return CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString()
-            "portalVersion" -> ProtocolCollection.getProtocolById(ViaForge.getInstance().version).getName()
+            "portalVersion" -> ProtocolCollection.getProtocolById(ViaMCP.getInstance().version).getName()
             "watchdogLastMin" -> LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.watchdogLastMin.toString()
             "staffLastMin" -> LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.staffLastMin.toString()
             "wdStatus" -> return if (PacketUtils.isWatchdogActive()) "Inactive" else "Active"

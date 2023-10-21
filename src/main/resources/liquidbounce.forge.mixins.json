@@ -51,6 +51,7 @@
     "gui.MixinGuiSlot",
     "gui.MixinGuiSpectator",
     "gui.MixinServerSelectionList",
+    "item.MixinItemBlock",
     "item.MixinItemRenderer",
     "item.MixinItemStack",
     "item.MixinNBTTagCompound",
