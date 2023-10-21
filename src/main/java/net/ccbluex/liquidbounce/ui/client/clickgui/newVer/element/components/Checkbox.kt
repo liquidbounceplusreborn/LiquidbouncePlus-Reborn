@@ -3,10 +3,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.components
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.extensions.animLinear
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.MathHelper
 import org.lwjgl.opengl.GL11
-
 import java.awt.Color
 
 class Checkbox {

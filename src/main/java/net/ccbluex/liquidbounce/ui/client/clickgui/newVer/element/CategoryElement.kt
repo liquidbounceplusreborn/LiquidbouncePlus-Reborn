@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element
 
+import com.mojang.realmsclient.gui.ChatFormatting
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.ModuleElement
@@ -10,10 +10,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import com.mojang.realmsclient.gui.ChatFormatting
-import net.ccbluex.liquidbounce.utils.render.Stencil
 import org.lwjgl.opengl.GL11
-
 import java.awt.Color
 import kotlin.math.abs
 

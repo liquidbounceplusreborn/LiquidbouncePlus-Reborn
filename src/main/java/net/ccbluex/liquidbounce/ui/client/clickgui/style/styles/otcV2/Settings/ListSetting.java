@@ -1,7 +1,9 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Settings;
 
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUI;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.*;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.Downward;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.ModuleRender;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.OtcClickGUi;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.misc.Direction;
 import net.ccbluex.liquidbounce.utils.misc.EaseInOutQuad;

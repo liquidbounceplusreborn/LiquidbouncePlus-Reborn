@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.packets;
 import net.ccbluex.liquidbounce.features.special.AntiForge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.EnumConnectionState;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.handshake.client.C00Handshake;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

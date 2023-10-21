@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.patcher.bugfixes;
 
-import net.minecraft.client.renderer.RegionRenderCache;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.RegionRenderCache;
 import net.minecraft.util.BlockPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

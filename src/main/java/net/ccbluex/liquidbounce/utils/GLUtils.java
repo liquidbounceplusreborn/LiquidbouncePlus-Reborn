@@ -1,16 +1,12 @@
 package net.ccbluex.liquidbounce.utils;
 
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.Vec3;
+import org.lwjgl.opengl.GL11;
 
-import javax.swing.*;
-import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;

@@ -9,12 +9,10 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Listenable;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.TickEvent;
-
+import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.INetHandlerPlayServer;
 import net.minecraft.network.play.server.S32PacketConfirmTransaction;
-
-import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 
 import java.util.ArrayList;
 

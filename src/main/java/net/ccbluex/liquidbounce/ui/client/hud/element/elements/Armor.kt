@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
-import org.lwjgl.opengl.GL11
 
 /**
  * CustomHUD Armor element

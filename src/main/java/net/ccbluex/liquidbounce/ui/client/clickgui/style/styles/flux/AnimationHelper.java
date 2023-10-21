@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux;
 
-import net.ccbluex.liquidbounce.value.*;
-import net.ccbluex.liquidbounce.features.module.*;
+import net.ccbluex.liquidbounce.features.module.Module;
+import net.ccbluex.liquidbounce.value.BoolValue;
 
 public class AnimationHelper
 {

@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.ui.client.altmanager.menus
 
 import me.liuli.elixir.account.MinecraftAccount
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager.Companion.login
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution

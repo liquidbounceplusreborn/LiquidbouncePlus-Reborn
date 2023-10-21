@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
-import org.json.XMLTokener
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.math.BigDecimal

@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.MathHelper
 import org.lwjgl.opengl.GL11
-import java.awt.Color
 import kotlin.math.pow
 
 class IDK(inst: Target): TargetStyle("IDK", inst, false) {

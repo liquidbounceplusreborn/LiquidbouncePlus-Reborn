@@ -1,7 +1,6 @@
 //from kevin client
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import de.gerrygames.viarewind.utils.PacketUtil
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
@@ -114,7 +113,7 @@ class BackTrack : Module() {
         val theWorld = mc.theWorld!!
         if (packet.javaClass.name.contains("net.minecraft.network.play.server.", true)) {
             if (packet is S14PacketEntity) {
-                val entity = packet.getEntity(theWorld)?: return
+                val entity = packet.getEntity(theWorld) ?: return
                 if (entity !is EntityLivingBase) return
                 if (onlyPlayer.get() && entity !is EntityPlayer) return
                 entity.serverPosX += packet.func_149062_c().toInt()
@@ -134,7 +133,8 @@ class BackTrack : Module() {
                             val eyes = mc.thePlayer!!.getPositionEyes(1F)
                             afterRange = getNearestPointBB(eyes, afterBB).distanceTo(eyes) + 0.075
                         }
-                        if (beforeRange == Double.MAX_VALUE) beforeRange = mc.thePlayer!!.getDistanceToEntityBox(entity) + 0.075
+                        if (beforeRange == Double.MAX_VALUE) beforeRange =
+                            mc.thePlayer!!.getDistanceToEntityBox(entity) + 0.075
                     } else {
                         val eyes = mc.thePlayer!!.getPositionEyes(1F)
                         afterRange = getNearestPointBB(eyes, afterBB).distanceTo(eyes)
@@ -167,8 +167,10 @@ class BackTrack : Module() {
                 }
                 if (!event.isCancelled && !needFreeze) {
                     LiquidBounce.eventManager.callEvent(EntityMovementEvent(entity))
-                    val f = if (packet.func_149060_h()) (packet.func_149066_f() * 360).toFloat() / 256.0f else entity.rotationYaw
-                    val f1 = if (packet.func_149060_h()) (packet.func_149063_g() * 360).toFloat() / 256.0f else entity.rotationPitch
+                    val f =
+                        if (packet.func_149060_h()) (packet.func_149066_f() * 360).toFloat() / 256.0f else entity.rotationYaw
+                    val f1 =
+                        if (packet.func_149060_h()) (packet.func_149063_g() * 360).toFloat() / 256.0f else entity.rotationPitch
                     entity.setPositionAndRotation2(x, y, z, f, f1, 3, false)
                     entity.onGround = packet.onGround
                 }
@@ -222,9 +224,13 @@ class BackTrack : Module() {
                             if (distance > d || distance > reverseMaxRange.get() || (it.hurtTime <= (1 + (mc.thePlayer.getPing() / 50.0).toInt()) && hasAttackInReversing)) {
                                 stopReverse()
                             } else {
-                                val rot = (if (it is EntityOtherPlayerMP) Rotation(it.otherPlayerMPYaw.toFloat(), it.otherPlayerMPPitch.toFloat()) else Rotation(it.rotationYaw, it.rotationPitch)).toDirection().multiply(4.0).add(loc)
+                                val rot = (if (it is EntityOtherPlayerMP) Rotation(
+                                    it.otherPlayerMPYaw.toFloat(),
+                                    it.otherPlayerMPPitch.toFloat()
+                                ) else Rotation(it.rotationYaw, it.rotationPitch)).toDirection().multiply(4.0).add(loc)
                                 val movingObjectPosition = lastBB.calculateIntercept(loc, rot) ?: return@let
-                                val m2 = mc.thePlayer.entityBoundingBox.expand(0.11, 0.1, 0.11).calculateIntercept(loc, rot)
+                                val m2 =
+                                    mc.thePlayer.entityBoundingBox.expand(0.11, 0.1, 0.11).calculateIntercept(loc, rot)
                                 if (movingObjectPosition.hitVec != null) {
                                     val d2 = movingObjectPosition.hitVec.distanceTo(loc)
                                     if (d2 <= 3.0 && (m2?.hitVec == null || m2.hitVec.distanceTo(loc) > d2)) stopReverse()
@@ -232,7 +238,8 @@ class BackTrack : Module() {
                             }
                         } else if (distance <= reverseRange.get() &&
                             it.hurtTime <= reverseTargetMaxHurtTime.get() && mc.thePlayer.hurtTime <= reverseSelfMaxHurtTime.get() &&
-                            loc.distanceTo(bp) >= distance && (!onlyKillAura.get() || killAura!!.state)) {
+                            loc.distanceTo(bp) >= distance && (!onlyKillAura.get() || killAura!!.state)
+                        ) {
                             reversing = true
                             lastPosition = vec
                             hasAttackInReversing = false
@@ -447,7 +454,13 @@ class BackTrack : Module() {
                     if (!packets.contains(it)) LiquidBounce.eventManager.callEvent(packetEvent)
                     if (!packetEvent.isCancelled) PacketUtils.sendPacketNoEvent(it)
                 } catch (e: Exception) {
-                    LiquidBounce.hud.addNotification(Notification("BackTrack","Something went wrong when sending packet reversing",NotifyType.ERROR))
+                    LiquidBounce.hud.addNotification(
+                        Notification(
+                            "BackTrack",
+                            "Something went wrong when sending packet reversing",
+                            NotifyType.ERROR
+                        )
+                    )
                 }
                 // why kotlin
                 return@let

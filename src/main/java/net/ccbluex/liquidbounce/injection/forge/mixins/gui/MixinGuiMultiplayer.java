@@ -6,21 +6,15 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import de.enzaxd.viaforge.ViaForge;
-//import de.enzaxd.viaforge.gui.GuiProtocolSelector;
 import de.enzaxd.viaforge.protocol.ProtocolCollection;
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.ui.elements.ToolDropdown;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMultiplayer;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.fml.client.config.GuiSlider;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Arrays;
 
 @Mixin(GuiMultiplayer.class)
 public abstract class MixinGuiMultiplayer extends MixinGuiScreen {

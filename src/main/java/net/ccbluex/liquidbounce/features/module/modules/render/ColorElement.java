@@ -8,6 +8,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.render;
 
 import net.ccbluex.liquidbounce.value.IntegerValue;
+
 import static net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer.regenerateColors;
 
 public class ColorElement extends IntegerValue {

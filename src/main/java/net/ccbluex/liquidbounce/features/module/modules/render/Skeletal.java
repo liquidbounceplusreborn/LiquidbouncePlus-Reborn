@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import org.lwjgl.opengl.GL11;
+
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;

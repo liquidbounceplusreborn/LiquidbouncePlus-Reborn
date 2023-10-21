@@ -1,11 +1,10 @@
 package net.ccbluex.liquidbounce.utils.render;
 
-import net.minecraft.client.renderer.RenderHelper;
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.Vec3;
+import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;

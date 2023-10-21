@@ -11,12 +11,11 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AutoDisable.DisableEvent
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.util.*
 
 class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
 
-    private val autodisableModules : List<Module>
+    private val autodisableModules: List<Module>
         get() = LiquidBounce.moduleManager.modules.filter { it.autoDisables.size > 0 }
     /**
      * Execute commands with provided [args]
@@ -41,10 +40,13 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
                     }
                     return
                 }
+
                 "clear", "c" -> {
-                    chat("Cleared the AutoDisable list (${autodisableModules.size} module${
-                        if (autodisableModules.size > 1) "s" else ""
-                    }).")
+                    chat(
+                        "Cleared the AutoDisable list (${autodisableModules.size} module${
+                            if (autodisableModules.size > 1) "s" else ""
+                        })."
+                    )
                     autodisableModules.forEach {
                         it.autoDisables.clear()
                     }
@@ -110,6 +112,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
                     .map { it.name }
                     .filter { it.startsWith(moduleName, true) }
                     .toList()
+
             2 -> listOf("clear", "flag", "world_change", "game_end").filter { it.startsWith(args[1], true) }
             else -> emptyList()
         }

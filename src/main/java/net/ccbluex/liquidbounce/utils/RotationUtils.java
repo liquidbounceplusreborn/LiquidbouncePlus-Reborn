@@ -6,12 +6,14 @@
 package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.event.EventTarget;
+import net.ccbluex.liquidbounce.event.Listenable;
+import net.ccbluex.liquidbounce.event.PacketEvent;
+import net.ccbluex.liquidbounce.event.TickEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.FastBow;
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
@@ -19,7 +21,6 @@ import net.minecraft.util.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static java.lang.Math.PI;
 
@@ -358,12 +359,11 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         float pitchSin = MathHelper.sin(-rotation.getPitch() * 0.017453292F);
         return new Vec3(yawSin * pitchCos, pitchSin, yawCos * pitchCos);
     }*/
-
     public static Vec3 getVectorForRotation(final Rotation rotation) {
-        float f = MathHelper.cos((float) (-rotation.getYaw()* 0.017453292f - PI));
-        float f1 = MathHelper.sin((float) (-rotation.getYaw()* 0.017453292f - PI));
-        float f2 = -MathHelper.cos(-rotation.getPitch()* 0.017453292f);
-        float f3 = MathHelper.sin(-rotation.getPitch()* 0.017453292f);
+        float f = MathHelper.cos((float) (-rotation.getYaw() * 0.017453292f - PI));
+        float f1 = MathHelper.sin((float) (-rotation.getYaw() * 0.017453292f - PI));
+        float f2 = -MathHelper.cos(-rotation.getPitch() * 0.017453292f);
+        float f3 = MathHelper.sin(-rotation.getPitch() * 0.017453292f);
         return new Vec3((f1 * f2), f3, (f * f2));
     }
 

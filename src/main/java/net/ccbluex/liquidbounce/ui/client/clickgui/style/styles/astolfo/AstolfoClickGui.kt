@@ -46,75 +46,76 @@ class AstolfoClickGui : GuiScreen() {
     pressed["RIGHT"] = Keyboard.isKeyDown(Keyboard.KEY_RIGHT)
   }
 
-  private fun init() {
+    private fun init() {
     var xPos = 4f
     for (cat in ModuleCategory.values()) {
       panels.add(AstolfoCategoryPanel(xPos, 4f, cat,generateColor()))
       xPos += AstolfoConstants.PANEL_WIDTH.toInt() + 10
     }
-    loadConfig()
-  }
+        loadConfig()
+    }
 
-  private fun loadConfig() {
-    val jsonElement = JsonParser().parse(FileReader(LiquidBounce.fileManager.clickGuiConfig.file))
-    if (jsonElement is JsonNull) return
+    private fun loadConfig() {
+        val jsonElement = JsonParser().parse(FileReader(LiquidBounce.fileManager.clickGuiConfig.file))
+        if (jsonElement is JsonNull) return
 
-    val jsonObject = jsonElement as JsonObject
-    for (panel in panels) {
-      if (!jsonObject.has(panel.category.displayName)) continue
-      try {
-        val panelObject = jsonObject.getAsJsonObject(panel.name)
-        panel.open = panelObject["open"].asBoolean
-        panel.x = panelObject["posX"].asFloat
-        panel.y = panelObject["posY"].asFloat
-        for (moduleElement in panel.moduleButtons) {
-          if (!panelObject.has(moduleElement.module.name)) continue
-          try {
-            val elementObject = panelObject.getAsJsonObject(moduleElement.module.name)
-            moduleElement.open = elementObject["Settings"].asBoolean
-          } catch (e: Exception) {
-            ClientUtils.getLogger().error(
-              "Error while loading clickgui module element with the name '" + moduleElement.module.name + "' (Panel Name: " + panel.name + ").",
-              e
-            )
-          }
+        val jsonObject = jsonElement as JsonObject
+        for (panel in panels) {
+            if (!jsonObject.has(panel.category.displayName)) continue
+            try {
+                val panelObject = jsonObject.getAsJsonObject(panel.name)
+                panel.open = panelObject["open"].asBoolean
+                panel.x = panelObject["posX"].asFloat
+                panel.y = panelObject["posY"].asFloat
+                for (moduleElement in panel.moduleButtons) {
+                    if (!panelObject.has(moduleElement.module.name)) continue
+                    try {
+                        val elementObject = panelObject.getAsJsonObject(moduleElement.module.name)
+                        moduleElement.open = elementObject["Settings"].asBoolean
+                    } catch (e: Exception) {
+                        ClientUtils.getLogger().error(
+                            "Error while loading clickgui module element with the name '" + moduleElement.module.name + "' (Panel Name: " + panel.name + ").",
+                            e
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                ClientUtils.getLogger()
+                    .error("Error while loading clickgui panel with the name '" + panel.name + "'.", e)
+            }
         }
-      } catch (e: Exception) {
-        ClientUtils.getLogger().error("Error while loading clickgui panel with the name '" + panel.name + "'.", e)
-      }
-    }
-  }
-
-  private fun saveConfig() {
-    val jsonObject = JsonObject()
-
-    for (panel in panels) {
-      val panelObject = JsonObject()
-      panelObject.addProperty("open", panel.open)
-      panelObject.addProperty("visible", true)
-      panelObject.addProperty("posX", panel.x)
-      panelObject.addProperty("posY", panel.y)
-      for (moduleElement in panel.moduleButtons) {
-        val elementObject = JsonObject()
-        elementObject.addProperty("Settings", moduleElement.open)
-        panelObject.add(moduleElement.module.name, elementObject)
-      }
-      jsonObject.add(panel.name, panelObject)
     }
 
-    val file = LiquidBounce.fileManager.clickGuiConfig.file
-    val printWriter = PrintWriter(FileWriter(file))
-    printWriter.println(FileManager.PRETTY_GSON.toJson(jsonObject))
-    printWriter.close()
-  }
+    private fun saveConfig() {
+        val jsonObject = JsonObject()
 
-  override fun onGuiClosed() {
-    saveConfig()
+        for (panel in panels) {
+            val panelObject = JsonObject()
+            panelObject.addProperty("open", panel.open)
+            panelObject.addProperty("visible", true)
+            panelObject.addProperty("posX", panel.x)
+            panelObject.addProperty("posY", panel.y)
+            for (moduleElement in panel.moduleButtons) {
+                val elementObject = JsonObject()
+                elementObject.addProperty("Settings", moduleElement.open)
+                panelObject.add(moduleElement.module.name, elementObject)
+            }
+            jsonObject.add(panel.name, panelObject)
+        }
+
+        val file = LiquidBounce.fileManager.clickGuiConfig.file
+        val printWriter = PrintWriter(FileWriter(file))
+        printWriter.println(FileManager.PRETTY_GSON.toJson(jsonObject))
+        printWriter.close()
+    }
+
+    override fun onGuiClosed() {
+        saveConfig()
   }
 
   override fun drawScreen(mouseXIn: Int, mouseYIn: Int, partialTicks: Float) {
-    if (panels.isEmpty())
-      init()
+      if (panels.isEmpty())
+          init()
     val mouseX = (mouseXIn / scale).roundToInt()
     val mouseY = (mouseYIn / scale).roundToInt()
 

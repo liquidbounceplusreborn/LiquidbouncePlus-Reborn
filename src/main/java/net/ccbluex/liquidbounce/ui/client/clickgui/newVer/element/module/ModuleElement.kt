@@ -5,28 +5,25 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.components.ToggleSwitch
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.value.ValueElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.value.impl.BooleanElement
-import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.value.impl.ListElement
-import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.value.impl.IntElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.value.impl.FloatElement
+import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.value.impl.IntElement
+import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.value.impl.ListElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MouseUtils
+import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
-import net.ccbluex.liquidbounce.value.Value
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.minecraft.client.gui.Gui
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*
-
-import java.awt.*
+import java.awt.Color
 
 class ModuleElement(val module: Module): MinecraftInstance() {
 

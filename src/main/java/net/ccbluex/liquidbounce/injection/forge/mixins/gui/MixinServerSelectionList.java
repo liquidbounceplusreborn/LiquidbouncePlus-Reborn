@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.gui.GuiListExtended;
+import net.minecraft.client.gui.GuiSlot;
 import net.minecraft.client.gui.ServerListEntryLanDetected;
 import net.minecraft.client.gui.ServerSelectionList;
 import org.spongepowered.asm.mixin.Final;

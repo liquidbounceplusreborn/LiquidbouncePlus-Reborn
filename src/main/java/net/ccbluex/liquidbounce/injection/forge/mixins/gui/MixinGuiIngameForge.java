@@ -5,11 +5,10 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.*;
-import net.minecraft.client.Minecraft;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.utils.AnimationUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.scoreboard.ScoreObjective;
@@ -22,6 +21,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType.PLAYER_LIST;
 
 @Mixin(GuiIngameForge.class)
 public abstract class MixinGuiIngameForge extends MixinGuiInGame {

@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.features.module.modules.movement.Strafe
 import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
@@ -101,7 +100,8 @@ object Breaker : Module() {
         }
     }
 
-    @EventTarget fun onStrafe(event: StrafeEvent) {
+    @EventTarget
+    fun onStrafe(event: StrafeEvent) {
         if (movementCorrectionValue.get()) {
             if (breaking) {
                 val (yaw) = RotationUtils.targetRotation ?: return

@@ -19,7 +19,7 @@ class BoolValueButton(x: Float, y: Float, width: Float, height: Float, var setti
   }
 
   override fun mouseAction(mouseX: Int, mouseY: Int, click: Boolean, button: Int) {
-    if (!show) return
+      if (!show) return
     if (isHovered(mouseX, mouseY) && click) {
       setting.set(!setting.get())
     }

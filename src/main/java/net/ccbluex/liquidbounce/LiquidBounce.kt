@@ -151,7 +151,8 @@ object LiquidBounce {
             }
         }
 
-        ClientUtils.getLogger().info("Finished loading $CLIENT_NAME version $CLIENT_VERSION in ${System.currentTimeMillis() - lastTick}ms.")
+        ClientUtils.getLogger()
+            .info("Finished loading $CLIENT_NAME version $CLIENT_VERSION in ${System.currentTimeMillis() - lastTick}ms.")
 
         // Set is starting status
         isStarting = false

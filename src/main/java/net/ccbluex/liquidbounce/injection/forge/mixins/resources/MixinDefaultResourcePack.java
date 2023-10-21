@@ -6,15 +6,11 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.resources;
 
 import com.google.common.collect.ImmutableSet;
-import java.util.Set;
 import net.minecraft.client.resources.DefaultResourcePack;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Set;
 
 @Mixin(DefaultResourcePack.class)
 public class MixinDefaultResourcePack {

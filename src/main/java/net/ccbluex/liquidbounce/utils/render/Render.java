@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.utils.render;
 
 
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;

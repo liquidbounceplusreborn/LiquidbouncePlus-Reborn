@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.value.Value;
 import org.lwjgl.input.Keyboard;
+
 import java.io.*;
 import java.util.Map;
 

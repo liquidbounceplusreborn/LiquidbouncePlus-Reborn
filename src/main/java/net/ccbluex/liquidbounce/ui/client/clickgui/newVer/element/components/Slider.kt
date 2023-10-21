@@ -3,8 +3,6 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.components
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.minecraft.util.MathHelper
-
 import java.awt.Color
 
 class Slider {

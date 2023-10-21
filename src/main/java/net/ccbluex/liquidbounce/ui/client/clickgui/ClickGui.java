@@ -18,8 +18,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
@@ -425,9 +425,9 @@ public class ClickGui extends GuiScreen {
     }
 
     public static boolean isUsingSpecialStyle() {
-        String style = ((ClickGUI) Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUI.class))).styleValue.get();
+        String style = Objects.requireNonNull(LiquidBounce.moduleManager.getModule(ClickGUI.class)).styleValue.get();
         String[] specialModes = {"astolfo", "zeroday"};
-        for (String specialMode: specialModes) {
+        for (String specialMode : specialModes) {
             if (style.equalsIgnoreCase(specialMode))
                 return true;
         }

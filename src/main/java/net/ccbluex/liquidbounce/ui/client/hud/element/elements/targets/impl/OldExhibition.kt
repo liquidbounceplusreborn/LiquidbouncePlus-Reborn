@@ -17,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.util.ArrayList
 
 class OldExhibition(inst: Target): TargetStyle("OldExhibition", inst, false) {
     override fun drawTarget(entity: EntityPlayer) {

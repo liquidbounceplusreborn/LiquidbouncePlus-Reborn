@@ -12,9 +12,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.Translate
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.extensions.setAlpha
 import net.minecraft.client.gui.FontRenderer
-import java.awt.Color
 import java.util.*
 
 abstract class Value<T>(val name: String,var value: T, var canDisplay: () -> Boolean) {
@@ -311,5 +309,5 @@ open class NoteValue(name: String) : Value<String>(name, name, { true }) {
     var open = true
     override fun toJson() = null
 
-    override fun fromJson(element: JsonElement) { }
+    override fun fromJson(element: JsonElement) {}
 }

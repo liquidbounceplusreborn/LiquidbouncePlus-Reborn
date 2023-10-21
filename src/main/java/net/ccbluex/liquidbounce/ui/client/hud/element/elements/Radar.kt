@@ -24,7 +24,8 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.vector.Vector2f
 import java.awt.Color
-import kotlin.math.*
+import kotlin.math.ceil
+import kotlin.math.sqrt
 
 @ElementInfo(name = "Radar", disableScale = true, priority = 1)
 class Radar(x: Double = 5.0, y: Double = 130.0) : Element(x, y) {

@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import codes.som.anthony.koffee.modifiers.module
 import java.awt.Color
 
 enum class ModuleCategory(var displayName: String, val color: Int) {

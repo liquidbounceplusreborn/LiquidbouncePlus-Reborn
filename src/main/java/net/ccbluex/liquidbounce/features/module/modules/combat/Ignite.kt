@@ -18,18 +18,12 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.BlockAir
-import net.minecraft.entity.Entity
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBucket
-import net.minecraft.item.ItemStack
-import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.network.play.client.C03PacketPlayer.*
+import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
 import net.minecraft.network.play.client.C09PacketHeldItemChange
-import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
-
 import java.lang.Math.*
 
 @ModuleInfo(name = "Ignite", description = "Automatically sets targets around you on fire.", category = ModuleCategory.COMBAT)

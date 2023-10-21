@@ -1,4 +1,5 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux;
+
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.file.configs.ProfilesConfig;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
@@ -7,6 +8,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
+
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;

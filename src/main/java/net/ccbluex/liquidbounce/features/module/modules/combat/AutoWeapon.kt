@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.ItemSword
-import net.minecraft.item.ItemTool
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 
@@ -44,7 +43,7 @@ class AutoWeapon : Module() {
             // Find best weapon in hotbar (#Kotlin Style)
             val (slot, _) = (0..8)
                     .map { Pair(it, mc.thePlayer.inventory.getStackInSlot(it)) }
-                    .filter { it.second != null && (it.second.item is ItemSword) }
+                .filter { it.second != null && (it.second.item is ItemSword) }
                     .maxByOrNull {
                         (it.second.attributeModifiers["generic.attackDamage"].first()?.amount
                                 ?: 0.0) + 1.25 * ItemUtils.getEnchantment(it.second, Enchantment.sharpness)

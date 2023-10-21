@@ -17,8 +17,8 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.ListValue;
-import net.minecraft.block.BlockPane;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockPane;
 import net.minecraft.util.BlockPos;
 
 @ModuleInfo(name = "HighJump", spacedName = "High Jump", description = "Allows you to jump higher.", category = ModuleCategory.MOVEMENT)

@@ -13,11 +13,9 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import org.json.JSONObject
-import java.io.IOException
+import org.lwjgl.opengl.Display
 import java.time.OffsetDateTime
 import kotlin.concurrent.thread
-
-import org.lwjgl.opengl.Display
 
 class ClientRichPresence : MinecraftInstance() {
 

@@ -1,5 +1,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.RegionRenderCache;
+import net.minecraft.util.BlockPos;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -7,10 +10,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
-
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.RegionRenderCache;
-import net.minecraft.util.BlockPos;
 
 @Mixin(RegionRenderCache.class)
 public class MixinRegionRenderCache {

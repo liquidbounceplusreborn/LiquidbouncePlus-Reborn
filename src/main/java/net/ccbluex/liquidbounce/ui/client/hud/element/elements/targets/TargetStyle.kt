@@ -7,25 +7,21 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets
 
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Target
-import net.ccbluex.liquidbounce.utils.AnimationUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.animations.impl.EaseBackIn
 import net.ccbluex.liquidbounce.value.Value
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
-
 import org.lwjgl.opengl.GL11.*
-import kotlin.math.pow
-
 import java.awt.Color
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.Locale
+import java.util.*
+import kotlin.math.pow
 
 abstract class TargetStyle(val name: String, val targetInstance: Target, val shaderSupport: Boolean): MinecraftInstance() {
 

@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.utils.render;
 
 import net.minecraft.entity.EntityLivingBase;
 
-import java.awt.Color;
+import java.awt.*;
 
 import static net.ccbluex.liquidbounce.utils.render.BlendUtils.blendColors;
 

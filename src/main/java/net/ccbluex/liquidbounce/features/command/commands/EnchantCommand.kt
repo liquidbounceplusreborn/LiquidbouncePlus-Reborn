@@ -6,9 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.minecraft.enchantment.Enchantment
-import net.minecraft.enchantment.EnumEnchantmentType
 
 class EnchantCommand : Command("enchant", emptyArray()) {
     /**

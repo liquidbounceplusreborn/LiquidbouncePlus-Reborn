@@ -5,9 +5,10 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.EXTPackedDepthStencil;
-import static org.lwjgl.opengl.GL11.*;
 
 import java.awt.*;
+
+import static org.lwjgl.opengl.GL11.*;
 
 /**
  * Outline ESP

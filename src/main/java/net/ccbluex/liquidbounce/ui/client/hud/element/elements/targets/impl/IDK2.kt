@@ -3,13 +3,8 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Target
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
-import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.MathHelper
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.pow

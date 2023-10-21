@@ -8,9 +8,8 @@ package net.ccbluex.liquidbounce.ui.client.hud.element
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.Value
-import net.minecraft.entity.Entity
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.entity.player.EntityPlayer
 import kotlin.math.max
 import kotlin.math.min
 

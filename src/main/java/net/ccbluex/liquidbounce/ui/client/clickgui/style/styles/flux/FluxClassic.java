@@ -14,8 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-
-import java.awt.Color;
+import java.awt.*;
 
 public class FluxClassic extends GuiScreen {
     /**

@@ -10,21 +10,27 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.HypixelBoost;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.HypixelCustom;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.HypixelNew;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.HypixelStable;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.matrix.*;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.*;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spartan.SpartanYPort;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.SpectreBHop;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.SpectreLowHop;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.SpectreOnGround;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus.VerusHard;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus.VerusHop;
+import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus.VerusLowHop;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanGroundSpeed;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanLowHopSpeed;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanYPort2Speed;
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan.VulcanYPortSpeed;
-import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac.*;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.*;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp.*;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other.*;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus.*;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spectre.*;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.spartan.SpartanYPort;
-import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel.HypixelStable;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
@@ -223,7 +229,7 @@ public class Speed extends Module {
         }
     };
 
-    public final ListValue otherModeValue = new ListValue("Other-Mode", new String[]{"YPort", "YPort2", "Boost", "Frame", "MiJump", "OnGround", "SlowHop", "Jump", "Legit", "AEMine", "GWEN", "HiveHop", "MineplexGround", "TeleportCubeCraft","GrimCombat"}, "Boost", () -> typeValue.get().equalsIgnoreCase("other")) {
+    public final ListValue otherModeValue = new ListValue("Other-Mode", new String[]{"YPort", "YPort2", "Boost", "Frame", "MiJump", "OnGround", "SlowHop", "Jump", "Legit", "AEMine", "GWEN", "HiveHop", "MineplexGround", "TeleportCubeCraft", "GrimCombat"}, "Boost", () -> typeValue.get().equalsIgnoreCase("other")) {
 
         @Override
         protected void onChange(final String oldValue, final String newValue) {
@@ -319,9 +325,9 @@ public class Speed extends Module {
     public final FloatValue cubecraftPortLengthValue = new FloatValue("CubeCraft-PortLength", 1F, 0.1F, 2F, () -> getModeName().equalsIgnoreCase("teleportcubecraft"));
     public final FloatValue mineplexGroundSpeedValue = new FloatValue("MineplexGround-Speed", 0.5F, 0.1F, 1F, () -> getModeName().equalsIgnoreCase("mineplexground"));
 
-    public final BoolValue onlyAir = new BoolValue("OnlyAir",false, () -> getModeName().equalsIgnoreCase("grimcombat"));
-    public final BoolValue  okstrafe = new BoolValue("Strafe",false, () -> getModeName().equalsIgnoreCase("grimcombat"));
-    public final BoolValue speedUp = new BoolValue("SpeedUp",false, () -> getModeName().equalsIgnoreCase("grimcombat"));
+    public final BoolValue onlyAir = new BoolValue("OnlyAir", false, () -> getModeName().equalsIgnoreCase("grimcombat"));
+    public final BoolValue okstrafe = new BoolValue("Strafe", false, () -> getModeName().equalsIgnoreCase("grimcombat"));
+    public final BoolValue speedUp = new BoolValue("SpeedUp", false, () -> getModeName().equalsIgnoreCase("grimcombat"));
     public final IntegerValue speed = new IntegerValue("Speed", 0, 0, 15, () -> getModeName().equalsIgnoreCase("grimcombat"));
     public final FloatValue distance = new FloatValue("Range", 0f, 0f, 2f, () -> getModeName().equalsIgnoreCase("grimcombat"));
     public final ListValue tagDisplay = new ListValue("Tag", new String[] { "Type", "FullName", "All" }, "Type");

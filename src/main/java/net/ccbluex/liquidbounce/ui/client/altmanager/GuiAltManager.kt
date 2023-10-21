@@ -15,7 +15,9 @@ import me.liuli.elixir.account.MojangAccount
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.LiquidBounce.fileManager
 import net.ccbluex.liquidbounce.event.SessionEvent
-import net.ccbluex.liquidbounce.ui.client.altmanager.menus.*
+import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiChangeName
+import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiLoginIntoAccount
+import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiSessionLogin
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.altgenerator.GuiTheAltening
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
@@ -36,7 +38,6 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.util.*
 import java.util.function.Consumer
-import javax.swing.JOptionPane
 import kotlin.concurrent.thread
 
 

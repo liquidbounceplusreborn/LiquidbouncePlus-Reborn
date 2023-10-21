@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.utils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.function.Supplier;
 
 public enum Palette {

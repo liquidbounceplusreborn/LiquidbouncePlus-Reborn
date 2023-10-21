@@ -35,7 +35,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.block.material.Material
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -198,7 +197,7 @@ class Scaffold : Module() {
     private val grimLock = BoolValue("TellyLock", true){ rotationsValue.get() && (rotationModeValue.isMode("Telly") || rotationModeValue.isMode("Grim")) }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline","Intave","Telly","Grim","Rise"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline", "Intave", "Telly", "Grim", "Rise"),
         "Normal") // searching reason
     private val maxTurnSpeed: FloatValue =
         object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() }) {
@@ -232,13 +231,21 @@ class Scaffold : Module() {
     private val placeConditionValue =
         ListValue("Place-Condition", arrayOf("Air", "FallDown", "NegativeMotion", "Always"), "Always")
     private val rotationStrafeValue =
-        ListValue("MovementCorrection", arrayOf("LiquidBounce", "FDP","None"), "None") { !isTowerOnly && rotationsValue.get() }
+        ListValue(
+            "MovementCorrection",
+            arrayOf("LiquidBounce", "FDP", "None"),
+            "None"
+        ) { !isTowerOnly && rotationsValue.get() }
     private val speedPotSlow = BoolValue("SpeedPotDetect", true)
 
     // Zitter
     private val zitterValue = BoolValue("Zitter", false) { !isTowerOnly }
     private val zitterModeValue =
-        ListValue("ZitterMode", arrayOf("Teleport", "Smooth","NewSmooth"), "Teleport") { !isTowerOnly && zitterValue.get() }
+        ListValue(
+            "ZitterMode",
+            arrayOf("Teleport", "Smooth", "NewSmooth"),
+            "Teleport"
+        ) { !isTowerOnly && zitterValue.get() }
     private val zitterSpeed = FloatValue("ZitterSpeed", 0.13f, 0.1f, 0.3f) {
         !isTowerOnly && zitterValue.get() && zitterModeValue.get().equals("teleport", ignoreCase = true)
     }
@@ -956,7 +963,8 @@ class Scaffold : Module() {
             var friction = event.friction
             var factor = strafe * strafe + forward * forward
 
-            var angleDiff = ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
+            var angleDiff =
+                ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
             //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
             var calcYaw = { yaw + 45.0f * angleDiff.toFloat() }.toString().toFloat()
 
@@ -964,15 +972,18 @@ class Scaffold : Module() {
             calcMoveDir = calcMoveDir * calcMoveDir
             var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
 
-                when (angleDiff) {
-                    1, 3, 5, 7, 9 -> {
-                        if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
-                            friction = friction / calcMultiplier
-                        } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
-                            friction = friction * calcMultiplier
-                        }
+            when (angleDiff) {
+                1, 3, 5, 7, 9 -> {
+                    if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(
+                            strafe
+                        ) > 0.005)
+                    ) {
+                        friction = friction / calcMultiplier
+                    } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
+                        friction = friction * calcMultiplier
                     }
                 }
+            }
 
             if (factor >= 1.0E-4F) {
                 factor = MathHelper.sqrt_float(factor)
@@ -1046,7 +1057,10 @@ class Scaffold : Module() {
                     mc.thePlayer.heldItem == null ||
                             mc.thePlayer.heldItem.item !is ItemBlock)
             ) return
-            findBlock(mode == "Expand" && expandLengthValue.get() > 1 && !towering(), !(rotationModeValue.get() == "Novoline" || rotationModeValue.get() == "Rise" || rotationModeValue.get() == "Intave"))
+            findBlock(
+                mode == "Expand" && expandLengthValue.get() > 1 && !towering(),
+                !(rotationModeValue.get() == "Novoline" || rotationModeValue.get() == "Rise" || rotationModeValue.get() == "Intave")
+            )
         }
         if (targetPlace == null) {
             if (placeableDelay.get()) delayTimer.reset()

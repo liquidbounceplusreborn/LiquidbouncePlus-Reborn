@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils;
 
-import java.math.*;
-
 public final class AnimationUtils {
    public static double animate(double target, double current, double speed) {
       if (current == target) return current;

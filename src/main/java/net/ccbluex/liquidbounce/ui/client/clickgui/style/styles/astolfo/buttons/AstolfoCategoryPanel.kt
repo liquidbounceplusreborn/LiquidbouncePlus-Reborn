@@ -8,7 +8,6 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.AstolfoC
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.AstolfoConstants.PANEL_WIDTH
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.drawHeightCenteredString
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.geom.Rectangle
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import java.awt.Color
@@ -16,7 +15,7 @@ import java.awt.Color
 class AstolfoCategoryPanel(x: Float, y: Float, var category: ModuleCategory, var color: Color) : AstolfoButton(x, y, PANEL_WIDTH, PANEL_HEIGHT) {
   var open = false
   var moduleButtons = ArrayList<AstolfoModuleButton>()
-  val name = category.displayName
+    val name = category.displayName
   private var dragged = false
   private var mouseX2 = 0
   private var mouseY2 = 0

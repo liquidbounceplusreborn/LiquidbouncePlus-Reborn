@@ -69,8 +69,8 @@ class Camera : Module(){
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f){ fpsHurtCam.get() }
     private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10){ fpsHurtCam.get() }
 
-    private val motionBlur = BoolValue("Motionblur",false)
-    private val blurAmount = IntegerValue("BlurAmount",2,1,10){ motionBlur.get() }
+    private val motionBlur = BoolValue("Motionblur", false)
+    private val blurAmount = IntegerValue("BlurAmount", 2, 1, 10) { motionBlur.get() }
     //FPSHurtCam
     @EventTarget
     private fun renderHud(event: Render2DEvent) {
@@ -108,20 +108,26 @@ class Camera : Module(){
     }
 
     @EventTarget
-    fun onTick(event:TickEvent){
+    fun onTick(event: TickEvent) {
         try {
 
-                if (mc.thePlayer != null) {
-                    if (motionBlur.get()) {
-                        if (mc.entityRenderer.shaderGroup == null) mc.entityRenderer.loadShader(ResourceLocation("minecraft", "shaders/post/motion_blur.json"))
-                        val uniform = 1f - (blurAmount.get() / 10f).coerceAtMost(0.9f)
-                        if (mc.entityRenderer.shaderGroup != null) {
-                            mc.entityRenderer.shaderGroup.listShaders[0].shaderManager.getShaderUniform("Phosphor").set(uniform, 0f, 0f)
-                        }
-                    } else {
-                        if (mc.entityRenderer.isShaderActive) mc.entityRenderer.stopUseShader()
+            if (mc.thePlayer != null) {
+                if (motionBlur.get()) {
+                    if (mc.entityRenderer.shaderGroup == null) mc.entityRenderer.loadShader(
+                        ResourceLocation(
+                            "minecraft",
+                            "shaders/post/motion_blur.json"
+                        )
+                    )
+                    val uniform = 1f - (blurAmount.get() / 10f).coerceAtMost(0.9f)
+                    if (mc.entityRenderer.shaderGroup != null) {
+                        mc.entityRenderer.shaderGroup.listShaders[0].shaderManager.getShaderUniform("Phosphor")
+                            .set(uniform, 0f, 0f)
                     }
+                } else {
+                    if (mc.entityRenderer.isShaderActive) mc.entityRenderer.stopUseShader()
                 }
+            }
 
         } catch (a: Exception) {
             a.printStackTrace()

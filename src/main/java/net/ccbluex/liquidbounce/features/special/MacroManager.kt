@@ -2,8 +2,8 @@ package net.ccbluex.liquidbounce.features.special
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.KeyEvent
+import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 
 object MacroManager : MinecraftInstance(), Listenable {

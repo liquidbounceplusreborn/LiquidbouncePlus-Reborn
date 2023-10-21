@@ -6,12 +6,12 @@
 package net.ccbluex.liquidbounce.features.module
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.features.module.modules.client.AutoDisable.DisableEvent
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.AnimationHelper
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.Translate
 import net.ccbluex.liquidbounce.value.*
@@ -161,7 +161,8 @@ open class Module : MinecraftInstance(), Listenable {
     /**
      * Get module by [valueName]
      */
-    open fun getValue(valueName: String) = values.find { it.name.equals(valueName, ignoreCase = true) && it !is NoteValue }
+    open fun getValue(valueName: String) =
+        values.find { it.name.equals(valueName, ignoreCase = true) && it !is NoteValue }
 
     val numberValues: List<Value<*>>
         get() = values.filter { it is IntegerValue || it is FloatValue }

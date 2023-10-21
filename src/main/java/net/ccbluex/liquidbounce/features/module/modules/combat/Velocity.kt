@@ -41,7 +41,7 @@ class Velocity : Module() {
     private val horizontalExplosionValue = FloatValue("HorizontalExplosion", 0F, 0F, 1F, "x")
     private val verticalExplosionValue = FloatValue("VerticalExplosion", 0F, 0F, 1F, "x")
     private val modeValue = ListValue(
-            "Mode", arrayOf(
+        "Mode", arrayOf(
             "Cancel",
             "Simple",
             "Hypixel",
@@ -64,11 +64,11 @@ class Velocity : Module() {
             "AllAC",
             "Intave",
             "Smart"
-    ), "Cancel"
+        ), "Cancel"
     ) // later
 
     private val aac5KillAuraValue =
-            BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
+        BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
 
     // Affect chance
     private val reduceChance = FloatValue("Reduce-Chance", 100F, 0F, 100F, "%")
@@ -76,13 +76,13 @@ class Velocity : Module() {
 
     // Reverse
     private val reverseStrengthValue =
-            FloatValue("ReverseStrength", 1F, 0.1F, 1F, "x", { modeValue.get().equals("reverse", true) })
+        FloatValue("ReverseStrength", 1F, 0.1F, 1F, "x", { modeValue.get().equals("reverse", true) })
     private val reverse2StrengthValue =
-            FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F, "x", { modeValue.get().equals("smoothreverse", true) })
+        FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F, "x", { modeValue.get().equals("smoothreverse", true) })
 
     // AAC Push
     private val aacPushXZReducerValue =
-            FloatValue("AACPushXZReducer", 2F, 1F, 3F, "x", { modeValue.get().equals("aacpush", true) })
+        FloatValue("AACPushXZReducer", 2F, 1F, 3F, "x", { modeValue.get().equals("aacpush", true) })
     private val aacPushYReducerValue = BoolValue("AACPushYReducer", true, { modeValue.get().equals("aacpush", true) })
 
     // legit
@@ -94,7 +94,7 @@ class Velocity : Module() {
 
     //epic
     private val phaseOffsetValue =
-            FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m", { modeValue.get().equals("phase", true) })
+        FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m", { modeValue.get().equals("phase", true) })
 
     /**
      * VALUES
@@ -187,15 +187,15 @@ class Velocity : Module() {
 
             "aac4reduce" -> {
                 if (mc.thePlayer.hurtTime > 0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(
-                                80L
-                        )
+                        80L
+                    )
                 ) {
                     mc.thePlayer.motionX *= 0.62
                     mc.thePlayer.motionZ *= 0.62
                 }
                 if (velocityInput && (mc.thePlayer.hurtTime < 4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(
-                                120L
-                        )
+                        120L
+                    )
                 ) {
                     velocityInput = false
                 }
@@ -207,8 +207,8 @@ class Velocity : Module() {
                     mc.thePlayer.motionZ *= 0.81
                 }
                 if (velocityInput && (mc.thePlayer.hurtTime < 5 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(
-                                120L
-                        )
+                        120L
+                    )
                 ) {
                     velocityInput = false
                 }
@@ -253,7 +253,7 @@ class Velocity : Module() {
 
                     // Reduce Y
                     if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get()
-                            && !LiquidBounce.moduleManager[Speed::class.java]!!.state
+                        && !LiquidBounce.moduleManager[Speed::class.java]!!.state
                     )
                         mc.thePlayer.motionY -= 0.014999993
                 }
@@ -358,7 +358,7 @@ class Velocity : Module() {
         if (packet is S12PacketEntityVelocity) {
 
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID)
-                            ?: return) != mc.thePlayer || !shouldAffect
+                    ?: return) != mc.thePlayer || !shouldAffect
             )
                 return
 
@@ -393,18 +393,18 @@ class Velocity : Module() {
                 "aac5.2.0" -> {
                     event.cancelEvent()
                     if (!mc.isIntegratedServerRunning && (!aac5KillAuraValue.get() || killAura.target != null)) mc.netHandler.addToSendQueue(
-                            C03PacketPlayer.C04PacketPlayerPosition(
-                                    mc.thePlayer.posX,
-                                    1.7976931348623157E+308,
-                                    mc.thePlayer.posZ,
-                                    true
-                            )
+                        C03PacketPlayer.C04PacketPlayerPosition(
+                            mc.thePlayer.posX,
+                            1.7976931348623157E+308,
+                            mc.thePlayer.posZ,
+                            true
+                        )
                     )
                 }
 
                 "smart" -> {
                     if (packet.motionX * packet.motionX + packet.motionZ * packet.motionZ + packet.motionY * packet.motionY > 640000) velocityInput =
-                            true
+                        true
                 }
 
                 "glitch" -> {
@@ -416,9 +416,9 @@ class Velocity : Module() {
                 }
 
                 "phase" -> mc.thePlayer.setPositionAndUpdate(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY + phaseOffsetValue.get().toDouble(),
-                        mc.thePlayer.posZ
+                    mc.thePlayer.posX,
+                    mc.thePlayer.posY + phaseOffsetValue.get().toDouble(),
+                    mc.thePlayer.posZ
                 )
 
                 "legit" -> {

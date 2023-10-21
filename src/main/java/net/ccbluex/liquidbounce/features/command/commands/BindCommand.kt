@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import org.lwjgl.input.Keyboard
-import java.util.*
 
 class BindCommand : Command("bind", emptyArray()) {
     /**
@@ -31,10 +30,22 @@ class BindCommand : Command("bind", emptyArray()) {
 
             if (key == Keyboard.KEY_NONE) {
                 chat("Removed ${highlightModule(module)}'s bind.")
-                LiquidBounce.hud.addNotification(Notification("Bind","Removed ${module.name}'s bind", NotifyType.SUCCESS))
+                LiquidBounce.hud.addNotification(
+                    Notification(
+                        "Bind",
+                        "Removed ${module.name}'s bind",
+                        NotifyType.SUCCESS
+                    )
+                )
             } else {
                 chat("${highlightModule(module)} is now bound to §9$keyName.")
-                LiquidBounce.hud.addNotification(Notification("Bind","${module.name} bound to $keyName", NotifyType.SUCCESS))
+                LiquidBounce.hud.addNotification(
+                    Notification(
+                        "Bind",
+                        "${module.name} bound to $keyName",
+                        NotifyType.SUCCESS
+                    )
+                )
             }
 
             playEdit()

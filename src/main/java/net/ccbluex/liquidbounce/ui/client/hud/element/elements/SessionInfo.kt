@@ -11,11 +11,13 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.SessionUtils
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.LiquidSlowly
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
@@ -179,7 +181,8 @@ class SessionInfo(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Eleme
                 }
             }
 
-            val watchdoglmbans = LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.watchdogLastMin.toString()
+            val watchdoglmbans =
+                LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.watchdogLastMin.toString()
             val stafflmbans = LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.staffLastMin.toString()
             Fonts.fontSFUI35.drawStringWithShadow("Session Information", x2.toFloat() / 4f, -10f, Color.WHITE.rgb)
             Fonts.fontSFUI35.drawStringWithShadow("Play Time: ", 2f, fontRenderer.height + -6f, Color.WHITE.rgb)

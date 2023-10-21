@@ -5,15 +5,9 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac
 
-import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
-import net.minecraft.block.BlockCarpet
-import kotlin.math.cos
-import kotlin.math.sin
 
 class AACHop438 : SpeedMode("AACHop4.3.8") {
     override fun onMotion() {}

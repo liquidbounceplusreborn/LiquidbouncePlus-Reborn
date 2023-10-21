@@ -11,10 +11,9 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11
-
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
-import java.util.Locale
+import java.util.*
 
 class CharRenderer(val small: Boolean): MinecraftInstance() {
     var moveY = FloatArray(20)

@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
@@ -38,7 +37,7 @@ open class HUD : MinecraftInstance() {
                 Text::class.java,
                 ScoreboardElement::class.java,
                 Target::class.java,
-                EvoTargets::class.java,
+            EvoTargets::class.java,
                 Inventory::class.java,
                 SpeedGraph::class.java,
                 PlayerList::class.java,

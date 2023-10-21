@@ -22,7 +22,6 @@ import java.io.File
 import java.util.*
 import java.util.function.Function
 import javax.script.ScriptEngine
-import kotlin.collections.HashMap
 
 class Script(val scriptFile: File) {
 

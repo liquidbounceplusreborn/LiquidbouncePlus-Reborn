@@ -9,8 +9,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
-import net.ccbluex.liquidbounce.features.module.modules.combat.BackTrack;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.combat.BackTrack;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetworkManager;
@@ -66,7 +66,7 @@ public class MixinNetworkManager {
     private void send(Packet<?> packet, CallbackInfo callback) {
         if (PacketUtils.handleSendPacket(packet)) return;
         final PacketEvent event = new PacketEvent(packet);
-        BackTrack backTrack = LiquidBounce.moduleManager.getModule(BackTrack.class);;
+        BackTrack backTrack = LiquidBounce.moduleManager.getModule(BackTrack.class);
         assert backTrack != null;
         if (backTrack.getState()) {
             try {

@@ -5,19 +5,11 @@
  */
 package net.ccbluex.liquidbounce.ui.client
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.renderer.texture.DynamicTexture
-import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.nio.file.Files
-import javax.imageio.ImageIO
 
 class GuiKeybindHelper(val prevGui: GuiScreen) : GuiScreen() {
 
