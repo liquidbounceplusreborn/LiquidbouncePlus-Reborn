@@ -38,6 +38,7 @@ class TickBase : Module() {
 
     private val predictDistance = FloatValue("PredictDistance", 0.3f, 0.1f, 2f) {mode.get() == "PredictTest"}
     private val predictTimer = FloatValue("PredictTimer", 0.4f, 0.1f, 10f) {mode.get() == "PredictTest"}
+    private val predictTimer2 = FloatValue("PredictTimer2", 2.4f, 0.1f, 10f) {mode.get() == "PredictTest"}
 
     private var ticks = 0
     private val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)
@@ -80,6 +81,8 @@ class TickBase : Module() {
                 "PredictTest" -> {
                     if (predictDistance.get() + killAura?.attackRangeValue!!.get() <= mc.thePlayer.getDistanceToEntityBox(entity!!).toFloat()) {
                         mc.timer.timerSpeed = predictTimer.get()
+                    }else if (killAura.attackRangeValue.get() <= mc.thePlayer.getDistanceToEntityBox(entity).toFloat()) {
+                        mc.timer.timerSpeed = predictTimer2.get()
                     }
                 }
             }
