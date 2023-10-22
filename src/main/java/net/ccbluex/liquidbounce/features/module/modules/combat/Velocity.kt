@@ -28,9 +28,14 @@ import net.minecraft.util.MathHelper
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 
-@ModuleInfo(name = "Velocity", description = "Allows you to modify the amount of knockback you take.", category = ModuleCategory.COMBAT)
+@ModuleInfo(
+    name = "Velocity",
+    description = "Allows you to modify the amount of knockback you take.",
+    category = ModuleCategory.COMBAT
+)
 class Velocity : Module() {
 
     /**
@@ -67,34 +72,31 @@ class Velocity : Module() {
         ), "Cancel"
     ) // later
 
-    private val aac5KillAuraValue =
-        BoolValue("AAC5.2.0-Attack-Only", true, { modeValue.get().equals("aac5.2.0", true) })
+    private val aac5KillAuraValue = BoolValue("AAC5.2.0-Attack-Only", true) { modeValue.get().equals("aac5.2.0", true) }
 
     // Affect chance
     private val reduceChance = FloatValue("Reduce-Chance", 100F, 0F, 100F, "%")
     private var shouldAffect: Boolean = true
 
     // Reverse
-    private val reverseStrengthValue =
-        FloatValue("ReverseStrength", 1F, 0.1F, 1F, "x", { modeValue.get().equals("reverse", true) })
-    private val reverse2StrengthValue =
-        FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F, "x", { modeValue.get().equals("smoothreverse", true) })
+    private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F, "x") { modeValue.get().equals("reverse", true) }
+    private val reverse2StrengthValue = FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F, "x") { modeValue.get().equals("smoothreverse", true) }
 
     // AAC Push
-    private val aacPushXZReducerValue =
-        FloatValue("AACPushXZReducer", 2F, 1F, 3F, "x", { modeValue.get().equals("aacpush", true) })
-    private val aacPushYReducerValue = BoolValue("AACPushYReducer", true, { modeValue.get().equals("aacpush", true) })
+    private val aacPushXZReducerValue = FloatValue("AACPushXZReducer", 2F, 1F, 3F, "x") { modeValue.get().equals("aacpush", true) }
+    private val aacPushYReducerValue = BoolValue("AACPushYReducer", true) { modeValue.get().equals("aacpush", true) }
 
     // legit
-    private val legitStrafeValue = BoolValue("LegitStrafe", false, { modeValue.get().equals("legit", true) })
-    private val legitFaceValue = BoolValue("LegitFace", true, { modeValue.get().equals("legit", true) })
+    private val legitStrafeValue = BoolValue("LegitStrafe", false) { modeValue.get().equals("legit", true) }
+    private val legitFaceValue = BoolValue("LegitFace", true) { modeValue.get().equals("legit", true) }
 
     //add strafe in aac
-    private val aacStrafeValue = BoolValue("AACStrafeValue", false, { modeValue.get().equals("aac", true) })
+    private val aacStrafeValue = BoolValue("AACStrafeValue", false) { modeValue.get().equals("aac", true) }
 
     //epic
-    private val phaseOffsetValue =
-        FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m", { modeValue.get().equals("phase", true) })
+    private val phaseOffsetValue = FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m") { modeValue.get().equals("phase", true) }
+
+    private val tagModeValue = ListValue("TagMode", arrayOf("Off", "Mode", "Percentage", "Both"), "Both")
 
     /**
      * VALUES
@@ -117,11 +119,13 @@ class Velocity : Module() {
 
     private var jumped = 0
 
-    override val tag: String
-        get() = if (modeValue.get() == "Simple")
-            String.format("%.2f%% %.2f%%", horizontalValue.get(), verticalValue.get())
-        else
-            modeValue.get()
+    override val tag: String?
+        get() = when (tagModeValue.get()) {
+            "Mode" -> modeValue.get()
+            "Percentage" -> "${(horizontalValue.get() * 100).roundToInt()}% ${(verticalValue.get() * 100).roundToInt()}%"
+            "Both" -> "${modeValue.get()} ${(horizontalValue.get() * 100).roundToInt()}% ${(verticalValue.get() * 100).roundToInt()}%"
+            else -> null
+        }
 
     override fun onDisable() {
         mc.thePlayer?.speedInAir = 0.02F
@@ -129,15 +133,6 @@ class Velocity : Module() {
         transactionQueue.clear()
     }
 
-    override fun onEnable() {
-    }
-
-    /*
-        override fun onEnable() {
-            if (modeValue.get().equals("simple", true) && horizontalValue.get() == 0F && verticalValue.get() == 0F && !LiquidBounce.isStarting)
-                LiquidBounce.hud.addNotification(Notification("Trying to cancel knockback? Consider using Cancel mode.", 2000L))
-        }
-    */
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
 
@@ -145,7 +140,7 @@ class Velocity : Module() {
         if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || !shouldAffect)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "jump" -> if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
                 mc.thePlayer.motionY = 0.42
 
@@ -186,17 +181,11 @@ class Velocity : Module() {
             }
 
             "aac4reduce" -> {
-                if (mc.thePlayer.hurtTime > 0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(
-                        80L
-                    )
-                ) {
+                if (mc.thePlayer.hurtTime > 0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(80L)) {
                     mc.thePlayer.motionX *= 0.62
                     mc.thePlayer.motionZ *= 0.62
                 }
-                if (velocityInput && (mc.thePlayer.hurtTime < 4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(
-                        120L
-                    )
-                ) {
+                if (velocityInput && (mc.thePlayer.hurtTime < 4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
                     velocityInput = false
                 }
             }
@@ -206,10 +195,7 @@ class Velocity : Module() {
                     mc.thePlayer.motionX *= 0.81
                     mc.thePlayer.motionZ *= 0.81
                 }
-                if (velocityInput && (mc.thePlayer.hurtTime < 5 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(
-                        120L
-                    )
-                ) {
+                if (velocityInput && (mc.thePlayer.hurtTime < 5 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
                     velocityInput = false
                 }
             }
@@ -252,9 +238,7 @@ class Velocity : Module() {
                         mc.thePlayer.onGround = true
 
                     // Reduce Y
-                    if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get()
-                        && !LiquidBounce.moduleManager[Speed::class.java]!!.state
-                    )
+                    if (mc.thePlayer.hurtResistantTime > 0 && aacPushYReducerValue.get() && !LiquidBounce.moduleManager[Speed::class.java]!!.state)
                         mc.thePlayer.motionY -= 0.014999993
                 }
 
@@ -357,14 +341,12 @@ class Velocity : Module() {
 
         if (packet is S12PacketEntityVelocity) {
 
-            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID)
-                    ?: return) != mc.thePlayer || !shouldAffect
-            )
+            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer || !shouldAffect)
                 return
 
             velocityTimer.reset()
 
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "cancel" -> event.cancelEvent()
                 "simple" -> {
                     val horizontal = horizontalValue.get()
@@ -453,7 +435,7 @@ class Velocity : Module() {
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "legit" -> {
                 if (pos == null || mc.thePlayer.hurtTime <= 0)
                     return
@@ -501,7 +483,7 @@ class Velocity : Module() {
         if (mc.thePlayer == null || mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || !shouldAffect)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "aacpush" -> {
                 jump = true
 
