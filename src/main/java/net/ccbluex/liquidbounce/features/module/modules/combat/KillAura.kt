@@ -128,7 +128,7 @@ class KillAura : Module() {
         }
     }
 
-    private val attackRangeValue: FloatValue = object : FloatValue("Attack-Range", 6f, 1f, 20f, "m") {
+    public val attackRangeValue: FloatValue = object : FloatValue("Attack-Range", 6f, 1f, 20f, "m") {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = rangeValue.get()
             if (i < newValue) set(i)
