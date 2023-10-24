@@ -19,10 +19,10 @@ class FontValueButton(x: Float, y: Float, width: Float, height: Float, var setti
     drawRect(background, BACKGROUND_VALUE)
     FONT.drawHeightCenteredString(setting.name, x + hOffset, y + height / 2, -0x1)
 
-    //		val format = setting.get()
-    //		val formatWidth = FONT.getStringWidth(format)
-    //		FONT.drawHeightCenteredString(format, x + width - formatWidth - hOffset, y + height / 2, -0x1)
-    //
+    val format = if (this.setting.openList) "+" else "-"
+    val formatWidth = FONT.getStringWidth(format)
+    FONT.drawHeightCenteredString(format, x + width - formatWidth - hOffset, y + height / 2, -0x1)
+
     var count = 0
     listEntryBoxPairs.clear()
     if (setting.openList) {
@@ -43,7 +43,7 @@ class FontValueButton(x: Float, y: Float, width: Float, height: Float, var setti
   }
 
   override fun mouseAction(mouseX: Int, mouseY: Int, click: Boolean, button: Int) {
-      if (!show) return
+    if (!show) return
     if (click) {
       when (button) {
         MouseButtons.LEFT.ordinal -> { //					if (baseRect.contains(mouseX, mouseY)) // clicked on the button with value name

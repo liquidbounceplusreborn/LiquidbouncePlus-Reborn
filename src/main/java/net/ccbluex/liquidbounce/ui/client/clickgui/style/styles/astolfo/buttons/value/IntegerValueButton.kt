@@ -46,7 +46,7 @@ class IntegerValueButton(x: Float, y: Float, width: Float, height: Float, var se
       val wheel = Mouse.getDWheel()
       if (wheel != 0) {
         val amount = if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) 10 else 1
-        setting.set(setting.get() + amount * if (wheel > 0) 1 else -1)
+        setting.set((setting.get() + amount * if (wheel > 0) 1 else -1).coerceIn(setting.minimum, setting.maximum))
       }
     }
     return background

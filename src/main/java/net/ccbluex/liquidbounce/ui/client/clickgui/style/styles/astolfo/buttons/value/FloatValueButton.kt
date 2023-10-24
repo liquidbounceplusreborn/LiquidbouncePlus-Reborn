@@ -47,7 +47,7 @@ class FloatValueButton(x: Float, y: Float, width: Float, height: Float, var sett
       val wheel = Mouse.getDWheel()
       if (wheel != 0) {
         val amount = if (Keyboard.isKeyDown(Keyboard.KEY_SPACE)) 0.1f else 0.01f
-        setting.set(setting.get() + amount * if (wheel > 0) 1 else -1)
+        setting.set((setting.get() + amount * if (wheel > 0) 1 else -1).coerceIn(setting.minimum, setting.maximum))
       }
     }
 
