@@ -23,8 +23,8 @@ public class PacketUtils extends MinecraftInstance implements Listenable {
 
     public static ArrayList<Packet> packets = new ArrayList<>();
 
-    private static MSTimer packetTimer = new MSTimer();
-    private static MSTimer wdTimer = new MSTimer();
+    private static final MSTimer packetTimer = new MSTimer();
+    private static final MSTimer wdTimer = new MSTimer();
 
     private static int transCount = 0;
     private static int wdVL = 0;

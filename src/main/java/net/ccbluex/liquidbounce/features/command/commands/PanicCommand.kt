@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import java.util.*
 
 class PanicCommand : Command("panic", emptyArray()) {
     /**
@@ -18,7 +19,7 @@ class PanicCommand : Command("panic", emptyArray()) {
         val msg: String
 
         if (args.size > 1 && args[1].isNotEmpty()) {
-            when (args[1].toLowerCase()) {
+            when (args[1].lowercase(Locale.getDefault())) {
                 "all" -> msg = "all"
 
                 "nonrender" -> {

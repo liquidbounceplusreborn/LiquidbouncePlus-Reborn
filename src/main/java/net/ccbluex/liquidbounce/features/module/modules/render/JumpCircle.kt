@@ -21,6 +21,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -42,8 +43,8 @@ class JumpCircle : Module() {
     private val astolfoRainbowIndex = IntegerValue("AstolfoIndex", 109, 1, 300)
 
     private val points = mutableMapOf<Int, MutableList<Render>>()
-    var jump=false;
-    var entityjump=false;
+    var jump=false
+    var entityjump=false
     val circles = mutableListOf<Circle>()
     var red = colorRedValue.get()
     var green = colorGreenValue.get()
@@ -51,7 +52,7 @@ class JumpCircle : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
-        when (typeValue.get().toLowerCase()) {
+        when (typeValue.get().lowercase(Locale.getDefault())) {
             "oldcircle" -> {
         points.forEach {
             for (point in it.value) {
@@ -97,7 +98,7 @@ class JumpCircle : Module() {
             jump = true
         }
         if (mc.thePlayer.onGround && jump) {
-            updatePoints(mc.thePlayer);
+            updatePoints(mc.thePlayer)
             jump = false
         }
         /* for(entity in mc.theWorld.playerEntities) {
@@ -112,7 +113,7 @@ class JumpCircle : Module() {
     }
 
     fun updatePoints(entity: EntityLivingBase) {
-        when (typeValue.get().toLowerCase()) {
+        when (typeValue.get().lowercase(Locale.getDefault())) {
             "oldcircle" -> {
                 val counter = intArrayOf(0)
                 (points[entity.entityId] ?: mutableListOf<Render>().also { points[entity.entityId] = it }).add(
@@ -167,7 +168,7 @@ class JumpCircle : Module() {
 
             GL11.glBegin(GL11.GL_TRIANGLE_STRIP)
             for (i in 0..360) {
-                val color = getColor(entity, 0);
+                val color = getColor(entity, 0)
 
                 val x = (dif * jumpModule.radius.get() * 0.001 * sin(i.toDouble().toRadians()))
                 val z = (dif * jumpModule.radius.get() * 0.001 * cos(i.toDouble().toRadians()))

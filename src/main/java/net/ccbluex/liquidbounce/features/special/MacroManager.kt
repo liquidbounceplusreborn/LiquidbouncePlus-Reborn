@@ -13,7 +13,7 @@ object MacroManager : MinecraftInstance(), Listenable {
     @EventTarget
     fun onKey(event: KeyEvent) {
         mc.thePlayer ?: return
-        LiquidBounce.commandManager ?: return
+        LiquidBounce.commandManager
         macroMapping.filter { it.key == event.key }.forEach { 
             if (it.value.startsWith(LiquidBounce.commandManager.prefix))
                 LiquidBounce.commandManager.executeCommands(it.value) 

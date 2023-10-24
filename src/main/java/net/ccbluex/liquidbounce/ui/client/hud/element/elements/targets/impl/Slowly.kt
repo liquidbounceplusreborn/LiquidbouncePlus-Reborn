@@ -57,7 +57,7 @@ class Slowly(inst: Target): TargetStyle("Slowly", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, 32F + length, 36F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         entity ?: return Border(0F, 0F, 102F, 36F)
         val font = Fonts.minecraftFont
         val healthString = "${decimalFormat2.format(entity.health)} ❤"

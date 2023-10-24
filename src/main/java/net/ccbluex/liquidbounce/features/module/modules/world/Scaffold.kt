@@ -1148,9 +1148,9 @@ class Scaffold : Module() {
         if (mc.thePlayer.heldItem == null || mc.thePlayer.heldItem.item !is ItemBlock) {
             if (autoBlockMode.get().equals("Off", ignoreCase = true)) return
             blockSlot = if(sortByHighestAmount.get()){
-                InventoryUtils.findLargestBlockStackInHotbar()!!
+                InventoryUtils.findLargestBlockStackInHotbar()
             }else{
-                InventoryUtils.findBlockInHotbar()!!
+                InventoryUtils.findBlockInHotbar()
             }
             if (blockSlot == -1) return
             if (autoBlockMode.get().equals("Spoof", ignoreCase = true)) {

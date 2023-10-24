@@ -34,7 +34,7 @@ class NovolineFive(inst: Target): TargetStyle("NovolineFive", inst, true){
     val gradientDistanceValue = IntegerValue("GradientDistance", 50, 1, 200, { targetInstance.styleValue.get().equals("NovolineFive", true) })
     override fun drawTarget(entity: EntityPlayer) {
         updateAnim(entity.health)
-        val ColorMixer = (LiquidBounce.moduleManager.getModule(net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer::class.java) as net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer)!!
+        val ColorMixer = (LiquidBounce.moduleManager.getModule(net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer::class.java) as net.ccbluex.liquidbounce.features.module.modules.render.ColorMixer)
 
 
         val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
@@ -243,7 +243,7 @@ class NovolineFive(inst: Target): TargetStyle("NovolineFive", inst, true){
         RenderUtils.originalRoundedRect(-3F, -4F, width + 26F, 47F, 1F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(0F, 0F, 124F, 44F)
     }
 }

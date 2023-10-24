@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import java.util.*
 
 @ModuleInfo(name = "NoWeb", spacedName = "No Web", description = "Prevents you from getting slowed down in webs.", category = ModuleCategory.MOVEMENT)
 class NoWeb : Module() {
@@ -31,7 +32,7 @@ class NoWeb : Module() {
         if (!mc.thePlayer.isInWeb)
             return
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "none" -> mc.thePlayer.isInWeb = false
             "aac" -> {
                 mc.thePlayer.jumpMovementFactor = 0.59f
@@ -112,6 +113,6 @@ class NoWeb : Module() {
     }
 
 
-    override val tag: String?
+    override val tag: String
         get() = modeValue.get()
 }

@@ -95,11 +95,7 @@ public class SkeetStyle extends GuiScreen {
                 }
                 if (isSettingsButtonHovered(startX + 100.0F, mY + 45.0F, startX + 200.0F, mY + 70.0F, mouseX, mouseY)) {
                     if (!this.previousmouse && Mouse.isButtonDown(0)) {
-                        if (module.getState()) {
-                            module.setState(false);
-                        } else {
-                            module.setState(true);
-                        }
+                        module.setState(!module.getState());
                         this.previousmouse = true;
                     }
                     if (!this.previousmouse && Mouse.isButtonDown(1))
@@ -160,7 +156,7 @@ public class SkeetStyle extends GuiScreen {
                             perc = Math.min(Math.max(0.0D, perc), 1.0D);
                             double valRel = (max - render) * perc;
                             float val = (float)(render + valRel);
-                            val = (float)(Math.round(val * 1.0D) / 1.0D);
+                            val = (float)(Math.round(val * 1.0D));
                         }
                         if (!Mouse.isButtonDown(0))
                             this.previousmouse = false;
@@ -324,8 +320,8 @@ public class SkeetStyle extends GuiScreen {
                 currentModule.setKeyBind(0);
             this.bind = false;
         } else if (keyCode == 1) {
-            this.mc.displayGuiScreen((GuiScreen)null);
-            ((ClickGUI)LiquidBounce.moduleManager.getModule(ClickGUI.class)).setState(false);
+            this.mc.displayGuiScreen(null);
+            LiquidBounce.moduleManager.getModule(ClickGUI.class).setState(false);
             if (this.mc.currentScreen == null)
                 this.mc.setIngameFocus();
         }

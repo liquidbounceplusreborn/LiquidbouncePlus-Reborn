@@ -23,6 +23,7 @@ import net.minecraft.init.Items
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
+import java.util.*
 
 @ModuleInfo(name = "Gapple", description = "Eat Gapples.", category = ModuleCategory.PLAYER)
 class Gapple : Module() {
@@ -35,7 +36,7 @@ class Gapple : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        when(modeValue.get().toLowerCase()){
+        when(modeValue.get().lowercase(Locale.getDefault())){
             "once" -> {
                 doEat(true)
                 state = false

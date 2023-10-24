@@ -15,9 +15,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 class Freeze : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        mc.thePlayer.motionX = 0.0;
-        mc.thePlayer.motionY = 0.0;
-        mc.thePlayer.motionZ = 0.0;
+        mc.thePlayer.motionX = 0.0
+        mc.thePlayer.motionY = 0.0
+        mc.thePlayer.motionZ = 0.0
     }
 
     override fun onDisable() {

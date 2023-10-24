@@ -23,6 +23,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 
 @ModuleInfo(name = "Tracers", description = "Draws a line to targets around you.", category = ModuleCategory.RENDER)
 class Tracers : Module() {
@@ -57,7 +58,7 @@ class Tracers : Module() {
 
                 if (dist > 255) dist = 255
 
-                val colorMode = colorMode.get().toLowerCase()
+                val colorMode = colorMode.get().lowercase(Locale.getDefault())
                 val color = when {
                     EntityUtils.isFriend(entity) -> Color(0, 0, 255, 150)
                     colorMode.equals("custom") -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 150)

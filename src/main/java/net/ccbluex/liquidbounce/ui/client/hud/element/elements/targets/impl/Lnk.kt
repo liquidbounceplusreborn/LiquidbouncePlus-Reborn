@@ -142,7 +142,7 @@ class Lnk(inst: Target): TargetStyle("Lnk", inst, true){
         RenderUtils.originalRoundedRect(0F, 0F, 124F, 44F, 8F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(0F, 0F, 124F, 44F)
     }
 }

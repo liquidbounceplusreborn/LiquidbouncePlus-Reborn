@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
+import java.util.*
 
 class ToggleCommand : Command("toggle", arrayOf("t")) {
     /**
@@ -22,7 +23,7 @@ class ToggleCommand : Command("toggle", arrayOf("t")) {
             }
 
             if (args.size > 2) {
-                val newState = args[2].toLowerCase();
+                val newState = args[2].lowercase(Locale.getDefault())
 
                 if (newState == "on" || newState == "off") {
                     module.state = newState == "on"

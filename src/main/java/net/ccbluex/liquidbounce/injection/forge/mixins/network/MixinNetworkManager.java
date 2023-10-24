@@ -40,7 +40,7 @@ public class MixinNetworkManager {
     @Overwrite
     protected void channelRead0(ChannelHandlerContext p_channelRead0_1_, Packet p_channelRead0_2_) throws Exception {
         final PacketEvent event = new PacketEvent(p_channelRead0_2_);
-        BackTrack backTrack = LiquidBounce.moduleManager.getModule(BackTrack.class);;
+        BackTrack backTrack = LiquidBounce.moduleManager.getModule(BackTrack.class);
         assert backTrack != null;
         if (backTrack.getState()) {
             try {

@@ -186,7 +186,7 @@ class Target : Element() {
                 mainStyle.particleList.clear()
             return returnBorder
         }
-        val convertTarget = mainTarget!! as EntityPlayer
+        val convertTarget = mainTarget!!
         
         val calcScaleX = animProgress * (4F / (borderWidth / 2F))
         val calcScaleY = animProgress * (4F / (borderHeight / 2F))

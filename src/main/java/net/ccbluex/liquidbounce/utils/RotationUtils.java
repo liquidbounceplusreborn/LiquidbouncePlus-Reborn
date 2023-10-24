@@ -26,7 +26,7 @@ import static java.lang.Math.PI;
 
 public final class RotationUtils extends MinecraftInstance implements Listenable {
 
-    private static Random random = new Random();
+    private static final Random random = new Random();
 
     private static int keepLength;
 
@@ -209,7 +209,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
     }
 
     public static float roundRotation(float yaw, int strength) {
-        return (int) Math.round(yaw / strength) * strength;
+        return Math.round(yaw / strength) * strength;
     }
 
     /**

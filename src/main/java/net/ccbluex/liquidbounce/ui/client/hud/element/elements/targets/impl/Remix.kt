@@ -36,7 +36,7 @@ class Remix(inst: Target): TargetStyle("Remix", inst, true) {
 
         // armor bar
         RenderUtils.newDrawRect(40F, 36F, 141.5F, 38F, getColor(Color.blue.darker()).rgb)
-        RenderUtils.newDrawRect(40F, 36F, 40F + (entity.getTotalArmorValue().toFloat() / 20F).coerceIn(0F, 1F) * 101.5F, 38F, getColor(Color.blue).rgb)
+        RenderUtils.newDrawRect(40F, 36F, 40F + (entity.totalArmorValue.toFloat() / 20F).coerceIn(0F, 1F) * 101.5F, 38F, getColor(Color.blue).rgb)
 
         // armor item background
         RenderUtils.newDrawRect(40F, 16F, 58F, 34F, getColor(Color(25, 25, 25)).rgb)
@@ -100,7 +100,7 @@ class Remix(inst: Target): TargetStyle("Remix", inst, true) {
         for (index in 3 downTo 0) {
             val stack = entity.inventory.armorInventory[index] ?: continue
 
-            if (stack.getItem() == null)
+            if (stack.item == null)
                 continue
 
             renderItem.renderItemAndEffectIntoGUI(stack, x, y)
@@ -139,7 +139,7 @@ class Remix(inst: Target): TargetStyle("Remix", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, 146F, 49F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(0F, 0F, 146F, 49F)
     }
 

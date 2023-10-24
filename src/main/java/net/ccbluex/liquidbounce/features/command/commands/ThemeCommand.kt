@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.Config
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
+import java.util.*
 import kotlin.concurrent.thread
 
 class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
@@ -41,7 +42,7 @@ class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
                 val url = if (args[2].startsWith("http"))
                     args[2]
                 else
-                    "${LiquidBounce.CLIENT_CLOUD}/themes/${args[2].toLowerCase()}"
+                    "${LiquidBounce.CLIENT_CLOUD}/themes/${args[2].lowercase(Locale.getDefault())}"
 
                 chat("Loading theme...")
 

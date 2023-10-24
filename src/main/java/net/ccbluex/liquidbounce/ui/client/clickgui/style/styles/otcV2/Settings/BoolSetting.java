@@ -26,17 +26,17 @@ public class BoolSetting extends Downward<BoolValue>
         this.modulex = OtcClickGUi.getMainx();
         this.moduley = OtcClickGUi.getMainy();
         this.booly = this.pos.y + this.getScrollY();
-        RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 4.0f, this.moduley + 17.0f + this.booly + 8.0f, 7.0f, 7.0f, 1.0f, ((boolean)((BoolValue)this.setting).get()) ? new Color(86, 94, 115).getRGB() : new Color(50, 54, 65).getRGB(), 1.0f, ((boolean)((BoolValue)this.setting).get()) ? new Color(86, 94, 115).getRGB() : new Color(85, 90, 96).getRGB());
+        RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 4.0f, this.moduley + 17.0f + this.booly + 8.0f, 7.0f, 7.0f, 1.0f, this.setting.get() ? new Color(86, 94, 115).getRGB() : new Color(50, 54, 65).getRGB(), 1.0f, this.setting.get() ? new Color(86, 94, 115).getRGB() : new Color(85, 90, 96).getRGB());
         if (this.isHovered(mouseX, mouseY)) {
             RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 4.0f, this.moduley + 17.0f + this.booly + 8.0f, 7.0f, 7.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, guiColor);
         }
-        Fonts.fontTahoma.drawString(((BoolValue)this.setting).getName(), this.modulex + 5.0f + this.pos.x + 4.0f + 10.0f, this.moduley + 17.0f + this.booly + 8.0f + 3.0f, new Color(200, 200, 200).getRGB());
+        Fonts.fontTahoma.drawString(this.setting.getName(), this.modulex + 5.0f + this.pos.x + 4.0f + 10.0f, this.moduley + 17.0f + this.booly + 8.0f + 3.0f, new Color(200, 200, 200).getRGB());
     }
     
     @Override
     public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
         if (this.isHovered(mouseX, mouseY)) {
-            ((BoolValue)this.setting).toggle();
+            this.setting.toggle();
         }
     }
     

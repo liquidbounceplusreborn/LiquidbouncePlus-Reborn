@@ -48,7 +48,7 @@ class Ignite : Module() {
         val fireInHotbar = if (lighterInHotbar != -1) lighterInHotbar else lavaInHotbar
 
         for (entity in mc.theWorld.loadedEntityList)
-            if (EntityUtils.isSelected(entity, true) && !entity.isBurning()) {
+            if (EntityUtils.isSelected(entity, true) && !entity.isBurning) {
                 val blockPos = entity.position
 
                 if (mc.thePlayer.getDistanceSq(blockPos) >= 22.3 ||

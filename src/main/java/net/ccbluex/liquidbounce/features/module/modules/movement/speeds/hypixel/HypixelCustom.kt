@@ -25,7 +25,7 @@ class HypixelCustom: SpeedMode("HypixelCustom") {
     override fun onMotion(event: MotionEvent) {
         val thePlayer = mc.thePlayer ?: return
 
-        val speedModule = (LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed?)!!
+        val speedModule = LiquidBounce.moduleManager.getModule(Speed::class.java)!!
         val scaffoldModule = LiquidBounce.moduleManager.getModule(Scaffold::class.java)
         val timer = LiquidBounce.moduleManager.getModule(GameSpeed::class.java)
 
@@ -61,7 +61,7 @@ class HypixelCustom: SpeedMode("HypixelCustom") {
 
     override fun onMove(event: MoveEvent) {
         val thePlayer = mc.thePlayer ?: return
-        val speedModule = (LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed?)!!
+        val speedModule = LiquidBounce.moduleManager.getModule(Speed::class.java)!!
 
         if (isMoving()) {
             when {

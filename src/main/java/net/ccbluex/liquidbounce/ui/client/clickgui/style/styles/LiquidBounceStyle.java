@@ -27,6 +27,7 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 public class LiquidBounceStyle extends Style {
@@ -58,14 +59,14 @@ public class LiquidBounceStyle extends Style {
     @Override
     public void drawButtonElement(int mouseX, int mouseY, ButtonElement buttonElement) {
         GlStateManager.resetColor();
-        Fonts.fontSFUI35.drawString(buttonElement.getDisplayName(), (int) (buttonElement.getX() + 5), buttonElement.getY() + 7, buttonElement.getColor());
+        Fonts.fontSFUI35.drawString(buttonElement.getDisplayName(), buttonElement.getX() + 5, buttonElement.getY() + 7, buttonElement.getColor());
     }
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
         int guiColor = ClickGUI.generateColor().getRGB();
         GlStateManager.resetColor();
-        Fonts.fontSFUI35.drawString(moduleElement.getDisplayName(), (int) (moduleElement.getX() + 5), moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
+        Fonts.fontSFUI35.drawString(moduleElement.getDisplayName(), moduleElement.getX() + 5, moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
@@ -307,7 +308,7 @@ public class LiquidBounceStyle extends Style {
 
     private BigDecimal round(final float f) {
         BigDecimal bd = new BigDecimal(Float.toString(f));
-        bd = bd.setScale(2, 4);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd;
     }
 }

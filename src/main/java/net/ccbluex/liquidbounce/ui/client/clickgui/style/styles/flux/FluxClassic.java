@@ -42,7 +42,7 @@ public class FluxClassic extends GuiScreen {
      * Create a new Instance
      */
     public FluxClassic() {
-        this.clickGuiModule = (ClickGUI) LiquidBounce.moduleManager.getModule(ClickGUI.class);
+        this.clickGuiModule = LiquidBounce.moduleManager.getModule(ClickGUI.class);
         this.animationPosition = 75;
         for(Module module : LiquidBounce.moduleManager.getModules())
             module.getAnimationHelper().animationX = module.getState() ? 2.5F : -2.5F;
@@ -251,7 +251,7 @@ public class FluxClassic extends GuiScreen {
 
                         FloatValue optionDouble = (FloatValue) option;
                         Fonts.fontSFUI35.drawString(optionDouble.getName(), posX + 8, valuePosY, new Color(160,160,160).getRGB());
-                        optionDouble.getTranslate().interpolate((float) (112F * (optionDouble.get() > optionDouble.getMaximum() ? optionDouble.getMaximum() : optionDouble.get() < optionDouble.getMinimum() ? 0 : optionDouble.get() - optionDouble.getMinimum()) / (optionDouble.getMaximum() - optionDouble.getMinimum()) + 8), 0, 100);
+                        optionDouble.getTranslate().interpolate(112F * (optionDouble.get() > optionDouble.getMaximum() ? optionDouble.getMaximum() : optionDouble.get() < optionDouble.getMinimum() ? 0 : optionDouble.get() - optionDouble.getMinimum()) / (optionDouble.getMaximum() - optionDouble.getMinimum()) + 8, 0, 100);
                         RenderUtils.drawRect(posX + 8, valuePosY + 16, posX + 120, valuePosY + 17,
                                 (new Color(227, 227, 227)).getRGB());
                         RenderUtils.drawRect(posX + 8, valuePosY + 16, (posX + optionDouble.getTranslate().getX()), valuePosY + 17,
@@ -421,12 +421,12 @@ public class FluxClassic extends GuiScreen {
                     } else mouseClicked = false;
                 }
                 Fonts.fontSFUI35.drawStringWithColor("", width - 75, height - 3F - posY + yPos1, new Color(160,160,160).getRGB(), false);
-                Fonts.fontSFUI35.drawStringWithColor("" + config.getFile().getName().split(".profile")[0], width - 75F + Fonts.fontSFUI35.getCharWidth('v') + 2, height - 4F - posY + yPos1, new Color(160,160,160).getRGB(), false);
+                Fonts.fontSFUI35.drawStringWithColor(config.getFile().getName().split(".profile")[0], width - 75F + Fonts.fontSFUI35.getCharWidth('v') + 2, height - 4F - posY + yPos1, new Color(160,160,160).getRGB(), false);
             }
         }
         Fonts.fontSFUI35.drawStringWithColor("",width - 75, height - 22 - posY, new Color(160,160,160).getRGB(), false);
         Fonts.fontSFUI35.drawStringWithColor("", width - 20, height - 22 - posY, new Color(160,160,160).getRGB(), false);
-        Fonts.fontSFUI35.drawStringWithColor("" + currentConfigName, width - 75F + Fonts.fontSFUI35.getCharWidth('v') + 2, height - 23F - posY, new Color(160,160,160).getRGB(), false);
+        Fonts.fontSFUI35.drawStringWithColor(currentConfigName, width - 75F + Fonts.fontSFUI35.getCharWidth('v') + 2, height - 23F - posY, new Color(160,160,160).getRGB(), false);
         super.drawScreen(mouseX,mouseY,partialTicks);
     }
     //Get icon for each category.

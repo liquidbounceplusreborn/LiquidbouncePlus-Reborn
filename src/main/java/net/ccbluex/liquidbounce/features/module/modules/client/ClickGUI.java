@@ -66,8 +66,8 @@ public class ClickGUI extends Module {
     public final ListValue animationValue = new ListValue("Animation", new String[]{"Azura", "Slide", "SlideBounce", "Zoom", "ZoomBounce", "None"}, "Azura");
     public final FloatValue animSpeedValue = new FloatValue("AnimSpeed", 1F, 0.01F, 5F, "x");
 
-    public final FloatValue scale = new FloatValue("AstolfoScale", 1f, 0f, 10f, () -> styleValue.get().equalsIgnoreCase("astolfo"));;
-    public final FloatValue scroll = new FloatValue("Scroll", 20f, 0f, 200f, () -> styleValue.get().equalsIgnoreCase("astolfo"));;
+    public final FloatValue scale = new FloatValue("AstolfoScale", 1f, 0f, 10f, () -> styleValue.get().equalsIgnoreCase("astolfo"));
+    public final FloatValue scroll = new FloatValue("Scroll", 20f, 0f, 200f, () -> styleValue.get().equalsIgnoreCase("astolfo"));
     public final BoolValue getGetClosePrevious = new BoolValue("ClosePrevious",false, () -> styleValue.get().equalsIgnoreCase("dropdown"));
     public final BoolValue disp = new BoolValue("DisplayValue", false, () -> styleValue.get().equalsIgnoreCase("onetap"));
 

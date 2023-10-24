@@ -174,8 +174,8 @@ class NoFall : Module() {
                 mc.timer.timerSpeed = 1F
         }
 
-        when (typeValue.get().toLowerCase()) {
-            "packet" -> when (packetMode.get().toLowerCase()) {
+        when (typeValue.get().lowercase(Locale.getDefault())) {
+            "packet" -> when (packetMode.get().lowercase(Locale.getDefault())) {
                 "default" -> {
                     if (mc.thePlayer.fallDistance > 2F)
                         mc.netHandler.addToSendQueue(C03PacketPlayer(true))
@@ -211,7 +211,7 @@ class NoFall : Module() {
                     needSpoof = true
                 }
             }
-            "matrix" -> when (matrixMode.get().toLowerCase()) {
+            "matrix" -> when (matrixMode.get().lowercase(Locale.getDefault())) {
                 "old" -> {
                     if (mc.thePlayer.fallDistance > 3)
                         isDmgFalling = true
@@ -253,7 +253,7 @@ class NoFall : Module() {
                     }
                 }
             }
-            "aac" -> when (aacMode.get().toLowerCase()) {
+            "aac" -> when (aacMode.get().lowercase(Locale.getDefault())) {
                 "default" -> {
                     if (mc.thePlayer.fallDistance > 2f) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(true))
@@ -279,7 +279,7 @@ class NoFall : Module() {
                 }
                 "3.3.15" -> if (mc.thePlayer.fallDistance > 2) {
                     if (!mc.isIntegratedServerRunning) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, Double.NaN, mc.thePlayer.posZ, false))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, Double.NaN, mc.thePlayer.posZ, false))
                     }
                     mc.thePlayer.fallDistance = -9999f
                 }
@@ -329,7 +329,7 @@ class NoFall : Module() {
                         aac5doFlag = false
 
                     if (aac5doFlag)
-                        mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + if (mc.thePlayer.onGround) 0.5 else 0.42, mc.thePlayer.posZ, true))
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + if (mc.thePlayer.onGround) 0.5 else 0.42, mc.thePlayer.posZ, true))
                 }
             }
             "motion" -> if (mc.thePlayer.fallDistance > 3F) {
@@ -343,7 +343,7 @@ class NoFall : Module() {
                         mc.timer.timerSpeed = 0.05f
                         Timer().schedule(100L) {
                             try {
-                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(fallPos.x.toDouble(), fallPos.y.toDouble(), fallPos.z.toDouble(), true))
+                                mc.netHandler.addToSendQueue(C04PacketPlayerPosition(fallPos.x.toDouble(), fallPos.y.toDouble(), fallPos.z.toDouble(), true))
                                 mc.thePlayer.setPosition(fallPos.x.toDouble(), fallPos.y.toDouble(), fallPos.z.toDouble())
                             } catch (e: Exception) {
                                 // ignore, may leave unexpectedly.
@@ -516,8 +516,8 @@ class NoFall : Module() {
             if (matrixSend) {
                 matrixSend = false
                 event.cancelEvent()
-                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
-                PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y, packet.z, false))
+                PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(packet.x, packet.y, packet.z, true))
+                PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(packet.x, packet.y, packet.z, false))
             }
 
             if (doSpoof) {
@@ -549,13 +549,13 @@ class NoFall : Module() {
             }
 
             if (typeValue.get().equals("hypixel", true)) {
-                when (hypixelMode.get().toLowerCase()) {
+                when (hypixelMode.get().lowercase(Locale.getDefault())) {
                     "default" -> if (mc.thePlayer.fallDistance > 1.5) {
                         packet.onGround = mc.thePlayer.ticksExisted % 2 == 0
                     }
                     "new" -> if (mc.thePlayer.fallDistance > 2.5F && mc.thePlayer.ticksExisted % 2 == 0) {
                         packet.onGround = true
-                        packet.setMoving(false)
+                        packet.isMoving = false
                     }
                 }
             }
@@ -566,7 +566,7 @@ class NoFall : Module() {
             }
 
             if (typeValue.get().equals("aac", true)) {
-                when (aacMode.get().toLowerCase()) {
+                when (aacMode.get().lowercase(Locale.getDefault())) {
                     "4.x" -> if (aac4Fakelag) {
                         event.cancelEvent()
                         if (packetModify) {
@@ -584,8 +584,8 @@ class NoFall : Module() {
                             packet.onGround = true
                             mc.thePlayer.onGround = false
                             packet.y += 1.0
-                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 1.0784, packet.z, false))
-                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 0.5, packet.z, true))
+                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(packet.x, packet.y - 1.0784, packet.z, false))
+                            mc.netHandler.addToSendQueue(C04PacketPlayerPosition(packet.x, packet.y - 0.5, packet.z, true))
                         }
                     }
                 }
@@ -603,8 +603,8 @@ class NoFall : Module() {
                     isDmgFalling = false
                     event.cancelEvent()
                     mc.thePlayer.onGround = false
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, packet.y - 256, packet.z, false))
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(packet.x, (-10).toDouble() , packet.z, true))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(packet.x, packet.y - 256, packet.z, false))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(packet.x, (-10).toDouble() , packet.z, true))
                     mc.timer.timerSpeed = 0.18f
                     modifiedTimer = true
                 }

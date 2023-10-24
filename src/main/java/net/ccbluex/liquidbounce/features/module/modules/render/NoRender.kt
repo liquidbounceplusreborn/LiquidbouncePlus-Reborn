@@ -35,7 +35,7 @@ class NoRender : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
     	for (en in mc.theWorld.loadedEntityList) {
-    		val entity = en!! as Entity
+    		val entity = en!!
     		if (shouldStopRender(entity))
     			entity.renderDistanceWeight = 0.0
             else if (autoResetValue.get())
@@ -56,7 +56,7 @@ class NoRender : Module() {
 
  	override fun onDisable() {
  		for (en in mc.theWorld.loadedEntityList) {
- 			val entity = en!! as Entity
+ 			val entity = en!!
  			if (entity != mc.thePlayer!! && entity.renderDistanceWeight <= 0.0)
  				entity.renderDistanceWeight = 1.0
  		}

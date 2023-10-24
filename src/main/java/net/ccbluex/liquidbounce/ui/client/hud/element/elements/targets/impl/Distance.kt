@@ -56,7 +56,7 @@ class Distance(inst: Target): TargetStyle("Distance", inst, false) {
             GL11.glPopMatrix()
         }
     }
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(0F,0F,150F,30F)
     }
 }

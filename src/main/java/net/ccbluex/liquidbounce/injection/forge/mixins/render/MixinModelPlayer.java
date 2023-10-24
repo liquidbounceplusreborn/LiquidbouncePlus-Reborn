@@ -352,7 +352,7 @@ public class MixinModelPlayer extends ModelBiped {
         PlayerEdit playerEdit = LiquidBounce.moduleManager.getModule(PlayerEdit.class);
         GlStateManager.pushMatrix();
         if (PlayerEdit.customModel.get() && (LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyMe.get() && entityIn == Minecraft.getMinecraft().thePlayer || LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyOther.get() && entityIn != Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState()) {
-            if (playerEdit.mode.get().contains("Rabbit")) {
+            if (PlayerEdit.mode.get().contains("Rabbit")) {
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(1.25D, 1.25D, 1.25D);
                 GlStateManager.translate(0.0D, -0.3D, 0.0D);
@@ -373,7 +373,7 @@ public class MixinModelPlayer extends ModelBiped {
                 this.rabbitLleg.rotateAngleZ = this.bipedLeftLeg.rotateAngleZ;
                 this.rabbitBone.render(scale);
                 GlStateManager.popMatrix();
-            } else if (playerEdit.mode.get().contains("Freddy")) {
+            } else if (PlayerEdit.mode.get().contains("Freddy")) {
                 this.fredhead.rotateAngleX = this.bipedHead.rotateAngleX;
                 this.fredhead.rotateAngleY = this.bipedHead.rotateAngleY;
                 this.fredhead.rotateAngleZ = this.bipedHead.rotateAngleZ;
@@ -394,7 +394,7 @@ public class MixinModelPlayer extends ModelBiped {
                 GlStateManager.translate(0.0, 0.85, 0.0);
                 this.fredbody.render(scale);
                 GlStateManager.popMatrix();
-            } else if (playerEdit.mode.get().contains("Amogus")){
+            } else if (PlayerEdit.mode.get().contains("Amogus")){
                 this.bipedHead.rotateAngleY = netHeadYaw * 0.017453292F;
                 this.bipedHead.rotateAngleX = headPitch * 0.017453292F;
                 this.bipedBody.rotateAngleY = 0.0F;

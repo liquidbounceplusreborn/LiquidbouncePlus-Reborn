@@ -128,7 +128,7 @@ class KillAura : Module() {
         }
     }
 
-    public val attackRangeValue: FloatValue = object : FloatValue("Attack-Range", 6f, 1f, 20f, "m") {
+    val attackRangeValue: FloatValue = object : FloatValue("Attack-Range", 6f, 1f, 20f, "m") {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = rangeValue.get()
             if (i < newValue) set(i)
@@ -480,14 +480,14 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
-        val targetStrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java)!! as TargetStrafe
+        val targetStrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java)!!
         if (rotationStrafeValue.get().equals("Off", true) && !targetStrafe.state)
             return
 
         update()
 
         if (currentTarget != null && RotationUtils.targetRotation != null) {
-            when (rotationStrafeValue.get().toLowerCase()) {
+            when (rotationStrafeValue.get().lowercase(Locale.getDefault())) {
                 "strict" -> {
                     val (yaw) = RotationUtils.targetRotation ?: return
                     var strafe = event.strafe
@@ -976,7 +976,7 @@ class KillAura : Module() {
         }
 
         // Sort targets by priority
-        when (priorityValue.get().toLowerCase()) {
+        when (priorityValue.get().lowercase(Locale.getDefault())) {
             "distance" -> targets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) } // Sort by distance
             "health" -> targets.sortBy { it.health } // Sort by health
             "direction" -> targets.sortBy { RotationUtils.getRotationDifference(it) } // Sort by FOV
@@ -1159,7 +1159,7 @@ class KillAura : Module() {
     private fun updateRotations(entity: Entity): Boolean {
         if (rotations.get().equals("none", true)) return true
 
-        val disabler = LiquidBounce.moduleManager.getModule(Disabler::class.java)!! as Disabler
+        val disabler = LiquidBounce.moduleManager.getModule(Disabler::class.java)!!
         val modify = disabler.canModifyRotation
 
         if (modify) return true // just ignore then
@@ -1275,7 +1275,7 @@ class KillAura : Module() {
             return
         }
 
-        val disabler = LiquidBounce.moduleManager.getModule(Disabler::class.java)!! as Disabler
+        val disabler = LiquidBounce.moduleManager.getModule(Disabler::class.java)!!
 
         // Completely disable rotation check if turn speed equals to 0 or NoHitCheck is enabled
         if(yawMaxTurnSpeed.get() <= 0F || noHitCheck.get() || disabler.canModifyRotation) {
@@ -1420,6 +1420,6 @@ class KillAura : Module() {
     /**
      * HUD Tag
      */
-    override val tag: String?
+    override val tag: String
         get() = targetModeValue.get()
 }

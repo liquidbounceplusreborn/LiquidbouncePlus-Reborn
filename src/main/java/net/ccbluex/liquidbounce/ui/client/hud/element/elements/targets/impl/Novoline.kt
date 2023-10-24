@@ -75,7 +75,7 @@ class Novoline(inst: Target): TargetStyle("Novoline", inst, true) {
         RenderUtils.newDrawRect(-1F, -2F, nameLength + 40, 38F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         val percent = entity?.health?.toInt()
         val nameLength = (Fonts.minecraftFont.getStringWidth(entity?.name)).coerceAtLeast(
             Fonts.minecraftFont.getStringWidth(

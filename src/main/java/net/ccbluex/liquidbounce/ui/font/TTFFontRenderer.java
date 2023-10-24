@@ -22,7 +22,7 @@ public class TTFFontRenderer {
     /**
      * The font to be drawn.
      */
-    private Font font;
+    private final Font font;
 
     /**
      * If fractional metrics should be used in the font renderer.
@@ -32,22 +32,22 @@ public class TTFFontRenderer {
     /**
      * All the character data information (regular).
      */
-    private CharacterData[] regularData;
+    private final CharacterData[] regularData;
 
     /**
      * All the character data information (bold).
      */
-    private CharacterData[] boldData;
+    private final CharacterData[] boldData;
 
     /**
      * All the character data information (italics).
      */
-    private CharacterData[] italicsData;
+    private final CharacterData[] italicsData;
 
     /**
      * All the color codes used in minecraft.
      */
-    private int[] colorCodes = new int[32];
+    private final int[] colorCodes = new int[32];
 
     /**
      * The margin on each texture.
@@ -62,7 +62,7 @@ public class TTFFontRenderer {
     /**
      * The random offset in obfuscated text.
      */
-    private static int RANDOM_OFFSET = 1;
+    private static final int RANDOM_OFFSET = 1;
 
     public TTFFontRenderer(Font font) {
         this(font, 256);
@@ -198,7 +198,7 @@ public class TTFFontRenderer {
         }
 
         // Flips the byte buffer, not sure why this is needed.
-        ((java.nio.Buffer)buffer).flip();
+        buffer.flip();
 
         // Binds the opengl texture by the texture id.
         GlStateManager.bindTexture(textureId);
@@ -645,7 +645,7 @@ public class TTFFontRenderer {
         /**
          * The id of the character texture.
          */
-        private int textureId;
+        private final int textureId;
 
         public CharacterData(char character, float width, float height, int textureId) {
             this.character = character;

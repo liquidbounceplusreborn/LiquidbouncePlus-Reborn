@@ -132,7 +132,7 @@ public class GLUtils
         }
     }
 
-    private static Map<Integer, Boolean> glCapMap = new HashMap();
+    private static final Map<Integer, Boolean> glCapMap = new HashMap();
 
     public static double interpolate(double current, double old, double scale) {
         return old + (current - old) * scale;

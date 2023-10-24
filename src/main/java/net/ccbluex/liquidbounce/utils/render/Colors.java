@@ -28,7 +28,7 @@ public enum Colors {
 
     public int c;
 
-    private Colors(int co) {
+    Colors(int co) {
         this.c = co;
     }
 

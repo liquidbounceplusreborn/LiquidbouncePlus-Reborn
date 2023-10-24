@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.io.File
 import java.io.IOException
+import java.util.*
 
 class LocalThemeCommand : Command("localtheme", arrayOf("localthememanager", "ltm", "localthemes")) {
     /**
@@ -115,7 +116,7 @@ class LocalThemeCommand : Command("localtheme", arrayOf("localthememanager", "lt
         return when (args.size) {
             1 -> listOf("delete", "list", "load", "save").filter { it.startsWith(args[0], true) }
             2 -> {
-                when (args[0].toLowerCase()) {
+                when (args[0].lowercase(Locale.getDefault())) {
                     "delete", "load" -> {
                         val settings = this.getLocalThemes() ?: return emptyList()
 

@@ -126,5 +126,5 @@ public class GLUtils
         }
     }
 
-    private static Map<Integer, Boolean> glCapMap = new HashMap();
+    private static final Map<Integer, Boolean> glCapMap = new HashMap();
 }

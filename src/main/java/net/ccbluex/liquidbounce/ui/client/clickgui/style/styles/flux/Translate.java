@@ -10,7 +10,7 @@ public final class Translate {
         this.y = y;
     }
 
-    public final void interpolate(float targetX, float targetY, double smoothing) {
+    public void interpolate(float targetX, float targetY, double smoothing) {
         if(first) {
             this.x = AnimationUtil.animate(targetX, this.x, smoothing);
             this.y = AnimationUtil.animate(targetY, this.y, smoothing);
@@ -21,12 +21,12 @@ public final class Translate {
         }
     }
 
-    public final void interpolate3(float targetX, float targetY, double smoothing) {
+    public void interpolate3(float targetX, float targetY, double smoothing) {
         this.x = AnimationUtil.animate(targetX, this.x, smoothing);
         this.y = AnimationUtil.animate(targetY, this.y, smoothing);
     }
 
-    public final void interpolate2(float targetX, float targetY, double smoothing) {
+    public void interpolate2(float targetX, float targetY, double smoothing) {
         this.x = targetX;
         this.y = AnimationUtil.animate(targetY, this.y, smoothing);
     }

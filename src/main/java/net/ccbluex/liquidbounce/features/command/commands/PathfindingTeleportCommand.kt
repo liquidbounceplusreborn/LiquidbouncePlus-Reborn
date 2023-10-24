@@ -27,10 +27,10 @@ class PathfindingTeleportCommand : Command("ptp", emptyArray()) {
 
             // Attempt to teleport to player's position.
             if (targetPlayer != null) {
-                val pathfinding = PathUtils.findBlinkPath(targetPlayer!!.posX, targetPlayer!!.posY, targetPlayer!!.posZ)
+                val pathfinding = PathUtils.findBlinkPath(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ)
                 for (path in pathfinding) 
                     mc.thePlayer.setPositionAndUpdate(path.x, path.y, path.z)
-                chat("Attempted to teleport you to §a${targetPlayer!!.name}§3.")
+                chat("Attempted to teleport you to §a${targetPlayer.name}§3.")
                 return
             } else {
                 chat("§6We couldn't find any player in the current world with that name.")

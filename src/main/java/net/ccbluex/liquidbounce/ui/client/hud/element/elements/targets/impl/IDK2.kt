@@ -40,7 +40,7 @@ class IDK2(inst: Target): TargetStyle("IDK2", inst, false) {
             (startPos.toInt() + 2).toFloat(), 30f, 0xffffff)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(0F, 0F, 100f, 44f)
     }
 }

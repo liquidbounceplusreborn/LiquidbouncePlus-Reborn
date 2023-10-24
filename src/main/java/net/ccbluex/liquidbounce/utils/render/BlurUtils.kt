@@ -19,7 +19,7 @@ import net.minecraft.util.ResourceLocation
 
 object BlurUtils : MinecraftInstance() {
 
-    private val shaderGroup = ShaderGroup(mc.textureManager, mc.resourceManager, mc.getFramebuffer(), ResourceLocation("shaders/post/blurArea.json"))
+    private val shaderGroup = ShaderGroup(mc.textureManager, mc.resourceManager, mc.framebuffer, ResourceLocation("shaders/post/blurArea.json"))
     private val framebuffer = shaderGroup.mainFramebuffer
     private val frbuffer = shaderGroup.getFramebufferRaw("result")
 
@@ -97,7 +97,7 @@ object BlurUtils : MinecraftInstance() {
 
         framebuffer.bindFramebuffer(true)
         shaderGroup.loadShaderGroup(mc.timer.renderPartialTicks)
-        mc.getFramebuffer().bindFramebuffer(true)
+        mc.framebuffer.bindFramebuffer(true)
 
         Stencil.write(displayClipMask)
         triggerMethod()
@@ -117,7 +117,7 @@ object BlurUtils : MinecraftInstance() {
         val f2 = frbuffer.framebufferWidth.toDouble() / frbuffer.framebufferTextureWidth.toDouble()
         val f3 = frbuffer.framebufferHeight.toDouble() / frbuffer.framebufferTextureHeight.toDouble()
         val tessellator = Tessellator.getInstance()
-        val worldrenderer = tessellator.getWorldRenderer()
+        val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
         worldrenderer.pos(0.0, height.toDouble(), 0.0).tex(0.0, 0.0).color(255, 255, 255, 255).endVertex()
         worldrenderer.pos(width.toDouble(), height.toDouble(), 0.0).tex(f2, 0.0).color(255, 255, 255, 255).endVertex()

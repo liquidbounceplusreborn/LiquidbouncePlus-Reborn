@@ -115,7 +115,7 @@ class LiquidBounce(inst: Target): TargetStyle("LiquidBounce", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, width, 36F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         entity ?: return Border(0F, 0F, 118F, 36F)
         val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
                         .coerceAtLeast(118)

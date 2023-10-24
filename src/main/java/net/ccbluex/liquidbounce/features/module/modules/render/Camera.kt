@@ -75,7 +75,7 @@ class Camera : Module(){
     @EventTarget
     private fun renderHud(event: Render2DEvent) {
         if (fpsHurtCam.get()) {
-            val color = getColor( 0);
+            val color = getColor( 0)
             run {
                 val sr = ScaledResolution(mc)
                 if (mc.thePlayer.hurtTime >= 1) {

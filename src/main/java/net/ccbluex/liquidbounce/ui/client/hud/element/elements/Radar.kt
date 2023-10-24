@@ -73,7 +73,7 @@ class Radar(x: Double = 5.0, y: Double = 130.0) : Element(x, y) {
     private val borderBlueValue = IntegerValue("Border Blue", 0, 0, 255)
     private val borderAlphaValue = IntegerValue("Border Alpha", 150, 0, 255)
 
-    override fun drawElement(): Border? {
+    override fun drawElement(): Border {
         val renderViewEntity = mc.renderViewEntity
 
         val size = sizeValue.get()

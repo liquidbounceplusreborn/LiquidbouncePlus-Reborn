@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
+import java.util.*
 
 @ModuleInfo(name = "KeepAlive", spacedName = "Keep Alive", description = "Tries to prevent you from dying.", category = ModuleCategory.PLAYER)
 class KeepAlive : Module() {
@@ -26,7 +27,7 @@ class KeepAlive : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (mc.thePlayer!!.health <= maxHealthValue.get()) {
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "/heal" -> mc.thePlayer.sendChatMessage("/heal")
                 "soup" -> {
                     val soupInHotbar = InventoryUtils.findItem(36, 45, Items.mushroom_stew)

@@ -74,7 +74,7 @@ class NovolineThree(inst: Target): TargetStyle("Novoline3", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, 118F, 34F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(0F, 0F, 118F, 34F)
     }
 }

@@ -92,7 +92,7 @@ class Moon(inst: Target): TargetStyle("Moon", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, width + 40.5f, 51.5F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         entity ?: return Border(0F, 0F, 118F + 40.5f, 51.5F)
         val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
                         .coerceAtLeast(118)

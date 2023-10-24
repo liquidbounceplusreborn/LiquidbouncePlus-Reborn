@@ -17,7 +17,7 @@ class HypixelNew : SpeedMode("HypixelNew") {
     }
 
     override fun onUpdate() {
-        val speedModule = (LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed)!!
+        val speedModule = (LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed)
         if (mc.thePlayer.onGround) {
             mc.thePlayer.jump()
             mc.thePlayer.motionY = speedModule.jumpYValue.get().toDouble()

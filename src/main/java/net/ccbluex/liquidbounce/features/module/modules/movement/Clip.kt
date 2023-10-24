@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import java.util.*
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -28,7 +29,7 @@ class Clip : Module() {
         val x = -sin(yaw) * horizontalValue.get()
         val z = cos(yaw) * horizontalValue.get()
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "teleport" -> mc.thePlayer.setPosition(mc.thePlayer.posX + x, mc.thePlayer.posY + verticalValue.get(),
                     mc.thePlayer.posZ + z)
 

@@ -48,29 +48,29 @@ public class UiUtils
 	}
 	public static void drawImage(ResourceLocation image, int x, int y, int width, int height) {
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-		GL11.glDisable((int)2929);
-		GL11.glEnable((int)3042);
-		GL11.glDepthMask((boolean)false);
-		OpenGlHelper.glBlendFunc((int)770, (int)771, (int)1, (int)0);
-		GL11.glColor4f((float)1.0f, (float)1.0f, (float)1.0f, (float)1.0f);
+		GL11.glDisable(2929);
+		GL11.glEnable(3042);
+		GL11.glDepthMask(false);
+		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+		GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(image);
-		Gui.drawModalRectWithCustomSizedTexture((int)x, (int)y, (float)0.0f, (float)0.0f, (int)width, (int)height, (float)width, (float)height);
-		GL11.glDepthMask((boolean)true);
-		GL11.glDisable((int)3042);
-		GL11.glEnable((int)2929);
+		Gui.drawModalRectWithCustomSizedTexture(x, y, 0.0f, 0.0f, width, height, (float)width, (float)height);
+		GL11.glDepthMask(true);
+		GL11.glDisable(3042);
+		GL11.glEnable(2929);
 	}
 	public static void drawImage(ResourceLocation image, int x, int y, int width, int height, Color color) {
 		ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
-		GL11.glDisable((int)2929);
-		GL11.glEnable((int)3042);
-		GL11.glDepthMask((boolean)false);
-		OpenGlHelper.glBlendFunc((int)770, (int)771, (int)1, (int)0);
-		GL11.glColor4f((float)((float)color.getRed() / 255.0f), (float)((float)color.getBlue() / 255.0f), (float)((float)color.getRed() / 255.0f), (float)1.0f);
+		GL11.glDisable(2929);
+		GL11.glEnable(3042);
+		GL11.glDepthMask(false);
+		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
+		GL11.glColor4f((float)color.getRed() / 255.0f, (float)color.getBlue() / 255.0f, (float)color.getRed() / 255.0f, 1.0f);
 		Minecraft.getMinecraft().getTextureManager().bindTexture(image);
-		Gui.drawModalRectWithCustomSizedTexture((int)x, (int)y, (float)0.0f, (float)0.0f, (int)width, (int)height, (float)width, (float)height);
-		GL11.glDepthMask((boolean)true);
-		GL11.glDisable((int)3042);
-		GL11.glEnable((int)2929);
+		Gui.drawModalRectWithCustomSizedTexture(x, y, 0.0f, 0.0f, width, height, (float)width, (float)height);
+		GL11.glDepthMask(true);
+		GL11.glDisable(3042);
+		GL11.glEnable(2929);
 	}
 	public static void drawRoundRect(double d, double e, double g, double h, int color)
 	{
@@ -106,7 +106,7 @@ public class UiUtils
 		}
 		GL11.glPushMatrix();
 		GL11.glEnable(3089);
-		GL11.glScissor((int)(x * scaleFactor), (int)(mc.displayHeight - (y + height) * scaleFactor), (int)(width * scaleFactor), (int)(height * scaleFactor));
+		GL11.glScissor(x * scaleFactor, mc.displayHeight - (y + height) * scaleFactor, width * scaleFactor, height * scaleFactor);
 	}
 	public static void stopGlScissor(){
 		GL11.glDisable(3089);

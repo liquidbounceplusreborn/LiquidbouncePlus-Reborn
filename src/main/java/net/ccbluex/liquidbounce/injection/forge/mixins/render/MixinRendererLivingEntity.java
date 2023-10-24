@@ -163,7 +163,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         GlStateManager.disableCull();
         this.mainModel.swingProgress = this.getSwingProgress(entity, partialTicks);
         this.mainModel.isRiding = entity.isRiding();
-        this.mainModel.isChild = PlayerEdit.baby.get() && (LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyMe.get() && entity == Minecraft.getMinecraft().thePlayer || LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyOther.get() && entity != Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState() ? true :entity.isChild();
+        this.mainModel.isChild = PlayerEdit.baby.get() && (LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyMe.get() && entity == Minecraft.getMinecraft().thePlayer || LiquidBounce.moduleManager.getModule(PlayerEdit.class).onlyOther.get() && entity != Minecraft.getMinecraft().thePlayer) && LiquidBounce.moduleManager.getModule(PlayerEdit.class).getState() || entity.isChild();
 
         try
         {
@@ -252,11 +252,11 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             }
 
 
-            Rotations rotations = (Rotations)LiquidBounce.moduleManager.getModule(Rotations.class);
+            Rotations rotations = LiquidBounce.moduleManager.getModule(Rotations.class);
             float renderpitch = (Minecraft.getMinecraft().gameSettings.thirdPersonView != 0 && rotations.getState() && rotations.getFakeValue().get() && entity == Minecraft.getMinecraft().thePlayer) ? (entity.prevRotationPitch + (((RotationUtils.serverRotation.getPitch() != 0.0f) ? RotationUtils.serverRotation.getPitch() : entity.rotationPitch) - entity.prevRotationPitch)) : (entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks);
             float renderyaw = (Minecraft.getMinecraft().gameSettings.thirdPersonView != 0 && rotations.getState() && rotations.getFakeValue().get() && entity == Minecraft.getMinecraft().thePlayer) ? (entity.prevRotationYaw + (((RotationUtils.serverRotation.getYaw() != 0.0f) ? RotationUtils.serverRotation.getYaw() : entity.rotationYaw) - entity.prevRotationYaw)) : (entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks);
             assert rotations != null;
-            if(rotations.getState() && rotations.getFakeValue().get()&&entity.equals(Minecraft.getMinecraft().thePlayer) && rotations.shouldRotate()) {
+            if(rotations.getState() && rotations.getFakeValue().get()&&entity.equals(Minecraft.getMinecraft().thePlayer) && Rotations.shouldRotate()) {
                 //假身绘制 :/
                 glPushMatrix();
                 GL11.glPushAttrib(1048575);
@@ -283,7 +283,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         }
         catch (Exception exception)
         {
-            logger.error((String)"Couldn\'t render entity", (Throwable)exception);
+            logger.error("Couldn't render entity", exception);
         }
 
         GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
@@ -305,7 +305,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Overwrite
     protected <T extends EntityLivingBase> boolean setBrightness(T entitylivingbaseIn, float partialTicks, boolean combineTextures)
     {
-        Camera camera = (Camera)LiquidBounce.moduleManager.getModule(Camera.class);
+        Camera camera = LiquidBounce.moduleManager.getModule(Camera.class);
         float f = entitylivingbaseIn.getBrightness(partialTicks);
         int i = this.getColorMultiplier(entitylivingbaseIn, f, partialTicks);
         boolean flag = (i >> 24 & 255) > 0;
@@ -379,7 +379,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             }
 
             this.brightnessBuffer.flip();
-            GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, (FloatBuffer)this.brightnessBuffer);
+            GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, this.brightnessBuffer);
             GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);
             GlStateManager.enableTexture2D();
             GlStateManager.bindTexture(field_177096_e.getGlTextureId());
@@ -403,7 +403,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Overwrite
     protected <T extends EntityLivingBase> void renderModel(T entitylivingbaseIn, float p_77036_2_, float p_77036_3_, float p_77036_4_, float p_77036_5_, float p_77036_6_, float scaleFactor) {
         boolean visible = !entitylivingbaseIn.isInvisible();
-        final TrueSight trueSight = (TrueSight) LiquidBounce.moduleManager.getModule(TrueSight.class);
+        final TrueSight trueSight = LiquidBounce.moduleManager.getModule(TrueSight.class);
         final Chams chams = LiquidBounce.moduleManager.getModule(Chams.class);
         assert chams != null;
         boolean chamsFlag = (chams.getState() && chams.getTargetsValue().get() && !chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entitylivingbaseIn == Minecraft.getMinecraft().thePlayer) || EntityUtils.isSelected(entitylivingbaseIn, false)));

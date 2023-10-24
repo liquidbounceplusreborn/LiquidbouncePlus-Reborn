@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import java.util.*
 
 class FriendCommand : Command("friend", arrayOf("friends", "f")) {
     /**
@@ -51,7 +52,7 @@ class FriendCommand : Command("friend", arrayOf("friends", "f")) {
                         var added : Int = 0
 
                         mc.theWorld.playerEntities
-                            .filter { !AntiBot.isBot(it) && it.displayName.getFormattedText().contains(coloredRegex, false) }
+                            .filter { !AntiBot.isBot(it) && it.displayName.formattedText.contains(coloredRegex, false) }
                             .forEach {
                                 if (friendsConfig.addFriend(it.name))
                                     added++
@@ -132,7 +133,7 @@ class FriendCommand : Command("friend", arrayOf("friends", "f")) {
         return when (args.size) {
             1 -> listOf("add", "addall", "remove", "removeall", "list", "clear").filter { it.startsWith(args[0], true) }
             2 -> {
-                when (args[0].toLowerCase()) {
+                when (args[0].lowercase(Locale.getDefault())) {
                     "add" -> {
                         return mc.theWorld.playerEntities
                             .map { it.name }

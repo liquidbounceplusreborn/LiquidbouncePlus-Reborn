@@ -32,6 +32,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
@@ -292,7 +293,7 @@ class InvManager : Module() {
     fun move(item: Int, isArmorSlot: Boolean): Boolean {
         if (!isArmorSlot && item < 9 && hotbarValue.get() && mc.currentScreen !is GuiInventory && !spoofInventory) {
             if (item != mc.thePlayer.inventory.currentItem) mc.netHandler.addToSendQueue(C09PacketHeldItemChange(item))
-            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(item).getStack()))
+            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(item).stack))
             if (item != mc.thePlayer.inventory.currentItem) mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
 
             delay = TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
@@ -389,7 +390,7 @@ class InvManager : Module() {
     private fun findBetterItem(targetSlot: Int, slotStack: ItemStack?): Int? {
         val type = type(targetSlot)
 
-        when (type.toLowerCase()) {
+        when (type.lowercase(Locale.getDefault())) {
             "sword", "pickaxe", "shovel", "axe" -> {
                 val currentType: Class<out Item> = when {
                     type.equals("Sword", ignoreCase = true) -> ItemSword::class.java

@@ -22,6 +22,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C07PacketPlayerDigging
+import java.util.*
 
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
@@ -42,7 +43,7 @@ class Criticals : Module() {
 //        if (modeValue.get().equals("NoGround", ignoreCase = true))
 //            mc.thePlayer.jump()
         canCrits = true
-        counter = 0;
+        counter = 0
     }
 
     @EventTarget
@@ -61,7 +62,7 @@ class Criticals : Module() {
             val y = mc.thePlayer.posY
             val z = mc.thePlayer.posZ
 
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "newpacket" -> {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.05250000001304, z, true))
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00150000001304, z, false))
@@ -169,24 +170,24 @@ class Criticals : Module() {
         
         val packet = event.packet
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "redesky" -> {
                 if (packet is C03PacketPlayer) {
-                    val packetPlayer: C03PacketPlayer = packet as C03PacketPlayer
+                    val packetPlayer: C03PacketPlayer = packet
                     if(mc.thePlayer.onGround && canCrits) {
                         packetPlayer.y += 0.000001
                         packetPlayer.onGround = false
                     }
-                    if(mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.getEntityBoundingBox().offset(
+                    if(mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(
                                     0.0, (mc.thePlayer.motionY - 0.08) * 0.98, 0.0).expand(0.0, 0.0, 0.0)).isEmpty()) {
-                        packetPlayer.onGround = true;
+                        packetPlayer.onGround = true
                     }
                 }
                 if(packet is C07PacketPlayerDigging) {
                     if(packet.status == C07PacketPlayerDigging.Action.START_DESTROY_BLOCK) {
-                        canCrits = false;
+                        canCrits = false
                     } else if(packet.status == C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK || packet.status == C07PacketPlayerDigging.Action.ABORT_DESTROY_BLOCK) {
-                        canCrits = true;
+                        canCrits = true
                     }
                 }
             }
@@ -209,6 +210,6 @@ class Criticals : Module() {
 
     }
 
-    override val tag: String?
+    override val tag: String
         get() = modeValue.get()
 }

@@ -18,7 +18,7 @@ class Simplicity(inst: Target): TargetStyle("Simplicity", inst, true) {
         GlStateManager.pushMatrix()
         var width = 100.0
         width = PlayerUtils.getIncremental(width, -50.0)
-        Fonts.font35.drawStringWithShadow("\u00a7l" + entity.getName(), (38).toFloat(), 2.0f, -1)
+        Fonts.font35.drawStringWithShadow("\u00a7l" + entity.name, (38).toFloat(), 2.0f, -1)
         if (width < 80.0) {
             width = 80.0
         }
@@ -61,7 +61,7 @@ class Simplicity(inst: Target): TargetStyle("Simplicity", inst, true) {
 
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(37F, 0F, 119F, 20F)
     }
 }

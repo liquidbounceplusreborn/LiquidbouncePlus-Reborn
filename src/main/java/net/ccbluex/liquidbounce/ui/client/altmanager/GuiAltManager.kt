@@ -270,7 +270,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 }
 
                 // Copy to clipboard
-                Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(formattedData), null);
+                Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(formattedData), null)
                 status = "§aCopied account into your clipboard."
             }
             88 -> { // Gui Change Name Button
@@ -293,9 +293,9 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
                     status = when (loginResult) {
                         LoginUtils.LoginResult.LOGGED -> {
-                            if (GuiAltManager.altService.currentService != AltService.EnumAltService.MOJANG) {
+                            if (altService.currentService != AltService.EnumAltService.MOJANG) {
                                 try {
-                                    GuiAltManager.altService.switchService(AltService.EnumAltService.MOJANG)
+                                    altService.switchService(AltService.EnumAltService.MOJANG)
                                 } catch (e: NoSuchFieldException) {
                                     ClientUtils.getLogger().error("Something went wrong while trying to switch alt service.", e)
                                 } catch (e: IllegalAccessException) {
@@ -369,7 +369,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         searchField.updateCursorCounter()
     }
 
-    private inner class GuiList constructor(prevGui: GuiScreen) : GuiSlot(mc, prevGui.width, prevGui.height, 40, prevGui.height - 40, 30) {
+    private inner class GuiList(prevGui: GuiScreen) : GuiSlot(mc, prevGui.width, prevGui.height, 40, prevGui.height - 40, 30) {
 
         val accounts: List<MinecraftAccount>
             get() {

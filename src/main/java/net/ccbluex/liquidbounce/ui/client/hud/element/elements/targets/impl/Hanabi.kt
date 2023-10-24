@@ -28,10 +28,10 @@ class Hanabi(inst: Target): TargetStyle("Hanabi", inst, true) {
         val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
             .coerceAtLeast(140)
             .toFloat()
-        health = entity.getHealth()
-        hpPercentage = (health / entity.getMaxHealth()).toDouble()
+        health = entity.health
+        hpPercentage = (health / entity.maxHealth).toDouble()
         hurt = Color.getHSBColor(310f / 360f, entity.hurtTime.toFloat() / 10f, 1f)
-        healthStr = (entity.getHealth().toInt().toFloat() / 2.0f).toString()
+        healthStr = (entity.health.toInt().toFloat() / 2.0f).toString()
         hpPercentage = MathHelper.clamp_double(hpPercentage, 0.0, 1.0)
         val hpWidth = 140.0 * hpPercentage
         targetInstance.healthBarWidth2 = AnimationUtils.animate(hpWidth, targetInstance.healthBarWidth2, 0.20000000298023224)
@@ -77,7 +77,7 @@ class Hanabi(inst: Target): TargetStyle("Hanabi", inst, true) {
             15f,
             blackcolor2
         )
-        Fonts.fontSFUI40.drawString(entity.getName(), 38.0f, 4.0f, blackcolor2)
+        Fonts.fontSFUI40.drawString(entity.name, 38.0f, 4.0f, blackcolor2)
         mc.textureManager.bindTexture((entity as AbstractClientPlayer).locationSkin)
         Gui.drawScaledCustomSizeModalRect(3, 3, 8.0f, 8.0f, 8, 8, 32, 32, 64f, 64f)
     }
@@ -98,7 +98,7 @@ class Hanabi(inst: Target): TargetStyle("Hanabi", inst, true) {
         RenderUtils.originalRoundedRect(0F, 0F, 140F, 40F, 8F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(0F, 0F, 140F, 40F)
     }
 }

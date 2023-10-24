@@ -29,15 +29,15 @@ public abstract class SpeedMode extends MinecraftInstance {
 
     public abstract void onMotion();
 
-    public void onMotion(MotionEvent eventMotion) { };
+    public void onMotion(MotionEvent eventMotion) { }
 
     public abstract void onUpdate();
 
     public abstract void onMove(final MoveEvent event);
 
-    public void onPacket(PacketEvent eventPacket) { };
+    public void onPacket(PacketEvent eventPacket) { }
 
-    public void onJump(JumpEvent event) { };
+    public void onJump(JumpEvent event) { }
 
     public void onTick() {
     }

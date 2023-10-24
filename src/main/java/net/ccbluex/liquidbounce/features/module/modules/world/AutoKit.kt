@@ -72,7 +72,7 @@ class AutoKit : Module() {
         if (clickStage == 1) { // minimum requirement in case of duplicated s2f packets
             if (!delayTimer.hasTimePassed(1000L)) return
             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(expectSlot - 36))
-            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(expectSlot).getStack()))
+            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(expectSlot).stack))
             clickStage = 2
             delayTimer.reset()
             debug("clicked kit selector")

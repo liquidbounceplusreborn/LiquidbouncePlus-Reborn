@@ -119,7 +119,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             f1 = 75.0F;
         }
 
-        if (rotations.shouldRotate() && rotations.getBodyValue().get() && (EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
+        if (Rotations.shouldRotate() && rotations.getBodyValue().get() && (EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
             f1 = 0.0F;
         }
 
@@ -148,15 +148,15 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         this.motionY = jumpEvent.getMotion();
 
         if (this.isPotionActive(Potion.jump))
-            this.motionY += (double) ((float) (this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F);
+            this.motionY += (float) (this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
 
         if (this.isSprinting()) {
             final KillAura auraMod = LiquidBounce.moduleManager.getModule(KillAura.class);
             final Sprint sprintMod = LiquidBounce.moduleManager.getModule(Sprint.class);
             float yaw = this.rotationYaw;
             float f = jumpEvent.getYaw() * ((float)Math.PI / 180F);
-            this.motionX -= (double) (MathHelper.sin(f) * 0.2F);
-            this.motionZ += (double) (MathHelper.cos(f) * 0.2F);
+            this.motionX -= MathHelper.sin(f) * 0.2F;
+            this.motionZ += MathHelper.cos(f) * 0.2F;
         }
 
         this.isAirBorne = true;
@@ -205,7 +205,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Overwrite
     private int getArmSwingAnimationEnd() {
         int speed = LiquidBounce.moduleManager.getModule(Animations.class).getState() ? 2 + (20 - Animations.SpeedSwing.get()) : 6;
-        return this.isPotionActive(Potion.digSpeed) ? speed - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) * 1 : (this.isPotionActive(Potion.digSlowdown) ? speed + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : speed);
+        return this.isPotionActive(Potion.digSpeed) ? speed - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) : (this.isPotionActive(Potion.digSlowdown) ? speed + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : speed);
     }
 
     @ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))

@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.lang.Math.pow
+import java.util.*
 import kotlin.math.sqrt
 
 /**
@@ -95,7 +96,7 @@ class Graph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
         lastValue = graphValue.get()
 
         if (timer.hasTimePassed(updateDelay.get().toLong())) {
-            when (graphValue.get().toLowerCase()) {
+            when (graphValue.get().lowercase(Locale.getDefault())) {
                 "speed" -> valueStore.add(MovementUtils.getSpeed() * 10F)
                 "bps" -> valueStore.add(speedVal)
                 "packet-in" -> valueStore.add(PacketUtils.avgInBound.toFloat())
@@ -117,12 +118,12 @@ class Graph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
 		val average = if (graphValue.get().startsWith("packet", true)) averageNumber.toInt().toString() else String.format("%.2f", averageNumber)
 
         if (displayGraphName.get()) {
-            var displayString = if (nameValue.get()) when (graphValue.get().toLowerCase()) {
+            var displayString = if (nameValue.get()) when (graphValue.get().lowercase(Locale.getDefault())) {
                 "speed" -> "Player speed ($working blocks/tick)"
                 "bps" -> "Player speed ($working blocks/s)"
                 "packet-in" -> "Inbound packets ($working packets/s)"
                 else -> "Outbound packets ($working packets/s)"
-            } else when (graphValue.get().toLowerCase()) {
+            } else when (graphValue.get().lowercase(Locale.getDefault())) {
                 "speed" -> "Player speed"
                 "bps" -> "Player blocks/s"
                 "packet-in" -> "Inbound packets"
@@ -153,7 +154,7 @@ class Graph(x: Double = 75.0, y: Double = 110.0, scale: Float = 1F,
 		GL11.glLineWidth(thickness.get())
 		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
 		val tessellator = Tessellator.getInstance()
-		val worldRenderer = tessellator.getWorldRenderer()
+		val worldRenderer = tessellator.worldRenderer
         if (showAverageLine.get() && averageLayer.get().equals("bottom", true)) {
             GlStateManager.color(0.1F, 1F, 0.1F, 1F)
 		    worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION)

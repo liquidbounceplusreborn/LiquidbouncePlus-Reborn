@@ -69,7 +69,7 @@ class PlayerList : Element() {
         nameLength = font.getStringWidth("Name (${playerList.size})").toFloat()
 
         when (sortValue.get()) {
-            "Alphabet" -> playerList.sortWith(compareBy { it.name.toLowerCase() })
+            "Alphabet" -> playerList.sortWith(compareBy { it.name.lowercase(Locale.getDefault()) })
             "Distance" -> playerList.sortWith(Comparator{ a, b -> mc.thePlayer.getDistanceToEntityBox(a).compareTo(mc.thePlayer.getDistanceToEntityBox(b)) })
             else -> playerList.sortWith(Comparator{ a, b -> a.health.compareTo(b.health) })
         }

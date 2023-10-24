@@ -30,9 +30,9 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
             52.0,
             net.ccbluex.liquidbounce.utils.render.Colors.getColor(0, 0, 0, 180)
         )
-        mc.fontRendererObj.drawStringWithShadow(entity.getName(), 0.0f, -8.0f, Color(255, 255, 255).rgb)
+        mc.fontRendererObj.drawStringWithShadow(entity.name, 0.0f, -8.0f, Color(255, 255, 255).rgb)
         RenderUtils.drawRect(0.0, (8.0f + Math.round(40.0f)).toDouble(), 130.0, 40.0, colors2)
-        if (entity.getHealth() / 2.0f + entity.getAbsorptionAmount() / 2.0f > 1.0) {
+        if (entity.health / 2.0f + entity.absorptionAmount / 2.0f > 1.0) {
             RenderUtils.drawRect(
                 0.0,
                 (8.0f + Math.round(40.0f)).toDouble(),
@@ -75,7 +75,7 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
         RenderUtils.originalRoundedRect(-23F, 41F, 148F, 107F, 8F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(-23F, 41F, 148F, 107F)
     }
 }

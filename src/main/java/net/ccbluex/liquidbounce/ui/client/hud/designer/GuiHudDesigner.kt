@@ -61,7 +61,7 @@ class GuiHudDesigner : GuiScreen() {
         if (!(mouseX >= editorPanel.x && mouseX <= editorPanel.x + editorPanel.width && mouseY >= editorPanel.y &&
                         mouseY <= editorPanel.y + min(editorPanel.realHeight, 200))) {
             selectedElement = null
-            editorPanel.create = false;
+            editorPanel.create = false
         }
 
         if (mouseButton == 0) {

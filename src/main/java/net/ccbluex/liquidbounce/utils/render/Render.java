@@ -71,7 +71,7 @@ public class Render {
         GL11.glDisable(3042);
         GL11.glPopMatrix();
         if (d==1.5F) {
-            this.alpha = MathHelper.clamp_float(this.alpha = (float) ((double) this.alpha  - 1.0D * var15), 0.0F, 255.0F);
+            this.alpha = MathHelper.clamp_float(this.alpha = (float) ((double) this.alpha  - var15), 0.0F, 255.0F);
         }
         this.d = MathHelper.clamp_float(this.d = (float)((double)this.d + 0.005D * var14), 0.0F, 1.5F);
     }

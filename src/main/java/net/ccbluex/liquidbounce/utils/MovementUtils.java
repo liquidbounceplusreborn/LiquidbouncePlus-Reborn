@@ -49,7 +49,7 @@ public final class MovementUtils extends MinecraftInstance {
             return false;
         }
         for (int off = 0; off < (int) mc.thePlayer.posY + 2; off += 2) {
-            final AxisAlignedBB bb = mc.thePlayer.getEntityBoundingBox().offset(0.0, (double) (-off), 0.0);
+            final AxisAlignedBB bb = mc.thePlayer.getEntityBoundingBox().offset(0.0, -off, 0.0);
             if (!mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty()) {
                 return true;
             }
@@ -226,11 +226,8 @@ public final class MovementUtils extends MinecraftInstance {
     }
 
     public static boolean isOnGround(double height) {
-        if (!Minecraft.getMinecraft().theWorld.getCollidingBoundingBoxes(Minecraft.getMinecraft().thePlayer,
-                Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().offset(0.0D, -height, 0.0D)).isEmpty()) {
-            return true;
-        }
-        return false;
+        return !Minecraft.getMinecraft().theWorld.getCollidingBoundingBoxes(Minecraft.getMinecraft().thePlayer,
+                Minecraft.getMinecraft().thePlayer.getEntityBoundingBox().offset(0.0D, -height, 0.0D)).isEmpty();
     }
 
     public static int getSpeedEffect() {
@@ -329,7 +326,7 @@ public final class MovementUtils extends MinecraftInstance {
     }
 
     public static void setSpeed(MoveEvent moveEvent, double moveSpeed) {
-        setSpeed(moveEvent, moveSpeed, mc.thePlayer.rotationYaw, (double) mc.thePlayer.movementInput.moveStrafe, (double) mc.thePlayer.movementInput.moveForward);
+        setSpeed(moveEvent, moveSpeed, mc.thePlayer.rotationYaw, mc.thePlayer.movementInput.moveStrafe, mc.thePlayer.movementInput.moveForward);
     }
 
     public static void setSpeed(final MoveEvent moveEvent, final double moveSpeed, final float pseudoYaw, final double pseudoStrafe, final double pseudoForward) {

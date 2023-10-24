@@ -23,12 +23,12 @@ import java.util.*
 
 class ModuleManager : Listenable {
 
-    public val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
+    val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
 
-    public var shouldNotify : Boolean = false
-    public var toggleSoundMode = 0
-    public var toggleVolume = 0F
+    var shouldNotify : Boolean = false
+    var toggleSoundMode = 0
+    var toggleVolume = 0F
 
     init {
         LiquidBounce.eventManager.registerListener(this)

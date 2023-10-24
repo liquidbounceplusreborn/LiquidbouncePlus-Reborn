@@ -23,10 +23,10 @@ class AsuidBounce(inst: Target): TargetStyle("AsuidBounce", inst, true) {
         RenderUtils.drawRect(75F, 15.5f, 115F, 19.5f, Color(35, 35, 35, 255).rgb)
         drawHead(entity.skin, 2, 2, 30, 30)
         RenderUtils.drawOutlinedRect(1f, 1f, 33f, 33f, 0.5f, Color(65, 65, 65, 255).rgb)
-        Fonts.fontSFUI35.drawString(entity.getName(), 36F, 3f, Color.WHITE.rgb)
+        Fonts.fontSFUI35.drawString(entity.name, 36F, 3f, Color.WHITE.rgb)
         Fonts.fontSFUI35.drawString("Distance", 36F, 14f, Color.WHITE.rgb)
         Fonts.fontSFUI35.drawString(
-            "Armor " + decimalFormat2.format(entity.getTotalArmorValue() / 2f),
+            "Armor " + decimalFormat2.format(entity.totalArmorValue / 2f),
             36F,
             24f,
             Color.WHITE.rgb
@@ -34,14 +34,14 @@ class AsuidBounce(inst: Target): TargetStyle("AsuidBounce", inst, true) {
         RenderUtils.drawRect(
             1f,
             34f,
-            1f + min((Math.round(easingHealth / entity.getMaxHealth() * 10000) / 80f), 118f),
+            1f + min((Math.round(easingHealth / entity.maxHealth * 10000) / 80f), 118f),
             37f,
             targetInstance.barColor
         )
         RenderUtils.drawRect(
             75F,
             25.5f,
-            75F + min((Math.round(entity.getTotalArmorValue() / 20F * 10000) / 250f), 40f),
+            75F + min((Math.round(entity.totalArmorValue / 20F * 10000) / 250f), 40f),
             29.5f,
             Color(170, 145, 100).rgb
         )
@@ -73,7 +73,7 @@ class AsuidBounce(inst: Target): TargetStyle("AsuidBounce", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, 120F, 38F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(0F, 0F, 120F, 38F)
     }
 }

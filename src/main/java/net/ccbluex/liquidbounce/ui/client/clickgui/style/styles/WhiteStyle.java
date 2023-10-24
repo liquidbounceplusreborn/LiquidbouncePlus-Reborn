@@ -27,6 +27,7 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 public class WhiteStyle extends Style {
@@ -56,7 +57,7 @@ public class WhiteStyle extends Style {
                 double i = MathHelper.clamp_double(((double) mouseX - (double) x) / ((double) width - 3), 0, 1);
 
                 BigDecimal bigDecimal = new BigDecimal(Double.toString((min + (max - min) * i)));
-                bigDecimal = bigDecimal.setScale(2, 4);
+                bigDecimal = bigDecimal.setScale(2, RoundingMode.HALF_UP);
                 return bigDecimal.floatValue();
             }
         }
@@ -288,7 +289,7 @@ public class WhiteStyle extends Style {
 
     private BigDecimal round(final float v) {
         BigDecimal bigDecimal = new BigDecimal(Float.toString(v));
-        bigDecimal = bigDecimal.setScale(2, 4);
+        bigDecimal = bigDecimal.setScale(2, RoundingMode.HALF_UP);
         return bigDecimal;
     }
 

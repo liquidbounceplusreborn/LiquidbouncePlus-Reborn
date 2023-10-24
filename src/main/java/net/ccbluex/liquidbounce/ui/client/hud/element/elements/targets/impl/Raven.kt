@@ -18,7 +18,7 @@ class Raven(inst: Target): TargetStyle("Raven", inst, false) {
         val y = 0.0
         RenderUtils.newDrawRect(x, y, Fonts.minecraftFont.getStringWidth(entity.name) + 60.0, 30.0,Color(0, 0, 0, 100).rgb)
 
-        RenderUtils.newDrawRect(x, (y + maxHealth - health) * 1.5,1.0, 30.0, targetInstance.barColor.rgb);
+        RenderUtils.newDrawRect(x, (y + maxHealth - health) * 1.5,1.0, 30.0, targetInstance.barColor.rgb)
 
         Fonts.minecraftFont.drawStringWithShadow("Target: $targetName", (x + 6).toFloat(), (y + 5).toFloat(),Color(255, 255, 255).rgb)
         Fonts.minecraftFont.drawStringWithShadow("Health: ", (x + 6).toFloat(), (y + 9 + Fonts.minecraftFont.FONT_HEIGHT).toFloat(), Color(255, 255, 255).rgb)
@@ -28,7 +28,7 @@ class Raven(inst: Target): TargetStyle("Raven", inst, false) {
         Fonts.minecraftFont.drawStringWithShadow(winorlose, (x + 6 + Fonts.minecraftFont.getStringWidth("Target: $targetName ")).toFloat(), (y + 5).toFloat(), (if (winorlose == "W")  Color(0, 255, 0).rgb else Color(139, 0, 0).rgb))
 
     }
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         entity ?: return Border(0F, 0F, 60f, 30f)
         val width = (Fonts.minecraftFont.getStringWidth(entity.name))
                 .coerceAtLeast(60)

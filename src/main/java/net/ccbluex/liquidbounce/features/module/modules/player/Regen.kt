@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.potion.Potion
+import java.util.*
 
 @ModuleInfo(name = "Regen", category = ModuleCategory.PLAYER , description = "Regen")
 class Regen : Module() {
@@ -47,7 +48,7 @@ class Regen : Module() {
                 return
             }
 
-            when (modeValue.get().toLowerCase()) {
+            when (modeValue.get().lowercase(Locale.getDefault())) {
                 "vanilla" -> {
                     repeat(speedValue.get()) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))

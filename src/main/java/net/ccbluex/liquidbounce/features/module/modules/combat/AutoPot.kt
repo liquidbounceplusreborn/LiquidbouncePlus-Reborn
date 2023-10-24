@@ -67,8 +67,8 @@ class AutoPot : Module() {
     private lateinit var scaffold: Scaffold
 
     override fun onInitialize() {
-        killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)!! as KillAura
-        scaffold = LiquidBounce.moduleManager.getModule(Scaffold::class.java)!! as Scaffold
+        killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)!!
+        scaffold = LiquidBounce.moduleManager.getModule(Scaffold::class.java)!!
     }
 
     private fun resetAll() {
@@ -171,7 +171,7 @@ class AutoPot : Module() {
                 && (!noCombatValue.get() || !killAura.state || killAura.target == null) && (!scaffold.state)) {
                 val potionEffects = getPotionFromSlot(potIndex)
                 if (potionEffects != null) {
-                    val potionIds = potionEffects!!.map { it.potionID }
+                    val potionIds = potionEffects.map { it.potionID }
                     
                     if (smartValue.get()) 
                         potionIds.filter { !throwQueue.contains(it) }.forEach { throwQueue.add(it) }

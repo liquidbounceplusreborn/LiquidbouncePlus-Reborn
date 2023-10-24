@@ -41,7 +41,7 @@ class Inventory(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F) : Element
     /**
      * Draw element
      */
-    override fun drawElement(): Border? {
+    override fun drawElement(): Border {
         val colorMode = rainbowList.get()
         val color = Color(redValue.get(), greenValue.get(), blueValue.get()).rgb
         val fontRenderer = fontValue.get()

@@ -43,7 +43,7 @@ class CharRenderer(val small: Boolean): MinecraftInstance() {
         val cutY = initY + fontRend.FONT_HEIGHT.toFloat() * (3F / 4F)
 
         GL11.glEnable(3089)
-        RenderUtils.makeScissorBox(0F, orgY + initY - 4F * scaleY, scaledRes.getScaledWidth().toFloat(), orgY + cutY - 4F * scaleY)
+        RenderUtils.makeScissorBox(0F, orgY + initY - 4F * scaleY, scaledRes.scaledWidth.toFloat(), orgY + cutY - 4F * scaleY)
         for (char in reFormat.toCharArray()) {
             moveX[indexX] = AnimationUtils.animate(animX, moveX[indexX], fontSpeed * 0.025F * delta)
             animX = moveX[indexX]

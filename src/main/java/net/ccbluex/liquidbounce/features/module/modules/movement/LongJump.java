@@ -94,8 +94,8 @@ public class LongJump extends Module {
     private boolean flagged = false;
     private boolean hasFell = false;
 
-    private MSTimer dmgTimer = new MSTimer();
-    private PosLookInstance posLookInstance = new PosLookInstance();
+    private final MSTimer dmgTimer = new MSTimer();
+    private final PosLookInstance posLookInstance = new PosLookInstance();
 
     private void debug(String message) {
         if (matrixDebugValue.get())

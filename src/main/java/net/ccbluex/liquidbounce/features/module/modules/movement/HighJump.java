@@ -68,7 +68,7 @@ public class HighJump extends Module {
             return;
 
         if(!mc.thePlayer.onGround) {
-            if ("mineplex".equals(modeValue.get().toLowerCase())) {
+            if ("mineplex".equalsIgnoreCase(modeValue.get())) {
                 mc.thePlayer.motionY += mc.thePlayer.fallDistance == 0 ? 0.0499D : 0.05D;
             }
         }

@@ -17,6 +17,6 @@ public class MixinDefaultResourcePack {
 
     @Shadow
     public static final Set<String> defaultResourceDomains = ImmutableSet
-			.<String> of("minecraft", "realms");
+			.of("minecraft", "realms");
             
 }

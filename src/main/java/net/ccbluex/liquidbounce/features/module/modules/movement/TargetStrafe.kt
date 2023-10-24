@@ -28,6 +28,7 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MathHelper
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 
 @ModuleInfo(name = "TargetStrafe", description = "Strafe around your target. (Require Fly or Speed to be enabled)", category = ModuleCategory.MOVEMENT)
 class TargetStrafe : Module() {
@@ -66,7 +67,7 @@ class TargetStrafe : Module() {
 
     val cansize: Float
         get() = when {
-            radiusMode.get().toLowerCase() == "simple" ->
+            radiusMode.get().lowercase(Locale.getDefault()) == "simple" ->
                 45f / mc.thePlayer!!.getDistance(killAura.target!!.posX, mc.thePlayer!!.posY, killAura.target!!.posZ).toFloat()
             else -> 45f
         }
@@ -196,11 +197,11 @@ class TargetStrafe : Module() {
 
         if (forward != 0.0) {
             if (strafe > 0.0) {
-                if (radiusMode.get().toLowerCase() == "trueradius")
+                if (radiusMode.get().lowercase(Locale.getDefault()) == "trueradius")
                     yaw += (if (forward > 0.0) -cansize else cansize)
                 strafe2 += (if (forward > 0.0) -45 / algorithm else 45 / algorithm)
             } else if (strafe < 0.0) {
-                if (radiusMode.get().toLowerCase() == "trueradius")
+                if (radiusMode.get().lowercase(Locale.getDefault()) == "trueradius")
                     yaw += (if (forward > 0.0) cansize else -cansize)
                 strafe2 += (if (forward > 0.0) 45 / algorithm else -45 / algorithm)
             }
@@ -225,7 +226,7 @@ class TargetStrafe : Module() {
 
 
     val keyMode: Boolean
-        get() = when (modeValue.get().toLowerCase()) {
+        get() = when (modeValue.get().lowercase(Locale.getDefault())) {
             "jump" -> mc.gameSettings.keyBindJump.isKeyDown
             "none" -> mc.thePlayer.movementInput.moveStrafe != 0f || mc.thePlayer.movementInput.moveForward != 0f
             else -> false
@@ -268,9 +269,9 @@ class TargetStrafe : Module() {
             target?:return
             GL11.glPushMatrix()
             GL11.glTranslated(
-                target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosX,
-                target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosY,
-                target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.getRenderManager().renderPosZ
+                target.lastTickPosX + (target.posX - target.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX,
+                target.lastTickPosY + (target.posY - target.lastTickPosY) * mc.timer.renderPartialTicks - mc.renderManager.renderPosY,
+                target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * mc.timer.renderPartialTicks - mc.renderManager.renderPosZ
             )
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glEnable(GL11.GL_LINE_SMOOTH)
@@ -307,7 +308,7 @@ class TargetStrafe : Module() {
                         val rainbow = Color(RenderUtils.getNormalRainbow(i, saturationValue.get(), brightnessValue.get()))
                         GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
                     }
-                    "Rainbow2" -> GL11.glColor3f(rainbow2!!.red / 255.0f, rainbow2!!.green / 255.0f, rainbow2!!.blue / 255.0f)
+                    "Rainbow2" -> GL11.glColor3f(rainbow2!!.red / 255.0f, rainbow2.green / 255.0f, rainbow2.blue / 255.0f)
                     "Sky" -> GL11.glColor3f(sky.red / 255.0f, sky.green / 255.0f, sky.blue / 255.0f)
                     "Mixer" -> GL11.glColor3f(mixer.red / 255.0f, mixer.green / 255.0f, mixer.blue / 255.0f)
                     else -> GL11.glColor3f(fade.red / 255.0f, fade.green / 255.0f, fade.blue / 255.0f)

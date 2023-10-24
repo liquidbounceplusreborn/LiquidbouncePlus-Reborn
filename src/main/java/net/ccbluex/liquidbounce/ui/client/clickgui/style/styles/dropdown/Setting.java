@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 public class Setting {
     public Value setting;
-    private Module module;
+    private final Module module;
     public boolean opened;
     private final TickTimer backSpace = new TickTimer();
     private final TickTimer caretTimer = new TickTimer();
@@ -41,10 +41,10 @@ public class Setting {
 
     public void drawScreen(int mouseX, int mouseY) {
         int y = getY();
-        HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+        HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         boolean scissor = scaledResolution.getScaleFactor() != 1;
-        double clamp = MathHelper.clamp_double(Minecraft.getMinecraft().getDebugFPS() / 30, 1, 9999);
+        double clamp = MathHelper.clamp_double(Minecraft.getDebugFPS() / 30, 1, 9999);
 
 
         if (setting instanceof FloatValue) {

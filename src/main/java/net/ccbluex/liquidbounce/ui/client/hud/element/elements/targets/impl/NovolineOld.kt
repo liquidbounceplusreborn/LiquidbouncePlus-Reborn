@@ -28,13 +28,13 @@ class NovolineOld(inst: Target): TargetStyle("NovolineOld", inst, false) {
         GL11.glColor4f(1F, 1F, 1F, 1F)
         RenderUtils.drawEntityOnScreen(15, 35, 15, entity)
 
-        Fonts.minecraftFont.drawStringWithShadow(entity.name, 30F, 5F, -1);
+        Fonts.minecraftFont.drawStringWithShadow(entity.name, 30F, 5F, -1)
         drawArmor(30, 15, entity)
 
         RenderUtils.drawRect(0F, 39F, barWidth, 40F,  targetInstance.barColor.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         return Border(0F, 0F, 80F, 40F)
     }
 
@@ -42,7 +42,7 @@ class NovolineOld(inst: Target): TargetStyle("NovolineOld", inst, false) {
         GL11.glPushMatrix()
         RenderHelper.enableGUIStandardItemLighting()
 
-        val renderItem = MinecraftInstance.mc.renderItem
+        val renderItem = mc.renderItem
 
         var drawX: Int = x
         var drawY: Int = y
@@ -51,14 +51,14 @@ class NovolineOld(inst: Target): TargetStyle("NovolineOld", inst, false) {
             val stack = ent.inventory.armorInventory[index] ?: continue
 
             renderItem.renderItemIntoGUI(stack, drawX, drawY)
-            renderItem.renderItemOverlays(MinecraftInstance.mc.fontRendererObj, stack, drawX, drawY)
+            renderItem.renderItemOverlays(mc.fontRendererObj, stack, drawX, drawY)
 
             drawX += 18
         }
 
-        if (ent.getHeldItem() != null && ent.getHeldItem().getItem() != null) {
-            renderItem.renderItemIntoGUI(ent.getHeldItem(), drawX, drawY)
-            renderItem.renderItemOverlays(MinecraftInstance.mc.fontRendererObj, ent.getHeldItem(), drawX, drawY)
+        if (ent.heldItem != null && ent.heldItem.item != null) {
+            renderItem.renderItemIntoGUI(ent.heldItem, drawX, drawY)
+            renderItem.renderItemOverlays(mc.fontRendererObj, ent.heldItem, drawX, drawY)
         }
 
         RenderHelper.disableStandardItemLighting()
@@ -75,7 +75,7 @@ class NovolineOld(inst: Target): TargetStyle("NovolineOld", inst, false) {
             val stack = ent.inventory.armorInventory[i] ?: continue
             x += 18F
         }
-        if (ent.getHeldItem() != null && ent.getHeldItem().getItem() != null)
+        if (ent.heldItem != null && ent.heldItem.item != null)
             x += 18F
 
         return x

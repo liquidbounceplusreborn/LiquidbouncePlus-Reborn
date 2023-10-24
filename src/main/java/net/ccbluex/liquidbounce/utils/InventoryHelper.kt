@@ -106,16 +106,13 @@ object InventoryHelper : MinecraftInstance(), Listenable {
     }
 
     fun isPositivePotionEffect(id: Int): Boolean {
-        if (id == Potion.regeneration.id || id == Potion.moveSpeed.id ||
-            id == Potion.heal.id || id == Potion.nightVision.id ||
-            id == Potion.jump.id || id == Potion.invisibility.id ||
-            id == Potion.resistance.id || id == Potion.waterBreathing.id ||
-            id == Potion.absorption.id || id == Potion.digSpeed.id ||
-            id == Potion.damageBoost.id || id == Potion.healthBoost.id ||
-            id == Potion.fireResistance.id) {
-            return true
-        }
-        return false
+        return id == Potion.regeneration.id || id == Potion.moveSpeed.id ||
+                id == Potion.heal.id || id == Potion.nightVision.id ||
+                id == Potion.jump.id || id == Potion.invisibility.id ||
+                id == Potion.resistance.id || id == Potion.waterBreathing.id ||
+                id == Potion.absorption.id || id == Potion.digSpeed.id ||
+                id == Potion.damageBoost.id || id == Potion.healthBoost.id ||
+                id == Potion.fireResistance.id
     }
 
     fun isPositivePotion(item: ItemPotion, stack: ItemStack): Boolean {

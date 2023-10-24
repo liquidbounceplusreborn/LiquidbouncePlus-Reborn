@@ -60,7 +60,7 @@ public class ValueButton {
                 perc = Math.min(Math.max(0, perc), 1);
                 final double valRel = (max - min) * perc;
                 double val = min + valRel;
-                val = Math.round(val * (1 / inc)) / (1 / inc);
+                val = Math.round(val);
                 v.set((int) val);
             }
             double number = 86 * (((Number) v.get()).floatValue() - v.getMinimum()) / (v.getMaximum() - v.getMinimum());

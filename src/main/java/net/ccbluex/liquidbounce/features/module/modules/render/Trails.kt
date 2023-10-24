@@ -1,7 +1,7 @@
 /*
  this code is from fdp client
  */
-package net.ccbluex.liquidbounce.features.module.modules.render;
+package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -169,48 +169,44 @@ class Trails : Module() {
     fun onUpdate(event: UpdateEvent) {
         val a1in8chance = (1..8).random()
         var ifrender: Boolean
-        if (a1in8chance == 1 && MovementUtils.isMoving() && mc.gameSettings.thirdPersonView != 0){
-            ifrender = true
-        } else {
-            ifrender = false
-        }
+        ifrender = a1in8chance == 1 && MovementUtils.isMoving() && mc.gameSettings.thirdPersonView != 0
         when(typeValue.get().lowercase()) {
             "heart" -> {
                 if (ifrender) {
-                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.HEART);
+                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.HEART)
                 }
             }
             "lava" -> {
                 if (ifrender) {
-                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.LAVA);
+                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.LAVA)
                 }
             }
             "smoke" -> {
-                mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.REDSTONE);
+                mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.REDSTONE)
             }
             "cloud" -> {
                 if (ifrender) {
-                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.CLOUD);
+                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.CLOUD)
                 }
             }
             "flame" -> {
                 if (ifrender) {
-                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.FLAME);
+                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.FLAME)
                 }
             }
             "slime" -> {
                 if (ifrender) {
-                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.SLIME);
+                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.SLIME)
                 }
             }
             "water" -> {
                 if (ifrender) {
-                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.WATER_SPLASH);
+                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.WATER_SPLASH)
                 }
             }
             "firework" -> {
                 if (ifrender) {
-                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.FIREWORKS_SPARK);
+                    mc.effectRenderer.emitParticleAtEntity(mc.thePlayer, EnumParticleTypes.FIREWORKS_SPARK)
                 }
             }
         }

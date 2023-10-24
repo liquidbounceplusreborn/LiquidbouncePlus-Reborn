@@ -14,13 +14,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class AStarCustomPathFinder {
-    private Vec3 startVec3;
-    private Vec3 endVec3;
+    private final Vec3 startVec3;
+    private final Vec3 endVec3;
     private ArrayList<Vec3> path = new ArrayList<>();
-    private ArrayList<Hub> hubs = new ArrayList<>();
-    private ArrayList<Hub> hubsToWork = new ArrayList<>();
-    private double minDistanceSquared = 9;
-    private boolean nearest = true;
+    private final ArrayList<Hub> hubs = new ArrayList<>();
+    private final ArrayList<Hub> hubsToWork = new ArrayList<>();
+    private final double minDistanceSquared = 9;
+    private final boolean nearest = true;
 
     private static final Vec3[] flatCardinalDirections = {
             new Vec3(1, 0, 0),

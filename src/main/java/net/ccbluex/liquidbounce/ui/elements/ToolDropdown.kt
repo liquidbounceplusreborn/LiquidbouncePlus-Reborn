@@ -27,11 +27,11 @@ object ToolDropdown {
     @JvmStatic
     fun handleDraw(button: GuiButton) {
         val gray = Color(100, 100, 100).rgb
-        val bWidth = button.getButtonWidth().toFloat()
+        val bWidth = button.buttonWidth.toFloat()
 
         glPushMatrix()
-        glTranslatef(button.xPosition.toFloat() + button.getButtonWidth().toFloat() - 10F, button.yPosition.toFloat() + 10F, 0F)
-        if (button.isMouseOver())
+        glTranslatef(button.xPosition.toFloat() + button.buttonWidth.toFloat() - 10F, button.yPosition.toFloat() + 10F, 0F)
+        if (button.isMouseOver)
             glTranslatef(0F, if (dropState) -1F else 1F, 0F)
         glPushMatrix()
         glRotatef(180F * (fullHeight / 100F), 0F, 0F, 1F)
@@ -68,7 +68,7 @@ object ToolDropdown {
     fun handleClick(mouseX: Int, mouseY: Int, button: GuiButton): Boolean {
         val bX = button.xPosition.toFloat()
         val bY = button.yPosition.toFloat()
-        val bWidth = button.getButtonWidth().toFloat()
+        val bWidth = button.buttonWidth.toFloat()
         if (dropState && isMouseOver(mouseX, mouseY, bX, bY + 20F, bWidth, fullHeight)) {
             when {
                 isMouseOver(mouseX, mouseY, bX, bY + 20F, bWidth, 20F) -> AntiForge.enabled = !AntiForge.enabled

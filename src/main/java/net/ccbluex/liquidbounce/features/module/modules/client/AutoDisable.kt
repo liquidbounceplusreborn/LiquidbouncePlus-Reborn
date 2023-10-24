@@ -41,7 +41,7 @@ class AutoDisable : Module() {
 
     companion object {
         fun handleGameEnd() {
-            val autoDisableModule = LiquidBounce.moduleManager[AutoDisable::class.java]!! as AutoDisable
+            val autoDisableModule = LiquidBounce.moduleManager[AutoDisable::class.java]!!
             autoDisableModule.disableModules(DisableEvent.GAME_END)
         }
     }

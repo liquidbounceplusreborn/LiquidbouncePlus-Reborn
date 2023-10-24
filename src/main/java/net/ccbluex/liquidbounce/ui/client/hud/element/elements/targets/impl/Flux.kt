@@ -76,7 +76,7 @@ class Flux(inst: Target): TargetStyle("Flux", inst, true) {
     }
 
     override fun handleBlur(entity: EntityPlayer) {
-        val additionalWidth = Fonts.minecraftFont.getStringWidth(entity?.name).coerceAtLeast(75)
+        val additionalWidth = Fonts.minecraftFont.getStringWidth(entity.name).coerceAtLeast(75)
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
@@ -88,12 +88,12 @@ class Flux(inst: Target): TargetStyle("Flux", inst, true) {
     override fun handleShadowCut(entity: EntityPlayer) = handleBlur(entity)
 
     override fun handleShadow(entity: EntityPlayer) {
-        val additionalWidth = Fonts.minecraftFont.getStringWidth(entity?.name).coerceAtLeast(75)
+        val additionalWidth = Fonts.minecraftFont.getStringWidth(entity.name).coerceAtLeast(75)
 
         RenderUtils.originalRoundedRect(0F, 0F, additionalWidth.toFloat() + 54, 34F, 8F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         val additionalWidth = Fonts.minecraftFont.getStringWidth(entity?.name).coerceAtLeast(75)
         return Border(0F, 0F, additionalWidth.toFloat() + 54, 34F)
     }

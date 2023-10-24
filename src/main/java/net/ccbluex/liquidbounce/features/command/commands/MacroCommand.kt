@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.special.MacroManager
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import org.lwjgl.input.Keyboard
+import java.util.*
 
 class MacroCommand : Command("macro", emptyArray()) {
     /**
@@ -18,13 +19,13 @@ class MacroCommand : Command("macro", emptyArray()) {
      */
     override fun execute(args: Array<String>) {
         if (args.size > 2) {
-            val key = Keyboard.getKeyIndex(args[2].toUpperCase())
+            val key = Keyboard.getKeyIndex(args[2].uppercase(Locale.getDefault()))
             if (key == 0) {
                 chat("§c§lKeybind doesn't exist, or not allowed.")
                 chatSyntax("macro <list/clear/add/remove>")
                 return
             }
-            when (args[1].toLowerCase()) {
+            when (args[1].lowercase(Locale.getDefault())) {
                 "add" -> {
                     if (args.size < 4) {
                         chatSyntax("macro add <key name> <message>")
@@ -57,7 +58,7 @@ class MacroCommand : Command("macro", emptyArray()) {
             }
         }
         if (args.size == 2) {
-            when (args[1].toLowerCase()) {
+            when (args[1].lowercase(Locale.getDefault())) {
                 "list" -> {
                     chat("§6§lMacros:")
                     MacroManager.macroMapping.forEach {

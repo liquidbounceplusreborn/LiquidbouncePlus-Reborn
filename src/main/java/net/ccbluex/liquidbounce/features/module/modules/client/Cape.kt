@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.ListValue
 
 import net.minecraft.util.ResourceLocation
+import java.util.*
 
 @ModuleInfo(name = "Cape", description = "LiquidBounce+ capes.", category = ModuleCategory.CLIENT)
 class Cape : Module() {
@@ -22,14 +23,14 @@ class Cape : Module() {
     private val capeCache = hashMapOf<String, CapeStyle>()
 
     fun getCapeLocation(value: String): ResourceLocation {
-        if (capeCache[value.toUpperCase()] == null) {
+        if (capeCache[value.uppercase(Locale.getDefault())] == null) {
             try {
-                capeCache[value.toUpperCase()] = CapeStyle.valueOf(value.toUpperCase())
+                capeCache[value.uppercase(Locale.getDefault())] = CapeStyle.valueOf(value.uppercase(Locale.getDefault()))
             } catch (e: Exception) {
-                capeCache[value.toUpperCase()] = CapeStyle.CRY
+                capeCache[value.uppercase(Locale.getDefault())] = CapeStyle.CRY
             }
         }
-        return capeCache[value.toUpperCase()]!!.location
+        return capeCache[value.uppercase(Locale.getDefault())]!!.location
     }
 
     enum class CapeStyle(val location: ResourceLocation) {

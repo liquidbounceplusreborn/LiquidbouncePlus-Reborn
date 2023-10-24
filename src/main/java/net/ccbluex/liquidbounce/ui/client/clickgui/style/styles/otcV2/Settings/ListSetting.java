@@ -17,7 +17,7 @@ import java.awt.*;
 
 public class ListSetting extends Downward
 {
-    private ListValue listValue;
+    private final ListValue listValue;
     private final Animation arrowAnimation;
     private float modulex;
     private float moduley;
@@ -40,7 +40,7 @@ public class ListSetting extends Downward
         if (this.isHovered(mouseX, mouseY)) {
             RenderUtils.drawRoundedRect(this.modulex + 5.0f + this.pos.x + 80.0f, this.moduley + 17.0f + this.listy + 8.0f, 50.0f, 11.0f, 1.0f, new Color(0, 0, 0, 0).getRGB(), 1.0f, guiColor);
         }
-        Fonts.fontTahoma.drawString(this.listValue.get() + "", this.modulex + 5.0f + this.pos.x + 82.0f, this.moduley + 17.0f + this.listy + 13.0f, new Color(200, 200, 200).getRGB());
+        Fonts.fontTahoma.drawString(this.listValue.get(), this.modulex + 5.0f + this.pos.x + 82.0f, this.moduley + 17.0f + this.listy + 13.0f, new Color(200, 200, 200).getRGB());
         this.arrowAnimation.setDirection(this.listValue.openList ? Direction.FORWARDS : Direction.BACKWARDS);
         RenderUtils.drawClickGuiArrow(this.modulex + 5.0f + this.pos.x + 123.5f, this.moduley + 17.0f + this.listy + 13.0f, 4.0f, this.arrowAnimation, new Color(222, 224, 236).getRGB());
         if (this.listValue.openList) {

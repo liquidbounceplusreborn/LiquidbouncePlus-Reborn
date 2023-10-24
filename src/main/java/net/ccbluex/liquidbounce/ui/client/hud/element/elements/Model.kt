@@ -16,6 +16,7 @@ import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.atan
 
@@ -40,7 +41,7 @@ class Model(x: Double = 40.0, y: Double = 100.0) : Element(x, y) {
      * Draw element
      */
     override fun drawElement(): Border {
-        val yaw = when (yawMode.get().toLowerCase()) {
+        val yaw = when (yawMode.get().lowercase(Locale.getDefault())) {
             "player" -> mc.thePlayer.rotationYaw
             "animation" -> {
                 val delta = RenderUtils.deltaTime
@@ -67,7 +68,7 @@ class Model(x: Double = 40.0, y: Double = 100.0) : Element(x, y) {
             else -> 0F
         }
 
-        var pitch = when (pitchMode.get().toLowerCase()) {
+        var pitch = when (pitchMode.get().lowercase(Locale.getDefault())) {
             "player" -> mc.thePlayer.rotationPitch
             "custom" -> customPitch.get()
             else -> 0F

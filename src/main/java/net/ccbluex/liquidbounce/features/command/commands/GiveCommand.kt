@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.utils.item.ItemUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import net.minecraft.item.Item
 import net.minecraft.network.play.client.C10PacketCreativeInventoryAction
+import java.util.*
 
 class GiveCommand : Command("give", arrayOf("item", "i", "get")) {
     /**
@@ -64,7 +65,7 @@ class GiveCommand : Command("give", arrayOf("item", "i", "get")) {
         return when (args.size) {
             1 -> {
                 return Item.itemRegistry.keys
-                    .map { it.resourcePath.toLowerCase() }
+                    .map { it.resourcePath.lowercase(Locale.getDefault()) }
                     .filter { it.startsWith(args[0], true) }
             }
             else -> emptyList()

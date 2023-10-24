@@ -66,9 +66,9 @@ class ChestStealer : Module() {
     private val noCompassValue = BoolValue("NoCompass", false)
     private val noDuplicateValue = BoolValue("NoDuplicateNonStackable", false)
     private val autoCloseValue = BoolValue("AutoClose", true)
-    public val silenceValue = BoolValue("SilentMode", true)
-    public val showStringValue = BoolValue("Silent-ShowString", false, { silenceValue.get() })
-    public val stillDisplayValue = BoolValue("Silent-StillDisplay", false, { silenceValue.get() })
+    val silenceValue = BoolValue("SilentMode", true)
+    val showStringValue = BoolValue("Silent-ShowString", false, { silenceValue.get() })
+    val stillDisplayValue = BoolValue("Silent-StillDisplay", false, { silenceValue.get() })
     private val delayOnStart = BoolValue("delayOnStart",true)
 
     private val autoCloseMaxDelayValue: IntegerValue = object : IntegerValue("AutoCloseMaxDelay", 0, 0, 400, "ms") {
@@ -100,9 +100,9 @@ class ChestStealer : Module() {
     private val autoCloseTimer = MSTimer()
     private var nextCloseDelay = TimerUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
 
-    public var contentReceived = 0
+    var contentReceived = 0
 
-    public var once = false
+    var once = false
 
     override fun onDisable() {
         once = false

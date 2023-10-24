@@ -332,7 +332,7 @@ public class Speed extends Module {
     public final FloatValue distance = new FloatValue("Range", 0f, 0f, 2f, () -> getModeName().equalsIgnoreCase("grimcombat"));
     public final ListValue tagDisplay = new ListValue("Tag", new String[] { "Type", "FullName", "All" }, "Type");
 
-    private int offGroundTicks = 0;
+    private final int offGroundTicks = 0;
 
     @EventTarget
     public void onUpdate(final UpdateEvent event) {

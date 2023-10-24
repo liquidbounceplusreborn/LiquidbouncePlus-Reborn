@@ -781,7 +781,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     private static final Frustum frustrum = new Frustum();
-    protected static float zLevel = 0F;
+    private static float zLevel = 0F;
 
     /**
      * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
@@ -793,10 +793,10 @@ public final class RenderUtils extends MinecraftInstance {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos((x + 0), (y + height), zLevel).tex(((float)(textureX + 0) * f), ((float)(textureY + height) * f1)).endVertex();
+        worldrenderer.pos((x), (y + height), zLevel).tex(((float)(textureX) * f), ((float)(textureY + height) * f1)).endVertex();
         worldrenderer.pos((x + width), (y + height), zLevel).tex(((float)(textureX + width) * f), ((float)(textureY + height) * f1)).endVertex();
-        worldrenderer.pos((x + width), (y + 0), zLevel).tex(((float)(textureX + width) * f), ((float)(textureY + 0) * f1)).endVertex();
-        worldrenderer.pos((x + 0), (y + 0), zLevel).tex(((float)(textureX + 0) * f), ((float)(textureY + 0) * f1)).endVertex();
+        worldrenderer.pos((x + width), (y), zLevel).tex(((float)(textureX + width) * f), ((float)(textureY) * f1)).endVertex();
+        worldrenderer.pos((x), (y), zLevel).tex(((float)(textureX) * f), ((float)(textureY) * f1)).endVertex();
         tessellator.draw();
     }
     public static void drawShadow(float x, float y, float width, float height) {
@@ -872,8 +872,8 @@ public final class RenderUtils extends MinecraftInstance {
         RenderHelper.enableStandardItemLighting();
         GlStateManager.rotate(-135.0f, 0.0f, 1.0f, 0.0f);
         GlStateManager.rotate((float) (-Math.atan(pitch / 40.0f) * 20.0), 1.0f, 0.0f, 0.0f);
-        entityLivingBase.renderYawOffset = yaw - yaw / yaw * 0.4f;
-        entityLivingBase.rotationYaw = yaw - yaw / yaw * 0.2f;
+        entityLivingBase.renderYawOffset = yaw - 1.0f * 0.4f;
+        entityLivingBase.rotationYaw = yaw - 1.0f * 0.2f;
         entityLivingBase.rotationPitch = pitch;
         entityLivingBase.rotationYawHead = entityLivingBase.rotationYaw;
         entityLivingBase.prevRotationYawHead = entityLivingBase.rotationYaw;
@@ -1110,17 +1110,17 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static int SkyRainbow(int var2, float st, float bright) {
-        double v1 = Math.ceil(System.currentTimeMillis() + (long) (var2 * 109)) / 5;
+        double v1 = Math.ceil(System.currentTimeMillis() + (long) (var2 * 109L)) / 5;
         return Color.getHSBColor( ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright).getRGB();
     }
 
     public static Color skyRainbow(int var2, float st, float bright) {
-        double v1 = Math.ceil(System.currentTimeMillis() + (long) (var2 * 109)) / 5;
+        double v1 = Math.ceil(System.currentTimeMillis() + (long) (var2 * 109L)) / 5;
         return Color.getHSBColor( ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), st, bright);
     }
 
     public static int getRainbowOpaque(int seconds, float saturation, float brightness, int index) {
-        float hue = ((System.currentTimeMillis() + index) % (int) (seconds * 1000)) / (float) (seconds * 1000);
+        float hue = ((System.currentTimeMillis() + index) % (seconds * 1000)) / (float) (seconds * 1000);
         int color = Color.HSBtoRGB(hue, saturation, brightness);
         return color;
     }
@@ -2275,15 +2275,15 @@ public final class RenderUtils extends MinecraftInstance {
     public static void rectangleBordered(double x, double y, double x1, double y1, double width, int internalColor,
                                          int borderColor) {
         rectangle(x + width, y + width, x1 - width, y1 - width, internalColor);
-        GlStateManager.color((float) 1.0f, (float) 1.0f, (float) 1.0f, (float) 1.0f);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
         rectangle(x + width, y, x1 - width, y + width, borderColor);
-        GlStateManager.color((float) 1.0f, (float) 1.0f, (float) 1.0f, (float) 1.0f);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
         rectangle(x, y, x + width, y1, borderColor);
-        GlStateManager.color((float) 1.0f, (float) 1.0f, (float) 1.0f, (float) 1.0f);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
         rectangle(x1 - width, y, x1, y1, borderColor);
-        GlStateManager.color((float) 1.0f, (float) 1.0f, (float) 1.0f, (float) 1.0f);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
         rectangle(x + width, y1 - width, x1 - width, y1, borderColor);
-        GlStateManager.color((float) 1.0f, (float) 1.0f, (float) 1.0f, (float) 1.0f);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
     }
     public static void drawScaledCustomSizeModalRect(int x, int y, float u, float v, int uWidth, int vHeight, int width, int height, float tileWidth, float tileHeight) {
         float f = 1.0F / tileWidth;
@@ -2342,7 +2342,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static int Astolfo(int var2) {
-        double v1 = Math.ceil(System.currentTimeMillis() + (long) (var2 * 109)) / 5;
+        double v1 = Math.ceil(System.currentTimeMillis() + (long) (var2 * 109L)) / 5;
         return Color.getHSBColor( ((float) ((v1 %= 360.0) / 360.0)) < 0.5 ? -((float) (v1 / 360.0)) : (float) (v1 / 360.0), 0.5F, 1.0F).getRGB();
     }
 
@@ -2351,21 +2351,21 @@ public final class RenderUtils extends MinecraftInstance {
         float red = (float) (color >> 16 & 255) / 255.0f;
         float green = (float) (color >> 8 & 255) / 255.0f;
         float blue = (float) (color & 255) / 255.0f;
-        boolean blend = GL11.glIsEnabled((int) 3042);
-        boolean line = GL11.glIsEnabled((int) 2848);
-        boolean texture = GL11.glIsEnabled((int) 3553);
+        boolean blend = GL11.glIsEnabled(3042);
+        boolean line = GL11.glIsEnabled(2848);
+        boolean texture = GL11.glIsEnabled(3553);
         if (!blend) {
-            GL11.glEnable((int) 3042);
+            GL11.glEnable(3042);
         }
         if (!line) {
-            GL11.glEnable((int) 2848);
+            GL11.glEnable(2848);
         }
         if (texture) {
-            GL11.glDisable((int) 3553);
+            GL11.glDisable(3553);
         }
-        GL11.glBlendFunc((int) 770, (int) 771);
-        GL11.glColor4f((float) red, (float) green, (float) blue, (float) alpha);
-        GL11.glBegin((int) 9);
+        GL11.glBlendFunc(770, 771);
+        GL11.glColor4f(red, green, blue, alpha);
+        GL11.glBegin(9);
         int i = 0;
         while (i <= 360) {
             GL11.glVertex2d( ( x + Math.sin( i * 3.141526 / 180.0) *  radius),  ( y + Math.cos( i * 3.141526 / 180.0) *  radius));
@@ -2373,13 +2373,13 @@ public final class RenderUtils extends MinecraftInstance {
         }
         GL11.glEnd();
         if (texture) {
-            GL11.glEnable((int) 3553);
+            GL11.glEnable(3553);
         }
         if (!line) {
-            GL11.glDisable((int) 2848);
+            GL11.glDisable(2848);
         }
         if (!blend) {
-            GL11.glDisable((int) 3042);
+            GL11.glDisable(3042);
         }
     }
 

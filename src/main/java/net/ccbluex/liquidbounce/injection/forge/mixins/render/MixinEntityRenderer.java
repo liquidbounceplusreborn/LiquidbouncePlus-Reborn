@@ -213,7 +213,7 @@ public abstract class MixinEntityRenderer {
                         f15 = 0.25f + f12 * 0.75f;
                     }
                     if (this.mc.thePlayer.isPotionActive(Potion.nightVision)) {
-                        f6 = this.getNightVisionBrightness((EntityLivingBase) this.mc.thePlayer, f2);
+                        f6 = this.getNightVisionBrightness(this.mc.thePlayer, f2);
                         f5 = 1.0f / f13;
                         if (f5 > 1.0f / f14) {
                             f5 = 1.0f / f14;
@@ -305,7 +305,7 @@ public abstract class MixinEntityRenderer {
                     GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, -1.0F, 0.0F, 0.0F);
                 }
             } else if (this.mc.gameSettings.thirdPersonView > 0) {
-                double d3 = (double) (this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks);
+                double d3 = this.thirdPersonDistanceTemp + (this.thirdPersonDistance - this.thirdPersonDistanceTemp) * partialTicks;
 
                 if (this.mc.gameSettings.debugCamEnable) {
                     GlStateManager.translate(0.0F, 0.0F, (float) (-d3));
@@ -381,7 +381,7 @@ public abstract class MixinEntityRenderer {
             this.mc.mcProfiler.startSection("pick");
             this.mc.pointedEntity = null;
 
-            final Reach reach = (Reach) LiquidBounce.moduleManager.getModule(Reach.class);
+            final Reach reach = LiquidBounce.moduleManager.getModule(Reach.class);
 
             assert reach != null;
             double d0 = reach.getState() ? reach.getMaxRange() : (double) this.mc.playerController.getBlockReachDistance();
@@ -413,13 +413,13 @@ public abstract class MixinEntityRenderer {
             this.pointedEntity = null;
             Vec3 vec33 = null;
             float f = 1.0F;
-            List<Entity> list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0).expand((double) f, (double) f, (double) f), Predicates.and(EntitySelectors.NOT_SPECTATING, p_apply_1_ -> p_apply_1_.canBeCollidedWith()));
+            List<Entity> list = this.mc.theWorld.getEntitiesInAABBexcluding(entity, entity.getEntityBoundingBox().addCoord(vec31.xCoord * d0, vec31.yCoord * d0, vec31.zCoord * d0).expand(f, f, f), Predicates.and(EntitySelectors.NOT_SPECTATING, p_apply_1_ -> p_apply_1_.canBeCollidedWith()));
             double d2 = d1;
 
             for (int j = 0; j < list.size(); ++j) {
-                Entity entity1 = (Entity) list.get(j);
+                Entity entity1 = list.get(j);
                 float f1 = entity1.getCollisionBorderSize();
-                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand((double) f1, (double) f1, (double) f1);
+                AxisAlignedBB axisalignedbb = entity1.getEntityBoundingBox().expand(f1, f1, f1);
                 MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
                 if (axisalignedbb.isVecInside(vec3)) {
                     if (d2 >= 0.0D) {
@@ -446,7 +446,7 @@ public abstract class MixinEntityRenderer {
 
             if (this.pointedEntity != null && flag && vec3.distanceTo(vec33) > (reach.getState() ? reach.getCombatReachValue().get() : 3.0D)) {
                 this.pointedEntity = null;
-                this.mc.objectMouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec33, (EnumFacing) null, new BlockPos(vec33));
+                this.mc.objectMouseOver = new MovingObjectPosition(MovingObjectPosition.MovingObjectType.MISS, vec33, null, new BlockPos(vec33));
             }
 
             if (this.pointedEntity != null && (d2 < d1 || this.mc.objectMouseOver == null)) {

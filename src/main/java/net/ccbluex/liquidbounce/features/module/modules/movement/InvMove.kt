@@ -16,6 +16,7 @@ import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiIngameMenu
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C16PacketClientStatus
+import java.util.*
 
 @ModuleInfo(name = "InvMove", spacedName = "Inv Move", description = "Allows you to walk while an inventory is opened.", category = ModuleCategory.MOVEMENT)
 class InvMove : Module() {
@@ -43,8 +44,8 @@ class InvMove : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        when (modeValue.get().toLowerCase()) {
-            "silent" -> if (packet is C16PacketClientStatus && packet.getStatus() == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) event.cancelEvent()
+        when (modeValue.get().lowercase(Locale.getDefault())) {
+            "silent" -> if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) event.cancelEvent()
             "blink" -> if (mc.currentScreen != null && mc.currentScreen !is GuiChat && mc.currentScreen !is GuiIngameMenu && packet is C03PacketPlayer) {
                 event.cancelEvent()
                 playerPackets.add(packet)

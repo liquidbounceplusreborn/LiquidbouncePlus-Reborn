@@ -98,24 +98,24 @@ class FakeLag : Module() {
 	fun onPacket(event: PacketEvent) {
 		mc.thePlayer ?: return
 		mc.theWorld ?: return
-		val packet = event.packet ?: return
+		val packet = event.packet
 		if (ignoreBus.remove(packet)) return
 
 		if ((fakeLagMode.get().equals("outbound", true) || fakeLagMode.get().equals("all", true)) 
-			&& packet::class.java!!.getSimpleName().startsWith("C", true)
-			&& (!fakeLagInclude.get() || fakeLagIncludeClasses.get().split(",").find { packet::class.java!!.getSimpleName().contains(it, true) } != null)
-			&& (!fakeLagExclude.get() || fakeLagExcludeClasses.get().split(",").find { packet::class.java!!.getSimpleName().contains(it, true) } == null)) {
-			debug("outbound, ${packet::class.java!!.getSimpleName()}")
+			&& packet::class.java.getSimpleName().startsWith("C", true)
+			&& (!fakeLagInclude.get() || fakeLagIncludeClasses.get().split(",").find { packet::class.java.getSimpleName().contains(it, true) } != null)
+			&& (!fakeLagExclude.get() || fakeLagExcludeClasses.get().split(",").find { packet::class.java.getSimpleName().contains(it, true) } == null)) {
+			debug("outbound, ${packet::class.java.getSimpleName()}")
 			outBus.add(packet as Packet<INetHandlerPlayServer>)
 			ignoreBus.add(packet)
 			event.cancelEvent()
 		}
 
 		if ((fakeLagMode.get().equals("inbound", true) || fakeLagMode.get().equals("all", true)) 
-			&& packet::class.java!!.getSimpleName().startsWith("S", true)
-			&& (!fakeLagInclude.get() || fakeLagIncludeClasses.get().split(",").find { packet::class.java!!.getSimpleName().contains(it, true) } != null)
-			&& (!fakeLagExclude.get() || fakeLagExcludeClasses.get().split(",").find { packet::class.java!!.getSimpleName().contains(it, true) } == null)) {
-			debug("inbound, ${packet::class.java!!.getSimpleName()}")
+			&& packet::class.java.getSimpleName().startsWith("S", true)
+			&& (!fakeLagInclude.get() || fakeLagIncludeClasses.get().split(",").find { packet::class.java.getSimpleName().contains(it, true) } != null)
+			&& (!fakeLagExclude.get() || fakeLagExcludeClasses.get().split(",").find { packet::class.java.getSimpleName().contains(it, true) } == null)) {
+			debug("inbound, ${packet::class.java.getSimpleName()}")
 			inBus.add(packet as Packet<INetHandlerPlayClient>)
 			ignoreBus.add(packet)
 			event.cancelEvent()

@@ -90,18 +90,18 @@ public abstract class MixinGuiConnecting extends GuiScreen {
                 if(cancel)
                     return;
 
-                logger.error("Couldn\'t connect to server", unknownhostexception);
+                logger.error("Couldn't connect to server", unknownhostexception);
                 mc.displayGuiScreen(new GuiDisconnected(previousGuiScreen, "connect.failed", new ChatComponentTranslation("disconnect.genericReason", "Unknown host")));
             }catch(Exception exception) {
                 if(cancel) {
                     return;
                 }
 
-                logger.error("Couldn\'t connect to server", exception);
+                logger.error("Couldn't connect to server", exception);
                 String s = exception.toString();
 
                 if(inetaddress != null) {
-                    String s1 = inetaddress.toString() + ":" + port;
+                    String s1 = inetaddress + ":" + port;
                     s = s.replaceAll(s1, "");
                 }
 

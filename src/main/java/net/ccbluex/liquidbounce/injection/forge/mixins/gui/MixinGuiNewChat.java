@@ -277,7 +277,7 @@ public abstract class MixinGuiNewChat {
                 if (mX <= MathHelper.floor_float((float) this.getChatWidth() / this.getChatScale()) && mY < (flagFont?hud.getFontType().get():this.mc.fontRendererObj).FONT_HEIGHT * lineCount + lineCount) {
                     int line = mY / (flagFont?hud.getFontType().get():this.mc.fontRendererObj).FONT_HEIGHT + this.scrollPos;
                     if (line >= 0 && line < this.drawnChatLines.size()) {
-                        ChatLine chatLine = (ChatLine) this.drawnChatLines.get(line);
+                        ChatLine chatLine = this.drawnChatLines.get(line);
                         int maxWidth = 0;
                         Iterator iter = chatLine.getChatComponent().iterator();
 

@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.SettingsUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
 import java.io.File
 import java.io.IOException
+import java.util.*
 
 class LocalAutoSettingsCommand :
     Command("localautosettings", arrayOf("localsetting", "localsettings", "localconfig", "c")) {
@@ -65,7 +66,8 @@ class LocalAutoSettingsCommand :
                                     return
                                 }
 
-                            val option = if (args.size > 3) StringUtils.toCompleteString(args, 3).toLowerCase() else "values"
+                            val option = if (args.size > 3) StringUtils.toCompleteString(args, 3)
+                                .lowercase(Locale.getDefault()) else "values"
                             val values = option.contains("all") || option.contains("values")
                             val binds = option.contains("all") || option.contains("binds")
                             val states = option.contains("all") || option.contains("states")
@@ -128,7 +130,7 @@ class LocalAutoSettingsCommand :
         return when (args.size) {
             1 -> listOf("delete", "list", "load", "save").filter { it.startsWith(args[0], true) }
             2 -> {
-                when (args[0].toLowerCase()) {
+                when (args[0].lowercase(Locale.getDefault())) {
                     "delete", "load" -> {
                         val settings = this.getLocalSettings() ?: return emptyList()
 

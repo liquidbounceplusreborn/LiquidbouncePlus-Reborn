@@ -29,7 +29,7 @@ class MidClick : Module() {
         if (wasDown && Mouse.isButtonDown(2)) {
             val entity = mc.objectMouseOver.entityHit
             if (entity != null && entity is EntityPlayer) {
-                val playerName = ColorUtils.stripColor(entity!!.name)
+                val playerName = ColorUtils.stripColor(entity.name)
                 val friendsConfig = LiquidBounce.fileManager.friendsConfig
 
                 if (friendsConfig.isFriend(playerName)) {

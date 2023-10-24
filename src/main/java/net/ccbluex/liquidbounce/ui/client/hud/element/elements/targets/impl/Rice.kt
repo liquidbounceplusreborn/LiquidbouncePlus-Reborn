@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 
 class Rice(inst: Target): TargetStyle("Rice", inst, true) {
 
@@ -86,9 +87,9 @@ class Rice(inst: Target): TargetStyle("Rice", inst, true) {
                     var parDistY = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
                     var firstChar = RandomUtils.random(1, "${if (riceParticleCircle.get().equals("none", true)) "" else "c"}${if (riceParticleRect.get().equals("none", true)) "" else "r"}${if (riceParticleTriangle.get().equals("none", true)) "" else "t"}")
                     var drawType = ShapeType.getTypeFromName(when (firstChar) {
-                        "c" -> "c_${riceParticleCircle.get().toLowerCase()}"
-                        "r" -> "r_${riceParticleRect.get().toLowerCase()}"
-                        else -> "t_${riceParticleTriangle.get().toLowerCase()}"
+                        "c" -> "c_${riceParticleCircle.get().lowercase(Locale.getDefault())}"
+                        "r" -> "r_${riceParticleRect.get().lowercase(Locale.getDefault())}"
+                        else -> "t_${riceParticleTriangle.get().lowercase(Locale.getDefault())}"
                     }) ?: break
 
                     particleList.add(Particle(
@@ -145,7 +146,7 @@ class Rice(inst: Target): TargetStyle("Rice", inst, true) {
 
         GL11.glDisable(GL11.GL_BLEND)
         Stencil.erase(true)
-        when (targetInstance.colorModeValue.get().toLowerCase()) {
+        when (targetInstance.colorModeValue.get().lowercase(Locale.getDefault())) {
             "custom", "health" -> RenderUtils.drawRect(5F, 42F, length - maxHealthLength, 48F, targetInstance.barColor.rgb)
             else -> for (i in 0..(gradientLoopValue.get() - 1)) {
                 val barStart = i.toDouble() / gradientLoopValue.get().toDouble() * (length - 5F - maxHealthLength).toDouble()
@@ -199,7 +200,7 @@ class Rice(inst: Target): TargetStyle("Rice", inst, true) {
         RenderUtils.originalRoundedRect(0F, 0F, 10F + length, 55F, 8F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         entity ?: return Border(0F, 0F, 135F, 55F)
 
         val font = Fonts.fontSFUI40

@@ -89,7 +89,7 @@ class Moon4(inst: Target): TargetStyle("Moon4.0", inst, true) {
         RenderUtils.originalRoundedRect(-1F, -1F, nameLength + 40, 37F,5f, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         val percent = entity?.health?.toInt()
         // val nameLength = (Fonts.fontTahoma.getStringWidth(entity?.name.toString())).coerceAtLeast(
         val nameLength = (Fonts.fontSFUI35.getStringWidth(entity?.name.toString())).coerceAtLeast(

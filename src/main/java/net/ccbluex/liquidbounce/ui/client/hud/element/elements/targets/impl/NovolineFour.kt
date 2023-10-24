@@ -78,7 +78,7 @@ class NovolineFour(inst: Target): TargetStyle("NovolineFour", inst, true) {
         for (index in 3 downTo 0) {
             val stack = entity.inventory.armorInventory[index] ?: continue
 
-            if (stack.getItem() == null)
+            if (stack.item == null)
                 continue
 
             renderItem.renderItemAndEffectIntoGUI(stack, x, y)
@@ -176,7 +176,7 @@ class NovolineFour(inst: Target): TargetStyle("NovolineFour", inst, true) {
         RenderUtils.newDrawRect(-2F, -2F, width+3, 43F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         entity ?: return Border(0F, 0F, 118F, 43F)
         val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
                         .coerceAtLeast(118)

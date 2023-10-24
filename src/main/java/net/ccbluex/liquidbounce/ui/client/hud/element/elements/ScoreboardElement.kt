@@ -29,6 +29,7 @@ import net.minecraft.scoreboard.Scoreboard
 import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 
 /**
  * CustomHUD scoreboard
@@ -39,7 +40,7 @@ import java.awt.Color
 class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                         side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)) : Element(x, y, scale, side) {
 
-    private val useVanillaBackground = BoolValue("UseVanillaBackground", false);
+    private val useVanillaBackground = BoolValue("UseVanillaBackground", false)
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255, { !useVanillaBackground.get() })
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255, { !useVanillaBackground.get() })
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255, { !useVanillaBackground.get() })
@@ -157,7 +158,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                         if(stripped.contains(domain,true)){
                             name = hud.domainValue.get()
                             cachedDomains.add(stripped)
-                            break;
+                            break
                         }
                     }
             }
@@ -290,7 +291,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
 
             // rect
             if (rectValue.get()) {
-                val rectColor = when (rectColorMode.toLowerCase()) {
+                val rectColor = when (rectColorMode.lowercase(Locale.getDefault())) {
                     "sky" -> RenderUtils.SkyRainbow(0, saturationValue.get(), brightnessValue.get())
                     "rainbow" -> RenderUtils.getRainbowOpaque(cRainbowSecValue.get(), saturationValue.get(), brightnessValue.get(), 0)
                     "liquidslowly" -> liquidSlowli
@@ -355,7 +356,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                             else -> rectCustomColor
                         }
                     if (side.horizontal == Side.Horizontal.LEFT) {
-                        when (domainShadowValue.get().toLowerCase()) {
+                        when (domainShadowValue.get().lowercase(Locale.getDefault())) {
                             "none" -> domainFontValue.get().drawString(name.get(z).toString(), -3F + domainFontValue.get().getStringWidth(stringZ).toFloat(), height.toFloat() + domainFontYValue.get(), typeColor, false)
                             "default" -> domainFontValue.get().drawStringWithShadow(name.get(z).toString(), -3F + domainFontValue.get().getStringWidth(stringZ).toFloat(), height.toFloat() + domainFontYValue.get(), typeColor)
                             "outline" -> {
@@ -367,7 +368,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                             }
                         }
                     } else {
-                        when (domainShadowValue.get().toLowerCase()) {
+                        when (domainShadowValue.get().lowercase(Locale.getDefault())) {
                             "none" -> domainFontValue.get().drawString(name.get(z).toString(), l1.toFloat() + domainFontValue.get().getStringWidth(stringZ), height.toFloat() + domainFontYValue.get(), typeColor, false)
                             "default" -> domainFontValue.get().drawStringWithShadow(name.get(z).toString(), l1.toFloat() + domainFontValue.get().getStringWidth(stringZ), height.toFloat() + domainFontYValue.get(), typeColor)
                             "outline" -> {

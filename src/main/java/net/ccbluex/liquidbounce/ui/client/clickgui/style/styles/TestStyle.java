@@ -26,6 +26,7 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
@@ -59,7 +60,7 @@ public class TestStyle extends Style {
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
         final int guiColor = RenderUtils.Astolfo(0);
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(moduleElement.getDisplayName(), (int) (moduleElement.getX()+3), moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
+        Fonts.minecraftFont.drawString(moduleElement.getDisplayName(), moduleElement.getX()+3, moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
@@ -275,7 +276,7 @@ public class TestStyle extends Style {
 
     private BigDecimal round(final float f) {
         BigDecimal bd = new BigDecimal(Float.toString(f));
-        bd = bd.setScale(2, 4);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd;
     }
 }

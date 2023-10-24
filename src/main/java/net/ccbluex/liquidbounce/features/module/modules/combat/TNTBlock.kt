@@ -38,8 +38,8 @@ class TNTBlock : Module() {
                         for (i in 0..8) {
                             val itemStack = mc.thePlayer.inventory.getStackInSlot(i)
 
-                            if (itemStack != null && itemStack.getItem() is ItemSword) {
-                                val itemDamage = (itemStack.getItem() as ItemSword).damageVsEntity + 4F;
+                            if (itemStack != null && itemStack.item is ItemSword) {
+                                val itemDamage = (itemStack.item as ItemSword).damageVsEntity + 4F
 
                                 if (itemDamage > bestDamage) {
                                     bestDamage = itemDamage
@@ -53,7 +53,7 @@ class TNTBlock : Module() {
                             mc.playerController.updateController()
                         }
                     }
-                    if (mc.thePlayer.getHeldItem() != null && mc.thePlayer.getHeldItem().getItem() is ItemSword) {
+                    if (mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword) {
                         mc.gameSettings.keyBindUseItem.pressed = true
                         blocked = true
                     }

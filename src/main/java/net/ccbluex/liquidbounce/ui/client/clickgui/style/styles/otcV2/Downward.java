@@ -9,8 +9,8 @@ public abstract class Downward<V extends Value> extends Gui
     public V setting;
     private float x;
     private float y;
-    private int width;
-    private int height;
+    private final int width;
+    private final int height;
     public Position pos;
     public ModuleRender moduleRender;
     

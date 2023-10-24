@@ -48,13 +48,13 @@ class Tifality(inst: Target): TargetStyle("Tifality", inst, true) {
             width1 = Colors.getIncremental(width1, 5.0)
             if (width1 < 50.0) width1 = 50.0
             val healthLocation = width1 * progress
-            RenderUtils.rectangle(42.5, 10.3, 53.0 + healthLocation + 0.5, 13.5, customColor.getRGB())
+            RenderUtils.rectangle(42.5, 10.3, 53.0 + healthLocation + 0.5, 13.5, customColor.rgb)
             if (entity.absorptionAmount > 0.0f) RenderUtils.rectangle(
                 97.5 - entity.absorptionAmount,
                 10.3,
                 103.5,
                 13.5,
-                Color(137, 112, 9).getRGB()
+                Color(137, 112, 9).rgb
             )
             RenderUtils.drawRectBordered(
                 42.0,
@@ -86,7 +86,7 @@ class Tifality(inst: Target): TargetStyle("Tifality", inst, true) {
         }
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         entity ?: return Border(0f, 0f, 124F, 0F)
 
         val font = Fonts.fontTahoma
@@ -145,7 +145,7 @@ class Tifality(inst: Target): TargetStyle("Tifality", inst, true) {
             val armer = entity!!.inventory.armorInventory[index]
             if (armer != null) stuff.add(armer)
         }
-        if (entity!!.currentEquippedItem != null) stuff.add(entity!!.currentEquippedItem)
+        if (entity!!.currentEquippedItem != null) stuff.add(entity.currentEquippedItem)
         for (everything in stuff) {
             if (mc.theWorld != null) {
                 RenderHelper.enableGUIStandardItemLighting()

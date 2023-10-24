@@ -33,7 +33,7 @@ abstract class TargetStyle(val name: String, val targetInstance: Target, val sha
     val decimalFormat3 = DecimalFormat("0.#", DecimalFormatSymbols(Locale.ENGLISH))
 
     val shadowOpaque: Color
-        get() = ColorUtils.reAlpha(when (targetInstance.shadowColorMode.get().toLowerCase()) {
+        get() = ColorUtils.reAlpha(when (targetInstance.shadowColorMode.get().lowercase(Locale.getDefault())) {
             "background" -> targetInstance.bgColor
             "custom" -> Color(targetInstance.shadowColorRedValue.get(), targetInstance.shadowColorGreenValue.get(), targetInstance.shadowColorBlueValue.get())
             else -> targetInstance.barColor

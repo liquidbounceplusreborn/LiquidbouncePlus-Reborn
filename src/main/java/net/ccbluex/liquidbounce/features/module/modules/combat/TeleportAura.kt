@@ -34,6 +34,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.*
 
 @ModuleInfo(name = "TeleportAura", spacedName = "Teleport Aura", description = "Automatically attacks targets around you. (by tp to them and back)",
         category = ModuleCategory.COMBAT)
@@ -83,7 +84,7 @@ class TeleportAura : Module() {
     }
 
     override fun onInitialize() {
-        auraMod = LiquidBounce.moduleManager.getModule(KillAura::class.java)!! as KillAura
+        auraMod = LiquidBounce.moduleManager.getModule(KillAura::class.java)!!
     }
 
     @EventTarget
@@ -123,7 +124,7 @@ class TeleportAura : Module() {
         }
 
         // Sort targets by priority
-        when (priorityValue.get().toLowerCase()) {
+        when (priorityValue.get().lowercase(Locale.getDefault())) {
             "distance" -> targets.sortBy { mc.thePlayer.getDistanceToEntity(it) } // Sort by distance
             "health" -> targets.sortBy { it.health } // Sort by health
             "livingtime" -> targets.sortBy { -it.ticksExisted } // Sort by existence
@@ -143,7 +144,7 @@ class TeleportAura : Module() {
 
             lastTarget = it
 
-            when (swingValue.get().toLowerCase()) {
+            when (swingValue.get().lowercase(Locale.getDefault())) {
                 "normal" -> mc.thePlayer.swingItem()
                 "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
             }
@@ -203,7 +204,7 @@ class TeleportAura : Module() {
                     val width = 0.3
                     val height = mc.thePlayer.getEyeHeight().toDouble()
 
-                    when (renderValue.get().toLowerCase()) {
+                    when (renderValue.get().lowercase(Locale.getDefault())) {
                         "box" -> {
                             GL11.glBegin(GL11.GL_LINE_STRIP)
                             GL11.glVertex3d(x - width, y, z - width)

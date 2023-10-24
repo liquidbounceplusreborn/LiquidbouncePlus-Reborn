@@ -60,7 +60,7 @@ class Astolfo2(inst: Target): TargetStyle("Astolfo2", inst, true) {
         RenderUtils.newDrawRect(0F, 0F, 130F + length, 45F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         entity ?: return Border(0F, 0F, 102F, 36F)
         return Border(0F, 0F, 130F, 45F)
     }

@@ -36,7 +36,7 @@ class Sprint : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
         if (allDirectionsValue.get() && noPacketPatchValue.get()) {
-            if (packet is C0BPacketEntityAction && (packet.getAction() == C0BPacketEntityAction.Action.STOP_SPRINTING || packet.getAction() == C0BPacketEntityAction.Action.START_SPRINTING)) {
+            if (packet is C0BPacketEntityAction && (packet.action == C0BPacketEntityAction.Action.STOP_SPRINTING || packet.action == C0BPacketEntityAction.Action.START_SPRINTING)) {
                 event.cancelEvent()
             }
         }
@@ -44,20 +44,20 @@ class Sprint : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)!! as KillAura
+        val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)!!
 
-        if (!MovementUtils.isMoving() || mc.thePlayer.isSneaking() ||
+        if (!MovementUtils.isMoving() || mc.thePlayer.isSneaking ||
                 (blindnessValue.get() && mc.thePlayer.isPotionActive(Potion.blindness)) ||
-                (foodValue.get() && !(mc.thePlayer.getFoodStats().getFoodLevel() > 6.0F || mc.thePlayer.capabilities.allowFlying))
+                (foodValue.get() && !(mc.thePlayer.foodStats.foodLevel > 6.0F || mc.thePlayer.capabilities.allowFlying))
                 || (checkServerSide.get() && (mc.thePlayer.onGround || !checkServerSideGround.get())
                 && !allDirectionsValue.get() && RotationUtils.targetRotation != null &&
                 RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30F)) {
-            mc.thePlayer.setSprinting(false)
+            mc.thePlayer.isSprinting = false
             return
         }
 
         if (allDirectionsValue.get() || mc.thePlayer.movementInput.moveForward >= 0.8F)
-            mc.thePlayer.setSprinting(true)
+            mc.thePlayer.isSprinting = true
 
         if (allDirectionsValue.get() && moveDirPatchValue.get() && killAura.target == null)
             RotationUtils.setTargetRotation(Rotation(MovementUtils.getRawDirection(), mc.thePlayer.rotationPitch))

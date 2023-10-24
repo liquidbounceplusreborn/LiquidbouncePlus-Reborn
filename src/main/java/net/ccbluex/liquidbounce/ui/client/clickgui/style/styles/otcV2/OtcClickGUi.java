@@ -20,7 +20,7 @@ public class OtcClickGUi extends GuiScreen
     private static float mainx;
     private float x;
     private static float mainy;
-    private float hight;
+    private final float hight;
     private int x2;
     private int y2;
     private boolean dragging;
@@ -31,9 +31,9 @@ public class OtcClickGUi extends GuiScreen
     }
     
     public OtcClickGUi() {
-        this.mainx = 320.0f;
+        mainx = 320.0f;
         this.x = 0.0f;
-        this.mainy = 130.0f;
+        mainy = 130.0f;
         this.hight = 120.0f;
         this.tabs = new ArrayList<CategoryScreen>();
         for (final ModuleCategory category : ModuleCategory.values()) {
@@ -69,22 +69,22 @@ public class OtcClickGUi extends GuiScreen
         int guiColor = ClickGUI.generateColor().getRGB();
         try {
             if (this.dragging) {
-                this.mainx = (float)(this.x2 + mouseX);
-                this.mainy = (float)(this.y2 + mouseY);
+                mainx = (float)(this.x2 + mouseX);
+                mainy = (float)(this.y2 + mouseY);
             }
             final ScaledResolution scaledResolution = new ScaledResolution(this.mc);
             RenderUtils.drawRect(0.0f, 0.0f, (float)scaledResolution.getScaledWidth(), (float)scaledResolution.getScaledHeight(), new Color(0, 0, 0, 120).getRGB());
-            RoundedUtil.drawRound(this.mainx, this.mainy, 290.0f, this.hight + 180.0f, 3.0f, new Color(44, 47, 56));
-            RoundedUtil.drawRound(this.mainx, this.mainy - 50.0f, 290.0f, this.hight - 80.0f, 3.0f, new Color(44, 47, 56));
-            RoundedUtil.drawGradientHorizontal(this.mainx, this.mainy - 50.0f, 290.0f, this.hight - 116.0f, 3.0f, new Color(guiColor), new Color(guiColor));
-            Fonts.fontTahoma.drawString("onetap.su", this.mainx + 11.0f, this.mainy - 31.0f, new Color(255, 255, 255).getRGB());
-            RoundedUtil.drawRound(this.mainx + 64.0f, this.mainy - 35.0f, 0.5f, this.hight - 105.0f, 1.0f, new Color(255, 255, 255, 150));
+            RoundedUtil.drawRound(mainx, mainy, 290.0f, this.hight + 180.0f, 3.0f, new Color(44, 47, 56));
+            RoundedUtil.drawRound(mainx, mainy - 50.0f, 290.0f, this.hight - 80.0f, 3.0f, new Color(44, 47, 56));
+            RoundedUtil.drawGradientHorizontal(mainx, mainy - 50.0f, 290.0f, this.hight - 116.0f, 3.0f, new Color(guiColor), new Color(guiColor));
+            Fonts.fontTahoma.drawString("onetap.su", mainx + 11.0f, mainy - 31.0f, new Color(255, 255, 255).getRGB());
+            RoundedUtil.drawRound(mainx + 64.0f, mainy - 35.0f, 0.5f, this.hight - 105.0f, 1.0f, new Color(255, 255, 255, 150));
             final CategoryScreen selectedTab = this.getSelectedTab();
             if (selectedTab == null) {
-                this.mc.fontRendererObj.drawString("-------------", (int)this.mainx + 109, (int)this.mainy + 40, new Color(255, 255, 255).getRGB());
-                this.mc.fontRendererObj.drawString(" Select one of", (int)this.mainx + 109, (int)this.mainy + 50, new Color(255, 255, 255).getRGB());
-                this.mc.fontRendererObj.drawString("-------------", (int)this.mainx + 109, (int)this.mainy + 60, new Color(255, 255, 255).getRGB());
-                this.mc.fontRendererObj.drawString("Enjoy OneTap", (int)this.mainx + 107, (int)this.mainy + 75, new Color(255, 255, 255).getRGB());
+                this.mc.fontRendererObj.drawString("-------------", (int) mainx + 109, (int) mainy + 40, new Color(255, 255, 255).getRGB());
+                this.mc.fontRendererObj.drawString(" Select one of", (int) mainx + 109, (int) mainy + 50, new Color(255, 255, 255).getRGB());
+                this.mc.fontRendererObj.drawString("-------------", (int) mainx + 109, (int) mainy + 60, new Color(255, 255, 255).getRGB());
+                this.mc.fontRendererObj.drawString("Enjoy OneTap", (int) mainx + 107, (int) mainy + 75, new Color(255, 255, 255).getRGB());
             }
             this.tabs.forEach(s -> s.drawScreen(mouseX, mouseY));
             super.drawScreen(mouseX, mouseY, partialTicks);
@@ -106,8 +106,8 @@ public class OtcClickGUi extends GuiScreen
             }
         }
         if (this.isHovered(mouseX, mouseY)) {
-            this.x2 = (int)(this.mainx - mouseX);
-            this.y2 = (int)(this.mainy - mouseY);
+            this.x2 = (int)(mainx - mouseX);
+            this.y2 = (int)(mainy - mouseY);
             this.dragging = true;
         }
         final CategoryScreen selectedTab = this.getSelectedTab();
@@ -122,7 +122,7 @@ public class OtcClickGUi extends GuiScreen
     }
 
     private boolean isHovered(final int mouseX, final int mouseY) {
-        return mouseX >= this.mainx && mouseX <= this.mainx + 45.0f + 105.0f + 270.0f && mouseY >= this.mainy - 50.0f - 7.0f && mouseY <= this.mainy - 50.0f + 20.0f;
+        return mouseX >= mainx && mouseX <= mainx + 45.0f + 105.0f + 270.0f && mouseY >= mainy - 50.0f - 7.0f && mouseY <= mainy - 50.0f + 20.0f;
     }
 
     public static OtcScroll scroll() {

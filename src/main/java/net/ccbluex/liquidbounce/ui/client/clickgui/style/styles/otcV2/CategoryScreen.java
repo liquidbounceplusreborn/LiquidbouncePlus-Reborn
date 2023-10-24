@@ -21,12 +21,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class CategoryScreen
 {
     private float maxScroll;
-    private float minScroll;
+    private final float minScroll;
     private float rawScroll;
     private float scroll;
     public Position pos;
     private ModuleCategory category;
-    private float x;
+    private final float x;
     private float categoryX;
     private float categoryY;
     private boolean selected;

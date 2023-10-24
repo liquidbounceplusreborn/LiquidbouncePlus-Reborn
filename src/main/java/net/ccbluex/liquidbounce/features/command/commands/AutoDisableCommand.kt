@@ -71,7 +71,7 @@ class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
             }
 
             try {
-                val disableWhen = DisableEvent.valueOf(args[2].toUpperCase())
+                val disableWhen = DisableEvent.valueOf(args[2].uppercase(Locale.getDefault()))
 
                 var added = "§awill now§r"
                 if (module.autoDisables.contains(disableWhen)) {

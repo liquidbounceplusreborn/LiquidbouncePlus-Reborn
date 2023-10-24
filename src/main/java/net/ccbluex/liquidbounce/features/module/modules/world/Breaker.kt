@@ -34,6 +34,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import java.awt.Color
+import java.util.*
 
 @ModuleInfo(name = "Breaker", description = "Destroys selected blocks around you. (aka. IDNuker)", category = ModuleCategory.WORLD)
 object Breaker : Module() {
@@ -291,7 +292,7 @@ object Breaker : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        when (renderValue.get().toLowerCase()) {
+        when (renderValue.get().lowercase(Locale.getDefault())) {
             "box" -> RenderUtils.drawBlockBox(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY else Color.RED, false)
             "outline" -> RenderUtils.drawBlockBox(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY else Color.RED, true)
             "2d" -> RenderUtils.draw2D(pos ?: return, if (!coolDownTimer.hasTimePassed(coolDownValue.get().toLong() * 1000L)) Color.DARK_GRAY.rgb else Color.RED.rgb, Color.BLACK.rgb)
@@ -305,11 +306,11 @@ object Breaker : Module() {
             val timeLeft = "Cooldown: ${(coolDownTimer.hasTimeLeft(coolDownValue.get().toLong() * 1000L) / 1000L).toInt()}s"
             val strWidth = Fonts.minecraftFont.getStringWidth(timeLeft)
 
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2 - 1, sc.getScaledHeight() / 2 - 70, 0x000000)
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2 + 1, sc.getScaledHeight() / 2 - 70, 0x000000)
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 69, 0x000000)
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 71, 0x000000)
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 70, -1)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2 - 1, sc.scaledHeight / 2 - 70, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2 + 1, sc.scaledHeight / 2 - 70, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2, sc.scaledHeight / 2 - 69, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2, sc.scaledHeight / 2 - 71, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2, sc.scaledHeight / 2 - 70, -1)
         }
     }
 
@@ -355,7 +356,7 @@ object Breaker : Module() {
         if (ignoreFirstBlockValue.get() && nearestBlock != null) {
             if (firstPos == null) {
                 firstPos = nearestBlock
-                LiquidBounce.hud.addNotification(Notification("Fucker","Found first ${getBlockName(targetID)} block at ${nearestBlock!!.x.toInt()} ${nearestBlock!!.y.toInt()} ${nearestBlock!!.z.toInt()}", NotifyType.SUCCESS))
+                LiquidBounce.hud.addNotification(Notification("Fucker","Found first ${getBlockName(targetID)} block at ${nearestBlock.x.toInt()} ${nearestBlock.y.toInt()} ${nearestBlock.z.toInt()}", NotifyType.SUCCESS))
             }
             if (targetID == 26 && firstPos != null && firstPosBed == null) { // bed
                 when (true) {
@@ -375,7 +376,7 @@ object Breaker : Module() {
      * Check if block is hitable (or allowed to hit through walls)
      */
     private fun isHitable(blockPos: BlockPos): Boolean {
-        return when (throughWallsValue.get().toLowerCase()) {
+        return when (throughWallsValue.get().lowercase(Locale.getDefault())) {
             "raycast" -> {
                 val eyesPos = Vec3(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY +
                         mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ)

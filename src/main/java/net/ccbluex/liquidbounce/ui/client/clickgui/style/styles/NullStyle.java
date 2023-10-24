@@ -26,6 +26,7 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 public class NullStyle extends Style {
@@ -60,14 +61,14 @@ public class NullStyle extends Style {
     @Override
     public void drawButtonElement(int mouseX, int mouseY, ButtonElement buttonElement) {
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(buttonElement.getDisplayName(), (int) (buttonElement.getX() + 5), buttonElement.getY() + 7, buttonElement.getColor());
+        Fonts.minecraftFont.drawString(buttonElement.getDisplayName(), buttonElement.getX() + 5, buttonElement.getY() + 7, buttonElement.getColor());
     }
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
         final int guiColor = ClickGUI.generateColor().getRGB();
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(moduleElement.getDisplayName(), (int) (moduleElement.getX() + 5), moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
+        Fonts.minecraftFont.drawString(moduleElement.getDisplayName(), moduleElement.getX() + 5, moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
@@ -310,7 +311,7 @@ public class NullStyle extends Style {
 
     private BigDecimal round(final float f) {
         BigDecimal bd = new BigDecimal(Float.toString(f));
-        bd = bd.setScale(2, 4);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd;
     }
 }

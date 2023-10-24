@@ -38,13 +38,13 @@ public class Module {
         }
     }
     private double length = 3, anim = 5;
-    private int alph = 0;
+    private final int alph = 0;
     float fraction = 0;
     float fractionBackground = 0;
     public void drawScreen(int mouseX, int mouseY) {
 
         Minecraft instance = Minecraft.getMinecraft();
-        int debugFPS = instance.getDebugFPS();
+        int debugFPS = Minecraft.getDebugFPS();
         if (module.getState() && fraction < 1) {
             fraction += 0.0025 * (2000 / debugFPS);
         }
@@ -80,7 +80,7 @@ public class Module {
             }
         }
 
-        HUD hud = (HUD) LiquidBounce.moduleManager.getModule(HUD.class);
+        HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
         Color colorHUD = ClickGUI.generateColor();
         Color white = new Color(0xFFFFFF);
 
@@ -152,13 +152,13 @@ public class Module {
             for (Setting setting : settings.stream().filter(s -> s.setting.getDisplayable() ).collect(Collectors.toList())) {
                 gay += 15;
             }
-            return tab.modules.indexOf(this) == tab.modules.size() - 1 ? gay : gay;
+            return gay;
         } else {
             return 14;
         }
     }
 
-    private float alpha = 0;
+    private final float alpha = 0;
 
     public void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         if (isHovered(mouseX, mouseY)) {
@@ -168,7 +168,7 @@ public class Module {
                     break;
                 case 1:
                     if (!module.getValues().isEmpty()) {
-                        final ClickGUI clickGUI = (ClickGUI) LiquidBounce.moduleManager.getModule(ClickGUI.class);
+                        final ClickGUI clickGUI = LiquidBounce.moduleManager.getModule(ClickGUI.class);
                         if (!opened && clickGUI.getGetClosePrevious.get())
                             tab.modules.forEach(module -> {
                                 if (module.opened)

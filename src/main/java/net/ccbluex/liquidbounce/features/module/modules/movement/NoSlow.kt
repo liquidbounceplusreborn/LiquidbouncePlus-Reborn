@@ -26,6 +26,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.*
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition
+import java.util.*
 
 
 @ModuleInfo(name = "NoSlow", spacedName = "No Slow", category = ModuleCategory.MOVEMENT, description = "Prevent you from getting slowed down by items (swords, foods, etc.) and liquids.")
@@ -77,7 +78,7 @@ class NoSlow : Module() {
         blinkPackets.clear()
     }
 
-    override val tag: String?
+    override val tag: String
         get() = modeValue.get()
 
     private fun sendPacket(event : MotionEvent, sendC07 : Boolean, sendC08 : Boolean, delay : Boolean, delayValue : Long, onGround : Boolean, watchDog : Boolean = false) {
@@ -115,7 +116,7 @@ class NoSlow : Module() {
             return
 
         val packet = event.packet
-        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
+        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
 
         if (modeValue.get().equals(
                 "blink",
@@ -129,9 +130,9 @@ class NoSlow : Module() {
                             .equals("postrelease", true)
                     ) {
                         (packet as C03PacketPlayer).x = lastX
-                        (packet as C03PacketPlayer).y = lastY
-                        (packet as C03PacketPlayer).z = lastZ
-                        (packet as C03PacketPlayer).onGround = lastOnGround
+                        packet.y = lastY
+                        packet.z = lastZ
+                        packet.onGround = lastOnGround
                         if (debugValue.get())
                             ClientUtils.displayChatMessage("pos update reached 20")
                     } else {
@@ -178,7 +179,7 @@ class NoSlow : Module() {
         if(modeValue.isMode("Watchdog")){
             if (packet is C08PacketPlayerBlockPlacement) {
                 if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem != null && (mc.thePlayer.heldItem.item is ItemFood || mc.thePlayer.heldItem.item is ItemBucketMilk || mc.thePlayer.heldItem.item is ItemPotion && !ItemPotion.isSplash(mc.thePlayer.heldItem.metadata) || mc.thePlayer.heldItem.item is ItemBow)) {
-                    if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit === MovingObjectPosition.MovingObjectType.BLOCK && (packet as C08PacketPlayerBlockPlacement).position != BlockPos(-1, -1, 1)) return
+                    if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit === MovingObjectPosition.MovingObjectType.BLOCK && packet.position != BlockPos(-1, -1, 1)) return
                     event.cancelEvent()
                     val position: MovingObjectPosition = mc.thePlayer.rayTraceCustom(
                         mc.playerController.blockReachDistance.toDouble(), mc.thePlayer.rotationYaw, 90f)
@@ -217,9 +218,9 @@ class NoSlow : Module() {
             return
 
         val heldItem = mc.thePlayer.heldItem
-        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!! as KillAura
+        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
 
-        when (modeValue.get().toLowerCase()) {
+        when (modeValue.get().lowercase(Locale.getDefault())) {
             "aac5" -> if (event.eventState == EventState.POST && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking || killAura.blockStatus)) {
                 mc.netHandler.addToSendQueue(
                     C08PacketPlayerBlockPlacement(
@@ -305,7 +306,7 @@ class NoSlow : Module() {
             else -> {
                 if (!mc.thePlayer.isBlocking && !killAura.blockStatus)
                     return
-                when (modeValue.get().toLowerCase()) {
+                when (modeValue.get().lowercase(Locale.getDefault())) {
                     "aac" -> {
                         if (mc.thePlayer.ticksExisted % 3 == 0)
                             sendPacket(event, true, false, false, 0, false)

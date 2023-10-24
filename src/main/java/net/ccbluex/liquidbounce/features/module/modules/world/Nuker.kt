@@ -80,7 +80,7 @@ class Nuker : Module() {
         // 箱子判断
         if (event != null) {
             if (event.packet is C07PacketPlayerDigging && !mc.playerController.extendedReach()) {
-                val packet = event.packet as C07PacketPlayerDigging
+                val packet = event.packet
                 if (isRunning) {
                     destroy = true
                     blockPos = packet.position
@@ -120,7 +120,7 @@ class Nuker : Module() {
                             blockChecks = (blockChecks && canSeeBlock(posX + 0.5f, this.posY + 0.9f, this.posZ + 0.5f)
                                     && block !is BlockAir)
                             blockChecks = blockChecks && (block.getBlockHardness(mc.theWorld, BlockPos.ORIGIN) != -1.0f
-                                    || mc.playerController.isInCreativeMode())
+                                    || mc.playerController.isInCreativeMode)
                             if (blockChecks) {
                                 isRunning = true
                                 if (mc.objectMouseOver != null) {

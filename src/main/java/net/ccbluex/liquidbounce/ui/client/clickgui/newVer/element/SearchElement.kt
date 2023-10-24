@@ -26,7 +26,7 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         Stencil.write(true)
         RenderUtils.originalRoundedRect(xPos, yPos, xPos + width, yPos + height, 4F, ColorManager.textBox.rgb)
         Stencil.erase(true)
-        if (searchBox.isFocused()) {
+        if (searchBox.isFocused) {
             RenderUtils.newDrawRect(xPos, yPos + height - 1F, xPos + width, yPos + height, accentColor.rgb)
             searchBox.drawTextBox()
         } else if (searchBox.text.length <= 0) {

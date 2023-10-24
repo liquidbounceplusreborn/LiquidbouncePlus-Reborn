@@ -11,10 +11,10 @@ import java.util.HashMap;
 
 public final class StringUtils {
 
-    private static HashMap<String,String> stringCache = new HashMap<>();
-    private static HashMap<String,String> stringReplaceCache = new HashMap<>();
-    private static HashMap<String,String> stringRegexCache = new HashMap<>();
-    private static HashMap<String,String> airCache = new HashMap<>();
+    private static final HashMap<String,String> stringCache = new HashMap<>();
+    private static final HashMap<String,String> stringReplaceCache = new HashMap<>();
+    private static final HashMap<String,String> stringRegexCache = new HashMap<>();
+    private static final HashMap<String,String> airCache = new HashMap<>();
 
     public static String fixString(String str) {
         if (stringCache.containsKey(str)) return stringCache.get(str);

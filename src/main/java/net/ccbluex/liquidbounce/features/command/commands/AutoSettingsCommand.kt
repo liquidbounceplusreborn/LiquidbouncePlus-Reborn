@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.SettingsUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
+import java.util.*
 import kotlin.concurrent.thread
 
 class AutoSettingsCommand : Command("autosettings", arrayOf("setting", "settings", "config", "autosetting")) {
@@ -41,7 +42,7 @@ class AutoSettingsCommand : Command("autosettings", arrayOf("setting", "settings
                 val url = if (args[2].startsWith("http"))
                     args[2]
                 else
-                    "${LiquidBounce.CLIENT_CLOUD}/settings/${args[2].toLowerCase()}"
+                    "${LiquidBounce.CLIENT_CLOUD}/settings/${args[2].lowercase(Locale.getDefault())}"
 
                 chat("Loading settings...")
 

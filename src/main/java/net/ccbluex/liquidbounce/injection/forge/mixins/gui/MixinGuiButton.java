@@ -63,7 +63,7 @@ public abstract class MixinGuiButton extends Gui {
    @Final
    protected static ResourceLocation buttonTextures;
 
-   private float bright = 0F;
+   private final float bright = 0F;
    private float moveX = 0F;
    private float cut;
    private float alpha;
@@ -108,7 +108,7 @@ public abstract class MixinGuiButton extends Gui {
             moveX = AnimationUtils.animate(0F, moveX, speedDelta);
          }
 
-         float roundCorner = (float) Math.max(0F, 2.4F + moveX - (this.width - 2.4F));
+         float roundCorner = Math.max(0F, 2.4F + moveX - (this.width - 2.4F));
 
          switch (hud.getGuiButtonStyle().get().toLowerCase()) {
             case "minecraft":

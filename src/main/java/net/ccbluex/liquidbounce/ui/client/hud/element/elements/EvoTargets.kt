@@ -209,7 +209,7 @@ class EvoTargets : Element() {
                     GL11.glColor4f(1F, 1F, 1F, 1F)
                     RenderUtils.drawEntityOnScreen(15, 35, 15, target)
 
-                    Fonts.minecraftFont.drawStringWithShadow(target.name, 30F, 5F, -1);
+                    Fonts.minecraftFont.drawStringWithShadow(target.name, 30F, 5F, -1)
                     drawArmor(30, 15, target)
 
                     RenderUtils.drawRect(0F, 39F, barWidth, 40F, barColor.rgb)
@@ -253,7 +253,7 @@ class EvoTargets : Element() {
                     GL11.glPushMatrix()
                     GL11.glTranslatef(32F, 20F, 32F)
                     GL11.glScalef(2F, 2F, 2F)
-                    Fonts.minecraftFont.drawString("${decimalFormat3.format(target.health)} ❤", 0, 0, barColor.rgb);
+                    Fonts.minecraftFont.drawString("${decimalFormat3.format(target.health)} ❤", 0, 0, barColor.rgb)
                     GL11.glPopMatrix()
 
                     RenderUtils.drawRect(32F, 48F, 32F + 122F, 55F, barColor.darker().rgb)
@@ -418,7 +418,7 @@ class EvoTargets : Element() {
             val stack = ent.inventory.armorInventory[i] ?: continue
             x += 18F
         }
-        if (ent.getHeldItem() != null && ent.getHeldItem().getItem() != null)
+        if (ent.heldItem != null && ent.heldItem.item != null)
             x += 18F
 
         return x
@@ -442,9 +442,9 @@ class EvoTargets : Element() {
             drawX += 18
         }
 
-        if (ent.getHeldItem() != null && ent.getHeldItem().getItem() != null) {
-            renderItem.renderItemIntoGUI(ent.getHeldItem(), drawX, drawY)
-            renderItem.renderItemOverlays(mc.fontRendererObj, ent.getHeldItem(), drawX, drawY)
+        if (ent.heldItem != null && ent.heldItem.item != null) {
+            renderItem.renderItemIntoGUI(ent.heldItem, drawX, drawY)
+            renderItem.renderItemOverlays(mc.fontRendererObj, ent.heldItem, drawX, drawY)
         }
 
         RenderHelper.disableStandardItemLighting()

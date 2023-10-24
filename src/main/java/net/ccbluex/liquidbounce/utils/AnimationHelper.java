@@ -14,7 +14,7 @@ public class AnimationHelper {
         this.alpha = 0;
     }
     public static float clamp(float number, float min, float max) {
-        return number < min ? min : Math.min((float)number, (float)max);
+        return number < min ? min : Math.min(number, max);
     }
     public AnimationHelper(BoolValue value) {
         animationX = value.get() ? 5 : -5;
@@ -69,11 +69,11 @@ public class AnimationHelper {
     public static float moveUD(float current, float end, float smoothSpeed, float minSpeed) {
         float movement = (end - current) * smoothSpeed;
         if (movement > 10.0f) {
-            movement = Math.max((float) minSpeed, (float) movement);
-            movement = Math.min((float) (end - current), (float) movement);
+            movement = Math.max(minSpeed, movement);
+            movement = Math.min(end - current, movement);
         } else if (movement < 10.0f) {
-            movement = Math.min((float) (-minSpeed), (float) movement);
-            movement = Math.max((float) (end - current), (float) movement);
+            movement = Math.min(-minSpeed, movement);
+            movement = Math.max(end - current, movement);
         }
         return current + movement;
     }

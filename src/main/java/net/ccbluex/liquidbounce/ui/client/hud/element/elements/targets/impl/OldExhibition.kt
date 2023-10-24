@@ -103,13 +103,13 @@ class OldExhibition(inst: Target): TargetStyle("OldExhibition", inst, false) {
         val stuff: MutableList<ItemStack> = ArrayList()
         var cock = -2
         for (geraltOfNigeria in 3 downTo 0) {
-            val armor = (target as EntityPlayer).getCurrentArmor(geraltOfNigeria)
+            val armor = target.getCurrentArmor(geraltOfNigeria)
             if (armor != null) {
                 stuff.add(armor)
             }
         }
-        if ((target as EntityPlayer).heldItem != null) {
-            stuff.add((target as EntityPlayer).heldItem)
+        if (target.heldItem != null) {
+            stuff.add(target.heldItem)
         }
         for (yes in stuff) {
             if (Minecraft.getMinecraft().theWorld != null) {
@@ -135,7 +135,7 @@ class OldExhibition(inst: Target): TargetStyle("OldExhibition", inst, false) {
         GL11.glPopMatrix()
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         val width = (38 + Fonts.minecraftFont.getStringWidth(entity?.name))
             .coerceAtLeast(118)
             .toFloat()

@@ -486,10 +486,7 @@ public class Fly extends Module {
     public void onUpdate(final UpdateEvent event) {
         final float vanillaSpeed = vanillaSpeedValue.get();
         final float vanillaVSpeed = vanillaVSpeedValue.get();
-
-        mc.thePlayer.noClip = false;
-        if (modeValue.get().equalsIgnoreCase("aac5-vanilla") && aac5NoClipValue.get())
-            mc.thePlayer.noClip = true;
+        mc.thePlayer.noClip = modeValue.get().equalsIgnoreCase("aac5-vanilla") && aac5NoClipValue.get();
 
         switch (modeValue.get().toLowerCase()) {
             case "motion":

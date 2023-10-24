@@ -107,7 +107,7 @@ class Exhibition(inst: Target): TargetStyle("Exhibition", inst, true) {
         RenderUtils.newDrawRect(-3F, -3F, minWidth, 48F, shadowOpaque.rgb)
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border? {
+    override fun getBorder(entity: EntityPlayer?): Border {
         entity ?: return Border(-3F, -3F, 143F, 48F)
 
         val font = Fonts.fontTahoma

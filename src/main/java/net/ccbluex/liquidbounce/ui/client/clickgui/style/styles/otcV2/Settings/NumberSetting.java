@@ -36,19 +36,19 @@ public class NumberSetting extends Downward<IntegerValue>
         this.moduley = OtcClickGUi.getMainy();
         this.numbery = this.pos.y + this.getScrollY();
         Minecraft.getMinecraft();
-        final double clamp = MathHelper.clamp_double((double)(Minecraft.getDebugFPS() / 30), 1.0, 9999.0);
-        final double percentBar = (((IntegerValue)this.setting).get() - (double)((IntegerValue)this.setting).getMinimum()) / (((IntegerValue)this.setting).getMaximum() - ((IntegerValue)this.setting).getMinimum());
+        final double clamp = MathHelper.clamp_double(Minecraft.getDebugFPS() / 30, 1.0, 9999.0);
+        final double percentBar = (this.setting.get() - (double) this.setting.getMinimum()) / (this.setting.getMaximum() - this.setting.getMinimum());
         this.percent = Math.max(0.0f, Math.min(1.0f, (float)(this.percent + (Math.max(0.0, Math.min(percentBar, 1.0)) - this.percent) * (0.2 / clamp))));
         RoundedUtil.drawRound(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.numbery + 8.0f, 75.0f, 2.5f, 1.0f, new Color(34, 38, 48));
         RoundedUtil.drawRound(this.modulex + 5.0f + this.pos.x + 55.0f, this.moduley + 17.0f + this.numbery + 8.0f, 75.0f * this.percent, 2.5f, 1.0f, new Color(guiColor));
-        Fonts.fontTahoma.drawString(((IntegerValue)this.setting).getName(), this.modulex + 5.0f + this.pos.x + 4.0f, this.moduley + 17.0f + this.numbery + 8.0f, new Color(200, 200, 200).getRGB());
+        Fonts.fontTahoma.drawString(this.setting.getName(), this.modulex + 5.0f + this.pos.x + 4.0f, this.moduley + 17.0f + this.numbery + 8.0f, new Color(200, 200, 200).getRGB());
         if (this.iloveyou) {
             final float percentt = Math.min(1.0f, Math.max(0.0f, (mouseX - (this.modulex + 5.0f + this.pos.x + 55.0f)) / 99.0f * 1.3f));
-            final double newValue = percentt * (((IntegerValue)this.setting).getMaximum() - ((IntegerValue)this.setting).getMinimum()) + ((IntegerValue)this.setting).getMinimum();
+            final double newValue = percentt * (this.setting.getMaximum() - this.setting.getMinimum()) + this.setting.getMinimum();
             final double set = MathUtil.incValue(newValue, 1.0);
-            ((IntegerValue)this.setting).set(set);
+            this.setting.set(set);
         }
-        final ClickGUI cg = (ClickGUI)LiquidBounce.moduleManager.getModule(ClickGUI.class);
+        final ClickGUI cg = LiquidBounce.moduleManager.getModule(ClickGUI.class);
         if (this.iloveyou || this.isHovered(mouseX, mouseY) || cg.disp.get()) {
             RoundedUtil.drawRound(this.modulex + 5.0f + this.pos.x + 55.0f + 61.0f * this.percent, this.moduley + 17.0f + this.numbery + 8.0f + 6.0f, (float)(Fonts.fontTahoma.getStringWidth(((Value<?>)this.setting).get() + "") + 2), 6.0f, 1.0f, new Color(32, 34, 39));
             Fonts.fontTahoma.drawString(((Value<?>)this.setting).get() + "", this.modulex + 5.0f + this.pos.x + 55.0f + 62.0f * this.percent, this.moduley + 17.0f + this.numbery + 8.0f + 8.0f, new Color(250, 250, 250).getRGB());
