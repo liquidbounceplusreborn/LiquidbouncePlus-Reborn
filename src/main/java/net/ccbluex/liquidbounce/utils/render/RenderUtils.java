@@ -2611,26 +2611,29 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawExhiEnchants(ItemStack stack, float x, float y) {
+        drawExhiEnchants(stack, x, y, -5);
+    }
+
+    public static void drawExhiEnchants(ItemStack stack, float x, float y, int offset) {
         RenderHelper.disableStandardItemLighting();
         GlStateManager.disableDepth();
         disableBlend();
         GlStateManager.resetColor();
-        final int darkBorder = 0xFF000000;
         if (stack.getItem() instanceof ItemArmor) {
             int prot = EnchantmentHelper.getEnchantmentLevel(Enchantment.protection.effectId, stack);
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             int thorn = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack);
             if (prot > 0) {
-                drawExhiOutlined(prot + "", drawExhiOutlined("P", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(prot), getMainColor(prot), true);
-                y += 4;
+                drawExhiOutlined(prot + "", drawExhiOutlined("P", x, y, -1), y, getMainColor(prot, 4));
+                y += offset;
             }
             if (unb > 0) {
-                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(unb),getMainColor(unb), true);
-                y += 4;
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, -1), y, getMainColor(unb, 3));
+                y += offset;
             }
             if (thorn > 0) {
-                drawExhiOutlined(thorn + "", drawExhiOutlined("T", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(thorn), getMainColor(thorn), true);
-                y += 4;
+                drawExhiOutlined(thorn + "", drawExhiOutlined("T", x, y, -1), y, getMainColor(thorn, 3));
+                y += offset;
             }
         }
         if (stack.getItem() instanceof ItemBow) {
@@ -2638,21 +2641,26 @@ public final class RenderUtils extends MinecraftInstance {
             int punch = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, stack);
             int flame = EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, stack);
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
+            int inf = EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, stack);
             if (power > 0) {
-                drawExhiOutlined(power + "", drawExhiOutlined("Pow", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(power), getMainColor(power), true);
-                y += 4;
+                drawExhiOutlined(power + "", drawExhiOutlined("Pow", x, y, -1), y, getMainColor(power, 5));
+                y += offset;
             }
             if (punch > 0) {
-                drawExhiOutlined(punch + "", drawExhiOutlined("Pun", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(punch), getMainColor(punch), true);
-                y += 4;
+                drawExhiOutlined(punch + "", drawExhiOutlined("Pun", x, y, -1), y, getMainColor(punch, 2));
+                y += offset;
             }
             if (flame > 0) {
-                drawExhiOutlined(flame + "", drawExhiOutlined("F", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(flame), getMainColor(flame), true);
-                y += 4;
+                drawExhiOutlined(flame + "", drawExhiOutlined("F", x, y, -1), y, getMainColor(flame, 1));
+                y += offset;
             }
             if (unb > 0) {
-                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(unb), getMainColor(unb), true);
-                y += 4;
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, -1), y, getMainColor(unb, 3));
+                y += offset;
+            }
+            if (inf > 0) {
+                drawExhiOutlined(inf + "", drawExhiOutlined("I", x, y, -1), y, getMainColor(unb, 1));
+                y += offset;
             }
         }
         if (stack.getItem() instanceof ItemSword) {
@@ -2661,38 +2669,34 @@ public final class RenderUtils extends MinecraftInstance {
             int fire = EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId, stack);
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             if (sharp > 0) {
-                drawExhiOutlined(sharp + "", drawExhiOutlined("S", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(sharp), getMainColor(sharp), true);
-                y += 4;
+                drawExhiOutlined(sharp + "", drawExhiOutlined("S", x, y, -1), y, getMainColor(sharp, 5));
+                y += offset;
             }
             if (kb > 0) {
-                drawExhiOutlined(kb + "", drawExhiOutlined("K", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(kb), getMainColor(kb), true);
-                y += 4;
+                drawExhiOutlined(kb + "", drawExhiOutlined("K", x, y, -1), y, getMainColor(kb, 2));
+                y += offset;
             }
             if (fire > 0) {
-                drawExhiOutlined(fire + "", drawExhiOutlined("F", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(fire), getMainColor(fire), true);
-                y += 4;
+                drawExhiOutlined(fire + "", drawExhiOutlined("F", x, y, -1), y, getMainColor(fire, 2));
+                y += offset;
             }
             if (unb > 0) {
-                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, 0.35F, darkBorder, -1, true), y, 0.35F, getBorderColor(unb), getMainColor(unb), true);
-                y += 4;
+                drawExhiOutlined(unb + "", drawExhiOutlined("U", x, y, -1), y, getMainColor(unb, 3));
+                y += offset;
             }
         }
         GlStateManager.enableDepth();
         RenderHelper.enableGUIStandardItemLighting();
     }
 
-    private static float drawExhiOutlined(String text, float x, float y, float borderWidth, int borderColor, int mainColor, boolean drawText) {
-        Fonts.fontTahomaSmall.drawString(text, x, y - borderWidth, borderColor);
-        Fonts.fontTahomaSmall.drawString(text, x, y + borderWidth, borderColor);
-        Fonts.fontTahomaSmall.drawString(text, x - borderWidth, y, borderColor);
-        Fonts.fontTahomaSmall.drawString(text, x + borderWidth, y, borderColor);
-        if (drawText)
-            Fonts.fontTahomaSmall.drawString(text, x, y, mainColor);
+    private static float drawExhiOutlined(String text, float x, float y, int mainColor) {
+        x += 0.5F;
+        Fonts.fontTahomaSmall.drawStringWithShadow(text, x, y, mainColor);
         return x + Fonts.fontTahomaSmall.getWidth(text) - 2F;
     }
 
-    private static int getMainColor(int level) {
-        if (level == 4)
+    private static int getMainColor(int level, int max) {
+        if (level >= max)
             return 0xFFAA0000;
         return -1;
     }

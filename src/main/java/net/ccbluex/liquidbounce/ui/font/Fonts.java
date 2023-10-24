@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.font;
 import com.google.gson.*;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.FontUtils;
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -138,6 +139,7 @@ public class Fonts {
             e.printStackTrace();
         }
 
+        FontUtils.INSTANCE.updateCache();
         ClientUtils.getLogger().info("Loaded Fonts. (" + (System.currentTimeMillis() - l) + "ms)");
     }
 
