@@ -30,15 +30,12 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
         name = moduleObject.getMember("name") as String
         description = moduleObject.getMember("description") as String
 
-        if (moduleObject.hasMember("spacedName"))
-            spacedName = moduleObject.getMember("spacedName") as String
-        else 
-            spacedName = name
+        spacedName = if (moduleObject.hasMember("spacedName"))
+            moduleObject.getMember("spacedName") as String
+        else
+            name
 
-        val categoryString = moduleObject.getMember("category") as String
-        for (category in ModuleCategory.values())
-            if (categoryString.equals(category.displayName, true))
-                this.category = category
+        this.category = ModuleCategory.SCRIPT
 
         if (moduleObject.hasMember("settings")) {
             val settings = moduleObject.getMember("settings") as JSObject
