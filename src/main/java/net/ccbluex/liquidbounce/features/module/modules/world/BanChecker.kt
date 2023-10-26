@@ -39,6 +39,7 @@ class BanChecker : Module() {
         override fun run() {
             val checkTimer = MSTimer()
             while (true) {
+                mc.thePlayer ?: return
                 if (checkTimer.hasTimePassed(60000L)) {
                     try {
                         val apiContent = get("https://api.plancke.io/hypixel/v1/punishmentStats")
