@@ -872,6 +872,10 @@ class Scaffold : Module() {
 
         // AutoBlock
         if (packet is C09PacketHeldItemChange) {
+            if (packet.slotId == slot) {
+                event.cancelEvent()
+                return
+            }
             slot = packet.slotId
         }
     }
@@ -1197,13 +1201,6 @@ class Scaffold : Module() {
 
         // Reset
         targetPlace = null
-        if (!stayAutoBlock.get() && blockSlot >= 0 && !autoBlockMode.get()
-                .equals("Switch", ignoreCase = true)
-        ) mc.netHandler.addToSendQueue(
-            C09PacketHeldItemChange(
-                mc.thePlayer.inventory.currentItem
-            )
-        )
     }
 
     /**
