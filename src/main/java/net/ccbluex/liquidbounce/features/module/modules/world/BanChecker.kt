@@ -9,15 +9,20 @@ package net.ccbluex.liquidbounce.features.module.modules.world
 
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.get
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import kotlin.concurrent.thread
 
 @ModuleInfo(
     name = "BanChecker",
@@ -26,83 +31,127 @@ import net.ccbluex.liquidbounce.value.IntegerValue
     category = ModuleCategory.WORLD
 )
 class BanChecker : Module() {
-    val alertValue = BoolValue("Alert", true)
-    val serverCheckValue = BoolValue("ServerCheck", true)
-    val alertTimeValue = IntegerValue("Alert-Time", 10, 1, 50, " seconds")
+    private val notify = BoolValue("Notify", true)
+    private val nofifyWhenNoBan = BoolValue("NotifyWhenNoBan", false)
+    private val notifyStaff = BoolValue("NotifyStaff", true)
+    private val notifyWatchdog = BoolValue("NotifyWatchdog", true)
+    private val onlyOnHypixel = BoolValue("NotifyOnlyOnHypixel", true)
+    private val alertTime = IntegerValue("AlertTime", 5, 1, 50, "s")
 
-    var watchdogLastMin = 0
-    var lastStaffTotal = -1
     var staffLastMin = 0
-    var thread: Thread? = null
+    var watchdogLastMin = 0
+    private var lastStaffTotal = -1
+    private var working = false
+    private var timer = MSTimer()
 
-    private fun getBanCheckerThread(): Thread = object : Thread("Hypixel-BanChecker") {
-        override fun run() {
-            val checkTimer = MSTimer()
-            while (true) {
-                mc.thePlayer ?: return
-                if (checkTimer.hasTimePassed(60000L)) {
-                    try {
-                        val apiContent = get("https://api.plancke.io/hypixel/v1/punishmentStats")
-                        val jsonObject = JsonParser().parse(apiContent).getAsJsonObject()
-                        if (jsonObject["success"].asBoolean && jsonObject.has("record")) {
-                            val objectAPI = jsonObject["record"].getAsJsonObject()
-                            watchdogLastMin = objectAPI["watchdog_lastMinute"].asInt
-                            var staffBanTotal = objectAPI["staff_total"].asInt
-                            if (staffBanTotal < lastStaffTotal) staffBanTotal = lastStaffTotal
-                            if (lastStaffTotal == -1) lastStaffTotal = staffBanTotal else {
-                                staffLastMin = staffBanTotal - lastStaffTotal
-                                lastStaffTotal = staffBanTotal
-                            }
-                            tag = staffLastMin.toString() + ""
-                            if (LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.state && alertValue.get() && mc.thePlayer != null && (!serverCheckValue.get() || isOnHypixel)) if (staffLastMin > 0) LiquidBounce.hud.addNotification(
-                                Notification(
-                                    "BanChecker",
-                                    "Staffs banned $staffLastMin players in the last minute!",
-                                    if (staffLastMin > 3) NotifyType.ERROR else NotifyType.WARNING,
-                                    1500,
-                                    alertTimeValue.get() * 500
-                                )
-                            ) else LiquidBounce.hud.addNotification(
-                                Notification(
-                                    "BanChecker",
-                                    "Staffs didn't ban any player in the last minute.",
-                                    NotifyType.SUCCESS,
-                                    1500,
-                                    alertTimeValue.get() * 500
-                                )
-                            )
-
-                            // watchdog ban doesnt matter, open an issue if you want to add it.
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        if (LiquidBounce.moduleManager.getModule(BanChecker::class.java)!!.state && alertValue.get() && mc.thePlayer != null && (!serverCheckValue.get() || isOnHypixel)) LiquidBounce.hud.addNotification(
-                            Notification(
-                                "BanChecker",
-                                "An error has occurred.",
-                                NotifyType.ERROR,
-                                1500,
-                                alertTimeValue.get() * 500
-                            )
-                        )
-                    }
-                    checkTimer.reset()
-                }
-            }
-        }
+    private fun reset() {
+        working = false
+        timer.time = -1
+        staffLastMin = 0
+        watchdogLastMin = 0
+        lastStaffTotal = -1
     }
 
+    private fun getThread(): Thread {
+        return thread(start = false, isDaemon = true, name = "BanCheckerThread") {
+            working = true
+
+            try {
+                val apiContent = get("https://api.plancke.io/hypixel/v1/punishmentStats")
+                val jsonObject = JsonParser().parse(apiContent).getAsJsonObject()
+                if (jsonObject["success"].asBoolean && jsonObject.has("record")) {
+                    val objectAPI = jsonObject["record"].getAsJsonObject()
+                    watchdogLastMin = objectAPI["watchdog_lastMinute"].asInt
+                    var staffBanTotal = objectAPI["staff_total"].asInt
+                    if (staffBanTotal < lastStaffTotal)
+                        staffBanTotal = lastStaffTotal
+                    if (lastStaffTotal == -1)
+                        lastStaffTotal = staffBanTotal
+                    else {
+                        staffLastMin = staffBanTotal - lastStaffTotal
+                        lastStaffTotal = staffBanTotal
+                    }
+
+                    tag = ((if (notifyStaff.get()) staffLastMin else 0)
+                            + (if (notifyWatchdog.get()) watchdogLastMin else 0)).toString()
+
+                    if (mc.thePlayer != null && notify.get()) {
+                        if (notifyStaff.get() && !(onlyOnHypixel.get() && !isOnHypixel))
+                            if (staffLastMin > 0)
+                                LiquidBounce.hud.addNotification(
+                                    Notification(
+                                        "BanChecker",
+                                        "Staffs banned $staffLastMin players in the last minute!",
+                                        NotifyType.WARNING,
+                                        1500,
+                                        alertTime.get() * 500
+                                    )
+                                )
+                            else if (nofifyWhenNoBan.get())
+                                LiquidBounce.hud.addNotification(
+                                    Notification(
+                                        "BanChecker",
+                                        "Staffs didn't ban any player in the last minute.",
+                                        NotifyType.SUCCESS,
+                                        1500,
+                                        alertTime.get() * 500
+                                    )
+                                )
+
+                        if (notifyWatchdog.get() && !(onlyOnHypixel.get() && !isOnHypixel))
+                            if (watchdogLastMin > 0)
+                                LiquidBounce.hud.addNotification(
+                                    Notification(
+                                        "BanChecker",
+                                        "Watchdog banned $watchdogLastMin players in the last minute!",
+                                        NotifyType.WARNING,
+                                        1500,
+                                        alertTime.get() * 500
+                                    )
+                                )
+                            else if (nofifyWhenNoBan.get())
+                                LiquidBounce.hud.addNotification(
+                                    Notification(
+                                        "BanChecker",
+                                        "Watchdog didn't ban any player in the last minute.",
+                                        NotifyType.SUCCESS,
+                                        1500,
+                                        alertTime.get() * 500
+                                    )
+                                )
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                if (notify.get() && mc.thePlayer != null)
+                    chat("BanChecker error")
+            }
+
+            working = false
+        }
+
+    }
 
     override fun onEnable() {
-        thread = getBanCheckerThread() // new one every time
-        thread?.start()
+        reset()
     }
 
-    override fun onDisable() {
-        thread?.stop()
+    @EventTarget
+    fun onWorld(event: WorldEvent) {
+        reset()
     }
 
-    val isOnHypixel: Boolean
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        if (!timer.hasTimePassed(60_000L) || working)
+            return
+
+        timer.reset()
+
+        getThread().start()
+    }
+
+    private val isOnHypixel: Boolean
         get() = !mc.isIntegratedServerRunning && mc.currentServerData.serverIP.contains("hypixel.net")
     override var tag = "Idle..."
 }
