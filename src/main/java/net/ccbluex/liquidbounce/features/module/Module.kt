@@ -65,7 +65,10 @@ open class Module : MinecraftInstance(), Listenable {
         val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
 
         name = moduleInfo.name
-        spacedName = if (moduleInfo.spacedName == "") name else moduleInfo.spacedName
+        spacedName = if (moduleInfo.spacedName == "")
+            name.split("(?<=[a-z])(?=[A-Z])".toRegex()).joinToString(separator = " ")
+        else
+            moduleInfo.spacedName
         description = moduleInfo.description
         category = moduleInfo.category
         keyBind = moduleInfo.keyBind

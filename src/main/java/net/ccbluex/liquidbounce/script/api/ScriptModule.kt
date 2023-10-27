@@ -33,7 +33,7 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
         spacedName = if (moduleObject.hasMember("spacedName"))
             moduleObject.getMember("spacedName") as String
         else
-            name
+            name.split("(?<=[a-z])(?=[A-Z])".toRegex()).joinToString(separator = " ")
 
         this.category = ModuleCategory.SCRIPT
 
