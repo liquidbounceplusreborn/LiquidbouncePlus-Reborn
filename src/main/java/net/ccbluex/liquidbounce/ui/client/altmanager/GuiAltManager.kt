@@ -40,6 +40,11 @@ import java.util.*
 import java.util.function.Consumer
 import kotlin.concurrent.thread
 
+enum class BUTTON {
+    ADD, REMOVE, IMPORT, EXPORT, COPY, REVERT, BACK, LOGIN, RANDOM, CRACKED, DIRECTLOGIN, SESSIONLOGIN, CHANGENAME,
+    THEALTENING,
+}
+
 
 class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
@@ -69,22 +74,24 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         // Setup buttons
 
         val startPositionY = 22
-        buttonList.add(GuiButton(1, width - 80, startPositionY + 24, 70, 20, "Add"))
-        buttonList.add(GuiButton(2, width - 80, startPositionY + 24 * 2, 70, 20, "Remove"))
-        buttonList.add(GuiButton(7, width - 80, startPositionY + 24 * 3, 70, 20, "Import"))
-        buttonList.add(GuiButton(12, width - 80, startPositionY + 24 * 4, 70, 20, "Export"))
-        buttonList.add(GuiButton(8, width - 80, startPositionY + 24 * 5, 70, 20, "Copy"))
-        buttonList.add(GuiButton(727, width - 80, startPositionY + 24 * 6, 70, 20, "Revert").also { revertOriginalAccount = it })
-        buttonList.add(GuiButton(0, width - 80, height - 65, 70, 20, "Back"))
-        buttonList.add(GuiButton(3, 5, startPositionY + 24, 90, 20, "Login").also { loginButton = it })
-        buttonList.add(GuiButton(4, 5, startPositionY + 24 * 2, 90, 20, "Random").also { randomButton = it })
-        buttonList.add(GuiButton(99, 5, startPositionY + 24 * 3, 90, 20, "Cracked").also { randomCracked = it })
-        buttonList.add(GuiButton(6, 5, startPositionY + 24 * 4, 90, 20, "Direct Login"))
-        buttonList.add(GuiButton(10, 5, startPositionY + 24 * 5, 90, 20, "Session Login"))
-        buttonList.add(GuiButton(88, 5, startPositionY + 24 * 6, 90, 20, "Change Name"))
+
+        buttonList.add(GuiButton(BUTTON.ADD.ordinal, width - 80, startPositionY + 24, 70, 20, "Add"))
+        buttonList.add(GuiButton(BUTTON.REMOVE.ordinal, width - 80, startPositionY + 24 * 2, 70, 20, "Remove"))
+        buttonList.add(GuiButton(BUTTON.IMPORT.ordinal, width - 80, startPositionY + 24 * 3, 70, 20, "Import"))
+        buttonList.add(GuiButton(BUTTON.EXPORT.ordinal, width - 80, startPositionY + 24 * 4, 70, 20, "Export"))
+        buttonList.add(GuiButton(BUTTON.COPY.ordinal, width - 80, startPositionY + 24 * 5, 70, 20, "Copy"))
+        buttonList.add(GuiButton(BUTTON.REVERT.ordinal, width - 80, startPositionY + 24 * 6, 70, 20, "Revert").also { revertOriginalAccount = it })
+        buttonList.add(GuiButton(BUTTON.BACK.ordinal, width - 80, height - 65, 70, 20, "Back"))
+
+        buttonList.add(GuiButton(BUTTON.LOGIN.ordinal, 5, startPositionY + 24, 90, 20, "Login").also { loginButton = it })
+        buttonList.add(GuiButton(BUTTON.RANDOM.ordinal, 5, startPositionY + 24 * 2, 90, 20, "Random").also { randomButton = it })
+        buttonList.add(GuiButton(BUTTON.CRACKED.ordinal, 5, startPositionY + 24 * 3, 90, 20, "Cracked").also { randomCracked = it })
+        buttonList.add(GuiButton(BUTTON.DIRECTLOGIN.ordinal, 5, startPositionY + 24 * 4, 90, 20, "Direct Login"))
+        buttonList.add(GuiButton(BUTTON.SESSIONLOGIN.ordinal, 5, startPositionY + 24 * 5, 90, 20, "Session Login"))
+        buttonList.add(GuiButton(BUTTON.CHANGENAME.ordinal, 5, startPositionY + 24 * 6, 90, 20, "Change Name"))
 
         if (activeGenerators.getOrDefault("thealtening", true))
-            buttonList.add(GuiButton(9, 5, startPositionY + 24 * 7, 90, 20, "TheAltening"))
+            buttonList.add(GuiButton(BUTTON.THEALTENING.ordinal, 5, startPositionY + 24 * 7, 90, 20, "TheAltening"))
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -122,9 +129,9 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             return
 
         when (button.id) {
-            0 -> mc.displayGuiScreen(prevGui)
-            1 -> mc.displayGuiScreen(GuiLoginIntoAccount(this))
-            2 -> {
+            BUTTON.BACK.ordinal -> mc.displayGuiScreen(prevGui)
+            BUTTON.ADD.ordinal -> mc.displayGuiScreen(GuiLoginIntoAccount(this))
+            BUTTON.REMOVE.ordinal -> {
                 status = if (altsList.selectedSlot != -1 && altsList.selectedSlot < altsList.size) {
                     fileManager.accountsConfig.removeAccount(altsList.accounts[altsList.selectedSlot])
                     fileManager.saveConfig(fileManager.accountsConfig)
@@ -134,7 +141,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 }
             }
 
-            3 -> {
+            BUTTON.LOGIN.ordinal -> {
                 if (lastSessionToken == null)
                     lastSessionToken = mc.session.token
 
@@ -157,7 +164,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 } ?: "§cSelect an account."
             }
 
-            4 -> {
+            BUTTON.RANDOM.ordinal -> {
                 if (lastSessionToken == null)
                     lastSessionToken = mc.session.token
 
@@ -180,7 +187,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 } ?: "§cYou do not have any accounts."
             }
 
-            99 -> {
+            BUTTON.CRACKED.ordinal -> {
                 if (lastSessionToken == null)
                     lastSessionToken = mc.session.token
 
@@ -204,10 +211,11 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 })
             }
 
-            6 -> { // Direct login button
+            BUTTON.DIRECTLOGIN.ordinal -> { // Direct login button
                 mc.displayGuiScreen(GuiLoginIntoAccount(this, directLogin = true))
             }
-            7 -> { // Import button
+
+            BUTTON.IMPORT.ordinal -> { // Import button
                 val file = MiscUtils.openFileChooser() ?: return
 
                 file.readLines().forEach {
@@ -224,7 +232,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 fileManager.saveConfig(fileManager.accountsConfig)
                 status = "§aThe accounts were imported successfully."
             }
-            12-> { // Export button
+            BUTTON.EXPORT.ordinal -> { // Export button
                 if (fileManager.accountsConfig.accounts.isEmpty()) {
                     status = "§cYou do not have any accounts to export."
                     return
@@ -254,7 +262,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     status = "§cUnable to export due to error: ${e.message}"
                 }
             }
-            8 -> {
+            BUTTON.COPY.ordinal -> {
                 val currentAccount = altsList.selectedAccount
 
                 if (currentAccount == null) {
@@ -273,16 +281,20 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(formattedData), null)
                 status = "§aCopied account into your clipboard."
             }
-            88 -> { // Gui Change Name Button
+
+            BUTTON.CHANGENAME.ordinal -> { // Gui Change Name Button
                 mc.displayGuiScreen(GuiChangeName(this))
             }
-            9 -> { // Altening Button
+
+            BUTTON.THEALTENING.ordinal -> { // Altening Button
                 mc.displayGuiScreen(GuiTheAltening(this))
             }
-            10 -> { // Session Login Button
+
+            BUTTON.SESSIONLOGIN.ordinal -> { // Session Login Button
                 mc.displayGuiScreen(GuiSessionLogin(this))
             }
-            727 -> {
+
+            BUTTON.REVERT.ordinal -> {
                 loginButton.enabled = false
                 randomButton.enabled = false
                 randomCracked.enabled = false
