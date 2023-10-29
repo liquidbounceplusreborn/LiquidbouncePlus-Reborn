@@ -215,6 +215,7 @@ class ModuleManager : Listenable {
             FreeLook::class.java,
             ViaVersionFix::class.java,
             AntiBot::class.java,
+            AntiStaff::class.java,
         )
         registerModule(Breaker)
         registerModule(ChestAura)
