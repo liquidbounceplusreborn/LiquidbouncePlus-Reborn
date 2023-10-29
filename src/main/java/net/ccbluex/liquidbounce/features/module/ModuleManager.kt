@@ -216,6 +216,7 @@ class ModuleManager : Listenable {
             ViaVersionFix::class.java,
             AntiBot::class.java,
             AntiStaff::class.java,
+            AntiBook::class.java,
         )
         registerModule(Breaker)
         registerModule(ChestAura)
