@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
 import net.ccbluex.liquidbounce.features.module.modules.render.Crosshair;
 import net.ccbluex.liquidbounce.features.module.modules.world.AutoHypixel;
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
+import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -25,6 +25,7 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -72,17 +73,38 @@ public abstract class MixinGuiInGame extends MixinGui {
             callbackInfo.cancel();
     }
 
-    @Inject(method = "renderTooltip", at = @At("HEAD"), cancellable = true)
-    private void renderTooltip(ScaledResolution sr, float partialTicks, CallbackInfo callbackInfo) {
+
+    @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
+    private void renderPumpkinOverlay(final CallbackInfo callbackInfo) {
+        final Camera camera = LiquidBounce.moduleManager.getModule(Camera.class);
+
+        if(camera.getState() && camera.getPumpkinEffect().get() && camera.getAntiBlindValue().get())
+            callbackInfo.cancel();
+    }
+
+    /**
+     * @author pii4
+     * @reason client side hotbar spoof
+     */
+    @Overwrite
+    protected void renderTooltip(ScaledResolution sr, float partialTicks) {
         final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
 
-        if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer && hud.getState() && (hud.getBlackHotbarValue().get() || hud.getAnimHotbarValue().get())) {
-            final Minecraft mc = Minecraft.getMinecraft();
-            EntityPlayer entityPlayer = (EntityPlayer) mc.getRenderViewEntity();
+        if (!(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer))
+            return;
 
+        final Minecraft mc = Minecraft.getMinecraft();
+        EntityPlayer entityPlayer = (EntityPlayer) mc.getRenderViewEntity();
+
+        int slot = entityPlayer.inventory.currentItem;
+        Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
+        if (scaffold != null && scaffold.getState() && scaffold.getAutoBlockMode().get().equalsIgnoreCase("spoof"))
+            slot = scaffold.getSlot();
+
+        if(hud.getState() && (hud.getBlackHotbarValue().get() || hud.getAnimHotbarValue().get())) {
             boolean blackHB = hud.getBlackHotbarValue().get();
             int middleScreen = sr.getScaledWidth() / 2;
-            float posInv = hud.getAnimPos(entityPlayer.inventory.currentItem * 20F);
+            float posInv = hud.getAnimPos(slot * 20F);
 
             GlStateManager.resetColor();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -111,29 +133,43 @@ public abstract class MixinGuiInGame extends MixinGui {
                 int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
                 int l = sr.getScaledHeight() - 19 - (blackHB ? 1 : 0);
                 this.renderHotbarItem(j, k, l, partialTicks, entityPlayer);
-            }   
+            }
 
             RenderHelper.disableStandardItemLighting();
             GlStateManager.disableRescaleNormal();
             GlStateManager.disableBlend();
             GlStateManager.resetColor();
             LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
-            AWTFontRenderer.Companion.garbageCollectionTick();
-            callbackInfo.cancel();
+            return;
         }
-    }
 
-    @Inject(method = "renderTooltip", at = @At("TAIL"))
-    private void renderTooltipPost(ScaledResolution sr, float partialTicks, CallbackInfo callbackInfo) {
+        // original
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(widgetsTexPath);
+        EntityPlayer lvt_3_1_ = (EntityPlayer)Minecraft.getMinecraft().getRenderViewEntity();
+        int lvt_4_1_ = sr.getScaledWidth() / 2;
+        float lvt_5_1_ = this.zLevel;
+        this.zLevel = -90.0F;
+        this.drawTexturedModalRect(lvt_4_1_ - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
+        this.drawTexturedModalRect(lvt_4_1_ - 91 - 1 + slot * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+        this.zLevel = lvt_5_1_;
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        RenderHelper.enableGUIStandardItemLighting();
+
+        for(int lvt_6_1_ = 0; lvt_6_1_ < 9; ++lvt_6_1_) {
+            int lvt_7_1_ = sr.getScaledWidth() / 2 - 90 + lvt_6_1_ * 20 + 2;
+            int lvt_8_1_ = sr.getScaledHeight() - 16 - 3;
+            this.renderHotbarItem(lvt_6_1_, lvt_7_1_, lvt_8_1_, partialTicks, lvt_3_1_);
+        }
+
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.disableBlend();
+
         LiquidBounce.eventManager.callEvent(new Render2DEvent(partialTicks));
-        AWTFontRenderer.Companion.garbageCollectionTick();
-    }
-
-    @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
-    private void renderPumpkinOverlay(final CallbackInfo callbackInfo) {
-        final Camera camera = LiquidBounce.moduleManager.getModule(Camera.class);
-
-        if(camera.getState() && camera.getPumpkinEffect().get() && camera.getAntiBlindValue().get())
-            callbackInfo.cancel();
+//        AWTFontRenderer.Companion.garbageCollectionTick();
     }
 }

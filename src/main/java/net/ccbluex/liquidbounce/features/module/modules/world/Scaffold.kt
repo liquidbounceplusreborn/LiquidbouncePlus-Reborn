@@ -157,7 +157,7 @@ class Scaffold : Module() {
     private val smartDelay = BoolValue("SmartDelay", true)
 
     // AutoBlock
-    private val autoBlockMode = ListValue("AutoBlock", arrayOf("Spoof", "Switch", "Off"), "Spoof")
+    val autoBlockMode = ListValue("AutoBlock", arrayOf("Spoof", "Switch", "Off"), "Spoof")
     private val stayAutoBlock = BoolValue("StayAutoBlock", false) {
         !autoBlockMode.get().equals("off", ignoreCase = true)
     }
@@ -308,7 +308,7 @@ class Scaffold : Module() {
     private var stabRot:Rotation? = null
 
     // Auto block slot
-    private var slot = 0
+    var slot = 0
     private var lastSlot = 0
 
     // Zitter Smooth
