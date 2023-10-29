@@ -110,6 +110,8 @@ object LiquidBounce {
         moduleManager = ModuleManager()
         moduleManager.registerModules()
 
+        DictUtils.init()
+
         // Remapper
         try {
             loadSrg()

@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiSessionLogin
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.altgenerator.GuiTheAltening
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.DictUtils
 import net.ccbluex.liquidbounce.utils.login.LoginUtils
 import net.ccbluex.liquidbounce.utils.login.UserUtils.isValidTokenOffline
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.get
@@ -41,7 +42,7 @@ import java.util.function.Consumer
 import kotlin.concurrent.thread
 
 enum class BUTTON {
-    ADD, REMOVE, IMPORT, EXPORT, COPY, REVERT, BACK, LOGIN, RANDOM, CRACKED, DIRECTLOGIN, SESSIONLOGIN, CHANGENAME,
+    ADD, REMOVE, IMPORT, EXPORT, COPY, REVERT, BACK, LOGIN, RANDOM, GENERATECRACKED, SEMIRANDOMFMT, CRACKED, DIRECTLOGIN, SESSIONLOGIN, CHANGENAME,
     THEALTENING,
 }
 
@@ -52,7 +53,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
     private lateinit var loginButton: GuiButton
     private lateinit var randomButton: GuiButton
-    private lateinit var randomCracked: GuiButton
+    private lateinit var generatedCrackedButton: GuiButton
     private lateinit var altsList: GuiList
     private lateinit var searchField: GuiTextField
     private lateinit var revertOriginalAccount: GuiButton
@@ -84,14 +85,14 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         buttonList.add(GuiButton(BUTTON.BACK.ordinal, width - 80, height - 65, 70, 20, "Back"))
 
         buttonList.add(GuiButton(BUTTON.LOGIN.ordinal, 5, startPositionY + 24, 90, 20, "Login").also { loginButton = it })
-        buttonList.add(GuiButton(BUTTON.RANDOM.ordinal, 5, startPositionY + 24 * 2, 90, 20, "Random").also { randomButton = it })
-        buttonList.add(GuiButton(BUTTON.CRACKED.ordinal, 5, startPositionY + 24 * 3, 90, 20, "Cracked").also { randomCracked = it })
-        buttonList.add(GuiButton(BUTTON.DIRECTLOGIN.ordinal, 5, startPositionY + 24 * 4, 90, 20, "Direct Login"))
-        buttonList.add(GuiButton(BUTTON.SESSIONLOGIN.ordinal, 5, startPositionY + 24 * 5, 90, 20, "Session Login"))
-        buttonList.add(GuiButton(BUTTON.CHANGENAME.ordinal, 5, startPositionY + 24 * 6, 90, 20, "Change Name"))
+        buttonList.add(GuiButton(BUTTON.RANDOM.ordinal, 5, startPositionY + 24 * 2, 90, 20, "Random Alt").also { randomButton = it })
+        buttonList.add(GuiButton(BUTTON.GENERATECRACKED.ordinal, 5, startPositionY + 24 * 3, 90, 20, "Generate Cracked").also { generatedCrackedButton = it })
+        buttonList.add(GuiButton(BUTTON.DIRECTLOGIN.ordinal, 5, startPositionY + 24 * 5, 90, 20, "Direct Login"))
+        buttonList.add(GuiButton(BUTTON.SESSIONLOGIN.ordinal, 5, startPositionY + 24 * 6, 90, 20, "Session Login"))
+        buttonList.add(GuiButton(BUTTON.CHANGENAME.ordinal, 5, startPositionY + 24 * 7, 90, 20, "Change Name"))
 
         if (activeGenerators.getOrDefault("thealtening", true))
-            buttonList.add(GuiButton(BUTTON.THEALTENING.ordinal, 5, startPositionY + 24 * 7, 90, 20, "TheAltening"))
+            buttonList.add(GuiButton(BUTTON.THEALTENING.ordinal, 5, startPositionY + 24 * 8, 90, 20, "TheAltening"))
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -120,6 +121,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             17f,
             0xffffff
         )
+        generateCracked.drawTextBox()
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -148,7 +150,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 status = altsList.selectedAccount?.let {
                     loginButton.enabled = false
                     randomButton.enabled = false
-                    randomCracked.enabled = false
+                    generatedCrackedButton.enabled = false
 
                     login(it, {
                         status = "§aLogged into ${mc.session.username}."
@@ -157,7 +159,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     },{
                         loginButton.enabled = true
                         randomButton.enabled = true
-                        randomCracked.enabled = true
+                        generatedCrackedButton.enabled = true
                     })
 
                     "§aLogging in..."
@@ -171,7 +173,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 status = altsList.accounts.randomOrNull()?.let {
                     loginButton.enabled = false
                     randomButton.enabled = false
-                    randomCracked.enabled = false
+                    generatedCrackedButton.enabled = false
 
                     login(it, {
                         status = "§aLogged into ${mc.session.username}."
@@ -180,7 +182,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     },{
                         loginButton.enabled = true
                         randomButton.enabled = true
-                        randomCracked.enabled = true
+                        generatedCrackedButton.enabled = true
                     })
 
                     "§aLogging in..."
@@ -193,7 +195,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
                 loginButton.enabled = false
                 randomButton.enabled = false
-                randomCracked.enabled = false
+                generatedCrackedButton.enabled = false
 
                 val rand = CrackedAccount()
                 rand.name = RandomUtils.randomString(RandomUtils.nextInt(5, 16))
@@ -207,7 +209,31 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 }, {
                     loginButton.enabled = true
                     randomButton.enabled = true
-                    randomCracked.enabled = true
+                    generatedCrackedButton.enabled = true
+                })
+            }
+
+            BUTTON.GENERATECRACKED.ordinal -> {
+                if (lastSessionToken == null)
+                    lastSessionToken = mc.session.token
+
+                loginButton.enabled = false
+                randomButton.enabled = false
+                generatedCrackedButton.enabled = false
+
+                val rand = CrackedAccount()
+                rand.name = DictUtils.get(generateCracked.text)
+
+                status = "§aGenerating..."
+
+                login(rand, {
+                    status = "§aLogged in as ${mc.session.username}."
+                }, { exception ->
+                    status = "§cLogin failed due to '${exception.message}'."
+                }, {
+                    loginButton.enabled = true
+                    randomButton.enabled = true
+                    generatedCrackedButton.enabled = true
                 })
             }
 
@@ -297,7 +323,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             BUTTON.REVERT.ordinal -> {
                 loginButton.enabled = false
                 randomButton.enabled = false
-                randomCracked.enabled = false
+                generatedCrackedButton.enabled = false
                 status = "§aLogging in..."
 
                 thread {
@@ -324,7 +350,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
                     loginButton.enabled = true
                     randomButton.enabled = true
-                    randomCracked.enabled = true
+                    generatedCrackedButton.enabled = true
 
                     lastSessionToken = null
                 }
@@ -336,6 +362,9 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
         if (searchField.isFocused) {
             searchField.textboxKeyTyped(typedChar, keyCode)
         }
+
+        if (generateCracked.isFocused)
+            generateCracked.textboxKeyTyped(typedChar, keyCode)
 
         when (keyCode) {
             Keyboard.KEY_ESCAPE -> { // Go back
@@ -374,11 +403,13 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
     public override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         searchField.mouseClicked(mouseX, mouseY, mouseButton)
+        generateCracked.mouseClicked(mouseX, mouseY, mouseButton)
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     override fun updateScreen() {
         searchField.updateCursorCounter()
+        generateCracked.updateCursorCounter()
     }
 
     private inner class GuiList(prevGui: GuiScreen) : GuiSlot(mc, prevGui.width, prevGui.height, 40, prevGui.height - 40, 30) {
@@ -421,7 +452,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                 status = altsList.selectedAccount?.let {
                     loginButton.enabled = false
                     randomButton.enabled = false
-                    randomCracked.enabled = false
+                    generatedCrackedButton.enabled = false
 
                     login(it, {
                         status = "§aLogged into ${mc.session.username}."
@@ -430,7 +461,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     },{
                         loginButton.enabled = true
                         randomButton.enabled = true
-                        randomCracked.enabled = true
+                        generatedCrackedButton.enabled = true
                     })
 
                     "§aLogging in..."
@@ -457,6 +488,13 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
 
         val altService = AltService()
         private val activeGenerators = mutableMapOf<String, Boolean>()
+        var generateCracked: GuiTextField =
+            GuiTextField(BUTTON.SEMIRANDOMFMT.ordinal, Fonts.minecraftFont, 5, 22 + 24 * 4 + 1, 90, 18)
+
+        init {
+            generateCracked.text = "%W%W%d%d%d%d"
+            generateCracked.maxStringLength = 100
+        }
 
         fun loadActiveGenerators() {
             try {

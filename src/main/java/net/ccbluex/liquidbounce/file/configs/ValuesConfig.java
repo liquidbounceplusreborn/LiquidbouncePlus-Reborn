@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.special.MacroManager;
 import net.ccbluex.liquidbounce.file.FileConfig;
 import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
+import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.altgenerator.GuiTheAltening;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.value.Value;
@@ -56,6 +57,8 @@ public class ValuesConfig extends FileConfig {
                 LiquidBounce.commandManager.setPrefix(entry.getValue().getAsCharacter());
             } else if (entry.getKey().equalsIgnoreCase("ShowRichPresence")) {
                 LiquidBounce.clientRichPresence.setShowRichPresenceValue(entry.getValue().getAsBoolean());
+            } else if (entry.getKey().equalsIgnoreCase("SemiRandomFormat")) {
+                GuiAltManager.Companion.getGenerateCracked().setText(entry.getValue().getAsString());
             } else if (entry.getKey().equalsIgnoreCase("targets")) {
                 JsonObject jsonValue = (JsonObject) entry.getValue();
 
@@ -135,6 +138,7 @@ public class ValuesConfig extends FileConfig {
 
         jsonObject.addProperty("CommandPrefix", LiquidBounce.commandManager.getPrefix());
         jsonObject.addProperty("ShowRichPresence", LiquidBounce.clientRichPresence.getShowRichPresenceValue());
+        jsonObject.addProperty("SemiRandomFormat", GuiAltManager.Companion.getGenerateCracked().getText());
 
         final JsonObject jsonTargets = new JsonObject();
         jsonTargets.addProperty("TargetPlayer", EntityUtils.targetPlayer);
