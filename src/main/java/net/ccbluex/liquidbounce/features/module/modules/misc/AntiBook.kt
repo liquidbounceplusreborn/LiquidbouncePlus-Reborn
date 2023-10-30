@@ -19,11 +19,14 @@ class AntiBook: Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (allowRightClick.get() && mc.thePlayer.inventory.getCurrentItem() != null
+        if (allowRightClick.get() && mc.thePlayer != null && mc.thePlayer.inventory.getCurrentItem() != null
             && mc.thePlayer.inventory.getCurrentItem().item in bookItems)
             return
 
-        if (packet is S3FPacketCustomPayload && packet.channelName == "MC|BOpen")
-            event.cancelEvent()
+        if (packet is S3FPacketCustomPayload) {
+            packet.channelName ?: return
+            if (packet.channelName == "MC|BOpen")
+                event.cancelEvent()
+        }
     }
 }
