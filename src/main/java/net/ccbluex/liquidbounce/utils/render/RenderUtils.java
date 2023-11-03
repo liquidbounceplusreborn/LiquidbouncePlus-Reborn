@@ -3106,4 +3106,103 @@ public final class RenderUtils extends MinecraftInstance {
         worldrenderer.pos(x4, y2, z4).endVertex();
         tessellator.draw();
     }
+
+    public static void drawRoundedGradientRectCorner(float x, float y, float x1, float y1, float radius, int color, int color2) {
+        ColorUtils.setColour(-1);
+        GL11.glEnable(GL_BLEND);
+        GL11.glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        glPushAttrib(0);
+        glScaled(0.5D, 0.5D, 0.5D);
+        x *= 2.0D;
+        y *= 2.0D;
+        x1 *= 2.0D;
+        y1 *= 2.0D;
+        GL11.glEnable(GL_BLEND);
+        GL11.glDisable(GL_TEXTURE_2D);
+        ColorUtils.setColour(color);
+        GL11.glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+        glBegin(6);
+        int i;
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y + radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color2);
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        ColorUtils.setColour(color2);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y + radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        glEnd();
+        GL11.glEnable(GL_TEXTURE_2D);
+        GL11.glDisable(GL_BLEND);
+        GL11.glDisable(GL_LINE_SMOOTH);
+        GL11.glDisable(GL_BLEND);
+        GL11.glEnable(GL_TEXTURE_2D);
+        glScaled(2.0D, 2.0D, 2.0D);
+        glPopAttrib();
+
+
+        GL11.glEnable(GL_TEXTURE_2D);
+        GL11.glDisable(GL_BLEND);
+        GL11.glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+        ColorUtils.setColour(-1);
+    }
+    public static void drawRoundedGradientOutlineCorner(float x, float y, float x1, float y1, float width, float radius, int color, int color2) {
+        ColorUtils.setColour(-1);
+        GL11.glEnable(GL_BLEND);
+        GL11.glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        glPushAttrib(0);
+        glScaled(0.5D, 0.5D, 0.5D);
+        x *= 2.0F;
+        y *= 2.0F;
+        x1 *= 2.0F;
+        y1 *= 2.0F;
+        GL11.glEnable(GL_BLEND);
+        GL11.glDisable(GL_TEXTURE_2D);
+        ColorUtils.setColour(color);
+        GL11.glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+        glLineWidth(width);
+        glBegin(GL_LINE_LOOP);
+        int i;
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y + radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color2);
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        ColorUtils.setColour(color2);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y + radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        glEnd();
+        glLineWidth(1);
+        GL11.glEnable(GL_TEXTURE_2D);
+        GL11.glDisable(GL_BLEND);
+        GL11.glDisable(GL_LINE_SMOOTH);
+        GL11.glDisable(GL_BLEND);
+        GL11.glEnable(GL_TEXTURE_2D);
+        glScaled(2.0D, 2.0D, 2.0D);
+        glPopAttrib();
+
+
+        GL11.glEnable(GL_TEXTURE_2D);
+        GL11.glDisable(GL_BLEND);
+        GL11.glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+        ColorUtils.setColour(-1);
+    }
 }

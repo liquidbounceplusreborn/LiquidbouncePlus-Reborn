@@ -192,7 +192,7 @@ class Scaffold : Module() {
     // Rotations
     private val rotationsValue = BoolValue("Rotations", true)
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
-    private val keepRotation = BoolValue("KeepRotation", false) { rotationsValue.get() }
+    private val snapRotation = BoolValue("SnapRot", false) { rotationsValue.get() && (rotationModeValue.isMode("Novoline") || rotationModeValue.isMode("Rise")) }
     private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() }
     private val grimLock = BoolValue("TellyLock", true){ rotationsValue.get() && (rotationModeValue.isMode("Telly") || rotationModeValue.isMode("Grim")) }
     private val rotationModeValue = ListValue(
@@ -586,19 +586,23 @@ class Scaffold : Module() {
             if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
             mc.thePlayer.posZ
         )
-        val blockData = get(blockPos)
+        val check = mc.theWorld.getBlockState(blockPos).block.material.isReplaceable || mc.theWorld.getBlockState(blockPos).block === Blocks.air
+        val blockData = if (snapRotation.get()) {
+            if (check) {
+                get(blockPos)
+            } else {
+                null
+            }
+        }else {
+            get(blockPos)
+        }
+
         when (rotationModeValue.get()) {
             "Novoline" -> {
                 val entity = EntityPig(mc.theWorld)
-                if (blockData != null) {
-                    entity.posX = blockData.blockPos.x + 0.5
-                }
-                if (blockData != null) {
-                    entity.posY = blockData.blockPos.y + 0.5
-                }
-                if (blockData != null) {
-                    entity.posZ = blockData.blockPos.z + 0.5
-                }
+                    entity.posX = blockData?.blockPos!!.x + 0.5
+                    entity.posY = blockData?.blockPos.y + 0.5
+                    entity.posZ = blockData?.blockPos.z + 0.5
 
                 lockRotation = RotationUtils.getAngles(entity)
                 faceBlock = true
@@ -732,11 +736,11 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        if (rotationsValue.get() && keepRotation.get()) {
+        if (rotationsValue.get()) {
             rotation()
         }
 
-        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock || !keepRotation.get()) && placeModeValue.get() === "Legit") {
+        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && placeModeValue.get() === "Legit") {
             place()
         }
         if (towering()) {
@@ -831,7 +835,7 @@ class Scaffold : Module() {
                 .equals("ground", ignoreCase = true) && !mc.thePlayer.onGround || sprintModeValue.get()
                 .equals("air", ignoreCase = true) && mc.thePlayer.onGround || sprintModeValue.get()
                 .equals("falldownoff", ignoreCase = true) && mc.thePlayer.fallDistance > 0 ||
-            sprintModeValue.get().equals("tellyticks", ignoreCase = true) && offGroundTicks >= tellyTicks.get() ||
+            sprintModeValue.get().equals("tellyticks", ignoreCase = true) && offGroundTicks >= (tellyTicks.get() - 1) ||
             sprintModeValue.get().equals("legit", ignoreCase = true) && abs(MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) - MathHelper.wrapAngleTo180_float(RotationUtils.targetRotation.yaw)) > 90
         ) {
             mc.thePlayer.isSprinting = false
@@ -1040,12 +1044,12 @@ class Scaffold : Module() {
                 && mc.thePlayer.inventory.mainInventory[i].stackSize <= 0
             ) mc.thePlayer.inventory.mainInventory[i] = null
         }
-        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock || !keepRotation.get()) && placeModeValue.get()
+        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && placeModeValue.get()
                 .equals(eventState.stateName, ignoreCase = true)
         ) {
             place()
         }
-        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock || !keepRotation.get()) && placeModeValue.get()
+        if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && placeModeValue.get()
                 .equals(eventState.stateName, ignoreCase = true) && towering()
         ) {
             place()
@@ -1180,9 +1184,6 @@ class Scaffold : Module() {
                 targetPlace!!.vec3
             )
         ) {
-            if (!keepRotation.get()) {
-                rotation()
-            }
             delayTimer.reset()
             delay = if (!placeableDelay.get()) 0L else TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             if (mc.thePlayer.onGround) {
