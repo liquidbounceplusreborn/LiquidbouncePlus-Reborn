@@ -27,7 +27,7 @@ import java.util.*
 @ModuleInfo(name = "Criticals", description = "Automatically deals critical hits.", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
-    val modeValue = ListValue("Mode", arrayOf("NewPacket", "Packet", "Packet2", "NCPPacket", "NoGround", "Redesky", "AACv4", "Hop", "TPHop", "Jump", "Visual", "Edit", "MiniPhase", "NanoPacket", "Non-Calculable", "Invalid", "VerusSmart"), "Packet")
+    val modeValue = ListValue("Mode", arrayOf("NewPacket", "Packet", "Packet2", "NCPPacket", "NoGround", "Redesky", "AACv4", "Hop", "TPHop", "Jump", "Visual", "Edit", "MiniPhase", "NanoPacket", "Non-Calculable", "Invalid", "VerusSmart", "BlocksMC"), "Packet")
     val delayValue = IntegerValue("Delay", 0, 0, 500, "ms")
     private val jumpHeightValue = FloatValue("JumpHeight", 0.42F, 0.1F, 0.42F)
     private val downYValue = FloatValue("DownY", 0f, 0f, 0.1F)
@@ -158,7 +158,11 @@ class Criticals : Module() {
 
                 "visual" -> mc.thePlayer.onCriticalHit(entity)
             }
-
+	        "blocksmc" -> {
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.001091981, z, true))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.000114514, z, false))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
+                }
             readyCrits = true
             msTimer.reset()
         }
