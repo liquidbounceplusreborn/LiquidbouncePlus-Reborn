@@ -43,7 +43,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         val maxLength = font.getStringWidth(ChangelogUtils.changes.map { it.second }.maxByOrNull { font.getStringWidth(it) } ?: return) + maxBuildIDLength + 10f
         val fontHeight = font.FONT_HEIGHT
 
-        if (maxLength <= width / 3) {
+        if (maxLength <= width * 0.45f) {
             Fonts.fontSFUI40.drawStringWithShadow("Changelog:", 5f, 5f, Color(255, 255, 255, 220).rgb)
             for (i in ChangelogUtils.changes.indices) {
                 val buildID = ChangelogUtils.changes[i].first
