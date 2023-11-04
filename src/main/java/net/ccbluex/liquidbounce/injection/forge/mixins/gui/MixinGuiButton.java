@@ -152,23 +152,20 @@ public abstract class MixinGuiButton extends Gui {
                RenderUtils.customRounded(this.xPosition, this.yPosition, this.xPosition + 2.4F + moveX, this.yPosition + this.height, 2.4F, roundCorner, roundCorner, 2.4F, (this.enabled ? new Color(0, 111, 255) : new Color(71, 71, 71)).getRGB());
                break;
             case"line":
-               GameFontRenderer var4 = Fonts.fontSFUI35;
                this.hovered = (mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height);
                updatefade();
-               if (this.hovered) {
-                  if (cs >= 4)
-                     cs = 4;
-                  cs++;
-               } else {
-                  if (cs <= 0)
-                     cs = 0;
-                  cs--;
-               }
-               Gui.drawRect(this.xPosition + (int) this.cut, this.yPosition,
-                       this.xPosition + this.width - (int) this.cut, this.yPosition + this.height,
-                       this.enabled ? new Color(0F, 0F, 0F, this.alpha / 255F).getRGB() :
-                               new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB());
-               RenderUtils.drawRect((this.xPosition + this.cs), (this.yPosition + this.height - 1), (this.xPosition + this.width - this.cs), (this.yPosition + this.height), new Color(255,255,255,255).getRGB());
+               Gui.drawRect(
+                       this.xPosition + (int) this.cut,
+                       this.yPosition,
+                       this.xPosition + this.width - (int) this.cut,
+                       this.yPosition + this.height,
+                       this.enabled ? new Color(0F, 0F, 0F, this.alpha / 255F).getRGB() : new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB());
+               RenderUtils.drawRect(
+                       (this.xPosition + (int) this.cut),
+                       (this.yPosition + this.height - 1),
+                       (this.xPosition + this.width - (int) this.cut),
+                       (this.yPosition + this.height),
+                       new Color(255,255,255,255).getRGB());
                break;
          } 
 

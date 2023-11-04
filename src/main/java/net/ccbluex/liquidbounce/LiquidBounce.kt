@@ -111,6 +111,7 @@ object LiquidBounce {
         moduleManager.registerModules()
 
         DictUtils.init()
+        ChangelogUtils.update()
 
         // Remapper
         try {

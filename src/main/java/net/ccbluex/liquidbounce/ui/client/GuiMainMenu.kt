@@ -2,17 +2,15 @@ package net.ccbluex.liquidbounce.ui.client
 
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.ChangelogUtils
 import net.ccbluex.liquidbounce.utils.Translate
 import net.minecraft.client.gui.*
-import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 
 
 class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
-    var alpha = 255
-    var translate: Translate? = null
-    var hue = 0.0f
-
+    private var translate: Translate? = null
+    private var hue = 0.0f
 
     override fun initGui() {
         val defaultHeight = this.height / 4 + 30
@@ -27,13 +25,11 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         this.buttonList.add(GuiButton(5, defaultWidth, defaultHeight + 125, buttonWidth, buttonHeight, "Game Options"))
         this.buttonList.add(GuiButton(6, defaultWidth, defaultHeight + 150, buttonWidth, buttonHeight, "Quit Game"))
         translate = Translate(0f, 0f)
+
         super.initGui()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-
-        val changes = ArrayList<String>()
-        changes.add("")
 
         drawBackground(0)
         hue += 1f
@@ -41,13 +37,30 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             hue = 0.0f
         }
         translate?.interpolate(width.toFloat(), height.toFloat(), 4.0)
-        val xmod2 = width / 2 - (translate!!.x / 2).toDouble()
-        val ymod2 = height / 2 - (translate!!.y / 2).toDouble()
-        GlStateManager.translate(xmod2, ymod2, 0.0)
-        GlStateManager.scale(translate!!.x / width, translate!!.y / height, 1f)
-        Fonts.fontSFUI40.drawStringWithShadow("Changelog:", 5f, 5f, Color(255, 255, 255, 220).rgb)
-        for (i in changes.indices) {
-            Fonts.fontSFUI35.drawStringWithShadow(changes[i], 5f, 16f + i * 12, Color(255, 255, 255, 220).rgb)
+
+        val font = Fonts.fontSFUI35
+        val maxBuildIDLength = font.getStringWidth(ChangelogUtils.changes.map { it.first }.maxByOrNull { font.getStringWidth(it) } ?: return)
+        val maxLength = font.getStringWidth(ChangelogUtils.changes.map { it.second }.maxByOrNull { font.getStringWidth(it) } ?: return) + maxBuildIDLength + 10f
+        val fontHeight = font.FONT_HEIGHT
+
+        if (maxLength <= width / 3) {
+            Fonts.fontSFUI40.drawStringWithShadow("Changelog:", 5f, 5f, Color(255, 255, 255, 220).rgb)
+            for (i in ChangelogUtils.changes.indices) {
+                val buildID = ChangelogUtils.changes[i].first
+                val buildMsg = ChangelogUtils.changes[i].second
+                font.drawStringWithShadow(
+                    buildID,
+                    3f + 5f,
+                    17f + i * fontHeight,
+                    Color(255, 255, 255, 220).rgb
+                )
+                font.drawStringWithShadow(
+                    buildMsg,
+                    3f + 10f + maxBuildIDLength,
+                    17f + i * fontHeight,
+                    Color(255, 255, 255, 220).rgb
+                )
+            }
         }
 
         super.drawScreen(mouseX, mouseY, partialTicks)
