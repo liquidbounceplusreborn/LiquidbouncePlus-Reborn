@@ -11,14 +11,20 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.settings.GameSettings
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C0APacketAnimation
+import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
@@ -66,6 +72,7 @@ class Velocity : Module() {
             "Legit",
             "AEMine",
             "GrimAC",
+            "GrimReduce",
             "AllAC",
             "Intave",
             "Smart"
@@ -79,11 +86,14 @@ class Velocity : Module() {
     private var shouldAffect: Boolean = true
 
     // Reverse
-    private val reverseStrengthValue = FloatValue("ReverseStrength", 1F, 0.1F, 1F, "x") { modeValue.get().equals("reverse", true) }
-    private val reverse2StrengthValue = FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F, "x") { modeValue.get().equals("smoothreverse", true) }
+    private val reverseStrengthValue =
+        FloatValue("ReverseStrength", 1F, 0.1F, 1F, "x") { modeValue.get().equals("reverse", true) }
+    private val reverse2StrengthValue =
+        FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F, "x") { modeValue.get().equals("smoothreverse", true) }
 
     // AAC Push
-    private val aacPushXZReducerValue = FloatValue("AACPushXZReducer", 2F, 1F, 3F, "x") { modeValue.get().equals("aacpush", true) }
+    private val aacPushXZReducerValue =
+        FloatValue("AACPushXZReducer", 2F, 1F, 3F, "x") { modeValue.get().equals("aacpush", true) }
     private val aacPushYReducerValue = BoolValue("AACPushYReducer", true) { modeValue.get().equals("aacpush", true) }
 
     // legit
@@ -94,7 +104,8 @@ class Velocity : Module() {
     private val aacStrafeValue = BoolValue("AACStrafeValue", false) { modeValue.get().equals("aac", true) }
 
     //epic
-    private val phaseOffsetValue = FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m") { modeValue.get().equals("phase", true) }
+    private val phaseOffsetValue =
+        FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m") { modeValue.get().equals("phase", true) }
 
     private val tagModeValue = ListValue("TagMode", arrayOf("Off", "Mode", "Percentage", "Both"), "Both")
 
@@ -116,6 +127,7 @@ class Velocity : Module() {
     // Grim
     private val transactionQueue: Queue<Short> = ConcurrentLinkedQueue()
     private var grimPacket = false
+    private var attack = false;
 
     private var jumped = 0
 
@@ -131,6 +143,7 @@ class Velocity : Module() {
         mc.thePlayer?.speedInAir = 0.02F
         grimPacket = false
         transactionQueue.clear()
+        attack = false
     }
 
     @EventTarget
@@ -181,11 +194,17 @@ class Velocity : Module() {
             }
 
             "aac4reduce" -> {
-                if (mc.thePlayer.hurtTime > 0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(80L)) {
+                if (mc.thePlayer.hurtTime > 0 && !mc.thePlayer.onGround && velocityInput && velocityTimer.hasTimePassed(
+                        80L
+                    )
+                ) {
                     mc.thePlayer.motionX *= 0.62
                     mc.thePlayer.motionZ *= 0.62
                 }
-                if (velocityInput && (mc.thePlayer.hurtTime < 4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
+                if (velocityInput && (mc.thePlayer.hurtTime < 4 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(
+                        120L
+                    )
+                ) {
                     velocityInput = false
                 }
             }
@@ -195,7 +214,10 @@ class Velocity : Module() {
                     mc.thePlayer.motionX *= 0.81
                     mc.thePlayer.motionZ *= 0.81
                 }
-                if (velocityInput && (mc.thePlayer.hurtTime < 5 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
+                if (velocityInput && (mc.thePlayer.hurtTime < 5 || mc.thePlayer.onGround) && velocityTimer.hasTimePassed(
+                        120L
+                    )
+                ) {
                     velocityInput = false
                 }
             }
@@ -331,6 +353,15 @@ class Velocity : Module() {
                     velocityInput = false
                 }
             }
+
+            "grimreduce" -> if (velocityInput) {
+                if (attack) {
+                    mc.thePlayer!!.motionX *= 0.077760000
+                    mc.thePlayer!!.motionZ *= 0.077760000
+                    velocityInput = false
+                    attack = false
+                }
+            }
         }
     }
 
@@ -410,6 +441,28 @@ class Velocity : Module() {
                 "grimac" -> {
                     event.cancelEvent()
                     grimPacket = true
+                }
+
+                "grimreduce" -> {
+                    velocityInput = true
+                    if (mc.thePlayer!!.onGround && mc.thePlayer.hurtTime > 0) {
+                        mc.gameSettings.keyBindJump.pressed = true
+                    }
+                    if (killAura.state && killAura.target != null && mc.thePlayer!!.getDistanceToEntityBox(killAura.target!!) <= 3.01) {
+                        if (mc.thePlayer!!.movementInput.moveForward > 0.9f && mc.thePlayer!!.isSprinting && mc.thePlayer!!.serverSprintState) {
+                            repeat(5) {
+                                mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction(100, 100, true))
+                                mc.netHandler.addToSendQueue(
+                                    C02PacketUseEntity(
+                                        killAura.target,
+                                        C02PacketUseEntity.Action.ATTACK
+                                    )
+                                )
+                                mc.netHandler.addToSendQueue(C0APacketAnimation())
+                            }
+                            attack = true
+                        }
+                    }
                 }
             }
 

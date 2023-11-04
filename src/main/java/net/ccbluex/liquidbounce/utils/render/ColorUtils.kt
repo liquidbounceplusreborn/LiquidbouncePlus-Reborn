@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import net.minecraft.util.ChatAllowedCharacters
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
@@ -180,4 +181,13 @@ object ColorUtils {
 
     @JvmStatic
     fun getOppositeColor(color: Color): Color = Color(255 - color.red, 255 - color.green, 255 - color.blue, color.alpha)
+
+    @JvmStatic
+    fun setColour(colour: Int) {
+        val a = (colour shr 24 and 0xFF) / 255.0f
+        val r = (colour shr 16 and 0xFF) / 255.0f
+        val g = (colour shr 8 and 0xFF) / 255.0f
+        val b = (colour and 0xFF) / 255.0f
+        GL11.glColor4f(r, g, b, a)
+    }
 }
