@@ -217,7 +217,7 @@ public class SlowlyStyle extends Style {
                             final GameFontRenderer liquidFontRenderer = (GameFontRenderer) fontRenderer;
 
                             displayString = "Font: " + liquidFontRenderer.getDefaultFont().getFont().getName() + " - " + liquidFontRenderer.getDefaultFont().getFont().getSize();
-                        } else if (fontRenderer == Fonts.minecraftFont)
+                        } else if (fontRenderer == Fonts.fontSFUI35)
                             displayString = "Font: Minecraft";
                         else {
                             final Object[] objects = Fonts.getFontDetails(fontRenderer);

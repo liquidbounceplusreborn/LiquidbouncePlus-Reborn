@@ -146,6 +146,8 @@ class Criticals : Module() {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 1E+41, z, false))
                 }
 
+
+
                 "verussmart" -> {
                     counter++
                     if (counter == 1) {
@@ -157,12 +159,13 @@ class Criticals : Module() {
                 }
 
                 "visual" -> mc.thePlayer.onCriticalHit(entity)
-            }
-	        "blocksmc" -> {
+
+                "blocksmc" -> {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.001091981, z, true))
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.000114514, z, false))
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
                 }
+            }
             readyCrits = true
             msTimer.reset()
         }

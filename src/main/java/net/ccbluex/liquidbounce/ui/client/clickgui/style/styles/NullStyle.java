@@ -45,35 +45,35 @@ public class NullStyle extends Style {
         if(panel.getFade() > 0)
             RenderUtils.drawRect((float) panel.getX(), (float) panel.getY() + 19, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), Integer.MIN_VALUE);
         GlStateManager.resetColor();
-        float textWidth = Fonts.minecraftFont.getStringWidth("§f" + StringUtils.stripControlCodes(panel.getName()));
-        Fonts.minecraftFont.drawString("§f" + panel.getName(), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7, Integer.MAX_VALUE);
+        float textWidth = Fonts.fontSFUI35.getStringWidth("§f" + StringUtils.stripControlCodes(panel.getName()));
+        Fonts.fontSFUI35.drawString("§f" + panel.getName(), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7, Integer.MAX_VALUE);
     }
 
     @Override
     public void drawDescription(int mouseX, int mouseY, String text) {
-        int textWidth = Fonts.minecraftFont.getStringWidth(text);
+        int textWidth = Fonts.fontSFUI35.getStringWidth(text);
 
-        RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.minecraftFont.FONT_HEIGHT + 3, modifyAlpha(ClickGUI.generateColor(), 120).getRGB());
+        RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.fontSFUI35.FONT_HEIGHT + 3, modifyAlpha(ClickGUI.generateColor(), 120).getRGB());
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(text, mouseX + 12, mouseY + (Fonts.minecraftFont.FONT_HEIGHT / 2), Integer.MAX_VALUE);
+        Fonts.fontSFUI35.drawString(text, mouseX + 12, mouseY + (Fonts.fontSFUI35.FONT_HEIGHT / 2), Integer.MAX_VALUE);
     }
 
     @Override
     public void drawButtonElement(int mouseX, int mouseY, ButtonElement buttonElement) {
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(buttonElement.getDisplayName(), buttonElement.getX() + 5, buttonElement.getY() + 7, buttonElement.getColor());
+        Fonts.fontSFUI35.drawString(buttonElement.getDisplayName(), buttonElement.getX() + 5, buttonElement.getY() + 7, buttonElement.getColor());
     }
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
         final int guiColor = ClickGUI.generateColor().getRGB();
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(moduleElement.getDisplayName(), moduleElement.getX() + 5, moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
+        Fonts.fontSFUI35.drawString(moduleElement.getDisplayName(), moduleElement.getX() + 5, moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
         if(!moduleValues.isEmpty()) {
-            Fonts.minecraftFont.drawString("+", moduleElement.getX() + moduleElement.getWidth() - 10, moduleElement.getY() + (moduleElement.getHeight() / 2), Color.WHITE.getRGB());
+            Fonts.fontSFUI35.drawString("+", moduleElement.getX() + moduleElement.getWidth() - 10, moduleElement.getY() + (moduleElement.getHeight() / 2), Color.WHITE.getRGB());
 
             if(moduleElement.isShowSettings()) {
                 int yPos = moduleElement.getY() + 4;
@@ -88,7 +88,7 @@ public class NullStyle extends Style {
 
                     if (value instanceof BoolValue) {
                         String text = value.getName();
-                        float textWidth = Fonts.minecraftFont.getStringWidth(text);
+                        float textWidth = Fonts.fontSFUI35.getStringWidth(text);
 
                         if (moduleElement.getSettingsWidth() < textWidth + 8)
                             moduleElement.setSettingsWidth(textWidth + 8);
@@ -105,21 +105,21 @@ public class NullStyle extends Style {
                         }
 
                         GlStateManager.resetColor();
-                        Fonts.minecraftFont.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, ((BoolValue) value).get() ? guiColor : Integer.MAX_VALUE);
+                        Fonts.fontSFUI35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, ((BoolValue) value).get() ? guiColor : Integer.MAX_VALUE);
                         yPos += 12;
                     }else if(value instanceof ListValue) {
                         ListValue listValue = (ListValue) value;
 
                         String text = value.getName();
-                        float textWidth = Fonts.minecraftFont.getStringWidth(text);
+                        float textWidth = Fonts.fontSFUI35.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 16)
                             moduleElement.setSettingsWidth(textWidth + 16);
 
                         RenderUtils.drawRect(moduleElement.getX() + moduleElement.getWidth() + 4, yPos + 2, moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth(), yPos + 14, Integer.MIN_VALUE);
                         GlStateManager.resetColor();
-                        Fonts.minecraftFont.drawString("§c" + text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
-                        Fonts.minecraftFont.drawString(listValue.openList ? "-" : "+", (int) (moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() - (listValue.openList ? 5 : 6)), yPos + 4, 0xffffff);
+                        Fonts.fontSFUI35.drawString("§c" + text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
+                        Fonts.fontSFUI35.drawString(listValue.openList ? "-" : "+", (int) (moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() - (listValue.openList ? 5 : 6)), yPos + 4, 0xffffff);
 
                         if(mouseX >= moduleElement.getX() + moduleElement.getWidth() + 4 && mouseX <= moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth() && mouseY >= yPos + 2 && mouseY <= yPos + 14) {
                             if(Mouse.isButtonDown(0) && moduleElement.isntPressed()) {
@@ -131,7 +131,7 @@ public class NullStyle extends Style {
                         yPos += 12;
 
                         for(final String valueOfList : listValue.getValues()) {
-                            final float textWidth2 = Fonts.minecraftFont.getStringWidth(">" + valueOfList);
+                            final float textWidth2 = Fonts.fontSFUI35.getStringWidth(">" + valueOfList);
 
                             if(moduleElement.getSettingsWidth() < textWidth2 + 12)
                                 moduleElement.setSettingsWidth(textWidth2 + 12);
@@ -147,15 +147,15 @@ public class NullStyle extends Style {
                                 }
 
                                 GlStateManager.resetColor();
-                                Fonts.minecraftFont.drawString(">", moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, Integer.MAX_VALUE);
-                                Fonts.minecraftFont.drawString(valueOfList, moduleElement.getX() + moduleElement.getWidth() + 14, yPos + 4, listValue.get() != null && listValue.get().equalsIgnoreCase(valueOfList) ? guiColor : Integer.MAX_VALUE);
+                                Fonts.fontSFUI35.drawString(">", moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, Integer.MAX_VALUE);
+                                Fonts.fontSFUI35.drawString(valueOfList, moduleElement.getX() + moduleElement.getWidth() + 14, yPos + 4, listValue.get() != null && listValue.get().equalsIgnoreCase(valueOfList) ? guiColor : Integer.MAX_VALUE);
                                 yPos += 12;
                             }
                         }
                     }else if(value instanceof FloatValue) {
                         FloatValue floatValue = (FloatValue) value;
                         String text = value.getName() + "§f: §c" + round(floatValue.get()) + floatValue.getSuffix();
-                        float textWidth = Fonts.minecraftFont.getStringWidth(text);
+                        float textWidth = Fonts.fontSFUI35.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)
                             moduleElement.setSettingsWidth(textWidth + 8);
@@ -181,12 +181,12 @@ public class NullStyle extends Style {
                         }
 
                         GlStateManager.resetColor();
-                        Fonts.minecraftFont.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
+                        Fonts.fontSFUI35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
                         yPos += 22;
                     }else if(value instanceof IntegerValue) {
                         IntegerValue integerValue = (IntegerValue) value;
                         String text = value.getName() + "§f: §c" + (value instanceof BlockValue ? BlockUtils.getBlockName(integerValue.get()) + " (" + integerValue.get() + ")" : (integerValue.get() + integerValue.getSuffix()));
-                        float textWidth = Fonts.minecraftFont.getStringWidth(text);
+                        float textWidth = Fonts.fontSFUI35.getStringWidth(text);
 
                         if(moduleElement.getSettingsWidth() < textWidth + 8)
                             moduleElement.setSettingsWidth(textWidth + 8);
@@ -212,7 +212,7 @@ public class NullStyle extends Style {
                         }
 
                         GlStateManager.resetColor();
-                        Fonts.minecraftFont.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
+                        Fonts.fontSFUI35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
                         yPos += 22;
                     }else if(value instanceof FontValue) {
                         final FontValue fontValue = (FontValue) value;
@@ -226,7 +226,7 @@ public class NullStyle extends Style {
                             final GameFontRenderer liquidFontRenderer = (GameFontRenderer) fontRenderer;
 
                             displayString = "Font: " + liquidFontRenderer.getDefaultFont().getFont().getName() + " - " + liquidFontRenderer.getDefaultFont().getFont().getSize();
-                        }else if(fontRenderer == Fonts.minecraftFont)
+                        }else if(fontRenderer == Fonts.fontSFUI35)
                             displayString = "Font: Minecraft";
                         else{
                             final Object[] objects = Fonts.getFontDetails(fontRenderer);
@@ -236,8 +236,8 @@ public class NullStyle extends Style {
                             }
                         }
 
-                        Fonts.minecraftFont.drawString(displayString, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, Color.WHITE.getRGB());
-                        int stringWidth = Fonts.minecraftFont.getStringWidth(displayString);
+                        Fonts.fontSFUI35.drawString(displayString, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, Color.WHITE.getRGB());
+                        int stringWidth = Fonts.fontSFUI35.getStringWidth(displayString);
 
                         if(moduleElement.getSettingsWidth() < stringWidth + 8)
                             moduleElement.setSettingsWidth(stringWidth + 8);
@@ -282,14 +282,14 @@ public class NullStyle extends Style {
                         yPos += 11;
                     }else{
                         String text = value.getName() + "§f: §c" + value.get();
-                        float textWidth = Fonts.minecraftFont.getStringWidth(text);
+                        float textWidth = Fonts.fontSFUI35.getStringWidth(text);
 
                         if (moduleElement.getSettingsWidth() < textWidth + 8)
                             moduleElement.setSettingsWidth(textWidth + 8);
 
                         RenderUtils.drawRect(moduleElement.getX() + moduleElement.getWidth() + 4, yPos + 2, moduleElement.getX() + moduleElement.getWidth() + moduleElement.getSettingsWidth(), yPos + 14, Integer.MIN_VALUE);
                         GlStateManager.resetColor();
-                        Fonts.minecraftFont.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
+                        Fonts.fontSFUI35.drawString(text, moduleElement.getX() + moduleElement.getWidth() + 6, yPos + 4, 0xffffff);
                         yPos += 12;
                     }
 
