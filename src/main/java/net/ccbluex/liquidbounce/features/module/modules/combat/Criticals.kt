@@ -146,18 +146,6 @@ class Criticals : Module() {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 1E+41, z, false))
                 }
 
-
-
-                "verussmart" -> {
-                    counter++
-                    if (counter == 1) {
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.001, z, true))
-                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y, z, false))
-                    }
-                    if (counter >= 5)
-                        counter = 0
-                }
-
                 "visual" -> mc.thePlayer.onCriticalHit(entity)
 
                 "blocksmc" -> {
@@ -174,7 +162,7 @@ class Criticals : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         if (onlyAuraValue.get() && !LiquidBounce.moduleManager[KillAura::class.java]!!.state) return
-        
+
         val packet = event.packet
 
         when (modeValue.get().lowercase(Locale.getDefault())) {
