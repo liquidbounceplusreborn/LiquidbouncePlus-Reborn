@@ -2067,7 +2067,7 @@ public final class RenderUtils extends MinecraftInstance {
         disableBlend();
     }
 
-    public static void drawRect(net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.geom.Rectangle rect , int color) {
+    public static void drawRect(net.ccbluex.liquidbounce.utils.geom.Rectangle rect , int color) {
         drawRect(rect.getX(), rect.getY(), rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight(), color);
     }
 
@@ -2621,10 +2621,16 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.resetColor();
         if (stack.getItem() instanceof ItemArmor) {
             int prot = EnchantmentHelper.getEnchantmentLevel(Enchantment.protection.effectId, stack);
+            int bprot = EnchantmentHelper.getEnchantmentLevel(Enchantment.blastProtection.effectId, stack);
             int unb = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             int thorn = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack);
+
             if (prot > 0) {
                 drawExhiOutlined(prot + "", drawExhiOutlined("P", x, y, -1), y, getMainColor(prot, 4));
+                y += offset;
+            }
+            if (bprot > 0) {
+                drawExhiOutlined(prot + "", drawExhiOutlined("B", x, y, -1), y, getMainColor(bprot, 4));
                 y += offset;
             }
             if (unb > 0) {
@@ -2685,6 +2691,12 @@ public final class RenderUtils extends MinecraftInstance {
                 y += offset;
             }
         }
+
+        if (stack.getTagCompound().hasKey("Unbreakable", 1)) {
+            drawExhiOutlined(0 + "", drawExhiOutlined("UB", x, y, -1), y, getMainColor(0, 0));
+            y += offset;
+        }
+
         GlStateManager.enableDepth();
         RenderHelper.enableGUIStandardItemLighting();
     }

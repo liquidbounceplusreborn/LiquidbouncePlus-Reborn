@@ -1043,7 +1043,7 @@ public class Fly extends Module {
 
                 if (started) {
                     mc.thePlayer.motionY += 0.025;
-                    MovementUtils.strafe((float) (bmcSpeed *= 0.935F));
+                    MovementUtils.strafe((float) (bmcSpeed *= 0.95F));
 
                     if (mc.thePlayer.motionY < -0.5 && !isBlockUnder()) {
                         toggle();
@@ -1053,7 +1053,7 @@ public class Fly extends Module {
                 if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, bb).isEmpty() && !started) {
                     started = true;
                     mc.thePlayer.jump();
-                    MovementUtils.strafe((float) (bmcSpeed = 9));
+                    MovementUtils.strafe((float) (bmcSpeed = 4));
                 }
             }
         }

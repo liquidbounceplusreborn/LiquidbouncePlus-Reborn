@@ -210,7 +210,6 @@ class ModuleManager : Listenable {
             CivBreak::class.java,
             Nuker::class.java,
             SuperheroFX::class.java,
-            NewGUI::class.java,
             ResetVL::class.java,
             SpeedMine::class.java,
             FreeLook::class.java,
@@ -219,8 +218,10 @@ class ModuleManager : Listenable {
             AntiStaff::class.java,
             AntiBook::class.java,
         )
+
         registerModule(Breaker)
         registerModule(ChestAura)
+        registerModule(NewGUI)
 
         ClientUtils.getLogger().info("[ModuleManager] Successfully loaded ${modules.size} modules.")
     }

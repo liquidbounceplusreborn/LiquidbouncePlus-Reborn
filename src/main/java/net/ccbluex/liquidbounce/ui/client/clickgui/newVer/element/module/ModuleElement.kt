@@ -89,7 +89,7 @@ class ModuleElement(val module: Module): MinecraftInstance() {
 
         toggleSwitch.state = module.state
 
-        if (module.values.size > 0) {
+        if (module.values.isNotEmpty()) {
             RenderUtils.newDrawRect(x + width - 40F, y + 5F, x + width - 39.5F, y + height - 5F, 4281348144L.toInt())
             GlStateManager.resetColor()
             glPushMatrix()
@@ -100,9 +100,10 @@ class ModuleElement(val module: Module): MinecraftInstance() {
             RenderUtils.drawImage(expandIcon, -4, -4, 8, 8)
             glPopMatrix()
             glPopMatrix()
-            toggleSwitch.onDraw(x + width - 70F, y + height / 2F - 5F, 20F, 10F, Color(4280624421L.toInt()), accentColor)
-        } else
-            toggleSwitch.onDraw(x + width - 40F, y + height / 2F - 5F, 20F, 10F, Color(4280624421L.toInt()), accentColor)
+        }
+//            toggleSwitch.onDraw(x + width - 40F, y + height / 2F - 5F, 20F, 10F, Color(4280624421L.toInt()), accentColor)
+
+        toggleSwitch.onDraw(x + width - 70F, y + height / 2F - 5F, 20F, 10F, Color(4280624421L.toInt()), accentColor)
 
         if (expanded || animHeight > 0F) {
             var startYPos = y + height
@@ -130,10 +131,10 @@ class ModuleElement(val module: Module): MinecraftInstance() {
             return
         }
         if (MouseUtils.mouseWithinBounds(mouseX, mouseY, 
-                x + width - if (module.values.size > 0) 70F else 40F, y, 
-                x + width - if (module.values.size > 0) 50F else 20F, y + height))
+                x + width - 70F, y,
+                x + width - 50F, y + height))
             module.toggle()
-        if (module.values.size > 0 && MouseUtils.mouseWithinBounds(mouseX, mouseY, x + width - 40F, y, x + width - 10F, y + height))
+        if (module.values.isNotEmpty() && MouseUtils.mouseWithinBounds(mouseX, mouseY, x + width - 40F, y, x + width - 10F, y + height))
             expanded = !expanded
         if (expanded) {
             var startY = y + height

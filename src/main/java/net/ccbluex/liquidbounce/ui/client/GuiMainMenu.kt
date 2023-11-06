@@ -78,5 +78,13 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             6 -> mc.shutdown()
         }
     }
-    override fun keyTyped(typedChar: Char, keyCode: Int) {}
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        when (typedChar) {
+            's' -> mc.displayGuiScreen(GuiSelectWorld(this))
+            'm' -> mc.displayGuiScreen(GuiMultiplayer(this))
+            'a' -> mc.displayGuiScreen(GuiAltManager(this))
+            'o' -> mc.displayGuiScreen(GuiOptions(this, mc.gameSettings))
+            'b' -> mc.displayGuiScreen(GuiBackground(this))
+        }
+    }
 }

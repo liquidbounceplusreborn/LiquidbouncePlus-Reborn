@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element
 
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.IconManager
+import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MouseUtils
@@ -10,16 +11,15 @@ import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.util.List
 import kotlin.math.abs
 
-class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val height: Float) {
+class SearchElement(var xPos: Float, var yPos: Float, var width: Float, val height: Float) {
 
     private var scrollHeight = 0F
     private var animScrollHeight = 0F
     private var lastHeight = 0F
 
-    private val searchBox = SearchBox(0, xPos.toInt() + 2, yPos.toInt() + 2, width.toInt() - 4, height.toInt() - 2)
+    val searchBox = SearchBox(0, xPos.toInt() + 2, yPos.toInt() + 2, width.toInt() - 4, height.toInt() - 2)
 
     fun drawBox(mouseX: Int, mouseY: Int, accentColor: Color): Boolean {
         RenderUtils.originalRoundedRect(xPos - 0.5F, yPos - 0.5F, xPos + width + 0.5F, yPos + height + 0.5F, 4F, ColorManager.buttonOutline.rgb)
@@ -29,7 +29,7 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         if (searchBox.isFocused) {
             RenderUtils.newDrawRect(xPos, yPos + height - 1F, xPos + width, yPos + height, accentColor.rgb)
             searchBox.drawTextBox()
-        } else if (searchBox.text.length <= 0) {
+        } else if (searchBox.text.isEmpty()) {
             searchBox.text = "Search"
             searchBox.drawTextBox()
             searchBox.text = ""
@@ -40,7 +40,7 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         GlStateManager.disableAlpha()
         RenderUtils.drawImage2(IconManager.search, xPos + width - 15F, yPos + 5F, 10, 10)
         GlStateManager.enableAlpha()
-        return searchBox.text.length > 0
+        return searchBox.text.isNotEmpty()
     }
 
     fun drawPanel(mX: Int, mY: Int, x: Float, y: Float, w: Float, h: Float, wheel: Int, ces: List<CategoryElement>, accentColor: Color) {
@@ -56,25 +56,28 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         if (lastHeight >= 10F) lastHeight -= 10F
         handleScrolling(wheel, h)
         drawScroll(x, y + 50F, w, h)
+
+
         Fonts.fontLarge.drawString("Search", x + 10F, y + 10F, -1)
-        Fonts.fontSmall.drawString("Search", x - 170F, y - 12F, -1)
-        RenderUtils.drawImage2(IconManager.back, x - 190F, y - 15F, 10, 10)
+        Fonts.fontSmall.drawString("Search", NewUi.getInstance().window.x + 20f, y - 12F, -1)
+        RenderUtils.drawImage2(IconManager.back, NewUi.getInstance().window.x + 4f, y - 15F, 10, 10)
+
         var startY = y + 50F
         if (mouseY < y + 50F || mouseY >= y + h)
             mouseY = -1
         RenderUtils.makeScissorBox(x, y + 50F, x + w, y + h)
-        GL11.glEnable(3089)
+        GL11.glEnable(GL11.GL_SCISSOR_TEST)
         for (ce in ces) {
             for (me in ce.moduleElements) {
                 if (me.module.name.startsWith(searchBox.text, true)) {
-                    if (startY + animScrollHeight > y + h || startY + animScrollHeight + 40F + me.animHeight < y + 50F)
-                        startY += 40F + me.animHeight
+                    startY += if (startY + animScrollHeight > y + h || startY + animScrollHeight + 40F + me.animHeight < y + 50F)
+                        40F + me.animHeight
                     else
-                        startY += me.drawElement(mouseX, mouseY, x, startY + animScrollHeight, w, 40F, accentColor)
+                        me.drawElement(mouseX, mouseY, x, startY + animScrollHeight, w, 40F, accentColor)
                 }
             }
         }
-        GL11.glDisable(3089)
+        GL11.glDisable(GL11.GL_SCISSOR_TEST)
     }
 
     private fun handleScrolling(wheel: Int, height: Float) {
@@ -101,13 +104,13 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
 
     fun handleMouseClick(mX: Int, mY: Int, mouseButton: Int, x: Float, y: Float, w: Float, h: Float, ces: List<CategoryElement>) {
         if (MouseUtils.mouseWithinBounds(mX, mY, x - 200F, y - 20F, x - 170F, y)) {
-            searchBox.text = ""
+//            searchBox.text = ""
             return
         }
         var mouseX = mX
         var mouseY = mY
         searchBox.mouseClicked(mouseX, mouseY, mouseButton)
-        if (searchBox.text.length <= 0) return
+        if (searchBox.text.isEmpty()) return
         if (mouseY < y + 50F || mouseY >= y + h)
             mouseY = -1
         var startY = y + 50F
@@ -122,7 +125,7 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
     fun handleMouseRelease(mX: Int, mY: Int, mouseButton: Int, x: Float, y: Float, w: Float, h: Float, ces: List<CategoryElement>) {
         var mouseX = mX
         var mouseY = mY
-        if (searchBox.text.length <= 0) return
+        if (searchBox.text.isEmpty()) return
         if (mouseY < y + 50F || mouseY >= y + h)
             mouseY = -1
         var startY = y + 50F
@@ -136,7 +139,7 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
 
     fun handleTyping(typedChar: Char, keyCode: Int, x: Float, y: Float, w: Float, h: Float, ces: List<CategoryElement>): Boolean {
         searchBox.textboxKeyTyped(typedChar, keyCode)
-        if (searchBox.text.length <= 0) return false
+        if (searchBox.text.isEmpty()) return false
         for (ce in ces)
             for (me in ce.moduleElements)
                 if (me.module.name.startsWith(searchBox.text, true))
@@ -145,6 +148,6 @@ class SearchElement(val xPos: Float, val yPos: Float, val width: Float, val heig
         return false
     }
 
-    fun isTyping(): Boolean = (searchBox.text.length > 0)
+    fun isTyping(): Boolean = searchBox.text.isNotEmpty()
 
 }

@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.buttons
 
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.AstolfoConstants.FONT
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.buttons.AstolfoButton
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.geom.Rectangle
+import net.ccbluex.liquidbounce.utils.geom.Rectangle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.getHeight
 import net.ccbluex.liquidbounce.value.Value
 

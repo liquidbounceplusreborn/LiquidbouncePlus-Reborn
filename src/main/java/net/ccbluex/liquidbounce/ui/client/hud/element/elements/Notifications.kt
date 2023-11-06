@@ -339,7 +339,7 @@ class Notification(
             val pn = ResourceLocation(
                 when (type.name) {
                     "SUCCESS" -> "liquidbounce+/noti/intellj/checkmark.png"
-                    "ERROR" -> "liquidbounce+/noti/intellj/error.png"
+                    "ERROR" -> "liquidbounce+/noti/intellj/close.png"
                     "WARNING" -> "liquidbounce+/noti/intellj/warning.png"
                     "INFO" -> "liquidbounce+/noti/intellj/info.png"
                     else -> "liquidbounce+/error/intellj/error1.png"

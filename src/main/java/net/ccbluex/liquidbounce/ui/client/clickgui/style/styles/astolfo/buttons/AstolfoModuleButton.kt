@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.AstolfoC
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.AstolfoConstants.VALUE_HEIGHT
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.buttons.value.*
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.drawHeightCenteredString
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.geom.Rectangle
+import net.ccbluex.liquidbounce.utils.geom.Rectangle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.astolfo.getHeight
 import net.ccbluex.liquidbounce.utils.MouseButtons
 import net.ccbluex.liquidbounce.utils.extensions.setAlpha
