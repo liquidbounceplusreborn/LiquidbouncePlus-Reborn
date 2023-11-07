@@ -2009,6 +2009,10 @@ public final class RenderUtils extends MinecraftInstance {
         glEnd();
     }
 
+    public static void drawRect(int x, int y, int x2, int y2, int color) {
+        drawRect((float)x, (float)y, (float)x2, (float)y2, color);
+    }
+
     public static void drawRect(final float x, final float y, final float x2, final float y2, final int color) {
         glPushMatrix();
         glEnable(GL_BLEND);
@@ -2692,10 +2696,12 @@ public final class RenderUtils extends MinecraftInstance {
             }
         }
 
-        if (stack.getTagCompound().hasKey("Unbreakable", 1)) {
-            drawExhiOutlined(0 + "", drawExhiOutlined("UB", x, y, -1), y, getMainColor(0, 0));
-            y += offset;
-        }
+        try {
+            if (stack.getTagCompound().hasKey("Unbreakable", 1)) {
+                drawExhiOutlined(0 + "", drawExhiOutlined("UB", x, y, -1), y, getMainColor(0, 0));
+                y += offset;
+            }
+        } catch (Exception ignored) { }
 
         GlStateManager.enableDepth();
         RenderHelper.enableGUIStandardItemLighting();
