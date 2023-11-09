@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.altgenerator.GuiTheAltening;
+import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.NewUi;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.value.Value;
 
@@ -52,6 +53,20 @@ public class ValuesConfig extends FileConfig {
         final Iterator<Map.Entry<String, JsonElement>> iterator = jsonObject.entrySet().iterator();
         while(iterator.hasNext()) {
             final Map.Entry<String, JsonElement> entry = iterator.next();
+
+            if (entry.getKey().equalsIgnoreCase("NewGui")) {
+                JsonObject positions = entry.getValue().getAsJsonObject();
+                if (positions.has("StartX"))
+                    NewUi.Companion.getInstance().setWindowXStart(positions.get("StartX").getAsFloat());
+                if (positions.has("StartY"))
+                    NewUi.Companion.getInstance().setWindowYStart(positions.get("StartY").getAsFloat());
+                if (positions.has("EndX"))
+                    NewUi.Companion.getInstance().setWindowXEnd(positions.get("EndX").getAsFloat());
+                if (positions.has("EndY"))
+                    NewUi.Companion.getInstance().setWindowYEnd(positions.get("EndY").getAsFloat());
+                if (positions.has("SideWidth"))
+                    NewUi.Companion.getInstance().setSideWidth(positions.get("SideWidth").getAsFloat());
+            }
 
             if (entry.getKey().equalsIgnoreCase("CommandPrefix")) {
                 LiquidBounce.commandManager.setPrefix(entry.getValue().getAsCharacter());
@@ -139,6 +154,14 @@ public class ValuesConfig extends FileConfig {
         jsonObject.addProperty("CommandPrefix", LiquidBounce.commandManager.getPrefix());
         jsonObject.addProperty("ShowRichPresence", LiquidBounce.clientRichPresence.getShowRichPresenceValue());
         jsonObject.addProperty("SemiRandomFormat", GuiAltManager.Companion.getGenerateCracked().getText());
+
+        final JsonObject jsonNewGui = new JsonObject();
+        jsonNewGui.addProperty("StartX", NewUi.Companion.getInstance().getWindowXStart());
+        jsonNewGui.addProperty("StartY", NewUi.Companion.getInstance().getWindowYStart());
+        jsonNewGui.addProperty("EndX", NewUi.Companion.getInstance().getWindowXEnd());
+        jsonNewGui.addProperty("EndY", NewUi.Companion.getInstance().getWindowYEnd());
+        jsonNewGui.addProperty("SideWidth", NewUi.Companion.getInstance().getSideWidth());
+        jsonObject.add("NewGui", jsonNewGui);
 
         final JsonObject jsonTargets = new JsonObject();
         jsonTargets.addProperty("TargetPlayer", EntityUtils.targetPlayer);

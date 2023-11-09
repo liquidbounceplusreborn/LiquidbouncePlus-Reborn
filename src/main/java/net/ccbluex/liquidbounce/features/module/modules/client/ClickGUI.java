@@ -24,7 +24,7 @@ import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 
-@ModuleInfo(name = "ClickGUI", description = "Opens the ClickGUI.", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, forceNoSound = true, onlyEnable = true)
+@ModuleInfo(name = "ClickGUI", description = "Opens the ClickGUI.", category = ModuleCategory.CLIENT, forceNoSound = true, onlyEnable = true)
 public class ClickGUI extends Module {
     public final ListValue styleValue = new ListValue("Style",
             new String[]{

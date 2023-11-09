@@ -1,27 +1,27 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.newVer
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.modules.client.NewGUI
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.CategoryElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.SearchElement
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.AnimationUtils
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MouseUtils.mouseWithinBounds
-import net.ccbluex.liquidbounce.utils.Stencil
 import net.ccbluex.liquidbounce.utils.extensions.setAlpha
 import net.ccbluex.liquidbounce.utils.geom.Rectangle
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.util.MathHelper
-import net.minecraft.util.ResourceLocation
+import org.apache.commons.lang3.tuple.MutablePair
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.io.IOException
 import java.util.function.Consumer
+import kotlin.math.abs
 
 /**
  * @author inf (original java code)
@@ -37,52 +37,139 @@ class NewUi private constructor() : GuiScreen() {
     private val backgroundColor = Color(16, 16, 16, 255)
     private val backgroundColor2 = Color(40, 40, 40, 255)
     // 30
-    private var marginLeft
-        get() = NewGUI.left.get()
-        set(value) = NewGUI.left.set(value)
-    private var marginRight
-        get() = NewGUI.right.get()
-        set(value) = NewGUI.right.set(value)
-    private var marginTop
-        get() = NewGUI.top.get()
-        set(value) = NewGUI.top.set(value)
-    private var marginBotton
-        get() = NewGUI.bottom.get()
-        set(value) = NewGUI.bottom.set(value)
 
-    private val categoryXOffset
-        get() = NewGUI.sideWidth.get()
+    var windowXStart = 30f
+    var windowYStart = 30f
+    var windowXEnd = 500f
+    var windowYEnd = 400f
+    private val windowWidth
+        get() = abs(windowXEnd - windowXStart)
+    private val windowHeight
+        get() = abs(windowYEnd - windowYStart)
+    private val minWindowWidth = 475f
+    private val minWindowHeight = 350f
 
     private val searchXOffset = 10f
-    private val searchYOffset = 85f
+    private val searchYOffset = 30f
 
+    var sideWidth = 120f
+    private val categoryXOffset
+        get() = sideWidth
     private val searchWidth
-        get() = NewGUI.sideWidth.get() - 10f
+        get() = sideWidth - 10f
     private val searchHeight = 20f
 
     private val elementHeight = 24f
-
-    private val elementsStartY = 110
+    private val elementsStartY = 55f
 
     private val categoriesTopMargin = 20f
     private val categoriesBottommargin = 20f
 
     private val xButtonColor = Color(0.2f, 0f, 0f, 1f)
 
-    val window
-        get() = Rectangle(marginLeft, marginTop, this.width - (marginLeft + marginRight), this.height - (marginTop + marginBotton))
+    private var moveDragging = false
+    private var resizeDragging = false
+    private var splitDragging = false
 
-    private var dragging = false
-    private val moveAera
-        get() = Rectangle(window.x, window.y, window.width - 20f, 20f)
+    private var quad = Pair(0, 0)
+    private val resizeArea = 12f
     private var x2 = 0f
     private var y2 = 0f
+
+    private val moveAera
+        get() = Rectangle(windowXStart, windowYStart, windowWidth - 20f, 20f)
+    private val splitArea
+        get() = Rectangle(windowXStart + sideWidth - 5, windowYStart, 10f, windowHeight)
 
 
     init {
         ModuleCategory.values().forEach { categoryElements.add(CategoryElement(it)) }
-        searchElement = SearchElement(window.x + searchXOffset, window.y + searchYOffset, searchWidth, searchHeight)
+        searchElement = SearchElement(windowXStart + searchXOffset, windowYStart + searchYOffset, searchWidth, searchHeight)
         categoryElements[0].focused = true
+    }
+
+    private fun reload() {
+        categoryElements.clear()
+        ModuleCategory.values().forEach { categoryElements.add(CategoryElement(it)) }
+        categoryElements[0].focused = true
+    }
+
+
+    private fun determineQuadrant(mouseX: Int, mouseY: Int): Pair<Int, Int> {
+        val result = MutablePair(0, 0)
+        val offset2 = 0f
+        if (mouseX.toFloat() in windowXStart-resizeArea..windowXStart-offset2)
+            result.left = -1
+        if (mouseX.toFloat() in windowXEnd+offset2..windowXEnd+resizeArea)
+            result.left = 1
+        if (mouseY.toFloat() in windowYStart-resizeArea..windowYStart-offset2)
+            result.right = 1
+        if (mouseY.toFloat() in windowYEnd+offset2..windowYEnd+resizeArea)
+            result.right = -1
+        return result.toPair()
+    }
+
+    private fun handleMove(mouseX: Int, mouseY: Int) {
+        if (moveDragging) {
+            val w = windowWidth
+            val h = windowHeight
+            windowXStart = mouseX + x2
+            windowYStart = mouseY + y2
+            windowXEnd = windowXStart + w
+            windowYEnd = windowYStart + h
+        }
+    }
+
+    private fun handleResize(mouseX: Int, mouseY: Int) {
+        if (resizeDragging) {
+            when (quad.first to quad.second) {
+                1 to 1 -> {
+                    windowXEnd = mouseX.toFloat().coerceAtLeast(windowXStart + minWindowWidth)
+                    windowYStart = mouseY.toFloat().coerceAtMost(windowYEnd - minWindowHeight)
+                    RenderUtils.drawRect(windowXEnd, windowYStart, windowXEnd + resizeArea,windowYStart - resizeArea, -1)
+                }
+                -1 to -1 -> {
+                    windowXStart = mouseX.toFloat().coerceAtMost(windowXEnd - minWindowWidth)
+                    windowYEnd = mouseY.toFloat().coerceAtLeast(windowYStart + minWindowHeight)
+                    RenderUtils.drawRect(windowXStart, windowYEnd, windowXStart - resizeArea, windowYEnd + resizeArea, -1)
+                }
+
+                -1 to 1 -> {
+                    windowXStart = mouseX.toFloat().coerceAtMost(windowXEnd - minWindowWidth)
+                    windowYStart = mouseY.toFloat().coerceAtMost(windowYEnd - minWindowHeight)
+                    RenderUtils.drawRect(windowXStart, windowYStart, windowXStart - resizeArea, windowYStart - resizeArea, -1)
+                }
+                1 to -1 -> {
+                    windowXEnd = mouseX.toFloat().coerceAtLeast(windowXStart + minWindowWidth)
+                    windowYEnd = mouseY.toFloat().coerceAtLeast(windowYStart + minWindowHeight)
+                    RenderUtils.drawRect(windowXEnd, windowYEnd, windowXEnd + resizeArea, windowYEnd + resizeArea, -1)
+                }
+            }
+        }
+    }
+
+    private fun resetPositions() {
+        windowXStart = 30f
+        windowYStart = 30f
+        windowXEnd = 500f
+        windowYEnd = 400f
+        resizeDragging = false
+        moveDragging = false
+    }
+
+    private fun handleSplit(mouseX: Int) {
+        if (splitDragging) {
+            sideWidth = (mouseX - windowXStart).coerceIn(80f, windowWidth/2)
+        }
+    }
+
+    private fun handleMisc() {
+        if (Keyboard.isKeyDown(Keyboard.KEY_F12)) {
+            resetPositions()
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_F5)) {
+            reload()
+        }
     }
 
     override fun initGui() {
@@ -98,114 +185,64 @@ class NewUi private constructor() : GuiScreen() {
 
     override fun onGuiClosed() {
         categoryElements.filter { it.focused }.map { it.handleMouseRelease(-1, -1, 0, 0f, 0f, 0f, 0f) }
-        dragging = false
+        moveDragging = false
+        resizeDragging = false
+        splitDragging = false
         Keyboard.enableRepeatEvents(false)
+        LiquidBounce.fileManager.saveConfigs(LiquidBounce.fileManager.valuesConfig)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (dragging) {
-            val ml = marginLeft
-            val mr = marginRight
-            val mt = marginTop
-            val mb = marginBotton
-
-            marginLeft = x2 + mouseX
-            marginTop = y2 + mouseY
-
-            marginRight -= marginLeft - ml
-            marginBotton -= marginTop - mt
-        }
-        
-        val resizeAmount = 1.5f * if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) -1 else 1
-        if (Keyboard.isKeyDown(Keyboard.KEY_LEFT))
-            marginLeft -= resizeAmount
-        if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT))
-            marginRight -= resizeAmount
-        if (Keyboard.isKeyDown(Keyboard.KEY_UP))
-            marginTop -= resizeAmount
-        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN))
-            marginBotton -= resizeAmount
-
-        Fonts.fontSmall.drawString("Use the arrow keys to expand and hold shift to shrink", 15f, 15f, -1)
+        handleMisc()
+        handleMove(mouseX, mouseY)
+        handleResize(mouseX, mouseY)
+        handleSplit(mouseX)
 
         drawFullSized(mouseX, mouseY, partialTicks, NewGUI.accentColor)
+
     }
 
     private fun drawFullSized(mouseX: Int, mouseY: Int, partialTicks: Float, accentColor: Color) {
-        RenderUtils.originalRoundedRect(window.x, window.y, window.x + window.width, window.y + window.height, 5f, backgroundColor.rgb)
-        RenderUtils.customRounded(window.x, window.y, window.x + window.width, window.y + 20f, 5f, 5f, 0f, 0f, backgroundColor2.rgb)
-
+        val windowRadius = 0f
+        RenderUtils.originalRoundedRect(windowXStart, windowYStart, windowXEnd, windowYEnd, windowRadius, backgroundColor.rgb)
+        RenderUtils.customRounded(windowXStart, windowYStart, windowXEnd, windowYStart + 20f, windowRadius, windowRadius, 0f, 0f, backgroundColor2.rgb)
 
         // something to make it look more like windoze - inf, 2022
-        if (window.contains(mouseX, mouseY))
+        if (mouseX.toFloat() in windowXStart..windowYStart && mouseY.toFloat() in windowYStart..windowYEnd)
             fading += 0.2f * RenderUtils.deltaTime * 0.045f
         else
             fading -= 0.2f * RenderUtils.deltaTime * 0.045f
         fading = MathHelper.clamp_float(fading, 0f, 1f)
         xButtonColor.setAlpha(fading)
-        RenderUtils.customRounded(window.x2 - 20f, window.y, window.x2, window.y + 20f, 0f, 5f, 0f, 0f, xButtonColor.rgb)
+        RenderUtils.customRounded(windowXEnd - 20f, windowYStart, windowXEnd, windowYStart + 20f, 0f, windowRadius, 0f, 0f, xButtonColor.rgb)
         GlStateManager.disableAlpha()
-        RenderUtils.drawImage(IconManager.removeIcon, window.x2 - 17.0, window.y + 5.0, 10.0, 10.0)
+        RenderUtils.drawImage(IconManager.removeIcon, windowXEnd - 15.0, windowYStart + 5.0, 10.0, 10.0)
         GlStateManager.enableAlpha()
 
-        val skinAndNameSpace = NewGUI.sideWidth.get() - 15
-        val font = Fonts.fontLarge
-
-        if (skinAndNameSpace > 50) {
-            // skin mask
-            Stencil.write(true)
-            RenderUtils.drawRoundedRect(window.x + 10f, window.y + 25f, window.x + 10f + 50f, window.y + 25f + 50f, 4f, -13816531)
-            Stencil.erase(true)
-
-            if (mc.netHandler.getPlayerInfo(mc.thePlayer.uniqueID) != null) {
-                val skin = mc.netHandler.getPlayerInfo(mc.thePlayer.uniqueID).locationSkin
-                GL11.glPushMatrix()
-                GL11.glTranslatef(window.x + 10f, window.y + 25f, 0f)
-                GL11.glDisable(GL11.GL_DEPTH_TEST)
-                GL11.glEnable(GL11.GL_BLEND)
-                GL11.glDepthMask(false)
-                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-                GL11.glColor4f(1f, 1f, 1f, 1f)
-                mc.textureManager.bindTexture(skin)
-                drawScaledCustomSizeModalRect(
-                    0, 0, 8f, 8f, 8, 8, 50, 50,
-                    64f, 64f
-                )
-                GL11.glDepthMask(true)
-                GL11.glDisable(GL11.GL_BLEND)
-                GL11.glEnable(GL11.GL_DEPTH_TEST)
-                GL11.glPopMatrix()
-            }
-            Stencil.dispose()
-        }
-
-        if (skinAndNameSpace > 110) {
-            if (font.getStringWidth(mc.thePlayer.gameProfile.name) > 70)
-                font.drawString(font.trimStringToWidth(mc.thePlayer.gameProfile.name, 50) + "...", window.x + 70, window.y + 48 - font.FONT_HEIGHT + 15, -1)
-            else
-                font.drawString(mc.thePlayer.gameProfile.name, window.x + 70, window.y + 48 - font.FONT_HEIGHT + 15, -1)
-        }
-
         // reset search pos
-        searchElement!!.xPos = window.x + searchXOffset
-        searchElement!!.yPos = window.y + searchYOffset
+        searchElement!!.xPos = windowXStart + searchXOffset
+        searchElement!!.yPos = windowYStart + searchYOffset
         searchElement!!.width = searchWidth
 
         // taken from searchBox's constructor
         searchElement!!.searchBox.width = searchWidth.toInt() - 4
-        searchElement!!.searchBox.xPosition = (window.x + searchXOffset + 2).toInt()
-        searchElement!!.searchBox.yPosition = (window.y + searchYOffset + 2).toInt()
+        searchElement!!.searchBox.xPosition = (windowXStart + searchXOffset + 2).toInt()
+        searchElement!!.searchBox.yPosition = (windowYStart + searchYOffset + 2).toInt()
 
         if (searchElement!!.drawBox(mouseX, mouseY, accentColor)) {
-            searchElement!!.drawPanel(mouseX, mouseY, window.x + categoryXOffset, window.y + categoriesTopMargin, window.width - categoryXOffset, window.height - categoriesBottommargin, Mouse.getDWheel(), categoryElements, accentColor)
+            searchElement!!.drawPanel(mouseX, mouseY, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, Mouse.getDWheel(), categoryElements, accentColor)
             return
         }
 
-        var startY = window.y + elementsStartY
+        var startY = windowYStart + elementsStartY
+        var lastFastYStart = 0f
+        var lastFastYEnd = 0f
 
         for (ce in categoryElements) {
-            ce.drawLabel(mouseX, mouseY, window.x, startY, categoryXOffset, elementHeight)
+            ce.drawLabel(mouseX, mouseY, windowXStart, startY, categoryXOffset, elementHeight)
             if (ce.focused) {
+                lastFastYStart = startY + 6f
+                lastFastYEnd = startY + elementHeight - 6f
                 startYAnim = if (NewGUI.fastRenderValue.get())
                     startY + 6f
                              else
@@ -221,46 +258,63 @@ class NewUi private constructor() : GuiScreen() {
                                     endYAnim,
                                     (if (endYAnim - (startY + elementHeight - 5f) < 0) 0.65f else 0.55f) * RenderUtils.deltaTime * 0.025f
                                 )
-                ce.drawPanel(mouseX, mouseY, window.x + categoryXOffset, window.y + categoriesTopMargin, window.width - categoryXOffset, window.height - categoriesBottommargin, Mouse.getDWheel(), accentColor)
-                Fonts.font40.drawString(ce.name, window.x + 7, window.y + 7, -1)
+                ce.drawPanel(mouseX, mouseY, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, Mouse.getDWheel(), accentColor)
+                Fonts.font40.drawString(ce.name, windowXStart + 7, windowYStart + 7, -1)
             }
             startY += elementHeight
         }
         val offset = 8f
-        RenderUtils.originalRoundedRect(window.x + 2f + offset, startYAnim, window.x + 4f + offset, endYAnim, 1f, accentColor.rgb)
+        val drawYStart = if (resizeDragging || moveDragging) lastFastYStart else startYAnim
+        val drawYEnd = if (resizeDragging || moveDragging) lastFastYEnd else endYAnim
+        RenderUtils.originalRoundedRect(windowXStart + 2f + offset, drawYStart, windowXStart + 4f + offset, drawYEnd, 1f, accentColor.rgb)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         // search back button
-        if (searchElement!!.isTyping() && Rectangle(window.x, window.y, 60f, 24f).contains(mouseX, mouseY)) {
+        if (searchElement!!.isTyping() && Rectangle(windowXStart, windowYStart, 60f, 24f).contains(mouseX, mouseY)) {
             searchElement!!.searchBox.text = ""
             return
         }
 
-        if (moveAera.contains(mouseX, mouseY) && !dragging) {
-            dragging = true
-            x2 = window.x - mouseX
-            y2 = window.y - mouseY
+        // window move
+        if (moveAera.contains(mouseX, mouseY) && !moveDragging) {
+            moveDragging = true
+            x2 = windowXStart - mouseX
+            y2 = windowYStart - mouseY
             return
         }
 
         // close button
-        if (Rectangle(window.x2 - 24, window.y, 24f, 24f).contains(mouseX, mouseY)) {
+        if (Rectangle(windowXEnd - 20, windowYStart, 20f, 20f).contains(mouseX, mouseY)) {
             mc.displayGuiScreen(null)
             return
         }
 
+        if (splitArea.contains(mouseX, mouseY)) {
+            splitDragging = true;
+            return
+        }
 
-        var startY = window.y + elementsStartY
+        // window resize
+        val quad2 = determineQuadrant(mouseX, mouseY)
+        if (quad2.first != 0 && quad2.second != 0) {
+            quad = quad2
+            resizeDragging = true
+            return
+        }
 
-        searchElement!!.handleMouseClick(mouseX, mouseY, mouseButton, window.x + categoryXOffset, window.y + categoriesTopMargin, window.width - categoryXOffset, window.height - categoriesBottommargin, categoryElements)
+
+
+        var startY = windowYStart + elementsStartY
+
+        searchElement!!.handleMouseClick(mouseX, mouseY, mouseButton, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, categoryElements)
         if (!searchElement!!.isTyping()) {
             categoryElements.forEach { cat ->
                 if (cat.focused)
-                    cat.handleMouseClick(mouseX, mouseY, mouseButton, window.x + categoryXOffset, window.y + categoriesTopMargin, window.width - categoryXOffset, window.height - categoriesBottommargin.toFloat())
-                if (mouseWithinBounds(mouseX, mouseY, window.x, startY, window.x + categoryXOffset, startY + elementHeight) && !searchElement!!.isTyping()) {
+                    cat.handleMouseClick(mouseX, mouseY, mouseButton, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin.toFloat())
+                if (mouseWithinBounds(mouseX, mouseY, windowXStart, startY, windowXStart + categoryXOffset, startY + elementHeight) && !searchElement!!.isTyping()) {
                     categoryElements.forEach(Consumer { e: CategoryElement -> e.focused = false })
                     cat.focused = true
                     return
@@ -270,30 +324,36 @@ class NewUi private constructor() : GuiScreen() {
         }
     }
 
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        if (moveDragging && moveAera.contains(mouseX, mouseY)) {
+            moveDragging = false
+//            return
+        }
+
+        if (resizeDragging)
+            resizeDragging = false
+
+        if (splitDragging)
+            splitDragging = false
+
+        searchElement!!.handleMouseRelease(mouseX, mouseY, state, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, categoryElements)
+        if (!searchElement!!.isTyping()) {
+            categoryElements.filter { it.focused }.forEach { cat ->
+                cat.handleMouseRelease(mouseX, mouseY, state, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin.toFloat())
+            }
+        }
+        super.mouseReleased(mouseX, mouseY, state)
+    }
+
     @Throws(IOException::class)
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         categoryElements.filter { it.focused }.forEach { cat ->
             if (cat.handleKeyTyped(typedChar, keyCode)) return
         }
 
-        if (searchElement!!.handleTyping(typedChar, keyCode, window.x + categoryXOffset, window.y + categoriesTopMargin, window.width - categoryXOffset, window.height - categoriesBottommargin, categoryElements))
+        if (searchElement!!.handleTyping(typedChar, keyCode, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, categoryElements))
             return
         super.keyTyped(typedChar, keyCode)
-    }
-
-    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-        if (dragging) {
-            dragging = false
-            return
-        }
-
-        searchElement!!.handleMouseRelease(mouseX, mouseY, state, window.x + categoryXOffset, window.y + categoriesTopMargin, window.width - categoryXOffset, window.height - categoriesBottommargin, categoryElements)
-        if (!searchElement!!.isTyping()) {
-            categoryElements.filter { it.focused }.forEach { cat ->
-                cat.handleMouseRelease(mouseX, mouseY, state, window.x + categoryXOffset, window.y + categoriesTopMargin, window.width - categoryXOffset, window.height - categoriesBottommargin.toFloat())
-            }
-        }
-        super.mouseReleased(mouseX, mouseY, state)
     }
 
     override fun doesGuiPauseGame(): Boolean {

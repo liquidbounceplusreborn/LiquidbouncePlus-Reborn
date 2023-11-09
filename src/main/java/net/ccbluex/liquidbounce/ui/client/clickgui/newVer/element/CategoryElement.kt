@@ -21,7 +21,7 @@ class CategoryElement(val category: ModuleCategory): MinecraftInstance() {
     private var animScrollHeight = 0F
     private var lastHeight = 0F
 
-    private val startYY = 10F
+    private val startYY = 5f
 
     val moduleElements = mutableListOf<ModuleElement>()
 

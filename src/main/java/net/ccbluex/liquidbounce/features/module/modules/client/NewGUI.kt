@@ -17,10 +17,11 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
 
-@ModuleInfo(name = "NewGUI", description = "next generation clickgui.", category = ModuleCategory.CLIENT, forceNoSound = true, onlyEnable = true)
+@ModuleInfo(name = "NewGUI", description = "next generation clickgui.", category = ModuleCategory.CLIENT, forceNoSound = true, onlyEnable = true, keyBind = Keyboard.KEY_RSHIFT)
 object NewGUI : Module() {
     val fastRenderValue = BoolValue("FastRender", false)
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "Sky", "Rainbow", "LiquidSlowly", "Fade", "Mixer"), "Custom")
@@ -31,7 +32,6 @@ object NewGUI : Module() {
     val right = FloatValue("Right", 30f, 0f, 1000f) { false }
     val top = FloatValue("Top", 30f, 0f, 1000f) { false }
     val bottom = FloatValue("Bottom", 30f, 0f, 1000f) { false }
-    val sideWidth = FloatValue("SideWidth", 200f, 50f, 300f)
 
     private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f)
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
