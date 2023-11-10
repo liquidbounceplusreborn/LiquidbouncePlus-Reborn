@@ -37,10 +37,11 @@ class RavenB4(inst: Target) : TargetStyle("RavenB4", inst, false) {
                 8F,
                 Color(255, 255, 255, 255).rgb
             )
+        val winorlose = if(entity.health < mc.thePlayer.health) "W" else "L"
             font.drawStringWithShadow(
-                if (entity.health > mc.thePlayer.health) "L" else "W",
+                winorlose,
                 length + hplength + 11.6F,
-                8F, Color(255, 0, 0, 255).rgb)
+                8F,  (if (winorlose == "W")  Color(0, 255, 0).rgb else Color(139, 0, 0).rgb))
             font.drawStringWithShadow(
                 hp,
                 length + 8F,

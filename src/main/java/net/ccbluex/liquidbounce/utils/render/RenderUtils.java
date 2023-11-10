@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.Shader;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -26,14 +27,17 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityEgg;
 import net.minecraft.item.*;
 import net.minecraft.util.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 
 import java.awt.*;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -1071,7 +1075,7 @@ public final class RenderUtils extends MinecraftInstance {
         if (!disableAlpha) glDisable(GL_ALPHA_TEST);
         mc.getTextureManager().bindTexture(new ResourceLocation("liquidbounce+/ui/" + image + ".png"));
         GlStateManager.color(1F, 1F, 1F, 1F);
-        RenderUtils.drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
+        drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
         if (!enableBlend) glDisable(GL_BLEND);
         if (!disableAlpha) glEnable(GL_ALPHA_TEST);
         glPopMatrix();
@@ -1157,10 +1161,10 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawOutlinedRect(float x, float y, float width, float height, float lineSize, int lineColor) {
-        RenderUtils.drawRect(x, y, width, y + lineSize, lineColor);
-        RenderUtils.drawRect(x, height - lineSize, width, height, lineColor);
-        RenderUtils.drawRect(x, y + lineSize, x + lineSize, height - lineSize, lineColor);
-        RenderUtils.drawRect(width - lineSize, y + lineSize, width, height - lineSize, lineColor);
+        drawRect(x, y, width, y + lineSize, lineColor);
+        drawRect(x, height - lineSize, width, height, lineColor);
+        drawRect(x, y + lineSize, x + lineSize, height - lineSize, lineColor);
+        drawRect(width - lineSize, y + lineSize, width, height - lineSize, lineColor);
     }
 
     public static void drawCircle(float x, float y ,float radius, final Color color) {
@@ -1524,7 +1528,7 @@ public final class RenderUtils extends MinecraftInstance {
     }
 
     public static void drawGradientRound(final float x, final float y, final float width, final float height, final float radius, final Color bottomLeft, final Color topLeft, final Color bottomRight, final Color topRight) {
-        RenderUtils.resetColor();
+        resetColor();
         GlStateManager.enableBlend();
         GlStateManager.blendFunc(770, 771);
         Shader.drawQuads(x - 1.0f, y - 1.0f, width + 2.0f, height + 2.0f);
@@ -2210,15 +2214,15 @@ public final class RenderUtils extends MinecraftInstance {
             int unbreakingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             int thornLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.thorns.effectId, stack);
             if (protectionLevel > 0) {
-                RenderUtils.drawEnchantTag("P" + ColorUtils.getColor(protectionLevel) + protectionLevel, x * 2, enchantmentY);
+                drawEnchantTag("P" + ColorUtils.getColor(protectionLevel) + protectionLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
             if (unbreakingLevel > 0) {
-                RenderUtils.drawEnchantTag("U" + ColorUtils.getColor(unbreakingLevel) + unbreakingLevel, x * 2, enchantmentY);
+                drawEnchantTag("U" + ColorUtils.getColor(unbreakingLevel) + unbreakingLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
             if (thornLevel > 0) {
-                RenderUtils.drawEnchantTag("T" + ColorUtils.getColor(thornLevel) + thornLevel, x * 2, enchantmentY);
+                drawEnchantTag("T" + ColorUtils.getColor(thornLevel) + thornLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
         }
@@ -2228,19 +2232,19 @@ public final class RenderUtils extends MinecraftInstance {
             int flameLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, stack);
             int unbreakingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             if (powerLevel > 0) {
-                RenderUtils.drawEnchantTag("Pow" + ColorUtils.getColor(powerLevel) + powerLevel, x * 2, enchantmentY);
+                drawEnchantTag("Pow" + ColorUtils.getColor(powerLevel) + powerLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
             if (punchLevel > 0) {
-                RenderUtils.drawEnchantTag("Pun" + ColorUtils.getColor(punchLevel) + punchLevel, x * 2, enchantmentY);
+                drawEnchantTag("Pun" + ColorUtils.getColor(punchLevel) + punchLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
             if (flameLevel > 0) {
-                RenderUtils.drawEnchantTag("F" + ColorUtils.getColor(flameLevel) + flameLevel, x * 2, enchantmentY);
+                drawEnchantTag("F" + ColorUtils.getColor(flameLevel) + flameLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
             if (unbreakingLevel > 0) {
-                RenderUtils.drawEnchantTag("U" + ColorUtils.getColor(unbreakingLevel) + unbreakingLevel, x * 2, enchantmentY);
+                drawEnchantTag("U" + ColorUtils.getColor(unbreakingLevel) + unbreakingLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
         }
@@ -2250,19 +2254,19 @@ public final class RenderUtils extends MinecraftInstance {
             int fireAspectLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId, stack);
             int unbreakingLevel = EnchantmentHelper.getEnchantmentLevel(Enchantment.unbreaking.effectId, stack);
             if (sharpnessLevel > 0) {
-                RenderUtils.drawEnchantTag("S" +  ColorUtils.getColor(sharpnessLevel) + sharpnessLevel, x * 2, enchantmentY);
+                drawEnchantTag("S" +  ColorUtils.getColor(sharpnessLevel) + sharpnessLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
             if (knockbackLevel > 0) {
-                RenderUtils.drawEnchantTag("K" + ColorUtils.getColor(knockbackLevel) + knockbackLevel, x * 2, enchantmentY);
+                drawEnchantTag("K" + ColorUtils.getColor(knockbackLevel) + knockbackLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
             if (fireAspectLevel > 0) {
-                RenderUtils.drawEnchantTag("F" + ColorUtils.getColor(fireAspectLevel) + fireAspectLevel, x * 2, enchantmentY);
+                drawEnchantTag("F" + ColorUtils.getColor(fireAspectLevel) + fireAspectLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
             if (unbreakingLevel > 0) {
-                RenderUtils.drawEnchantTag("U" + ColorUtils.getColor(unbreakingLevel) + unbreakingLevel, x * 2, enchantmentY);
+                drawEnchantTag("U" + ColorUtils.getColor(unbreakingLevel) + unbreakingLevel, x * 2, enchantmentY);
                 enchantmentY += 8;
             }
         }
@@ -3222,5 +3226,102 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glDisable(GL_LINE_SMOOTH);
         glShadeModel(GL_FLAT);
         ColorUtils.setColour(-1);
+    }
+    public static void renderParticles(java.util.List<AttackParticle> particles,Color color) {
+        GL11.glEnable((int)3042);
+        GL11.glDisable((int)3553);
+        GL11.glEnable((int)2848);
+        GL11.glBlendFunc((int)770, (int)771);
+        long currentMillis = System.currentTimeMillis();
+        int i = 0;
+        try {
+            for (AttackParticle particle : particles) {
+                Vec3 v = particle.position;
+                boolean draw = true;
+                float aOffset = (float)((currentMillis + (long)(++i) * 100L) % 2000L) / 1000.0f;
+                double x = v.xCoord - mc.getRenderManager().renderPosX;
+                double y = v.yCoord - mc.getRenderManager().renderPosY;
+                double z = v.zCoord - mc.getRenderManager().renderPosZ;
+                double distanceFromPlayer = mc.thePlayer.getDistance(v.xCoord, v.yCoord - 1.0, v.zCoord);
+                int quality = (int)(distanceFromPlayer * 4.0 + 10.0);
+                if (quality > 350) {
+                    quality = 350;
+                }
+                if (!isBBInFrustum(new EntityEgg(mc.theWorld, v.xCoord, v.yCoord, v.zCoord).getEntityBoundingBox())) {
+                    draw = false;
+                }
+                if (i % 10 != 0 && distanceFromPlayer > 25.0) {
+                    draw = false;
+                }
+                if (i % 3 == 0 && distanceFromPlayer > 15.0) {
+                    draw = false;
+                }
+                if (!draw) continue;
+                GL11.glPushMatrix();
+                GL11.glTranslated((double)x, (double)y, (double)z);
+                float scale = 0.04f;
+                GL11.glScalef((float)-0.04f, (float)-0.04f, (float)-0.04f);
+                mc.getRenderManager();
+                GL11.glRotated((double)(-mc.getRenderManager().playerViewY), (double)0.0, (double)1.0, (double)0.0);
+                mc.getRenderManager();
+                GL11.glRotated((double)mc.getRenderManager().playerViewX, (double)(mc.gameSettings.thirdPersonView == 2 ? -1.0 : 1.0), (double)0.0, (double)0.0);
+                Color c = color;
+                glDrawTriangle(0.0, -1.5, -1.0, 0.0, 1.0, 0.0, c.hashCode());
+                if (distanceFromPlayer < 4.0) {
+                    glDrawTriangle(0.0, -1.5, -1.0, 0.0, 1.0, 0.0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode());
+                }
+                if (distanceFromPlayer < 20.0) {
+                    glDrawTriangle(0.0, -1.5, -1.0, 0.0, 1.0, 0.0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 30).hashCode());
+                }
+                GL11.glScalef((float)0.8f, (float)0.8f, (float)0.8f);
+                GL11.glPopMatrix();
+            }
+        }
+        catch (ConcurrentModificationException concurrentModificationException) {
+            // empty catch block
+        }
+        GL11.glDisable((int)2848);
+        GL11.glEnable((int)3553);
+        GL11.glDisable((int)3042);
+        GL11.glColor3d((double)255.0, (double)255.0, (double)255.0);
+    }
+    public static void glDrawTriangle(double x, double y, double x1, double y1, double x2, double y2, int colour) {
+        GL11.glDisable((int)3553);
+        boolean restore = glEnableBlend();
+        GL11.glEnable((int)2881);
+        GL11.glHint((int)3155, (int)4354);
+        glColour(colour);
+        GL11.glBegin((int)4);
+        GL11.glVertex2d((double)x, (double)y);
+        GL11.glVertex2d((double)x1, (double)y1);
+        GL11.glVertex2d((double)x2, (double)y2);
+        GL11.glEnd();
+        GL11.glEnable((int)3553);
+        glRestoreBlend(restore);
+        GL11.glDisable((int)2881);
+        GL11.glHint((int)3155, (int)4352);
+    }
+    public static boolean glEnableBlend() {
+        boolean wasEnabled = GL11.glIsEnabled((int)3042);
+        if (!wasEnabled) {
+            GL11.glEnable((int)3042);
+            GL14.glBlendFuncSeparate((int)770, (int)771, (int)1, (int)0);
+        }
+        return wasEnabled;
+    }
+
+    public static void glColour(int color) {
+        GL11.glColor4ub((byte)((byte)(color >> 16 & 0xFF)), (byte)((byte)(color >> 8 & 0xFF)), (byte)((byte)(color & 0xFF)), (byte)((byte)(color >> 24 & 0xFF)));
+    }
+
+    public static void glRestoreBlend(boolean wasEnabled) {
+        if (!wasEnabled) {
+            GL11.glDisable((int)3042);
+        }
+    }
+    public static boolean isBBInFrustum(AxisAlignedBB aabb) {
+        EntityPlayerSP player = RenderUtils.mc.thePlayer;
+        frustrum.setPosition(player.posX, player.posY, player.posZ);
+        return frustrum.isBoundingBoxInFrustum(aabb);
     }
 }

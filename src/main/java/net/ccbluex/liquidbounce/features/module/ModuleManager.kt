@@ -217,6 +217,7 @@ class ModuleManager : Listenable {
             AntiBot::class.java,
             AntiStaff::class.java,
             AntiBook::class.java,
+            AttackEffect::class.java,
         )
 
         registerModule(Breaker)
