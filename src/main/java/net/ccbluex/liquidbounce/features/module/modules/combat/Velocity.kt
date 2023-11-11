@@ -75,6 +75,7 @@ class Velocity : Module() {
             "GrimReduce",
             "AllAC",
             "Intave",
+            "JumpReset",
             "Smart"
         ), "Cancel"
     ) // later
@@ -106,6 +107,16 @@ class Velocity : Module() {
     //epic
     private val phaseOffsetValue =
         FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m") { modeValue.get().equals("phase", true) }
+
+    // Jump Reset
+    private val jumpResetMode =
+        ListValue(
+            "JumpReset-Mode",
+            arrayOf("Normal", "Reset", "Reduce", "Combo"),
+            "Normal"
+        ) {
+            modeValue.get().equals("jumpreset", true)
+        }
 
     private val tagModeValue = ListValue("TagMode", arrayOf("Off", "Mode", "Percentage", "Both"), "Both")
 
@@ -362,6 +373,35 @@ class Velocity : Module() {
                     attack = false
                 }
             }
+            "jumpreset" ->
+                if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
+                    if (jumpResetMode.get() == "Reset") {
+                        mc.thePlayer.motionY = 0.0
+                        mc.thePlayer.motionX = 0.0
+                        mc.thePlayer.motionZ = 0.0
+
+                        mc.thePlayer.jump()
+                    } else if (jumpResetMode.get() == "Reduce") {
+                        mc.thePlayer.motionY = 0.0
+
+                        val yaw = mc.thePlayer.rotationYaw * 0.017453292F
+                        mc.thePlayer.motionX -= MathHelper.sin(yaw) * 0.2
+                        mc.thePlayer.motionZ += MathHelper.cos(yaw) * 0.2
+
+                        mc.thePlayer.jump()
+
+                        ClientUtils.displayChatMessage("Modified X:" + mc.thePlayer.motionX)
+                        ClientUtils.displayChatMessage("Modified Z:" + mc.thePlayer.motionZ)
+                    } else if (jumpResetMode.get() == "Normal") {
+                        mc.thePlayer.jump()
+                    }
+                } else if (
+                    jumpResetMode.get() == "Combo" &&
+                    mc.thePlayer.hurtTime == 9 &&
+                    mc.thePlayer.onGround
+                ) {
+                    mc.thePlayer.jump()
+                }
         }
     }
 
