@@ -54,7 +54,6 @@ class ModuleManager : Listenable {
             KillAura::class.java,
             Velocity::class.java,
             Fly::class.java,
-            TickBase::class.java,
             HighJump::class.java,
             InvMove::class.java,
             NoSlow::class.java,
@@ -223,6 +222,7 @@ class ModuleManager : Listenable {
         registerModule(Breaker)
         registerModule(ChestAura)
         registerModule(NewGUI)
+        registerModule(TimerRange)
 
         ClientUtils.getLogger().info("[ModuleManager] Successfully loaded ${modules.size} modules.")
     }

@@ -8,30 +8,24 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
-import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.render.AttackParticle;
-import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.Vec3;
 
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 @ModuleInfo(name = "AttackEffect", spacedName = "Attack Effect", description = "Gey", category = ModuleCategory.RENDER)
 public class AttackEffect extends Module {
 
+    private final IntegerValue amount = new IntegerValue("Amount", 8, 0, 30);
     private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Health", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
-
     private final IntegerValue colorRedValue = new IntegerValue("Red", 255, 0, 255);
     private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
     private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
@@ -46,7 +40,7 @@ public class AttackEffect extends Module {
        KillAura killAura = LiquidBounce.INSTANCE.getModuleManager().getModule(KillAura.class);
         if (killAura.getState()) {
             if (killAura.getTarget().hurtTime != 0) {
-                for (int i = 1; i < 10; ++i) {
+                for (int i = 1; i < amount.get(); ++i) {
                     particles.add(new AttackParticle(new Vec3(killAura.getTarget().posX + (Math.random() - 0.5) * 0.5, killAura.getTarget().posY + Math.random() + 0.5, killAura.getTarget().posZ + (Math.random() - 0.5) * 0.5)));
                 }
             }

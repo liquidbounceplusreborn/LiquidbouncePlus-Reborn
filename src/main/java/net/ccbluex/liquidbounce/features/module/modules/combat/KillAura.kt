@@ -118,7 +118,7 @@ class KillAura : Module() {
     //endregion
 
     private val rotationNote = NoteValue("Rotation") //region rotation
-    private val rangeValue: FloatValue = object : FloatValue("Rotation-Range", 8f, 1f, 20f, "m") {
+    public val rangeValue: FloatValue = object : FloatValue("Rotation-Range", 8f, 1f, 20f, "m") {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = attackRangeValue.get()
             if (i > newValue) set(i)
@@ -384,7 +384,7 @@ class KillAura : Module() {
     // Attack delay
     private val attackTimer = MSTimer()
     private var attackDelay = 0L
-    private var clicks = 0
+    var clicks = 0
 
     private var lastHitTick = 0
 

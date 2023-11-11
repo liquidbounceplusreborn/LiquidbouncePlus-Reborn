@@ -10,6 +10,7 @@ import cc.paimonmc.viamcp.utils.AttackOrder;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
+import net.ccbluex.liquidbounce.features.module.modules.combat.TimerRange;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeLook;
@@ -36,6 +37,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Timer;
 import net.minecraft.util.Util;
 import net.minecraftforge.client.MinecraftForgeClient;
 import org.apache.commons.lang3.SystemUtils;
@@ -99,6 +101,12 @@ public abstract class MixinMinecraft {
 
     @Shadow
     public GameSettings gameSettings;
+
+    @Shadow
+    public abstract void runTick();
+
+    @Shadow
+    public final Timer timer = new Timer(20.0F);
 
     @Shadow
     public abstract IResourceManager getResourceManager();
@@ -193,6 +201,22 @@ public abstract class MixinMinecraft {
     @Inject(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;joinPlayerCounter:I", shift = At.Shift.BEFORE))
     private void onTick(final CallbackInfo callbackInfo) {
         LiquidBounce.eventManager.callEvent(new TickEvent());
+    }
+
+    /*@Inject(method = "runGameLoop", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;mcProfiler:Lnet/minecraft/profiler/Profiler;", ordinal = 3, shift = At.Shift.AFTER))
+    private void timerRange(final CallbackInfo callbackInfo) {
+        for (int j = 0; j < this.timer.elapsedTicks; ++j) {
+            LiquidBounce.INSTANCE.getModuleManager().getModule(TickBase.class);
+            if (TickBase.handleTick()) continue;
+            this.runTick();
+        }
+    }*/
+
+    @Inject(method = "runGameLoop", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;timer:Lnet/minecraft/util/Timer;", ordinal = 4, shift = At.Shift.AFTER))
+    private void test(CallbackInfo ci){
+        LiquidBounce.INSTANCE.getModuleManager().getModule(TimerRange.class);
+        if (!TimerRange.handleTick()) return;
+        //this.runTick();
     }
 
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V", shift = At.Shift.AFTER))

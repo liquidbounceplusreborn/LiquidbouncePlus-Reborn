@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -25,7 +26,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import org.lwjgl.opengl.GL11;
 
@@ -36,19 +37,19 @@ import java.util.List;
 @ModuleInfo(name = "AsianHat", spacedName = "Asian Hat", description = "not your typical china hat", category = ModuleCategory.RENDER)
 public class AsianHat extends Module {
 
-    private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
-	private final IntegerValue colorRedValue = new IntegerValue("Red", 255, 0, 255);
-	private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
-	private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
-	private final IntegerValue colorAlphaValue = new IntegerValue("Alpha", 255, 0, 255);
+    private final ListValue colorModeValue = new ListValue("Color", new String[]{"Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
+    private final IntegerValue colorRedValue = new IntegerValue("Red", 255, 0, 255);
+    private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
+    private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
+    private final IntegerValue colorAlphaValue = new IntegerValue("Alpha", 255, 0, 255);
     private final IntegerValue colorEndAlphaValue = new IntegerValue("EndAlpha", 255, 0, 255);
-	private final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
-	private final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
-	private final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
+    private final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
+    private final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
+    private final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
     private final IntegerValue spaceValue = new IntegerValue("Color-Space", 0, 0, 100);
-    private final BoolValue noFirstPerson = new BoolValue("NoFirstPerson", true);
     private final BoolValue hatBorder = new BoolValue("HatBorder", true);
     private final BoolValue hatRotation = new BoolValue("HatRotation", true);
+    private final BoolValue target = new BoolValue("Target", true);
     private final IntegerValue borderAlphaValue = new IntegerValue("BorderAlpha", 255, 0, 255);
     private final FloatValue borderWidthValue = new FloatValue("BorderWidth", 1F, 0.1F, 4F);
 
@@ -60,25 +61,37 @@ public class AsianHat extends Module {
             // generate new positions
             positions.clear();
             for (int i = 0; i <= 360; i += 1)
-                positions.add(new double[] {-Math.sin(i * Math.PI / 180) * radius, Math.cos(i * Math.PI / 180) * radius});
+                positions.add(new double[]{-Math.sin(i * Math.PI / 180) * radius, Math.cos(i * Math.PI / 180) * radius});
         }
         lastRadius = radius;
     }
 
     @EventTarget
-    public void onRender3D(Render3DEvent event) {
-        EntityLivingBase entity = mc.thePlayer;
-        if (entity == null || (noFirstPerson.get() && mc.gameSettings.thirdPersonView == 0)) return;
+    private void onRender3D(Render3DEvent event) {
+        for (EntityPlayer player : mc.theWorld.playerEntities) {
+            if (player == mc.thePlayer) {
+                if (mc.gameSettings.thirdPersonView != 0) {
+                    this.drawHat(event, player);
+                }
+            }
+
+            if (target.getValue() && player == LiquidBounce.INSTANCE.getModuleManager().getModule(KillAura.class).getTarget()) {
+                this.drawHat(event, player);
+            }
+        }
+    }
+    private void drawHat(Render3DEvent event, Entity entity) {
+        if (entity == null) return;
 
         final AxisAlignedBB bb = entity.getEntityBoundingBox();
         float partialTicks = event.getPartialTicks();
 
         double radius = bb.maxX - bb.minX;
-		double height = bb.maxY - bb.minY;
+        double height = bb.maxY - bb.minY;
 
-		double posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
-	    double posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
-	    double posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
+        double posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks;
+        double posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks;
+        double posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks;
 
         double viewX = -mc.getRenderManager().viewerPosX;
         double viewY = -mc.getRenderManager().viewerPosY;
@@ -100,17 +113,17 @@ public class AsianHat extends Module {
         GlStateManager.translate(viewX + posX, viewY + posY + height - 0.4, viewZ + posZ);
 
         pre3D();
-        
+
         if (hatRotation.get()) {
             final Rotations rotMod = LiquidBounce.moduleManager.getModule(Rotations.class);
 
-            float yaw = RenderUtils.interpolate(entity.rotationYaw, entity.prevRotationYaw, partialTicks);
-            float pitch = RenderUtils.interpolate(entity.rotationPitch, entity.prevRotationPitch, partialTicks);
+            float yaw = RenderUtils.interpolate(entity.prevRotationYaw, entity.rotationYaw, partialTicks);
+            float pitch = RenderUtils.interpolate(entity.prevRotationPitch, entity.rotationPitch, partialTicks);
 
-            if (rotMod != null) {
-                yaw = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getYaw() : 
+            if (rotMod != null && entity == mc.thePlayer) {
+                yaw = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getYaw() :
                         (RotationUtils.serverRotation != null ? RotationUtils.serverRotation.getYaw() : yaw);
-                pitch = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getPitch() : 
+                pitch = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getPitch() :
                         (RotationUtils.serverRotation != null ? RotationUtils.serverRotation.getPitch() : pitch);
             }
 
@@ -137,7 +150,7 @@ public class AsianHat extends Module {
             }
 
             i++;
-		}
+        }
 
         worldrenderer.pos(0, 0.7, 0).color(r, g, b, al).endVertex();
         tessellator.draw();
@@ -149,7 +162,7 @@ public class AsianHat extends Module {
             GL11.glLineWidth(borderWidthValue.get());
 
             worldrenderer.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
-            
+
             i = 0;
             for (double[] smolPos : positions) {
 
@@ -165,31 +178,31 @@ public class AsianHat extends Module {
                 }
 
                 i++;
-		    }
+            }
 
             tessellator.draw();
         }
-        
+
         post3D();
         GL11.glPopMatrix();
     }
 
-	public final Color getColor(final Entity ent, final int index) {
-		switch (colorModeValue.get()) {
-			case "Custom":
-				return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
-			case "Rainbow":
-			 	return new Color(RenderUtils.getRainbowOpaque(mixerSecondsValue.get(), saturationValue.get(), brightnessValue.get(), index));
-			case "Sky":
-				return RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get());
-			case "LiquidSlowly":
-				return ColorUtils.LiquidSlowly(System.nanoTime(), index, saturationValue.get(), brightnessValue.get());
-			case "Mixer":
-				return ColorMixer.getMixedColor(index, mixerSecondsValue.get());
-			default:
-				return ColorUtils.fade(new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), index, 100);
-		}
-	}
+    public final Color getColor(final Entity ent, final int index) {
+        switch (colorModeValue.get()) {
+            case "Custom":
+                return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
+            case "Rainbow":
+                return new Color(RenderUtils.getRainbowOpaque(mixerSecondsValue.get(), saturationValue.get(), brightnessValue.get(), index));
+            case "Sky":
+                return RenderUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get());
+            case "LiquidSlowly":
+                return ColorUtils.LiquidSlowly(System.nanoTime(), index, saturationValue.get(), brightnessValue.get());
+            case "Mixer":
+                return ColorMixer.getMixedColor(index, mixerSecondsValue.get());
+            default:
+                return ColorUtils.fade(new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), index, 100);
+        }
+    }
 
     public static void pre3D() {
         GL11.glPushMatrix();
@@ -214,5 +227,4 @@ public class AsianHat extends Module {
         GL11.glPopMatrix();
         GL11.glColor4f(1, 1, 1, 1);
     }
-
 }
