@@ -36,11 +36,11 @@ class AntiStaff : Module() {
 
     private var staffsInWorld = mutableListOf<String>()
 
-    private var bmcstaffList: String = "${LiquidBounce.CLIENT_CLOUD}/staffs.txt"
-    private var mushstaffList: String = "${LiquidBounce.CLIENT_CLOUD}/mushstaffs.txt"
-    private var hypixelstaffList: String = "${LiquidBounce.CLIENT_CLOUD}/hypixelstaffs.txt"
-    private var gommehdstaffList: String = "${LiquidBounce.CLIENT_CLOUD}/gommehdstaffs.txt"
-    private var gamsterstaffList: String = "${LiquidBounce.CLIENT_CLOUD}/gamsterstaffs.txt"
+    private var bmcStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/staffs.txt"
+    private var mushStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/mushstaffs.txt"
+    private var hypixelStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/hypixelstaffs.txt"
+    private var gommeHDStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/gommehdstaffs.txt"
+    private var gamsterStaffList: String = "${LiquidBounce.CLIENT_CLOUD}/gamsterstaffs.txt"
 
 
 
@@ -52,26 +52,23 @@ class AntiStaff : Module() {
         get() = ServerUtils.serverData.serverIP.contains("blocksmc.com")
 
     private val onMushMC: Boolean
-        get() = ServerUtils.serverData.serverIP.contains("jogar.mush.com.br") || ServerUtils.serverData.serverIP.contains(
-            "mush.com.br"
-        )
+        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData.serverIP.contains("jogar.mush.com.br") || ServerUtils.serverData.serverIP.contains("mush.com.br")
     private val onHypixel: Boolean
-        get() = ServerUtils.serverData.serverIP.contains("hypixel.net")
+        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData.serverIP.contains("hypixel.net")
     private val onGommeHD: Boolean
-        get() = ServerUtils.serverData.serverIP.contains("GoomeHD.net")
+        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData.serverIP.contains("GoomeHD.net")
     private val onGamster: Boolean
-        get() = ServerUtils.serverData.serverIP.contains("mc.gamster.org")
+        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData.serverIP.contains("mc.gamster.org")
 
 
 
     override fun onInitialize() {
         thread {
-            staffs.addAll(HttpUtils.get(bmcstaffList).split(","))
-            mushmcstaffs.addAll(HttpUtils.get(mushstaffList).split(","))
-            gamsterstaffs.addAll(HttpUtils.get(gamsterstaffList).split(","))
-            hypixelstaffs.addAll(HttpUtils.get(hypixelstaffList).split(","))
-            gommehdstaffs.addAll(HttpUtils.get(gommehdstaffList).split(","))
-
+            staffs.addAll(HttpUtils.get(bmcStaffList).split(","))
+            mushmcstaffs.addAll(HttpUtils.get(mushStaffList).split(","))
+            gamsterstaffs.addAll(HttpUtils.get(gamsterStaffList).split(","))
+            hypixelstaffs.addAll(HttpUtils.get(hypixelStaffList).split(","))
+            gommehdstaffs.addAll(HttpUtils.get(gommeHDStaffList).split(","))
 
             ClientUtils.getLogger().info("[Staff/main] $staffs")
         }

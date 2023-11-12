@@ -1676,6 +1676,25 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.color(1, 1, 1, 1);
     }
 
+    public static void drawSquareTriangle(float cx, float cy, float dirX, float dirY, Color color, boolean filled) {
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.resetColor();
+        glColor(color);
+        worldrenderer.begin(filled ? 5 : 2, DefaultVertexFormats.POSITION);
+        worldrenderer.pos(cx + dirX, cy, 0D).endVertex();
+        worldrenderer.pos(cx, cy, 0D).endVertex();
+        worldrenderer.pos(cx, cy + dirY, 0D).endVertex();
+        worldrenderer.pos(cx + dirX, cy, 0D).endVertex();
+        tessellator.draw();
+        enableTexture2D();
+        disableBlend();
+        GlStateManager.color(1, 1, 1, 1);
+    }
+
     public static void drawGradientSideways(final double left, final double top, final double right, final double bottom, final int col1, final int col2) {
         final float f = (col1 >> 24 & 0xFF) / 255.0f;
         final float f2 = (col1 >> 16 & 0xFF) / 255.0f;

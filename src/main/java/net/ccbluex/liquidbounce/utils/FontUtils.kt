@@ -26,3 +26,5 @@ object FontUtils {
         return cache.toTypedArray()
     }
 }
+
+fun FontRenderer.getName() = FontUtils.getAllFontDetails().find { it.second == this }!!.first

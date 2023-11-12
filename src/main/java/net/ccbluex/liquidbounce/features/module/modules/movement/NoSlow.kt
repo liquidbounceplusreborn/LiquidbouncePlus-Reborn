@@ -109,8 +109,7 @@ class NoSlow : Module() {
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-
-        mc.thePlayer.heldItem ?: return
+        mc.thePlayer ?: return
         val itemType = mc.thePlayer.heldItem.item ?: return
         if ((!sword.get() && itemType is ItemSword) || (!bow.get() && itemType is ItemBow) || (!food.get() && (itemType is ItemFood || itemType is ItemPotion)))
             return

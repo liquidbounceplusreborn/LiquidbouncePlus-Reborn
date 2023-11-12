@@ -12,10 +12,13 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.flux.Translate
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.FontUtils
 import net.minecraft.client.gui.FontRenderer
 import java.util.*
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
-abstract class Value<T>(val name: String,var value: T, var canDisplay: () -> Boolean) {
+abstract class Value<T>(val name: String,var value: T, var canDisplay: () -> Boolean): ReadWriteProperty<Any?, T> {
     var textHovered: Boolean = false
     fun set(newValue: T) {
         if (newValue == value) return
@@ -48,6 +51,12 @@ abstract class Value<T>(val name: String,var value: T, var canDisplay: () -> Boo
 
     protected open fun onChange(oldValue: T, newValue: T) {}
     protected open fun onChanged(oldValue: T, newValue: T) {}
+
+    // Support for delegating values using the `by` keyword.
+    override operator fun getValue(thisRef: Any?, property: KProperty<*>) = value
+    override operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
+        set(value)
+    }
 
 }
 
@@ -231,6 +240,13 @@ class FontValue(valueName: String, value: FontRenderer, displayable: () -> Boole
         if (!element.isJsonObject) return
         val valueObject = element.asJsonObject
         value = Fonts.getFontRenderer(valueObject["fontName"].asString, valueObject["fontSize"].asInt)
+    }
+
+    val values
+        get() = FontUtils.getAllFontDetails().map { it.second }
+
+    fun setByName(name: String) {
+        set((FontUtils.getAllFontDetails().find { it.first.equals(name, true)} ?: return).second )
     }
 }
 

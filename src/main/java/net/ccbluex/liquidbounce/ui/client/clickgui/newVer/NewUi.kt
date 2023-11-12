@@ -7,7 +7,6 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.CategoryElemen
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.SearchElement
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.AnimationUtils
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MouseUtils.mouseWithinBounds
 import net.ccbluex.liquidbounce.utils.extensions.setAlpha
 import net.ccbluex.liquidbounce.utils.geom.Rectangle
@@ -75,6 +74,12 @@ class NewUi private constructor() : GuiScreen() {
     private val resizeArea = 12f
     private var x2 = 0f
     private var y2 = 0f
+    private var xHoldOffset = 0f
+    private var yHoldOffset = 0f
+//    private var xAnimDelta = 0f
+//    private var yAnimDelta = 0f
+//    private var lastMouseX = 0f
+//    private var lastMouseY = 0f
 
     private val moveAera
         get() = Rectangle(windowXStart, windowYStart, windowWidth - 20f, 20f)
@@ -98,18 +103,26 @@ class NewUi private constructor() : GuiScreen() {
     private fun determineQuadrant(mouseX: Int, mouseY: Int): Pair<Int, Int> {
         val result = MutablePair(0, 0)
         val offset2 = 0f
-        if (mouseX.toFloat() in windowXStart-resizeArea..windowXStart-offset2)
+        if (mouseX.toFloat() in windowXStart-resizeArea..windowXStart-offset2) {
             result.left = -1
-        if (mouseX.toFloat() in windowXEnd+offset2..windowXEnd+resizeArea)
+            xHoldOffset = mouseX - windowXStart
+        }
+        if (mouseX.toFloat() in windowXEnd+offset2..windowXEnd+resizeArea) {
             result.left = 1
-        if (mouseY.toFloat() in windowYStart-resizeArea..windowYStart-offset2)
+            xHoldOffset = mouseX - windowXEnd
+        }
+        if (mouseY.toFloat() in windowYStart-resizeArea..windowYStart-offset2) {
             result.right = 1
-        if (mouseY.toFloat() in windowYEnd+offset2..windowYEnd+resizeArea)
+            yHoldOffset = mouseY - windowYStart
+        }
+        if (mouseY.toFloat() in windowYEnd+offset2..windowYEnd+resizeArea) {
             result.right = -1
+            yHoldOffset = mouseY - windowYEnd
+        }
         return result.toPair()
     }
 
-    private fun handleMove(mouseX: Int, mouseY: Int) {
+    private fun handleMove(mouseX: Int, mouseY: Int) { // handling move here? yeah prob
         if (moveDragging) {
             val w = windowWidth
             val h = windowHeight
@@ -117,32 +130,62 @@ class NewUi private constructor() : GuiScreen() {
             windowYStart = mouseY + y2
             windowXEnd = windowXStart + w
             windowYEnd = windowYStart + h
+//            lastMouseX = mouseX.toFloat()
+//            lastMouseY = mouseY.toFloat()
         }
+
+        // không thì cứ để trong comment, khi nào nghĩ ra cách thì bỏ ra ok
+//        xAnimDelta = AnimationHelper.animation(xAnimDelta, lastMouseX, 0.01f)
+//        yAnimDelta = AnimationHelper.animation(yAnimDelta, lastMouseY, 0.01f)
+        // ko biết có nên dẹp vụ rotate này ko tại cái scissor box
     }
+    
+//    private fun handlingPreRotationAnimation(): Boolean {
+//        if (!isDoneRotatingAnimation()) {
+//            GlStateManager.pushMatrix()
+//            GlStateManager.translate(lastMouseX, lastMouseY, 0F)
+//            GlStateManager.rotate((lastMouseX - xAnimDelta) / width.toFloat() * 180f + (lastMouseY - yAnimDelta) / (height.toFloat()) * 360f, 0f, 0f, 1f)
+//            return true
+//        }
+//        return false
+//    }
+//
+//    private fun handlingPostRotationAnimation() {
+//        if (!isDoneRotatingAnimation())
+//            GlStateManager.popMatrix()
+//    }
+//
+//    private fun isDoneRotatingAnimation() = NewGUI.fastRenderValue.get() || (abs(lastMouseX - xAnimDelta) <= 0f && abs(lastMouseY - yAnimDelta) <= 0f)
 
     private fun handleResize(mouseX: Int, mouseY: Int) {
+        val mouseX = mouseX - xHoldOffset
+        val mouseY = mouseY - yHoldOffset
         if (resizeDragging) {
+            // cái resize còn 1 funny bug mà tôi chưa nghĩ ra solution nào nó clean
+            // cơ bản là ông hold down chuột ở +2, +2 so với góc thì ở trong này nó sẽ phải trừ đi 2
+            val triangleColor = Color(255, 255, 255)
             when (quad.first to quad.second) {
                 1 to 1 -> {
-                    windowXEnd = mouseX.toFloat().coerceAtLeast(windowXStart + minWindowWidth)
-                    windowYStart = mouseY.toFloat().coerceAtMost(windowYEnd - minWindowHeight)
-                    RenderUtils.drawRect(windowXEnd, windowYStart, windowXEnd + resizeArea,windowYStart - resizeArea, -1)
+                    windowXEnd = mouseX.coerceAtLeast(windowXStart + minWindowWidth)
+                    windowYStart = mouseY.coerceAtMost(windowYEnd - minWindowHeight)
+                    RenderUtils.drawSquareTriangle(windowXEnd + resizeArea, windowYStart - resizeArea, -resizeArea, resizeArea, triangleColor, true)
                 }
                 -1 to -1 -> {
-                    windowXStart = mouseX.toFloat().coerceAtMost(windowXEnd - minWindowWidth)
-                    windowYEnd = mouseY.toFloat().coerceAtLeast(windowYStart + minWindowHeight)
-                    RenderUtils.drawRect(windowXStart, windowYEnd, windowXStart - resizeArea, windowYEnd + resizeArea, -1)
+                    windowXStart = mouseX.coerceAtMost(windowXEnd - minWindowWidth)
+                    windowYEnd = mouseY.coerceAtLeast(windowYStart + minWindowHeight)
+                    RenderUtils.drawSquareTriangle(windowXStart - resizeArea, windowYEnd + resizeArea, resizeArea, -resizeArea, triangleColor, true)
                 }
 
                 -1 to 1 -> {
-                    windowXStart = mouseX.toFloat().coerceAtMost(windowXEnd - minWindowWidth)
-                    windowYStart = mouseY.toFloat().coerceAtMost(windowYEnd - minWindowHeight)
-                    RenderUtils.drawRect(windowXStart, windowYStart, windowXStart - resizeArea, windowYStart - resizeArea, -1)
+                    windowXStart = mouseX.coerceAtMost(windowXEnd - minWindowWidth)
+                    windowYStart = mouseY.coerceAtMost(windowYEnd - minWindowHeight)
+                    RenderUtils.drawSquareTriangle(windowXStart - resizeArea, windowYStart - resizeArea, resizeArea, resizeArea, triangleColor, true)
                 }
                 1 to -1 -> {
-                    windowXEnd = mouseX.toFloat().coerceAtLeast(windowXStart + minWindowWidth)
-                    windowYEnd = mouseY.toFloat().coerceAtLeast(windowYStart + minWindowHeight)
-                    RenderUtils.drawRect(windowXEnd, windowYEnd, windowXEnd + resizeArea, windowYEnd + resizeArea, -1)
+                    windowXEnd = mouseX.coerceAtLeast(windowXStart + minWindowWidth)
+                    windowYEnd = mouseY.coerceAtLeast(windowYStart + minWindowHeight)
+                    RenderUtils.drawSquareTriangle(windowXEnd + resizeArea, windowYEnd + resizeArea, -resizeArea, -resizeArea, triangleColor, true)
+                    // triangle góc với size đúng rồi mà
                 }
             }
         }
@@ -198,48 +241,52 @@ class NewUi private constructor() : GuiScreen() {
         handleResize(mouseX, mouseY)
         handleSplit(mouseX)
 
+//        if (handlingPreRotationAnimation())
+//            drawFullSized(mouseX, mouseY, partialTicks, NewGUI.accentColor, -mouseX.toFloat(), -mouseY.toFloat())
+//        else
+//            drawFullSized(mouseX, mouseY, partialTicks, NewGUI.accentColor)
         drawFullSized(mouseX, mouseY, partialTicks, NewGUI.accentColor)
-
+//        handlingPostRotationAnimation()
     }
 
-    private fun drawFullSized(mouseX: Int, mouseY: Int, partialTicks: Float, accentColor: Color) {
+    private fun drawFullSized(mouseX: Int, mouseY: Int, partialTicks: Float, accentColor: Color, xOffset: Float = 0f, yOffset: Float = 0f) {
         val windowRadius = 0f
-        RenderUtils.originalRoundedRect(windowXStart, windowYStart, windowXEnd, windowYEnd, windowRadius, backgroundColor.rgb)
-        RenderUtils.customRounded(windowXStart, windowYStart, windowXEnd, windowYStart + 20f, windowRadius, windowRadius, 0f, 0f, backgroundColor2.rgb)
+        RenderUtils.originalRoundedRect((windowXStart + xOffset), (windowYStart + yOffset), (windowXEnd + xOffset), (windowYEnd + yOffset), windowRadius, backgroundColor.rgb)
+        RenderUtils.customRounded((windowXStart + xOffset), (windowYStart + yOffset), (windowXEnd + xOffset), (windowYStart + yOffset) + 20f, windowRadius, windowRadius, 0f, 0f, backgroundColor2.rgb)
 
         // something to make it look more like windoze - inf, 2022
-        if (mouseX.toFloat() in windowXStart..windowYStart && mouseY.toFloat() in windowYStart..windowYEnd)
+        if (mouseX.toFloat() in (windowXStart + xOffset)..(windowYStart + yOffset) && mouseY.toFloat() in (windowYStart + yOffset)..(windowYEnd + yOffset))
             fading += 0.2f * RenderUtils.deltaTime * 0.045f
         else
             fading -= 0.2f * RenderUtils.deltaTime * 0.045f
         fading = MathHelper.clamp_float(fading, 0f, 1f)
         xButtonColor.setAlpha(fading)
-        RenderUtils.customRounded(windowXEnd - 20f, windowYStart, windowXEnd, windowYStart + 20f, 0f, windowRadius, 0f, 0f, xButtonColor.rgb)
+        RenderUtils.customRounded((windowXEnd + xOffset) - 20f, (windowYStart + yOffset), (windowXEnd + xOffset), (windowYStart + yOffset) + 20f, 0f, windowRadius, 0f, 0f, xButtonColor.rgb)
         GlStateManager.disableAlpha()
-        RenderUtils.drawImage(IconManager.removeIcon, windowXEnd - 15.0, windowYStart + 5.0, 10.0, 10.0)
+        RenderUtils.drawImage(IconManager.removeIcon, (windowXEnd + xOffset) - 15.0, (windowYStart + yOffset) + 5.0, 10.0, 10.0)
         GlStateManager.enableAlpha()
 
         // reset search pos
-        searchElement!!.xPos = windowXStart + searchXOffset
-        searchElement!!.yPos = windowYStart + searchYOffset
+        searchElement!!.xPos = (windowXStart + xOffset) + searchXOffset
+        searchElement!!.yPos = (windowYStart + yOffset) + searchYOffset
         searchElement!!.width = searchWidth
 
         // taken from searchBox's constructor
         searchElement!!.searchBox.width = searchWidth.toInt() - 4
-        searchElement!!.searchBox.xPosition = (windowXStart + searchXOffset + 2).toInt()
-        searchElement!!.searchBox.yPosition = (windowYStart + searchYOffset + 2).toInt()
+        searchElement!!.searchBox.xPosition = ((windowXStart + xOffset) + searchXOffset + 2).toInt()
+        searchElement!!.searchBox.yPosition = ((windowYStart + yOffset) + searchYOffset + 2).toInt()
 
         if (searchElement!!.drawBox(mouseX, mouseY, accentColor)) {
-            searchElement!!.drawPanel(mouseX, mouseY, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, Mouse.getDWheel(), categoryElements, accentColor)
+            searchElement!!.drawPanel(mouseX, mouseY, (windowXStart + xOffset) + categoryXOffset, (windowYStart + yOffset) + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, Mouse.getDWheel(), categoryElements, accentColor)
             return
         }
 
-        var startY = windowYStart + elementsStartY
+        var startY = (windowYStart + yOffset) + elementsStartY
         var lastFastYStart = 0f
         var lastFastYEnd = 0f
 
         for (ce in categoryElements) {
-            ce.drawLabel(mouseX, mouseY, windowXStart, startY, categoryXOffset, elementHeight)
+            ce.drawLabel(mouseX, mouseY, (windowXStart + xOffset), startY, categoryXOffset, elementHeight)
             if (ce.focused) {
                 lastFastYStart = startY + 6f
                 lastFastYEnd = startY + elementHeight - 6f
@@ -258,15 +305,15 @@ class NewUi private constructor() : GuiScreen() {
                                     endYAnim,
                                     (if (endYAnim - (startY + elementHeight - 5f) < 0) 0.65f else 0.55f) * RenderUtils.deltaTime * 0.025f
                                 )
-                ce.drawPanel(mouseX, mouseY, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, Mouse.getDWheel(), accentColor)
-                Fonts.font40.drawString(ce.name, windowXStart + 7, windowYStart + 7, -1)
+                ce.drawPanel(mouseX, mouseY, (windowXStart + xOffset) + categoryXOffset, (windowYStart + yOffset) + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, Mouse.getDWheel(), accentColor)
+                Fonts.font40.drawString(ce.name, (windowXStart + xOffset) + 7, (windowYStart + yOffset) + 7, -1)
             }
             startY += elementHeight
         }
         val offset = 8f
         val drawYStart = if (resizeDragging || moveDragging) lastFastYStart else startYAnim
         val drawYEnd = if (resizeDragging || moveDragging) lastFastYEnd else endYAnim
-        RenderUtils.originalRoundedRect(windowXStart + 2f + offset, drawYStart, windowXStart + 4f + offset, drawYEnd, 1f, accentColor.rgb)
+        RenderUtils.originalRoundedRect((windowXStart + xOffset) + 2f + offset, drawYStart, (windowXStart + xOffset) + 4f + offset, drawYEnd, 1f, accentColor.rgb)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -293,7 +340,7 @@ class NewUi private constructor() : GuiScreen() {
         }
 
         if (splitArea.contains(mouseX, mouseY)) {
-            splitDragging = true;
+            splitDragging = true
             return
         }
 
@@ -306,14 +353,13 @@ class NewUi private constructor() : GuiScreen() {
         }
 
 
-
         var startY = windowYStart + elementsStartY
 
         searchElement!!.handleMouseClick(mouseX, mouseY, mouseButton, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, categoryElements)
         if (!searchElement!!.isTyping()) {
             categoryElements.forEach { cat ->
                 if (cat.focused)
-                    cat.handleMouseClick(mouseX, mouseY, mouseButton, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin.toFloat())
+                    cat.handleMouseClick(mouseX, mouseY, mouseButton, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin)
                 if (mouseWithinBounds(mouseX, mouseY, windowXStart, startY, windowXStart + categoryXOffset, startY + elementHeight) && !searchElement!!.isTyping()) {
                     categoryElements.forEach(Consumer { e: CategoryElement -> e.focused = false })
                     cat.focused = true
@@ -339,7 +385,7 @@ class NewUi private constructor() : GuiScreen() {
         searchElement!!.handleMouseRelease(mouseX, mouseY, state, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin, categoryElements)
         if (!searchElement!!.isTyping()) {
             categoryElements.filter { it.focused }.forEach { cat ->
-                cat.handleMouseRelease(mouseX, mouseY, state, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin.toFloat())
+                cat.handleMouseRelease(mouseX, mouseY, state, windowXStart + categoryXOffset, windowYStart + categoriesTopMargin, windowWidth - categoryXOffset, windowHeight - categoriesBottommargin)
             }
         }
         super.mouseReleased(mouseX, mouseY, state)
