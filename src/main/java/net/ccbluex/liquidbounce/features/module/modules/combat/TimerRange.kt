@@ -1,3 +1,4 @@
+//from kevin client
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -51,7 +52,7 @@ object TimerRange : Module() {
     private val reverseValue = BoolValue("Reverse", false)
     private val maxReverseRange : FloatValue = object : FloatValue("MaxReverseRange", 2.8f, 1f, 4f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
-            if (newValue > minDistance.get()) set(minDistance.get())
+            if (newValue > minDistance.get() && minDistance.get() > minReverseRange.get()) set(minDistance.get())
             else if (newValue < minReverseRange.get()) set(minReverseRange.get())
         }
     }
@@ -90,7 +91,7 @@ object TimerRange : Module() {
         if (event.eventState == EventState.PRE) return // post event mean player's tick is done
         val thePlayer = mc.thePlayer ?: return
         if (onlyKillAura.get() && !killAura?.state!!) return
-        if (mode.get() == "RayCast") {
+        if (mode  .get() == "RayCast") {
             val entity = RaycastUtils.raycastEntity(maxDistance.get() + 1.0, object : RaycastUtils.IEntityFilter {
                 override fun canRaycast(entity: Entity?): Boolean {
                     return entity != null && entity is EntityLivingBase && (!onlyPlayer.get() || entity is EntityPlayer)
@@ -102,7 +103,7 @@ object TimerRange : Module() {
             }
             if (!EntityUtils.isSelected(entity, true)) return
             val vecEyes = thePlayer.getPositionEyes(1f)
-            val predictEyes = if (rangeMode.get() == "Smart") {
+            val predictEyes = if (rangeMode  .get() == "Smart") {
                 thePlayer.getPositionEyes(maxTimeValue.get() + 1f)
             } else thePlayer.getPositionEyes(3f)
             val entityBox = entity.entityBoundingBox.expands(entity.collisionBorderSize.toDouble())
@@ -128,7 +129,7 @@ object TimerRange : Module() {
             }
             if (range < minDistance.get()) {
                 stopWorking = true
-            } else if (((rangeMode .get() == "Smart" && range > minDistance.get() && afterRange < minDistance.get() && afterRange < range) || (rangeMode.get() == "Setting" && range <= maxDistance.get() && range < lastNearest && afterRange < range)) && entity.hurtTime <= maxHurtTimeValue.get()) {
+            } else if (((rangeMode  .get() == "Smart" && range > minDistance.get() && afterRange < minDistance.get() && afterRange < range) || (rangeMode  .get() == "Setting" && range <= maxDistance.get() && range < lastNearest && afterRange < range)) && entity.hurtTime <= maxHurtTimeValue.get()) {
                 stopWorking = false
                 foundTarget()
             }
@@ -140,7 +141,7 @@ object TimerRange : Module() {
             )
             if (entityList.isNotEmpty()) {
                 val vecEyes = thePlayer.getPositionEyes(1f)
-                val afterEyes = if (rangeMode .get() == "Smart") {
+                val afterEyes = if (rangeMode  .get() == "Smart") {
                     thePlayer.getPositionEyes(maxTimeValue.get() + 1f)
                 } else thePlayer.getPositionEyes(3f)
                 var targetFound = false
@@ -224,14 +225,14 @@ object TimerRange : Module() {
             reverseFreeze = false
             var time = reverseTickTime.get()
             working = true
-            if (reverseAuraClick.get() == "BeforeTimer") killAura?.clicks = killAura?.clicks!! + 1
+            if (reverseAuraClick .get() === "BeforeTimer") killAura?.clicks = killAura?.clicks!! + 1
             while (time > 0) {
                 --time
                 mc.runTick()
             }
             working = false
             cooldown = reverseDelay.get()
-            if (reverseAuraClick.get() == "AfterTimer") killAura?.clicks = killAura?.clicks!! + 1
+            if (reverseAuraClick .get() == "AfterTimer") killAura?.clicks = killAura?.clicks!! + 1
         }
         if (cooldown > 0) --cooldown
         return false

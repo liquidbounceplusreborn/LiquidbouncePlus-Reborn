@@ -212,11 +212,11 @@ public abstract class MixinMinecraft {
         }
     }*/
 
-    @Inject(method = "runGameLoop", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;timer:Lnet/minecraft/util/Timer;", ordinal = 4, shift = At.Shift.AFTER))
-    private void test(CallbackInfo ci){
+    @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;runTick()V"))
+    private void skipTicksCheck(Minecraft instance) {
         LiquidBounce.INSTANCE.getModuleManager().getModule(TimerRange.class);
-        if (!TimerRange.handleTick()) return;
-        //this.runTick();
+        if (TimerRange.handleTick()) return;
+        this.runTick();
     }
 
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V", shift = At.Shift.AFTER))

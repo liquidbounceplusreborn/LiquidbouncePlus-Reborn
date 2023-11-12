@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils.extensions
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.MinecraftInstance.mc
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.stripColor
 import net.minecraft.entity.Entity
@@ -31,12 +32,13 @@ import kotlin.math.sqrt
 /**
  * Allows to get the distance between the current entity and [entity] from the nearest corner of the bounding box
  */
-fun Entity.getDistanceToEntityBox(entity: Entity): Double {
-    val eyes = this.getPositionEyes(1F)
-    val pos = getNearestPointBB(eyes, entity.entityBoundingBox)
-    val xDist = abs(pos.xCoord - eyes.xCoord)
-    val yDist = abs(pos.yCoord - eyes.yCoord)
-    val zDist = abs(pos.zCoord - eyes.zCoord)
+fun Entity.getDistanceToEntityBox(entity: Entity): Double = this.eyesLoc.distanceTo(entity.entityBoundingBox)
+
+fun Vec3.distanceTo(bb: AxisAlignedBB): Double {
+    val pos = getNearestPointBB(this, bb)
+    val xDist = abs(pos.xCoord - this.xCoord)
+    val yDist = abs(pos.yCoord - this.yCoord)
+    val zDist = abs(pos.zCoord - this.zCoord)
     return sqrt(xDist.pow(2) + yDist.pow(2) + zDist.pow(2))
 }
 
@@ -102,3 +104,12 @@ val Entity.hitBox: AxisAlignedBB
 
 val Entity.rotation: Rotation
     get() = Rotation(rotationYaw, rotationPitch)
+
+val Entity.eyesLoc: Vec3
+    get() = getPositionEyes(1f)
+
+fun Entity.interpolatedPosition() = Vec3(
+    prevPosX + (posX - prevPosX) * mc.timer.renderPartialTicks,
+    prevPosY + (posY - prevPosY) * mc.timer.renderPartialTicks,
+    prevPosZ + (posZ - prevPosZ) * mc.timer.renderPartialTicks
+)
