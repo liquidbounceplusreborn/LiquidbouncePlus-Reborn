@@ -134,10 +134,8 @@ class NewUi private constructor() : GuiScreen() {
 //            lastMouseY = mouseY.toFloat()
         }
 
-        // không thì cứ để trong comment, khi nào nghĩ ra cách thì bỏ ra ok
 //        xAnimDelta = AnimationHelper.animation(xAnimDelta, lastMouseX, 0.01f)
 //        yAnimDelta = AnimationHelper.animation(yAnimDelta, lastMouseY, 0.01f)
-        // ko biết có nên dẹp vụ rotate này ko tại cái scissor box
     }
     
 //    private fun handlingPreRotationAnimation(): Boolean {
@@ -161,8 +159,6 @@ class NewUi private constructor() : GuiScreen() {
         val mouseX = mouseX - xHoldOffset
         val mouseY = mouseY - yHoldOffset
         if (resizeDragging) {
-            // cái resize còn 1 funny bug mà tôi chưa nghĩ ra solution nào nó clean
-            // cơ bản là ông hold down chuột ở +2, +2 so với góc thì ở trong này nó sẽ phải trừ đi 2
             val triangleColor = Color(255, 255, 255)
             when (quad.first to quad.second) {
                 1 to 1 -> {
@@ -185,7 +181,6 @@ class NewUi private constructor() : GuiScreen() {
                     windowXEnd = mouseX.coerceAtLeast(windowXStart + minWindowWidth)
                     windowYEnd = mouseY.coerceAtLeast(windowYStart + minWindowHeight)
                     RenderUtils.drawSquareTriangle(windowXEnd + resizeArea, windowYEnd + resizeArea, -resizeArea, -resizeArea, triangleColor, true)
-                    // triangle góc với size đúng rồi mà
                 }
             }
         }
@@ -373,7 +368,7 @@ class NewUi private constructor() : GuiScreen() {
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         if (moveDragging && moveAera.contains(mouseX, mouseY)) {
             moveDragging = false
-//            return
+            return
         }
 
         if (resizeDragging)
