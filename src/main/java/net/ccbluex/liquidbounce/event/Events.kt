@@ -230,8 +230,6 @@ class WorldEvent(val worldClient: WorldClient?) : Event()
 class ClickWindowEvent(val windowId: Int, val slotId: Int, val mouseButtonClicked: Int, val mode: Int) : CancellableEvent()
 
 
-class EventSilentMove(var yaw: Float) : Event() {
-    //var isSilent = false
-    //var isAdvanced = false
+class EventSilentMove(var yaw: Float) : Event()
 
-}
+class ChangeValueEvent(var valKey: String, var valName: String, var oldVal: Any, var `val`: Any) : Event()

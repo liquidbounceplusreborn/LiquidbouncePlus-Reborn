@@ -53,7 +53,8 @@ open class Module : MinecraftInstance(), Listenable {
                 LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.modulesConfig)
         }
     private val canEnable: Boolean
-    private val onlyEnable: Boolean
+    @JvmField
+    public val onlyEnable: Boolean
     private val forceNoSound: Boolean
 
     var slideStep = 0F

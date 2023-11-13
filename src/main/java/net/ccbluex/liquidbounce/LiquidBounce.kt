@@ -6,8 +6,10 @@
 package net.ccbluex.liquidbounce
 
 import net.ccbluex.liquidbounce.discord.ClientRichPresence
+import net.ccbluex.liquidbounce.event.ChangeValueEvent
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
+import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.special.AntiForge
@@ -19,6 +21,7 @@ import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.skeet.SkeetClickGUI
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.Companion.createDefault
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -54,6 +57,8 @@ object LiquidBounce {
     lateinit var hud: HUD
 
     lateinit var clickGui: ClickGui
+
+    lateinit var skeetClickGUI: SkeetClickGUI
 
     // Menu Background
     var background: ResourceLocation? = null
@@ -134,6 +139,7 @@ object LiquidBounce {
 
         // ClickGUI
         clickGui = ClickGui()
+        skeetClickGUI = SkeetClickGUI()
         fileManager.loadConfig(fileManager.clickGuiConfig)
 
         // Set HUD
@@ -174,5 +180,14 @@ object LiquidBounce {
         // Shutdown discord rpc
         clientRichPresence.shutdown()
     }
-
+    @EventTarget
+    fun onChangeValue(evt: ChangeValueEvent) {
+        try {
+            if (skeetClickGUI != null) {
+                skeetClickGUI.updateValue(evt.valKey, evt.valName, evt.oldVal, evt.`val`)
+            }
+        } catch (e : NullPointerException) {
+            e.printStackTrace()
+        }
+    }
 }

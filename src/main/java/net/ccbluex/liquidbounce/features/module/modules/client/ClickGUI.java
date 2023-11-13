@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.*;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.otcV2.OtcClickGUi;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.skeet.SkeetClickGUI;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.zeroday.ClickUI;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -40,7 +41,8 @@ public class ClickGUI extends Module {
                     "Chocolate",
                     "OneTap",
                     "Astolfo",
-                    "DropDown"},
+                    "DropDown",
+                    "Skeet"},
             "LiquidBounce") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
@@ -139,6 +141,18 @@ public class ClickGUI extends Module {
                 break;
             case "astolfo":
                 mc.displayGuiScreen(getAstolfoClickGui());
+                break;
+            case "skeet":
+                if (LiquidBounce.INSTANCE.getSkeetClickGUI() == null) {
+                    LiquidBounce.INSTANCE.setSkeetClickGUI(new SkeetClickGUI());
+                }
+
+                mc.displayGuiScreen(LiquidBounce.INSTANCE.getSkeetClickGUI());
+                SkeetClickGUI.alpha = 0.0;
+                SkeetClickGUI.open = true;
+                LiquidBounce.INSTANCE.getSkeetClickGUI().targetAlpha = 255.0;
+                LiquidBounce.INSTANCE.getSkeetClickGUI().closed = false;
+                this.setState(false);
                 break;
             default:
                 updateStyle();
