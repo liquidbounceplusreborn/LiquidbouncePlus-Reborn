@@ -49,10 +49,9 @@ class AntiStaff : Module() {
     private val leave = BoolValue("Leave", true)
 
     private val onBMC: Boolean
-        get() = ServerUtils.serverData.serverIP.contains("blocksmc.com")
-
+        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData.serverIP.contains("blocksmc.com")
     private val onMushMC: Boolean
-        get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData.serverIP.contains("jogar.mush.com.br") || ServerUtils.serverData.serverIP.contains("mush.com.br")
+        get() = !mc.isSingleplayer && (ServerUtils.serverData != null && ServerUtils.serverData.serverIP.contains("jogar.mush.com.br") || ServerUtils.serverData.serverIP.contains("mush.com.br"))
     private val onHypixel: Boolean
         get() = !mc.isSingleplayer && ServerUtils.serverData != null && ServerUtils.serverData.serverIP.contains("hypixel.net")
     private val onGommeHD: Boolean

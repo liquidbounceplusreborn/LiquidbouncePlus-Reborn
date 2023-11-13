@@ -1,9 +1,11 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.skeet;
 
-import lombok.Getter;
 
 public class TimeHelper {
-    @Getter
+    public void setLastMs(long lastMs) {
+        this.lastMs = lastMs;
+    }
+
     public long lastMs;
 
     public TimeHelper() {

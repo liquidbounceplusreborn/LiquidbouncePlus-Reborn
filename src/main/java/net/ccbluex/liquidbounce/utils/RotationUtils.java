@@ -443,9 +443,13 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
      * @param rotation your target rotation
      */
     public static void setTargetRotation(final Rotation rotation, final int keepLength) {
-        if(Double.isNaN(rotation.getYaw()) || Double.isNaN(rotation.getPitch())
-                || rotation.getPitch() > 90 || rotation.getPitch() < -90)
+        try {
+            if(Double.isNaN(rotation.getYaw()) || Double.isNaN(rotation.getPitch()) || rotation.getPitch() > 90 || rotation.getPitch() < -90)
+                return;
+        } catch (Exception ignored) {
             return;
+        }
+
 
         rotation.fixedSensitivity(mc.gameSettings.mouseSensitivity);
         targetRotation = rotation;
