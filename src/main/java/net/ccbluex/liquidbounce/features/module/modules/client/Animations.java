@@ -43,8 +43,8 @@ public class Animations extends Module {
     // custom animation sword
     public static final FloatValue mcSwordPos =  new FloatValue("MCPosOffset", 0.45f, 0, 0.5f, () -> Sword.get().equalsIgnoreCase("minecraft"));
 
-    // fake blocking
-    public static final BoolValue fakeBlock = new BoolValue("Fake-Block", true);
+    // fake blocking bruh
+    public static final BoolValue fakeBlock = new BoolValue("Fake-Block", false);
 
     // block not everything
     public static final BoolValue blockEverything = new BoolValue("Block-Everything", false);
