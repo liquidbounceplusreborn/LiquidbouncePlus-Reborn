@@ -484,6 +484,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             boolean textured = chams.getTexturedValue().get();
 
             Color chamsColor = new Color(0x00000000);
+            Color chamsBehindColor = new Color(chams.getBehindRedValue().get(), chams.getBehindGreenValue().get(), chams.getBehindBlueValue().get());
 
             switch (chams.getColorModeValue().get()) {
                 case "Custom":
@@ -507,6 +508,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             }
 
             chamsColor = ColorUtils.reAlpha(chamsColor, chams.getAlphaValue().get());
+            chamsBehindColor = ColorUtils.reAlpha(chamsBehindColor, chams.getBehindAlphaValue().get());
 
             if (chamsFlag) {
                 Color chamsColor2 = new Color(0x00000000);
@@ -518,8 +520,8 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                     case "Opposite":
                         chamsColor2 = ColorUtils.getOppositeColor(chamsColor);
                         break;
-                    case "Red":
-                        chamsColor2 = new Color(0xffEF2626);
+                    case "Custom":
+                        chamsColor2 = chamsBehindColor;
                         break;
                 }
 
