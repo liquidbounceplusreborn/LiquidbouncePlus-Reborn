@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils.packets
@@ -559,9 +559,8 @@ class BackTrack : Module() {
                 } catch (e: Exception) {
                     LiquidBounce.hud.addNotification(
                         Notification(
-                            "BackTrack",
                             "Something went wrong when sending packet reversing",
-                            NotifyType.ERROR
+                            Type.ERROR
                         )
                     )
                 }

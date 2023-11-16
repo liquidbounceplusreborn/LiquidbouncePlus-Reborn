@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType;
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
@@ -96,7 +96,7 @@ public class BowJump extends Module {
         case 0:
             int slot = getBowSlot();
             if (slot < 0 || !mc.thePlayer.inventory.hasItem(Items.arrow)) {
-                LiquidBounce.hud.addNotification(new Notification("BowJump","No arrows or bow found in your inventory!", NotifyType.ERROR, 1500, 500));
+                LiquidBounce.hud.addNotification(new Notification("No arrows or bow found in your inventory!", Type.ERROR, 500));
                 forceDisable = true;
                 bowState = 5;
                 break; // nothing to shoot

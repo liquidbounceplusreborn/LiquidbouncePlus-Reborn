@@ -24,7 +24,7 @@ object DictUtils {
 
     }
 
-    fun get(format: String): String {
+    private fun getInternal(format: String): String {
         var name = format
         name = name
             .replace(Regex("%w")) { dict!!.random() }
@@ -34,5 +34,15 @@ object DictUtils {
             .replace(Regex("%C")) { "ABCDEFGHIJKLMNOPQRSTUVWXYZ".random().toString() }
 
         return name
+    }
+
+    fun get(format: String): String {
+        var s = ""
+        while (true) {
+            s = getInternal(format)
+            if (s.length <= 16)
+                break;
+        }
+        return s
     }
 }

@@ -18,8 +18,12 @@ public abstract class Shader extends MinecraftInstance {
     private int program;
 
     private Map<String, Integer> uniformsMap;
-
+    
     public Shader(final String fragmentShader) {
+        this(fragmentShader, "fragment");
+    }
+
+    public Shader(final String fragmentShader, final String shaderFolder) {
         int vertexShaderID, fragmentShaderID;
 
         try {
@@ -27,7 +31,7 @@ public abstract class Shader extends MinecraftInstance {
             vertexShaderID = createShader(IOUtils.toString(vertexStream), ARBVertexShader.GL_VERTEX_SHADER_ARB);
             IOUtils.closeQuietly(vertexStream);
 
-            final InputStream fragmentStream = getClass().getResourceAsStream("/assets/minecraft/liquidbounce+/shader/fragment/" + fragmentShader);
+            final InputStream fragmentStream = getClass().getResourceAsStream("/assets/minecraft/liquidbounce+/shader/" + shaderFolder + "/" + fragmentShader);
             fragmentShaderID = createShader(IOUtils.toString(fragmentStream), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
             IOUtils.closeQuietly(fragmentStream);
         }catch(final Exception e) {
@@ -74,6 +78,32 @@ public abstract class Shader extends MinecraftInstance {
         GL11.glBegin(7);
         GL11.glTexCoord2f(0.0f, 0.0f);
         GL11.glVertex2f(x, y);
+        GL11.glEnd();
+    }
+
+    public static void drawQuad(final float x, final float y, final float width, final float height) {
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glTexCoord2f(0.0F, 0.0F);
+        GL11.glVertex2d(x, y + height);
+        GL11.glTexCoord2f(1.0F, 0.0F);
+        GL11.glVertex2d(x + width, y + height);
+        GL11.glTexCoord2f(1.0F, 1.0F);
+        GL11.glVertex2d(x + width, y);
+        GL11.glTexCoord2f(0.0F, 1.0F);
+        GL11.glVertex2d(x, y);
+        GL11.glEnd();
+    }
+
+    public static void drawTextureSpecifiedQuad(final float x, final float y, final float width, final float height) {
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glTexCoord2f(0.0F, 1.0F);
+        GL11.glVertex2d(x, y + height);
+        GL11.glTexCoord2f(1.0F, 1.0F);
+        GL11.glVertex2d(x + width, y + height);
+        GL11.glTexCoord2f(1.0F, 0.0F);
+        GL11.glVertex2d(x + width, y);
+        GL11.glTexCoord2f(0.0F, 0.0F);
+        GL11.glVertex2d(x, y);
         GL11.glEnd();
     }
 

@@ -26,7 +26,7 @@ class AsuidBounce(inst: Target): TargetStyle("AsuidBounce", inst, true) {
         Fonts.fontSFUI35.drawString(entity.name, 36F, 3f, Color.WHITE.rgb)
         Fonts.fontSFUI35.drawString("Distance", 36F, 14f, Color.WHITE.rgb)
         Fonts.fontSFUI35.drawString(
-            "Armor " + decimalFormat2.format(entity.totalArmorValue / 2f),
+            "Armor ${entity.totalArmorValue}",
             36F,
             24f,
             Color.WHITE.rgb

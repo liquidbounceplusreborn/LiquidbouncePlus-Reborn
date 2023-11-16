@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType;
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type;
 import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -385,7 +385,7 @@ public class Fly extends Module {
             case "watchdog":
                 expectItemStack = getSlimeSlot();
                 if (expectItemStack == -1) {
-                    LiquidBounce.hud.addNotification(new Notification("Fly","The fly requires slime blocks to be activated properly.", NotifyType.ERROR, 1500, 500));
+                    LiquidBounce.hud.addNotification(new Notification("The fly requires slime blocks to be activated properly.", Type.ERROR, 500));
                     break;
                 }
 
@@ -862,7 +862,7 @@ public class Fly extends Module {
                 int enderPearlSlot = getPearlSlot();
                 if (pearlState == 0) {
                     if (enderPearlSlot == -1) {
-                        LiquidBounce.hud.addNotification(new Notification("Fly","You don't have any ender pearl!", NotifyType.ERROR, 1500, 500));
+                        LiquidBounce.hud.addNotification(new Notification("You don't have any ender pearl!", Type.ERROR, 500));
                         pearlState = -1;
                         this.setState(false);
                         return;

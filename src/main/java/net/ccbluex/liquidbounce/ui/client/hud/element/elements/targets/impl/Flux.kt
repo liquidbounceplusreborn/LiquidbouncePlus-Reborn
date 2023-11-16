@@ -7,6 +7,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShaderUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
@@ -16,14 +17,14 @@ class Flux(inst: Target): TargetStyle("Flux", inst, true) {
     override fun drawTarget(entity: EntityPlayer) {
         updateAnim(entity.health)
         val hp = decimalFormat.format(easingHealth)
-        val additionalWidth = Fonts.minecraftFont.getStringWidth("${entity.name}  ${hp} hp").coerceAtLeast(75)
-        RenderUtils.drawCircleRect(
+        val additionalWidth = Fonts.minecraftFont.getStringWidth("${entity.name}  $hp hp").coerceAtLeast(75)
+        ShaderUtils.drawRoundedRect(
             0f,
             0f,
-            45f + additionalWidth,
+            45f + additionalWidth + 6f,
             34f,
             5f,
-            Color(0, 0, 0, targetInstance.bgAlphaValue.get()).rgb
+            Color(0, 0, 0, targetInstance.bgAlphaValue.get())
         )
         drawHead(entity.skin, 5, 3, 29, 28)
         RenderUtils.drawOutlinedRect(5f, 2f, 35f, 32f, 1f, targetInstance.bordercolor.rgb)
@@ -40,7 +41,7 @@ class Flux(inst: Target): TargetStyle("Flux", inst, true) {
         // hp bar
         val yPos = 5 + Fonts.minecraftFont.FONT_HEIGHT + 2f
         if (easingHealth > entity.health) {
-            if (targetInstance.colorModeValue.get().equals("Custom")) {
+            if (targetInstance.colorModeValue.get() == "Custom") {
                 RenderUtils.drawRect(
                     40f,
                     yPos,
@@ -48,7 +49,7 @@ class Flux(inst: Target): TargetStyle("Flux", inst, true) {
                     yPos + 3.5f,
                     Color(targetInstance.redValue.get(), targetInstance.greenValue.get(), targetInstance.blueValue.get(), 150)
                 )
-            } else if (targetInstance.colorModeValue.get().equals("Health")) {
+            } else if (targetInstance.colorModeValue.get() == "Health") {
                 RenderUtils.drawRect(
                     40f,
                     yPos,

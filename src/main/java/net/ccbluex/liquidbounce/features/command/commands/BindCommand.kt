@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import org.lwjgl.input.Keyboard
 
 class BindCommand : Command("bind", emptyArray()) {
@@ -32,18 +32,16 @@ class BindCommand : Command("bind", emptyArray()) {
                 chat("Removed ${highlightModule(module)}'s bind.")
                 LiquidBounce.hud.addNotification(
                     Notification(
-                        "Bind",
                         "Removed ${module.name}'s bind",
-                        NotifyType.SUCCESS
+                        Type.SUCCESS
                     )
                 )
             } else {
                 chat("${highlightModule(module)} is now bound to §9$keyName.")
                 LiquidBounce.hud.addNotification(
                     Notification(
-                        "Bind",
                         "${module.name} bound to $keyName",
-                        NotifyType.SUCCESS
+                        Type.SUCCESS
                     )
                 )
             }

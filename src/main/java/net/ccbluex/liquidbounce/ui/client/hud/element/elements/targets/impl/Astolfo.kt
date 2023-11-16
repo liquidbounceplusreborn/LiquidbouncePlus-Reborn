@@ -18,7 +18,7 @@ class Astolfo(inst: Target): TargetStyle("Astolfo", inst, true) {
         val colors = targetInstance.barColor.rgb
         val colors1 = targetInstance.barColor.darker(1.0f).rgb
         val colors2 = targetInstance.barColor.darker(0.5f).rgb
-        val additionalWidth = Fonts.minecraftFont.getStringWidth("${entity.name}").coerceAtLeast(125)
+        val additionalWidth = Fonts.minecraftFont.getStringWidth(entity.name).coerceAtLeast(125)
         GlStateManager.pushMatrix()
         GlStateManager.translate((15).toFloat(), 55.toFloat(), 0.0f)
         GlStateManager.color(1f, 1f, 1f)

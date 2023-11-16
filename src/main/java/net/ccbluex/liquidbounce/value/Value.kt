@@ -14,22 +14,27 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.FontUtils
 import net.minecraft.client.gui.FontRenderer
+import java.awt.Color
 import java.util.*
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
 abstract class Value<T>(val name: String,var value: T, var canDisplay: () -> Boolean): ReadWriteProperty<Any?, T> {
     var textHovered: Boolean = false
+    var canSet: (T) -> Boolean = { true }
+
     fun set(newValue: T) {
         if (newValue == value) return
 
         val oldValue = get()
 
         try {
-            onChange(oldValue, newValue)
-            changeValue(newValue)
-            onChanged(oldValue, newValue)
-            LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig)
+            if (canSet(newValue)) {
+                onChanged(oldValue, newValue)
+                changeValue(newValue)
+                onChanged(oldValue, newValue)
+                LiquidBounce.fileManager.saveConfig(LiquidBounce.fileManager.valuesConfig)
+            }
         } catch (e: Exception) {
             ClientUtils.getLogger().error("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
         }
@@ -39,6 +44,11 @@ abstract class Value<T>(val name: String,var value: T, var canDisplay: () -> Boo
 
     open fun changeValue(value: T) {
         this.value = value
+    }
+
+    open fun canSetIf(check: (T) -> Boolean): Value<T> {
+        canSet = check
+        return this
     }
 
     val displayable: Boolean
@@ -127,6 +137,11 @@ open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val m
             value = element.asFloat
     }
 
+    override fun canSetIf(check: (Float) -> Boolean): FloatValue {
+        this.canSet = check
+        return this
+    }
+
 }
 
 /**
@@ -146,28 +161,31 @@ open class TextValue(name: String, value: String, displayable: () -> Boolean) : 
         set(get() + o)
         return this
     }
+
+    override fun canSetIf(check: (String) -> Boolean): TextValue {
+        this.canSet = check
+        return this
+    }
 }
 
 open class ColorValue(name: String, value: Int, displayable: () -> Boolean) : Value<Int>(name, value, displayable) {
 
     constructor(name: String, value: Int): this(name, value, { true } )
 
-    private val Expanded = false
+    var expanded = false
 
-    open fun isExpanded(): Boolean {
-        return this.Expanded
-    }
-
-    fun getExpanded(): Boolean {
-        return Expanded
-    }
-
-    fun setExpanded(set: Boolean): Boolean {
-        return Expanded
-    }
     fun set(newValue: Number) {
         set(newValue.toInt())
     }
+
+    fun set(newValue: Color) {
+        set(newValue.rgb)
+    }
+
+    fun getColor(): Color {
+        return Color(value)
+    }
+
     open fun getValue(): Int {
         return super.get()
     }
@@ -177,11 +195,11 @@ open class ColorValue(name: String, value: Int, displayable: () -> Boolean) : Va
         var saturation = 0.0f
         var brightness = 0.0f
         var hue = 0.0f
-        var cMax: Int = Math.max(this.getValue() ushr 16 and 0xFF, this.getValue() ushr 8 and 0xFF)
+        var cMax: Int = (this.getValue() ushr 16 and 0xFF).coerceAtLeast(this.getValue() ushr 8 and 0xFF)
         if (this.getValue() and 0xFF > cMax) {
             cMax = this.getValue() and 0xFF
         }
-        var cMin: Int = Math.min(this.getValue() ushr 16 and 0xFF, this.getValue() ushr 8 and 0xFF)
+        var cMin: Int = (this.getValue() ushr 16 and 0xFF).coerceAtMost(this.getValue() ushr 8 and 0xFF)
         if (this.getValue() and 0xFF < cMin) {
             cMin = this.getValue() and 0xFF
         }
@@ -206,16 +224,22 @@ open class ColorValue(name: String, value: Int, displayable: () -> Boolean) : Va
 
     override fun toJson(): JsonElement? {
         val valueObject = JsonObject()
-        valueObject.addProperty("red", value)
-        valueObject.addProperty("green", value)
-        valueObject.addProperty("blue", value)
-        valueObject.addProperty("alpha", value)
+        val c = getColor()
+        valueObject.addProperty("red", c.red)
+        valueObject.addProperty("green", c.green)
+        valueObject.addProperty("blue", c.blue)
+        valueObject.addProperty("alpha", c.alpha)
         return valueObject
     }
 
     override fun fromJson(element: JsonElement) {
         if(element.isJsonPrimitive)
             value = element.asInt
+    }
+
+    override fun canSetIf(check: (Int) -> Boolean): ColorValue {
+        this.canSet = check
+        return this
     }
 
 }
@@ -247,6 +271,11 @@ class FontValue(valueName: String, value: FontRenderer, displayable: () -> Boole
 
     fun setByName(name: String) {
         set((FontUtils.getAllFontDetails().find { it.first.equals(name, true)} ?: return).second )
+    }
+
+    override fun canSetIf(check: (FontRenderer) -> Boolean): FontValue {
+        this.canSet = check
+        return this
     }
 }
 
@@ -318,6 +347,11 @@ open class ListValue(name: String, val values: Array<String>, value: String, dis
 
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive) changeValue(element.asString)
+    }
+
+    override fun canSetIf(check: (String) -> Boolean): ListValue {
+        this.canSet = check
+        return this
     }
 }
 

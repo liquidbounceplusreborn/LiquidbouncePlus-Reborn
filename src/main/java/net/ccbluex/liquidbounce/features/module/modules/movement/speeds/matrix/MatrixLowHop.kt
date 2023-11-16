@@ -15,5 +15,8 @@ class MatrixLowHop : SpeedMode("MatrixLowHop") {
             mc.thePlayer.motionY -= 0.116 * 0.03
         }
     }
-    override fun onMove(event: MoveEvent?) {}
+
+    override fun onMove(event: MoveEvent) {
+
+    }
 }

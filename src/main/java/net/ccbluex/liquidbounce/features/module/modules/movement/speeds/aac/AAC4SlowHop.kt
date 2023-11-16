@@ -14,8 +14,6 @@ class AAC4SlowHop : SpeedMode("AAC4SlowHop") {
         mc.timer.timerSpeed = 1f
         mc.thePlayer!!.speedInAir = 0.02f
     }
-    override fun onTick() {}
-    override fun onMotion() {}
     override fun onUpdate() {
         if (mc.thePlayer!!.isInWater) return
 
@@ -41,6 +39,4 @@ class AAC4SlowHop : SpeedMode("AAC4SlowHop") {
             mc.thePlayer!!.motionZ = 0.0
         }
     }
-    override fun onMove(event: MoveEvent) {}
-    override fun onEnable() {}
 }

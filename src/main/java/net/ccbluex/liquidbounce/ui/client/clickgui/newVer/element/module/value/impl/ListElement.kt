@@ -6,6 +6,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShaderUtils
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
@@ -25,7 +26,7 @@ class ListElement(val saveValue: ListValue): ValueElement<String>(saveValue) {
         expandHeight = expandHeight.animSmooth(if (expansion) 16F * (saveValue.values.size - 1F) else 0F, 0.5F)
         val percent = expandHeight / (16F * (saveValue.values.size - 1F))
         Fonts.font40.drawString(value.name, x + 10F, y + 10F - Fonts.font40.FONT_HEIGHT / 2F + 2F, -1)
-        RenderUtils.originalRoundedRect(x + width - 18F - maxSubWidth, y + 2F, x + width - 10F, y + 18F + expandHeight, 4F, ColorManager.button.rgb)
+        ShaderUtils.drawRoundedRect(x + width - 18F - maxSubWidth, y + 2F, x + width - 10F, y + 18F + expandHeight, 4F, ColorManager.button)
         GlStateManager.resetColor()
         glPushMatrix()
         glTranslatef(x + width - 20F, y + 10F, 0F)

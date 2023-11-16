@@ -28,10 +28,10 @@ class Lnk(inst: Target): TargetStyle("Lnk", inst, true){
             colors,
             progress
         ).brighter()
-        RenderUtils.drawRect(0F, 0F, width + 5F, 45F, Color(35, 35, 35, 190))
+        RenderUtils.drawRect(0F, 0F, width + 6F, 45F, Color(35, 35, 35, 190))
         GL11.glPushMatrix()
         GL11.glColor4f(1f, 1f, 1f, 1f)
-        RenderUtils.drawEntityOnScreen(10.0, 33.0, 16f, entity)
+        RenderUtils.drawEntityOnScreen(10.0, 34.0, 16f, entity)
         GL11.glPopMatrix()
         mc.fontRendererObj.drawStringWithShadow(entity.name, 23f, 4f, Color.white.rgb)
         RenderUtils.drawRect(3f, 37f, width + 2.5f, 42f, Color(30, 30, 30, 120))
@@ -44,7 +44,7 @@ class Lnk(inst: Target): TargetStyle("Lnk", inst, true){
         )
         easingHealth += ((entity.health - easingHealth) / 2.0F.pow(10.0F - targetInstance.fadeSpeed.get())) * RenderUtils.deltaTime
         var x = 22
-        var y = 14
+        val y = 14
         for (index in 3 downTo 0) {
             RenderUtils.drawRect(
                 x.toFloat(),
@@ -55,14 +55,13 @@ class Lnk(inst: Target): TargetStyle("Lnk", inst, true){
             )
             if (entity.inventory.armorInventory[index] != null) {
                 GlStateManager.pushMatrix()
-                GlStateManager.scale(0.65, 0.65, 0.65)
-                mc.fontRendererObj.drawStringWithShadow(
-                    ((entity.inventory.armorInventory[index].maxDamage - entity.inventory.armorInventory[index].itemDamage)).toString(),
-                    (x.toFloat() + 4f) * 1 / 0.65f,
-                    47f,
-                    Color.white.rgb
-                )
-                GlStateManager.scale(1 / 0.65, 1 / 0.65, 1 / 0.65)
+//                GlStateManager.scale(0.65, 0.65, 0.65)
+//                mc.fontRendererObj.drawStringWithShadow(
+//                    ((entity.inventory.armorInventory[index].maxDamage - entity.inventory.armorInventory[index].itemDamage)).toString(),
+//                    (x.toFloat() + 6f) * 1,
+//                    29f,
+//                    Color.white.rgb
+//                )
                 GlStateManager.popMatrix()
                 GL11.glPushMatrix()
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
@@ -90,13 +89,12 @@ class Lnk(inst: Target): TargetStyle("Lnk", inst, true){
         if (entity.inventory.mainInventory[entity.inventory.currentItem] != null) {
             if (entity.inventory.mainInventory[entity.inventory.currentItem].isItemStackDamageable) {
                 GlStateManager.pushMatrix()
-                GlStateManager.scale(0.65, 0.65, 0.65)
-                mc.fontRendererObj.drawStringWithShadow(
-                    ((entity.inventory.mainInventory[entity.inventory.currentItem].maxDamage - entity.inventory.mainInventory[entity.inventory.currentItem].itemDamage)).toString(),
-                    (x.toFloat() + 4f) * 1 / 0.65f,
-                    47f,
-                    Color.white.rgb
-                )
+//                mc.fontRendererObj.drawStringWithShadow(
+//                    ((entity.inventory.mainInventory[entity.inventory.currentItem].maxDamage - entity.inventory.mainInventory[entity.inventory.currentItem].itemDamage)).toString(),
+//                    (x.toFloat() + 6f),
+//                    29f,
+//                    Color.white.rgb
+//                )
                 GlStateManager.scale(1 / 0.65, 1 / 0.65, 1 / 0.65)
                 GlStateManager.popMatrix()
             }

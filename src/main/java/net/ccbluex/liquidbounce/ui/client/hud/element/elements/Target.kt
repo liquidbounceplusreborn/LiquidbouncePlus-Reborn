@@ -39,21 +39,21 @@ class Target : Element() {
 
     // Global variables
     val blurValue = BoolValue("Blur", false)
-    val blurStrength = FloatValue("Blur-Strength", 1F, 0.01F, 40F, { blurValue.get() })
+    val blurStrength = FloatValue("Blur-Strength", 1F, 0.01F, 40F) { blurValue.get() }
 
     val shadowValue = BoolValue("Shadow", false)
-    val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 40F, { shadowValue.get() })
-    val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Custom", "Bar"), "Background", { shadowValue.get() })
+    val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 40F) { shadowValue.get() }
+    val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Custom", "Bar"), "Background") { shadowValue.get() }
 
-    val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255, { shadowValue.get() && shadowColorMode.get().equals("custom", true) })
-    val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255, { shadowValue.get() && shadowColorMode.get().equals("custom", true) })
-    val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255, { shadowValue.get() && shadowColorMode.get().equals("custom", true) })
+    val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255) { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
+    val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255) { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
+    val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255) { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
 
     val fadeValue = BoolValue("FadeAnim", false)
-    val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F, { fadeValue.get() })
+    val fadeSpeed = FloatValue("Fade-Speed", 1F, 0F, 5F) { fadeValue.get() }
     val animation = EaseBackIn(350 * this.fadeSpeed.get().toInt(),1.0,2f)
     val noAnimValue = BoolValue("No-Animation", false)
-    val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 6.30F, { !noAnimValue.get() })
+    val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 6.30F) { !noAnimValue.get() }
 
     val showWithChatOpen = BoolValue("Show-ChatOpen", true)
     val resetBar = BoolValue("ResetBarWhenHiding", false)
@@ -80,8 +80,6 @@ class Target : Element() {
 
     val counter1 = intArrayOf(50)
     val counter2 = intArrayOf(80)
-    var lastTarget: Entity? = null
-    val addTimer = MSTimer()
 
     override val values: List<Value<*>>
         get() {
@@ -96,36 +94,24 @@ class Target : Element() {
             Astolfo2(this),
             AsuidBounce(this),
             Chill(this),
-            Distance(this),
             Exhibition(this),
-            OldExhibition(this),
             Flux(this),
             Hanabi(this),
-            IDK(this),
-            IDK2(this),
             LiquidBounce(this),
             Lnk(this),
-            Moon(this),
-            MoonTwo(this),
-            Moon4(this),
             Novoline(this),
-            NovolineTwo(this),
-            NovolineThree(this),
-            NovolineFour(this),
-            NovolineFive(this),
-            NovolineOld(this),
+            Novoline2(this),
             Raven(this),
             RavenB4(this),
             Remix(this),
             Rice(this),
             Slowly(this),
-            Simplicity(this),
             Tifality(this),
-        ).toTypedArray(), "LiquidBounce")
+        ).toTypedArray(), "Chill")
     }
-    val killAura: KillAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
-    val tpaura: TeleportAura = LiquidBounce.moduleManager.getModule(TeleportAura::class.java) as TeleportAura
-    var mainTarget: EntityPlayer? = null
+    private val killAura: KillAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
+    private val tpaura: TeleportAura = LiquidBounce.moduleManager.getModule(TeleportAura::class.java) as TeleportAura
+    private var mainTarget: EntityPlayer? = null
     var animProgress = 0F
 
     var barColor = Color(-1)
@@ -137,7 +123,7 @@ class Target : Element() {
         val kaTarget = (LiquidBounce.moduleManager[KillAura::class.java] as KillAura).target
         val taTarget = (LiquidBounce.moduleManager[TeleportAura::class.java] as TeleportAura).lastTarget
 
-        val actualTarget = if (kaTarget != null && kaTarget is EntityPlayer) kaTarget 
+        val actualTarget = if (kaTarget != null && kaTarget is EntityPlayer) kaTarget
                             else if (taTarget != null &&  taTarget is EntityPlayer) taTarget
                             else if ((mc.currentScreen is GuiChat && showWithChatOpen.get()) || mc.currentScreen is GuiHudDesigner) mc.thePlayer 
                             else null
@@ -274,6 +260,5 @@ class Target : Element() {
         return nameList
     }
 
-    fun getCurrentStyle(styleName: String): TargetStyle? = styleList.find { it.name.equals(styleName, true) }
-    
+    private fun getCurrentStyle(styleName: String): TargetStyle? = styleList.find { it.name.equals(styleName, true) }
 }

@@ -50,6 +50,7 @@ class VulcanYPortSpeed : SpeedMode("YPortSpeed") {
         }
     }
 
-    override fun onMove(event: MoveEvent?) {
+    override fun onMove(event: MoveEvent) {
+
     }
 }

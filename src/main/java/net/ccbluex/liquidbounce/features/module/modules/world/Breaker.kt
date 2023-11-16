@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
@@ -356,7 +356,7 @@ object Breaker : Module() {
         if (ignoreFirstBlockValue.get() && nearestBlock != null) {
             if (firstPos == null) {
                 firstPos = nearestBlock
-                LiquidBounce.hud.addNotification(Notification("Fucker","Found first ${getBlockName(targetID)} block at ${nearestBlock.x.toInt()} ${nearestBlock.y.toInt()} ${nearestBlock.z.toInt()}", NotifyType.SUCCESS))
+                LiquidBounce.hud.addNotification(Notification("Found first ${getBlockName(targetID)} block at ${nearestBlock.x.toInt()} ${nearestBlock.y.toInt()} ${nearestBlock.z.toInt()}", Type.SUCCESS))
             }
             if (targetID == 26 && firstPos != null && firstPosBed == null) { // bed
                 when (true) {
@@ -366,7 +366,7 @@ object Breaker : Module() {
                     getBlock(firstPos!!.north()) != null && Block.getIdFromBlock(getBlock(firstPos!!.north())!!) == 26 -> firstPosBed = firstPos!!.north()
                 }
                 if (firstPosBed != null)
-                    LiquidBounce.hud.addNotification(Notification("Fucker","Found second Bed block at ${firstPosBed!!.x.toInt()} ${firstPosBed!!.y.toInt()} ${firstPosBed!!.z.toInt()}", NotifyType.SUCCESS))
+                    LiquidBounce.hud.addNotification(Notification("Found second Bed block at ${firstPosBed!!.x} ${firstPosBed!!.y} ${firstPosBed!!.z}", Type.SUCCESS))
             }
         }
         return if (ignoreFirstBlockValue.get() && (firstPos == nearestBlock || firstPosBed == nearestBlock)) null else nearestBlock

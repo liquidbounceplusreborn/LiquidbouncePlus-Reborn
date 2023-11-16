@@ -21,17 +21,13 @@ class Hanabi(inst: Target): TargetStyle("Hanabi", inst, true) {
         updateAnim(entity.health)
         val blackcolor = Color(0, 0, 0, 180).rgb
         val blackcolor2 = Color(200, 200, 200).rgb
-        val health: Float
-        var hpPercentage: Double
-        val hurt: Color
-        val healthStr: String
         val width = (38 + Fonts.fontSFUI40.getStringWidth(entity.name))
             .coerceAtLeast(140)
             .toFloat()
-        health = entity.health
-        hpPercentage = (health / entity.maxHealth).toDouble()
-        hurt = Color.getHSBColor(310f / 360f, entity.hurtTime.toFloat() / 10f, 1f)
-        healthStr = (entity.health.toInt().toFloat() / 2.0f).toString()
+        val health: Float = entity.health
+        var hpPercentage: Double = (health / entity.maxHealth).toDouble()
+        val hurt: Color = Color.getHSBColor(310f / 360f, entity.hurtTime.toFloat() / 10f, 1f)
+        val healthStr: String = (entity.health.toInt().toFloat() / 2.0f).toString()
         hpPercentage = MathHelper.clamp_double(hpPercentage, 0.0, 1.0)
         val hpWidth = 140.0 * hpPercentage
         targetInstance.healthBarWidth2 = AnimationUtils.animate(hpWidth, targetInstance.healthBarWidth2, 0.20000000298023224)

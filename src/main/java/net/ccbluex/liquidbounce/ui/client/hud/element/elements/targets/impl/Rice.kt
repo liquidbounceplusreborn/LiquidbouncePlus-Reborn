@@ -31,22 +31,22 @@ import java.util.*
 class Rice(inst: Target): TargetStyle("Rice", inst, true) {
 
     // Bar gradient
-    val gradientLoopValue = IntegerValue("GradientLoop", 4, 1, 40, { targetInstance.styleValue.get().equals("Rice", true) })
-    val gradientDistanceValue = IntegerValue("GradientDistance", 50, 1, 200, { targetInstance.styleValue.get().equals("Rice", true) })
-    val gradientRoundedBarValue = BoolValue("GradientRoundedBar", true, { targetInstance.styleValue.get().equals("Rice", true) })
+    private val gradientLoopValue = IntegerValue("GradientLoop", 4, 1, 40) { targetInstance.styleValue.get().equals("Rice", true) }
+    private val gradientDistanceValue = IntegerValue("GradientDistance", 50, 1, 200) { targetInstance.styleValue.get().equals("Rice", true) }
+    private val gradientRoundedBarValue = BoolValue("GradientRoundedBar", true) { targetInstance.styleValue.get().equals("Rice", true) }
 
-    val riceParticle = BoolValue("Rice-Particle", true, { targetInstance.styleValue.get().equals("Rice", true) })
-    val riceParticleSpin = BoolValue("Rice-ParticleSpin", true, { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() })
-    val generateAmountValue = IntegerValue("GenerateAmount", 10, 1, 40, { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() })
-    val riceParticleCircle = ListValue("Circle-Particles", arrayOf("Outline", "Solid", "None"), "Solid", { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() })
-    val riceParticleRect = ListValue("Rect-Particles", arrayOf("Outline", "Solid", "None"), "Outline", { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() })
-    val riceParticleTriangle = ListValue("Triangle-Particles", arrayOf("Outline", "Solid", "None"), "Outline", { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() })
-    
-    val riceParticleSpeed = FloatValue("Rice-ParticleSpeed", 0.05F, 0.01F, 0.2F, { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() })
-    val riceParticleFade = BoolValue("Rice-ParticleFade", true, { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() })
-    val riceParticleFadingSpeed = FloatValue("ParticleFadingSpeed", 0.05F, 0.01F, 0.2F, { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() })
-    
-    val particleRange = FloatValue("Rice-ParticleRange", 50f, 0f, 50f, { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() })
+    val riceParticle = BoolValue("Rice-Particle", true) { targetInstance.styleValue.get().equals("Rice", true) }
+    private val riceParticleSpin = BoolValue("Rice-ParticleSpin", true) { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }
+    private val generateAmountValue = IntegerValue("GenerateAmount", 10, 1, 40) { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }
+    private val riceParticleCircle = ListValue("Circle-Particles", arrayOf("Outline", "Solid", "None"), "Solid") { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }
+    private val riceParticleRect = ListValue("Rect-Particles", arrayOf("Outline", "Solid", "None"), "Outline") { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }
+    private val riceParticleTriangle = ListValue("Triangle-Particles", arrayOf("Outline", "Solid", "None"), "Outline") { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }
+
+    private val riceParticleSpeed = FloatValue("Rice-ParticleSpeed", 0.05F, 0.01F, 0.2F) { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }
+    private val riceParticleFade = BoolValue("Rice-ParticleFade", true) { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }
+    private val riceParticleFadingSpeed = FloatValue("ParticleFadingSpeed", 0.05F, 0.01F, 0.2F) { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }
+
+    private val particleRange = FloatValue("Rice-ParticleRange", 50f, 0f, 50f) { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }
     val minParticleSize: FloatValue = object : FloatValue("MinParticleSize", 0.5f, 0f, 5f, { targetInstance.styleValue.get().equals("Rice", true) && riceParticle.get() }) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxParticleSize.get()
@@ -82,11 +82,11 @@ class Rice(inst: Target): TargetStyle("Rice", inst, true) {
             // adding system
             if (gotDamaged) {
                 for (j in 0..(generateAmountValue.get())) {
-                    var parSize = RandomUtils.nextFloat(minParticleSize.get(), maxParticleSize.get())
-                    var parDistX = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
-                    var parDistY = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
-                    var firstChar = RandomUtils.random(1, "${if (riceParticleCircle.get().equals("none", true)) "" else "c"}${if (riceParticleRect.get().equals("none", true)) "" else "r"}${if (riceParticleTriangle.get().equals("none", true)) "" else "t"}")
-                    var drawType = ShapeType.getTypeFromName(when (firstChar) {
+                    val parSize = RandomUtils.nextFloat(minParticleSize.get(), maxParticleSize.get())
+                    val parDistX = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
+                    val parDistY = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
+                    val firstChar = RandomUtils.random(1, "${if (riceParticleCircle.get().equals("none", true)) "" else "c"}${if (riceParticleRect.get().equals("none", true)) "" else "r"}${if (riceParticleTriangle.get().equals("none", true)) "" else "t"}")
+                    val drawType = ShapeType.getTypeFromName(when (firstChar) {
                         "c" -> "c_${riceParticleCircle.get().lowercase(Locale.getDefault())}"
                         "r" -> "r_${riceParticleRect.get().lowercase(Locale.getDefault())}"
                         else -> "t_${riceParticleTriangle.get().lowercase(Locale.getDefault())}"
@@ -132,7 +132,7 @@ class Rice(inst: Target): TargetStyle("Rice", inst, true) {
         font.drawString(info, 39F, 23F, getColor(-1).rgb)
 
         // gradient health bar
-        val barWidth = (length - 5F - maxHealthLength) * (easingHealth / entity.maxHealth.toFloat()).coerceIn(0F, 1F)
+        val barWidth = (length - 5F - maxHealthLength) * (easingHealth / entity.maxHealth).coerceIn(0F, 1F)
         Stencil.write(false)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glEnable(GL11.GL_BLEND)
@@ -148,7 +148,7 @@ class Rice(inst: Target): TargetStyle("Rice", inst, true) {
         Stencil.erase(true)
         when (targetInstance.colorModeValue.get().lowercase(Locale.getDefault())) {
             "custom", "health" -> RenderUtils.drawRect(5F, 42F, length - maxHealthLength, 48F, targetInstance.barColor.rgb)
-            else -> for (i in 0..(gradientLoopValue.get() - 1)) {
+            else -> for (i in 0 until gradientLoopValue.get()) {
                 val barStart = i.toDouble() / gradientLoopValue.get().toDouble() * (length - 5F - maxHealthLength).toDouble()
                 val barEnd = (i + 1).toDouble() / gradientLoopValue.get().toDouble() * (length - 5F - maxHealthLength).toDouble()
                 RenderUtils.drawGradientSideways(5.0 + barStart, 42.0, 5.0 + barEnd, 48.0, getColorAtIndex(i), getColorAtIndex(i + 1))
@@ -164,7 +164,7 @@ class Rice(inst: Target): TargetStyle("Rice", inst, true) {
         return getColor(when (targetInstance.colorModeValue.get()) {
             "Rainbow" -> RenderUtils.getRainbowOpaque(targetInstance.waveSecondValue.get(), targetInstance.saturationValue.get(), targetInstance.brightnessValue.get(), i * gradientDistanceValue.get())
             "Sky" -> RenderUtils.SkyRainbow(i * gradientDistanceValue.get(), targetInstance.saturationValue.get(), targetInstance.brightnessValue.get())
-            "Slowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), i * gradientDistanceValue.get(), targetInstance.saturationValue.get(), targetInstance.brightnessValue.get())!!.rgb
+            "Slowly" -> ColorUtils.LiquidSlowly(System.nanoTime(), i * gradientDistanceValue.get(), targetInstance.saturationValue.get(), targetInstance.brightnessValue.get()).rgb
             "Mixer" -> ColorMixer.getMixedColor(i * gradientDistanceValue.get(), targetInstance.waveSecondValue.get()).rgb
             "Fade" -> ColorUtils.fade(Color(targetInstance.redValue.get(), targetInstance.greenValue.get(), targetInstance.blueValue.get()), i * gradientDistanceValue.get(), 100).rgb
             else -> -1

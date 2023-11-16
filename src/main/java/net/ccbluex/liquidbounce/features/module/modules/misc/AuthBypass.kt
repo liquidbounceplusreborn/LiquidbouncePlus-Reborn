@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.item.*
@@ -50,7 +50,7 @@ class AuthBypass : Module() {
                 mc.netHandler.addToSendQueue(packet)
             }
             packets.clear()
-            LiquidBounce.hud.addNotification(Notification("AuthBypass","Authentication bypassed.", NotifyType.INFO))
+            LiquidBounce.hud.addNotification(Notification("Authentication bypassed.", Type.INFO))
         }
     }
 

@@ -51,7 +51,7 @@ public class ColorSetting extends Downward<ColorValue>
         }
         final int newColor = new Color(color >> 16 & 0xFF, color >> 8 & 0xFF, color & 0xFF, minAlpha).getRGB();
         RenderUtils.drawGradientRect(x2, y2, x2 + width, y2 + height, newColor, RenderUtils.darker(newColor, 0.6f));
-        if (this.colorValue.isExpanded()) {
+        if (this.colorValue.getExpanded()) {
             GL11.glTranslated(0.0, 0.0, 3.0);
             final float expandedX = this.getExpandedX();
             final float expandedY = this.getExpandedY();
@@ -157,9 +157,9 @@ public class ColorSetting extends Downward<ColorValue>
     @Override
     public void mouseClicked(final int mouseX, final int mouseY, final int mouseButton) {
         if (mouseButton == 1 && this.isHovered(mouseX, mouseY)) {
-            this.colorValue.setExpanded(!this.colorValue.isExpanded());
+            this.colorValue.setExpanded(!this.colorValue.getExpanded());
         }
-        if (this.colorValue.isExpanded() && mouseButton == 0) {
+        if (this.colorValue.getExpanded() && mouseButton == 0) {
             final float expandedX = this.getExpandedX();
             final float expandedY = this.getExpandedY();
             final float expandedWidth = this.getExpandedWidth();

@@ -42,6 +42,7 @@ class HypixelNew : SpeedMode("HypixelNew") {
         }
     }
 
-    override fun onMove(event: MoveEvent?) {
+    override fun onMove(event: MoveEvent) {
+
     }
 }

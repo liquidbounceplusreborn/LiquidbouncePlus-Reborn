@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.utils.MouseUtils.mouseWithinBounds
 import net.ccbluex.liquidbounce.utils.extensions.setAlpha
 import net.ccbluex.liquidbounce.utils.geom.Rectangle
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShaderUtils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.MathHelper
@@ -245,8 +246,8 @@ class NewUi private constructor() : GuiScreen() {
     }
 
     private fun drawFullSized(mouseX: Int, mouseY: Int, partialTicks: Float, accentColor: Color, xOffset: Float = 0f, yOffset: Float = 0f) {
-        val windowRadius = 0f
-        RenderUtils.originalRoundedRect((windowXStart + xOffset), (windowYStart + yOffset), (windowXEnd + xOffset), (windowYEnd + yOffset), windowRadius, backgroundColor.rgb)
+        val windowRadius = 4f
+        ShaderUtils.drawRoundedRect((windowXStart + xOffset), (windowYStart + yOffset), (windowXEnd + xOffset), (windowYEnd + yOffset), windowRadius, backgroundColor)
         RenderUtils.customRounded((windowXStart + xOffset), (windowYStart + yOffset), (windowXEnd + xOffset), (windowYStart + yOffset) + 20f, windowRadius, windowRadius, 0f, 0f, backgroundColor2.rgb)
 
         // something to make it look more like windoze - inf, 2022
@@ -308,7 +309,7 @@ class NewUi private constructor() : GuiScreen() {
         val offset = 8f
         val drawYStart = if (resizeDragging || moveDragging) lastFastYStart else startYAnim
         val drawYEnd = if (resizeDragging || moveDragging) lastFastYEnd else endYAnim
-        RenderUtils.originalRoundedRect((windowXStart + xOffset) + 2f + offset, drawYStart, (windowXStart + xOffset) + 4f + offset, drawYEnd, 1f, accentColor.rgb)
+        ShaderUtils.drawRoundedRect((windowXStart + xOffset) + 2f + offset, drawYStart, (windowXStart + xOffset) + 4f + offset, drawYEnd, 1f, accentColor)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 

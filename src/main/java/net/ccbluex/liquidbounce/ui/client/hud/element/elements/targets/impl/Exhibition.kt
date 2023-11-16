@@ -47,16 +47,13 @@ class Exhibition(inst: Target): TargetStyle("Exhibition", inst, true) {
 
         GlStateManager.resetColor()
         GL11.glPushMatrix()
-        GL11.glColor4f(1f, 1f, 1f, 1f - targetInstance.getFadeProgress())
-        GlStateManager.enableRescaleNormal()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+//        GL11.glColor4f(1f, 1f, 1f, 1f - targetInstance.getFadeProgress())
         RenderHelper.enableGUIStandardItemLighting()
 
         val renderItem = mc.renderItem
 
         var x = 45
-        var y = 28
+        val y = 28
 
         for (index in 3 downTo 0) {
             val stack = entity.inventory.armorInventory[index] ?: continue
@@ -66,7 +63,7 @@ class Exhibition(inst: Target): TargetStyle("Exhibition", inst, true) {
 
             renderItem.renderItemIntoGUI(stack, x, y)
             renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
-            RenderUtils.drawExhiEnchants(stack, x.toFloat(), y.toFloat())
+            RenderUtils.drawExhiEnchants(stack, x.toFloat(), y.toFloat(), 5)
 
             x += 16
         }
@@ -75,15 +72,10 @@ class Exhibition(inst: Target): TargetStyle("Exhibition", inst, true) {
         if (mainStack != null && mainStack.item != null) {
             renderItem.renderItemIntoGUI(mainStack, x, y)
             renderItem.renderItemOverlays(mc.fontRendererObj, mainStack, x, y)
-            RenderUtils.drawExhiEnchants(mainStack, x.toFloat(), y.toFloat())
+            RenderUtils.drawExhiEnchants(mainStack, x.toFloat(), y.toFloat(), 5)
         }
 
         RenderHelper.disableStandardItemLighting()
-        GlStateManager.disableRescaleNormal()
-        GlStateManager.enableAlpha()
-        GlStateManager.disableBlend()
-        GlStateManager.disableLighting()
-        GlStateManager.disableCull()
         GL11.glPopMatrix()
     }
 

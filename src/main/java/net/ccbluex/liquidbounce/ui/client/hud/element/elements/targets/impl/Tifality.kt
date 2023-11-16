@@ -18,6 +18,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.atan
 
 
 class Tifality(inst: Target): TargetStyle("Tifality", inst, true) {
@@ -40,7 +41,7 @@ class Tifality(inst: Target): TargetStyle("Tifality", inst, true) {
             val health = entity.health
             val totalHealth = entity.health + entity.absorptionAmount
             val fractions = floatArrayOf(0.0f, 0.5f, 1.0f)
-            val colors: Array<Color> = arrayOf<Color>(Color.RED, Color.YELLOW, Color.GREEN)
+            val colors: Array<Color> = arrayOf(Color.RED, Color.YELLOW, Color.GREEN)
             val progress = health / entity.maxHealth
             val customColor: Color =
                 if (health >= 0.0f) Colors.blendColors(fractions, colors, progress).brighter() else Color.RED
@@ -78,7 +79,7 @@ class Tifality(inst: Target): TargetStyle("Tifality", inst, true) {
             GlStateManager.enableAlpha()
             GlStateManager.enableBlend()
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-            if (entity is EntityPlayer) drawArmor(entity,28, 19)
+            if (entity is EntityPlayer) drawArmor(entity)
             GlStateManager.scale(0.31, 0.31, 0.31)
             GlStateManager.translate(73.0f, 102.0f, 40.0f)
             model(entity.rotationYaw, entity.rotationPitch, entity)
@@ -111,7 +112,7 @@ class Tifality(inst: Target): TargetStyle("Tifality", inst, true) {
         GlStateManager.rotate(135.0f, 0.0f, 1.0f, 0.0f)
         RenderHelper.enableStandardItemLighting()
         GlStateManager.rotate(-135.0f, 0.0f, 1.0f, 0.0f)
-        GlStateManager.rotate((-Math.atan((pitch / 40.0f).toDouble()) * 20.0).toFloat(), 1.0f, 0.0f, 0.0f)
+        GlStateManager.rotate((-atan((pitch / 40.0f).toDouble()) * 20.0).toFloat(), 1.0f, 0.0f, 0.0f)
         entityLivingBase.renderYawOffset = yaw - yaw / yaw * 0.4f
         entityLivingBase.rotationYaw = yaw - yaw / yaw * 0.2f
         entityLivingBase.rotationPitch = pitch
@@ -137,7 +138,9 @@ class Tifality(inst: Target): TargetStyle("Tifality", inst, true) {
         GlStateManager.resetColor()
     }
 
-    private fun drawArmor(entity: EntityPlayer?, x: Int, y: Int) {
+    private fun drawArmor(entity: EntityPlayer?) {
+        val x = 28
+        val y = 19
         GL11.glPushMatrix()
         val stuff: MutableList<ItemStack> = ArrayList()
         var split = -3

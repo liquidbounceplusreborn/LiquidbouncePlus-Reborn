@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Cha
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.darker
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShaderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -21,8 +22,8 @@ import org.lwjgl.opengl.GL11
 
 class Chill(inst: Target): TargetStyle("Chill", inst, true) {
 
-    val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F, { targetInstance.styleValue.get().equals("chill", true) })
-    val chillRoundValue = BoolValue("Chill-RoundedBar", true, { targetInstance.styleValue.get().equals("chill", true) })
+    private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F) { targetInstance.styleValue.get().equals("chill", true) }
+    private val chillRoundValue = BoolValue("Chill-RoundedBar", true) { targetInstance.styleValue.get().equals("chill", true) }
 
     private val numberRenderer = CharRenderer(false)
 
@@ -31,11 +32,11 @@ class Chill(inst: Target): TargetStyle("Chill", inst, true) {
     private var calcTranslateX = 0F
     private var calcTranslateY = 0F
 
-    fun updateData(_a: Float, _b: Float, _c: Float, _d: Float) {
-        calcTranslateX = _a
-        calcTranslateY = _b
-        calcScaleX = _c
-        calcScaleY = _d
+    fun updateData(ctx: Float, cty: Float, csx: Float, csy: Float) {
+        calcTranslateX = ctx
+        calcTranslateY = cty
+        calcScaleX = csx
+        calcScaleY = csy
     }
 
     override fun drawTarget(entity: EntityPlayer) {
@@ -47,7 +48,7 @@ class Chill(inst: Target): TargetStyle("Chill", inst, true) {
         val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
 
         // background
-        RenderUtils.drawRoundedRect(0F, 0F, tWidth, 48F, 7F, targetInstance.bgColor.rgb)
+        ShaderUtils.drawRoundedRect(0F, 0F, tWidth, 48F, 7F, targetInstance.bgColor)
         GlStateManager.resetColor()
         GL11.glColor4f(1F, 1F, 1F, 1F)
         
@@ -73,7 +74,7 @@ class Chill(inst: Target): TargetStyle("Chill", inst, true) {
         numberRenderer.renderChar(health, calcTranslateX, calcTranslateY, 38F, 17F, calcScaleX, calcScaleY, false, chillFontSpeed.get(), getColor(-1).rgb)
 
         // health bar
-        RenderUtils.drawRoundedRect(4F, 38F, tWidth - 4F, 44F, 3F, targetInstance.barColor.darker(0.5F).rgb)
+        ShaderUtils.drawRoundedRect(4F, 38F, tWidth - 4F, 44F, 3F, targetInstance.barColor.darker(0.5F))
 
         Stencil.write(false)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
@@ -83,7 +84,7 @@ class Chill(inst: Target): TargetStyle("Chill", inst, true) {
         GL11.glDisable(GL11.GL_BLEND)
         Stencil.erase(true)
         if (chillRoundValue.get())
-            RenderUtils.customRounded(4F, 38F, 4F + (easingHealth / entity.maxHealth) * (tWidth - 8F), 44F, 0F, 3F, 3F, 0F, targetInstance.barColor.rgb)
+            ShaderUtils.drawRoundedRect(4F, 38F, 4F + (easingHealth / entity.maxHealth) * (tWidth - 8F), 44F, 3F, targetInstance.barColor)
         else
             RenderUtils.drawRect(4F, 38F, 4F + (easingHealth / entity.maxHealth) * (tWidth - 8F), 44F, targetInstance.barColor.rgb)
         Stencil.dispose()

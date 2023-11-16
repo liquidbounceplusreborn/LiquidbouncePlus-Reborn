@@ -33,7 +33,8 @@ class VulcanLowHopSpeed : SpeedMode("LowHopSpeed") {
         }
     }
 
-    override fun onMove(event: MoveEvent?) {
+    override fun onMove(event: MoveEvent) {
+        TODO("Not yet implemented")
     }
 
     override fun onDisable() {

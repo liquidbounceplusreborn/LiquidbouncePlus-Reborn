@@ -30,8 +30,8 @@ class GrimCombat : SpeedMode("GrimCombat") {
             }
         }
     }
-    override fun onMotion() {}
-    override fun onMove(event: MoveEvent) {}
+    
+    
 
-    override fun onMotion(event: MotionEvent) {}
+    
 }

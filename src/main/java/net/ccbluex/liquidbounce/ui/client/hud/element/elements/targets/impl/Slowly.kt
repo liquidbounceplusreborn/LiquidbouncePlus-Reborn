@@ -31,7 +31,7 @@ class Slowly(inst: Target): TargetStyle("Slowly", inst, true) {
         font.drawStringWithShadow(entity.name, 33F, 2F, getColor(-1).rgb)
         font.drawStringWithShadow(healthString, length + 31F - font.getStringWidth(healthString).toFloat(), 22F, targetInstance.barColor.rgb)
 
-        RenderUtils.drawRect(0F, 32F, (easingHealth / entity.maxHealth.toFloat()).coerceIn(0F, entity.maxHealth.toFloat()) * (length + 32F), 36F, targetInstance.barColor.rgb)
+        RenderUtils.drawRect(0F, 32F, (easingHealth / entity.maxHealth).coerceIn(0F, entity.maxHealth) * (length + 32F), 36F, targetInstance.barColor.rgb)
     }
 
     override fun handleBlur(entity: EntityPlayer) {

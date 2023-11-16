@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShaderUtils
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.abs
@@ -31,9 +32,9 @@ class CategoryElement(val category: ModuleCategory): MinecraftInstance() {
 
     fun drawLabel(mouseX: Int, mouseY: Int, x: Float, y: Float, width: Float, height: Float) {
         if (focused)
-            RenderUtils.originalRoundedRect(x + 11F, y + 3F, x + width - 3F, y + height - 3F, 3F, ColorManager.dropDown.rgb)
+            ShaderUtils.drawRoundedRect(x + 11F, y + 3F, x + width - 3F, y + height - 3F, 3F, ColorManager.dropDown)
         else if (MouseUtils.mouseWithinBounds(mouseX, mouseY, x, y, x + width, y + height))
-            RenderUtils.originalRoundedRect(x + 11F, y + 3F, x + width - 3F, y + height - 3F, 3F, ColorManager.border.rgb)
+            ShaderUtils.drawRoundedRect(x + 11F, y + 3F, x + width - 3F, y + height - 3F, 3F, ColorManager.border)
         Fonts.font40.drawString(name, x + 16F, y + height / 2F - Fonts.font40.FONT_HEIGHT / 2F + 2F, -1)
     }
 
@@ -79,12 +80,12 @@ class CategoryElement(val category: ModuleCategory): MinecraftInstance() {
         if (lastHeight > height - (startYY + 10F)) {
             val last = (height - (startYY + 10F)) - (height - (startYY + 10F)) * ((height - (startYY + 10F)) / lastHeight)
             val multiply = last * abs(animScrollHeight / (-lastHeight + height - (startYY + 10F))).coerceIn(0F, 1F)
-            RenderUtils.originalRoundedRect(
+            ShaderUtils.drawRoundedRect(
                 x + width - 6F,
-                y + 5F + multiply - 40f,
+                y + multiply - 40f,
                 x + width - 4F,
-                y + 5F + (height - (startYY + 10F)) * ((height - (startYY + 10F)) / lastHeight) + multiply - 40f,
-                1F, 0x50FFFFFF)
+                y + (height - (startYY + 10F)) * ((height - (startYY + 10F)) / lastHeight) + multiply - 40f,
+                1F, Color(0x50FFFFFF))
         }
     }
 

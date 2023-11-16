@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.ui.client.hud.Config
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import java.util.*
 import kotlin.concurrent.thread
@@ -57,7 +57,7 @@ class ThemeCommand : Command("theme", arrayOf("thememanager", "tm", "themes")) {
                         LiquidBounce.hud = Config(theme).toHUD()
                         LiquidBounce.isStarting = false
                         chat("§6Theme applied successfully.")
-                        LiquidBounce.hud.addNotification(Notification("Theme","Updated HUD Theme.", NotifyType.SUCCESS))
+                        LiquidBounce.hud.addNotification(Notification("Updated HUD Theme.", Type.SUCCESS))
                         playEdit()
                     } catch (exception: Exception) {
                         exception.printStackTrace()

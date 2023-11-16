@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.*
+import kotlin.math.round
 
 
 fun EntityPlayer.getEyeVec3(): Vec3 {
@@ -59,3 +60,5 @@ fun Entity.getLookDistanceToEntityBox(entity: Entity=this, rotation: Rotation? =
 fun Entity.getHorizontalFacing(yaw: Float): EnumFacing {
     return EnumFacing.getHorizontal(MathHelper.floor_double(yaw * 4.0f / 360.0f + 0.5) and 0x3)
 }
+
+fun EntityLivingBase.getHealth1D(): Float = round((this.health + this.absorptionAmount)*10)/10

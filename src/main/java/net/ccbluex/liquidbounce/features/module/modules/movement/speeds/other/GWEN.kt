@@ -18,9 +18,9 @@ class GWEN : SpeedMode("GWEN") {
     private val timer = MSTimer()
     private var stage = false
 
-    override fun onUpdate() {}
-    override fun onMotion() {}
-    override fun onMove(event: MoveEvent) {}
+    
+    
+    
 
     override fun onMotion(event: MotionEvent) {
         if (event.eventState == EventState.PRE && MovementUtils.isMoving()) {

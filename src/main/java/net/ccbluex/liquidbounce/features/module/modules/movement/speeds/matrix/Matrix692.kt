@@ -13,7 +13,7 @@ class Matrix692 : SpeedMode("Matrix6.9.2") {
         mc.timer.timerSpeed = 1.0f
     }
 
-    override fun onMotion() {}
+    
 
     override fun onUpdate() {
         if (wasTimer) {
@@ -29,11 +29,14 @@ class Matrix692 : SpeedMode("Matrix6.9.2") {
             wasTimer = true
             mc.thePlayer.jump()
             MovementUtils.strafe()
-        }else if (mc.thePlayer.motionY > 0.003) {
+        } else if (mc.thePlayer.motionY > 0.003) {
             mc.thePlayer.motionX *= 1.0010
             mc.thePlayer.motionZ *= 1.0010
             mc.timer.timerSpeed = 1.05f
         }
     }
 
-    override fun onMove(event: MoveEvent?) {} }
+    override fun onMove(event: MoveEvent) {
+
+    }
+}

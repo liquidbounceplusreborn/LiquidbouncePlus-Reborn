@@ -59,23 +59,23 @@ class Remix(inst: Target): TargetStyle("Remix", inst, true) {
             // actual head
             drawHead(mc.netHandler.getPlayerInfo(entity.uniqueID).locationSkin, 5, 5, 32, 32, 1F - targetInstance.getFadeProgress())
 
-            val responseTime = mc.netHandler.getPlayerInfo(entity.uniqueID).responseTime.toInt()
+            val responseTime = mc.netHandler.getPlayerInfo(entity.uniqueID).responseTime
             val stringTime = "${responseTime.coerceAtLeast(0)}ms"
 
             var j = 0
 
-            if (responseTime < 0)
-                j = 5
+            j = if (responseTime < 0)
+                5
             else if (responseTime < 150)
-                j = 0
+                0
             else if (responseTime < 300)
-                j = 1
+                1
             else if (responseTime < 600)
-                j = 2
+                2
             else if (responseTime < 1000)
-                j = 3
+                3
             else
-                j = 4
+                4
 
             mc.textureManager.bindTexture(Gui.icons)
             RenderUtils.drawTexturedModalRect(132, 18, 0, 176 + j * 8, 10, 8, 100.0F)
@@ -95,7 +95,7 @@ class Remix(inst: Target): TargetStyle("Remix", inst, true) {
         val renderItem = mc.renderItem
 
         var x = 41
-        var y = 17
+        val y = 17
 
         for (index in 3 downTo 0) {
             val stack = entity.inventory.armorInventory[index] ?: continue

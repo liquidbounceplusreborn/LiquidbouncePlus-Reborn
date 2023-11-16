@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C03PacketPlayer
@@ -65,7 +65,7 @@ class AntiStuck : Module() {
                 reduceTimer.reset()
                 flagsTime = 0
                 stuck = true
-                LiquidBounce.hud.addNotification(Notification(name, "Trying to unstuck you", NotifyType.INFO, 1500))
+                LiquidBounce.hud.addNotification(Notification("Trying to unstuck you", Type.INFO, 1500))
             }
             if (timer.hasTimePassed(1500) && reduceTimer.hasTimePassed(500) && flagsTime> 0) {
                 flagsTime -= 1

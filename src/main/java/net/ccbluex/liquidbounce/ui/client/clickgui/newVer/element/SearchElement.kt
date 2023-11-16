@@ -1,13 +1,14 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element
 
-import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.ModuleElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.ColorManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.IconManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.NewUi
+import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.element.module.ModuleElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.newVer.extensions.animSmooth
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShaderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
@@ -24,9 +25,9 @@ class SearchElement(var xPos: Float, var yPos: Float, var width: Float, val heig
     val searchBox = SearchBox(0, xPos.toInt() + 2, yPos.toInt() + 2, width.toInt() - 4, height.toInt() - 2)
 
     fun drawBox(mouseX: Int, mouseY: Int, accentColor: Color): Boolean {
-        RenderUtils.originalRoundedRect(xPos - 0.5F, yPos - 0.5F, xPos + width + 0.5F, yPos + height + 0.5F, 4F, ColorManager.buttonOutline.rgb)
+//        RoundedRectShader.draw(xPos - 0.5F, yPos - 0.5F, xPos + width + 0.5F, yPos + height + 0.5F, 4F, ColorManager.buttonOutline)
         Stencil.write(true)
-        RenderUtils.originalRoundedRect(xPos, yPos, xPos + width, yPos + height, 4F, ColorManager.textBox.rgb)
+        ShaderUtils.drawRoundedRect(xPos, yPos, xPos + width, yPos + height, 4F, ColorManager.textBox)
         Stencil.erase(true)
         if (searchBox.isFocused) {
             RenderUtils.newDrawRect(xPos, yPos + height - 1F, xPos + width, yPos + height, accentColor.rgb)

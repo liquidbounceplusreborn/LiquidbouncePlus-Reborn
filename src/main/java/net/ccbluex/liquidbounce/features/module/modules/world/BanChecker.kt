@@ -16,8 +16,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.get
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -80,21 +79,17 @@ class BanChecker : Module() {
                             if (staffLastMin > 0)
                                 LiquidBounce.hud.addNotification(
                                     Notification(
-                                        "BanChecker",
                                         "Staffs banned $staffLastMin players in the last minute!",
-                                        NotifyType.WARNING,
-                                        1500,
-                                        alertTime.get() * 500
+                                        Type.WARNING,
+                                        alertTime.get() * 500L
                                     )
                                 )
                             else if (nofifyWhenNoBan.get())
                                 LiquidBounce.hud.addNotification(
                                     Notification(
-                                        "BanChecker",
                                         "Staffs didn't ban any player in the last minute.",
-                                        NotifyType.SUCCESS,
-                                        1500,
-                                        alertTime.get() * 500
+                                        Type.SUCCESS,
+                                        alertTime.get() * 500L
                                     )
                                 )
 
@@ -102,21 +97,17 @@ class BanChecker : Module() {
                             if (watchdogLastMin > 0)
                                 LiquidBounce.hud.addNotification(
                                     Notification(
-                                        "BanChecker",
                                         "Watchdog banned $watchdogLastMin players in the last minute!",
-                                        NotifyType.WARNING,
-                                        1500,
-                                        alertTime.get() * 500
+                                        Type.WARNING,
+                                        alertTime.get() * 500L
                                     )
                                 )
                             else if (nofifyWhenNoBan.get())
                                 LiquidBounce.hud.addNotification(
                                     Notification(
-                                        "BanChecker",
                                         "Watchdog didn't ban any player in the last minute.",
-                                        NotifyType.SUCCESS,
-                                        1500,
-                                        alertTime.get() * 500
+                                        Type.SUCCESS,
+                                        alertTime.get() * 500L
                                     )
                                 )
                     }

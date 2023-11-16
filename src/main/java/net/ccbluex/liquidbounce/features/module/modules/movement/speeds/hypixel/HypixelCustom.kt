@@ -18,9 +18,9 @@ class HypixelCustom: SpeedMode("HypixelCustom") {
             event.cancelEvent()
     }
 
-    override fun onUpdate() {}
+    
 
-    override fun onMotion() {}
+    
 
     override fun onMotion(event: MotionEvent) {
         val thePlayer = mc.thePlayer ?: return

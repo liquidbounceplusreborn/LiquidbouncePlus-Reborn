@@ -55,23 +55,17 @@ class KillAura : Module() {
     private val attackNote = NoteValue("Attack") //region attack
     private val maxCPSValue = object : IntegerValue("MaxCPS", 8, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
-            val i = minCPS
-            if (i > newValue) set(i)
-
             attackDelay = TimerUtils.randomClickDelay(minCPS, this.get())
         }
-    }
+    }.canSetIf { it >= minCPS }
 
     private val maxCPS: Int by maxCPSValue
 
     private val minCPS by object : IntegerValue("MinCPS", 5, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
-            val i = maxCPS
-            if (i < newValue) set(i)
-
             attackDelay = TimerUtils.randomClickDelay(this.get(), maxCPS)
         }
-    }
+    }.canSetIf { it <= maxCPS }
 
     private val hurtTime by IntegerValue("HurtTime", 10, 0, 10)
 
@@ -99,115 +93,46 @@ class KillAura : Module() {
     private val noScaff by BoolValue("NoScaffold", true)
 
     private val predict by BoolValue("Predict", true)
-
-    private val maxPredictSizeValue: FloatValue = object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f, { predict }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = minPredictSize
-            if (v > newValue) set(v)
-        }
-    }
-
+    private val maxPredictSizeValue: FloatValue =  FloatValue("MaxPredictSize", 1f, 0.1f, 5f) { predict }.canSetIf { it >= minPredictSize }
     private val maxPredictSize by maxPredictSizeValue
-
-    private val minPredictSize by object : FloatValue("MinPredictSize", 1f, 0.1f, 5f, { predict }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = maxPredictSize
-            if (v < newValue) set(v)
-        }
-    }
+    private val minPredictSize by FloatValue("MinPredictSize", 1f, 0.1f, 5f) { predict }.canSetIf { it <= maxPredictSize }
     //endregion
 
     private val rotationNote = NoteValue("Rotation") //region rotation
 
     private val searchRange by FloatValue("SearchRange", 6f, 1f, 10f, "m")
-    val attackRange by object : FloatValue("AttackRange", 5f, 1f, 10f, "m") {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            if (newValue > searchRange) set(searchRange)
-        }
-    }
-    private val rotationRange by object : FloatValue("RotationRange", 5f, 1f, 10f, "m") {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            if (newValue > searchRange) set(searchRange)
-        }
-    }
-
-    private val thoughWallsRotationRange by object : FloatValue("RotationWallsRange", 5f, 0f, 10f, "m") {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            if (newValue > searchRange) set(searchRange)
-        }
-    }
-
-    private val throughWallsAttackRange by object : FloatValue("AttackWallsRange", 4f, 0f, 10f, "m") {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            if (newValue > searchRange) set(searchRange)
-        }
-    }
+    val attackRange by FloatValue("AttackRange", 5f, 1f, 10f, "m").canSetIf { it <= searchRange }
+    private val rotationRange by  FloatValue("RotationRange", 5f, 1f, 10f, "m").canSetIf { it <= searchRange }
+    private val thoughWallsRotationRange by FloatValue("RotationWallsRange", 5f, 0f, 10f, "m").canSetIf { it <= searchRange }
+    private val throughWallsAttackRange by FloatValue("AttackWallsRange", 4f, 0f, 10f, "m").canSetIf { it <= searchRange }
     private val rangeSprintReducement by FloatValue("RangeSprintReducement", 0.4f, 0f, 2f, "m")
 
-    // Modes
     private val rotations by ListValue("RotationMode", arrayOf("Vanilla", "Grim", "Novoline", "None"), "Vanilla")
-
     private val shakeAmout by FloatValue("NovolineShakeAmoutTest", 4f, 0f, 10f) { rotations == "Novoline" }
 
     // Turn Speed
-    private val yawMaxTurnSpeedValue: FloatValue = object : FloatValue("YawMaxTurnSpeed", 180f, 0f, 180f) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = yawMinTurnSpeed
-            if (v > newValue) set(v)
-        }
-    }
-
+    private val yawMaxTurnSpeedValue: FloatValue = FloatValue("YawMaxTurnSpeed", 180f, 0f, 180f) { rotations != "None" }.canSetIf { it >= yawMinTurnSpeed }
     private val yawMaxTurnSpeed by yawMaxTurnSpeedValue
+    private val yawMinTurnSpeed by FloatValue("YawMinTurnSpeed", 180f, 0f, 180f) { rotations != "None" }.canSetIf { it <= yawMaxTurnSpeed }
 
-    private val yawMinTurnSpeed by object : FloatValue("YawMinTurnSpeed", 180f, 0f, 180f) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = yawMaxTurnSpeed
-            if (v < newValue) set(v)
-        }
-    }
-
-    private val pitchMaxTurnSpeedValue: FloatValue = object : FloatValue("PitchMaxTurnSpeed", 180f, 0f, 180f) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = pitchMinTurnSpeed
-            if (v > newValue) set(v)
-        }
-    }
-
+    private val pitchMaxTurnSpeedValue: FloatValue = FloatValue("PitchMaxTurnSpeed", 180f, 0f, 180f) { rotations != "None" }.canSetIf { it >= pitchMinTurnSpeed }
     private val pitchMaxTurnSpeed by pitchMaxTurnSpeedValue
-
-    private val pitchMinTurnSpeed by object : FloatValue("PitchMinTurnSpeed", 180f, 0f, 180f) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = pitchMaxTurnSpeed
-            if (v < newValue) set(v)
-        }
-    }
+    private val pitchMinTurnSpeed by FloatValue("PitchMinTurnSpeed", 180f, 0f, 180f) { rotations != "None" }.canSetIf { it <= pitchMaxTurnSpeed }
 
     private val roundTurnAngle by BoolValue("RoundAngle", false) { rotations != "None" }
     private val roundAngleDirs by IntegerValue("RoundAngle-Directions", 4, 2, 90) { rotations != "None" && roundTurnAngle }
 
-    private val shake by BoolValue("Shake", false)
+    private val shake by BoolValue("Shake", false) { rotations == "Vanilla" }
     private val randomCenterNew by BoolValue("NewCalc", true) { rotations == "Vanilla" && shake }
-    private val minRandValue: FloatValue = object : FloatValue("MinMultiply", 0.8f, 0f, 2f, "x", { rotations == "Vanilla" && shake }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = maxRand
-            if (v < newValue) set(v)
-        }
-    }
+    private val minRandValue: FloatValue =  FloatValue("MinMultiply", 0.8f, 0f, 2f, "x") { rotations == "Vanilla" && shake }.canSetIf { it <= maxRand }
     private val minRand by minRandValue
-    private val maxRand by object : FloatValue("MaxMultiply", 0.8f, 0f, 2f, "x", { rotations == "Vanilla" && shake }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = minRand
-            if (v > newValue) set(v)
-        }
-    }
-
-
+    private val maxRand by FloatValue("MaxMultiply", 0.8f, 0f, 2f, "x") { rotations == "Vanilla" && shake }.canSetIf { it >= minRand }
     private val noHitCheck by BoolValue("NoHitCheck", false) { rotations != "None" }
     private val silentRotation by BoolValue("SilentRotation", true) { rotations != "None" }
-    private val fov by FloatValue("FOV", 180f, 0f, 360f)
+    private val fov by FloatValue("FOV", 360f, 0f, 360f)
     //endregion
 
-    private val autoblockNote = NoteValue("Autoblock")
+    private val autoblockNote = NoteValue("Autoblock") // region autoblock
     private val autoBlockMode by ListValue(
         "AutoBlock",
         arrayOf("None", "AfterTick", "NCP", "OldHypixel", "Vanilla", "Hypixel", "Legacy"),
@@ -217,17 +142,11 @@ class KillAura : Module() {
     private val displayAutoBlockSettings by BoolValue("Open-AutoBlock-Settings", true) { autoBlockMode != "None" }
     private val interactAB by BoolValue("InteractAutoBlock", true) { autoBlockMode != "None" && displayAutoBlockSettings }
     private val verusAB by BoolValue("VerusAutoBlock", false) { autoBlockMode != "None" && displayAutoBlockSettings }
-    private val autoblockRange by object: FloatValue("AutoBlockRange", 4.5f, 0f, 10f,  { autoBlockMode != "None" && displayAutoBlockSettings }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            if (newValue > searchRange) set(searchRange)
-        }
-    }
+    private val autoblockRange by FloatValue("AutoBlockRange", 4.5f, 0f, 10f) { autoBlockMode != "None" && displayAutoBlockSettings }
+        .canSetIf { it <= searchRange }
 
-    private val throughWallsAutoblockRange by object: FloatValue("AutoBlockWallsRange", 4.5f, 0f, 10f,  { autoBlockMode != "None" && displayAutoBlockSettings }) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            if (newValue > searchRange) set(searchRange)
-        }
-    }
+    private val throughWallsAutoblockRange by FloatValue("AutoBlockWallsRange", 4.5f, 0f, 10f) { autoBlockMode != "None" && displayAutoBlockSettings }
+        .canSetIf { it <= searchRange }
 
     // smart autoblock stuff
     private val smartAutoBlockValue by BoolValue("SmartAutoBlock", false) { autoBlockMode != "None" && displayAutoBlockSettings } // thanks czech
@@ -238,8 +157,6 @@ class KillAura : Module() {
 
     private val afterTickPatch = BoolValue("AfterTickPatch", true) { autoBlockMode == "AfterTick" && displayAutoBlockSettings }
     private val blockRate by IntegerValue("BlockRate", 100, 1, 100, "%") { autoBlockMode != "None" && displayAutoBlockSettings }
-
-
     //endregion
 
     private val bypassNote by NoteValue("Bypass") //region bypass
