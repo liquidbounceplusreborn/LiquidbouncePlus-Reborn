@@ -12,10 +12,12 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.world.WorldSettings
@@ -40,6 +42,7 @@ class FreeCam : Module() {
     private var oldYaw = 0f
     private var oldPitch = 0f
     private var oldGamemode = WorldSettings.GameType.NOT_SET
+    private var count = 0
 
     private var lastOnGround = false
 
@@ -121,6 +124,16 @@ class FreeCam : Module() {
             packet.isMoving = false
             packet.onGround = lastOnGround
         }
+
+        if (packet is C03PacketPlayer && packet !is C04PacketPlayerPosition) {
+            count++
+            if (count == 20) {
+                count = 0
+                event.cancelEvent()
+                PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(oldX, oldY, oldZ, lastOnGround))
+            }
+        }
+
 
         // don't cancel keepalive because it flag BadPacketE on grim
         if (packet is C08PacketPlayerBlockPlacement || packet is C07PacketPlayerDigging || packet is C0BPacketEntityAction ||
