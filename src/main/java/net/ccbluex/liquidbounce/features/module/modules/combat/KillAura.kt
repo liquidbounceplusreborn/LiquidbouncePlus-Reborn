@@ -377,21 +377,8 @@ class KillAura : Module() {
     @EventTarget
     fun onJump(event: JumpEvent) {
         if (rotationStrafe == "Strict" || rotationStrafe == "Fdp" && !testSilent) {
-            if (event.isCancelled) return
-            val thePlayer = mc.thePlayer ?: return
             val (yaw) = RotationUtils.targetRotation ?: return
-            thePlayer.motionY = event.motion.toDouble()
-
-            if (thePlayer.isPotionActive(Potion.jump)) thePlayer.motionY += ((thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1).toFloat() * 0.1f).toDouble()
-
-            if (thePlayer.isSprinting) {
-                val f: Float = yaw * (Math.PI.toFloat() / 180f)
-                thePlayer.motionX -= (MathHelper.sin(f) * 0.2f).toDouble()
-                thePlayer.motionZ += (MathHelper.cos(f) * 0.2f).toDouble()
-            }
-
-            thePlayer.isAirBorne = true
-            event.cancelEvent()
+            event.yaw = yaw
         }
     }
 
