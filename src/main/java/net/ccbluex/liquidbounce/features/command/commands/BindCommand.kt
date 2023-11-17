@@ -32,6 +32,7 @@ class BindCommand : Command("bind", emptyArray()) {
                 chat("Removed ${highlightModule(module)}'s bind.")
                 LiquidBounce.hud.addNotification(
                     Notification(
+                        "Bind",
                         "Removed ${module.name}'s bind",
                         Type.SUCCESS
                     )
@@ -40,6 +41,7 @@ class BindCommand : Command("bind", emptyArray()) {
                 chat("${highlightModule(module)} is now bound to §9$keyName.")
                 LiquidBounce.hud.addNotification(
                     Notification(
+                        "Bind",
                         "${module.name} bound to $keyName",
                         Type.SUCCESS
                     )

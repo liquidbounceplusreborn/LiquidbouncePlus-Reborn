@@ -36,7 +36,7 @@ class LocalThemeCommand : Command("localtheme", arrayOf("localthememanager", "lt
                                 LiquidBounce.hud = Config(theme).toHUD()
                                 LiquidBounce.isStarting = false
                                 chat("§6Theme applied successfully.")
-                                LiquidBounce.hud.addNotification(Notification("Updated HUD Theme.", Type.SUCCESS))
+                                LiquidBounce.hud.addNotification(Notification("LocalTheme","Updated HUD Theme.", Type.SUCCESS))
                                 playEdit()
                             } catch (e: IOException) {
                                 e.printStackTrace()

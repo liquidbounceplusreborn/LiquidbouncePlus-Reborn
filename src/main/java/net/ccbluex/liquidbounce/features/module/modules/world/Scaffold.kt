@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
+
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
@@ -366,7 +367,7 @@ class Scaffold : Module() {
                 Speed::class.java
             )!!.state = false
             LiquidBounce.hud.addNotification(
-                Notification(
+                Notification(name,
                     "Speed is disabled to prevent flags/errors.",
                     Type.WARNING,
                     500

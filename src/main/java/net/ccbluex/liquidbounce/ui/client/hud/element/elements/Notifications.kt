@@ -1,364 +1,601 @@
-/*
- * LiquidBounce+ Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/WYSI-Foundation/LiquidBouncePlus/
- *
- * This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
- */
+
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.LiquidBounce.hud
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.utils.render.AnimationUtils
-import net.ccbluex.liquidbounce.utils.render.BlurUtils
-import net.ccbluex.liquidbounce.utils.render.Stencil
-import net.minecraft.client.gui.Gui
-import net.minecraft.client.renderer.GlStateManager
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blue2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blueValue
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.green2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.greenValue
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.red2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.redValue
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.Stencil
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
-import java.awt.Color
-
 import org.lwjgl.opengl.GL11
+import java.awt.Color
+import java.math.BigDecimal
+import kotlin.math.max
 
+/**
+ * CustomHUD Notification element
+ */
 @ElementInfo(name = "Notifications", single = true)
-class Notifications(x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
-                    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
-
-    val styleValue = ListValue("Style", arrayOf("Full", "Compact", "Material"), "Material")
-    val barValue = BoolValue("Bar", true) { styleValue.get().equals("material", true) }
-    val bgAlphaValue = IntegerValue("Background-Alpha", 120, 0, 255) { !styleValue.get().equals("material", true) }
-
-    val blurValue = BoolValue("Blur", false) { !styleValue.get().equals("material", true) }
-    val blurStrength = FloatValue("Strength", 0F, 0F, 30F) { !styleValue.get().equals("material", true) && blurValue.get() }
-
-    val hAnimModeValue = ListValue("H-Animation", arrayOf("LiquidBounce", "Smooth"), "LiquidBounce")
-    val vAnimModeValue = ListValue("V-Animation", arrayOf("None", "Smooth"), "Smooth")
-    val animationSpeed = FloatValue("Speed", 0.5F, 0.01F, 1F) { hAnimModeValue.get().equals("smooth", true) || vAnimModeValue.get().equals("smooth", true) }
+class Notifications(
+    x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)): Element(x, y, scale, side) {
 
     /**
      * Example notification for CustomHUD designer
      */
-    private val exampleNotification = Notification("Example Notification", Type.INFO)
+    private val exampleNotification = Notification("Notification", "This is an example notification.", Type.INFO)
+    companion object {
+        val styleValue = ListValue("Mode", arrayOf("Classic", "IntelliJIDEA","TenacityOld","Novoline"), "Classic")
+        val redValue = IntegerValue("Red", 255, 0, 255)
+        val greenValue = IntegerValue("Green", 255, 0, 255)
+        val blueValue = IntegerValue("Blue", 255, 0, 255)
+        val red2Value = IntegerValue("Red2", 255, 0, 255)
+        val green2Value = IntegerValue("Green2", 255, 0, 255)
+        val blue2Value = IntegerValue("Blue2", 255, 0, 255)
+
+    }
 
     /**
      * Draw element
      */
     override fun drawElement(): Border? {
-        var animationY = 30F
         val notifications = mutableListOf<Notification>()
+        for ((index, notify) in LiquidBounce.hud.notifications.withIndex()) {
+            GL11.glPushMatrix()
 
-        for (i in hud.notifications)
-            notifications.add(i)
-
-        if (mc.currentScreen !is GuiHudDesigner || !notifications.isEmpty()) {
-            var indexz = 0
-            for (i in notifications) {
-                if (indexz == 0 && styleValue.get().equals("material", true) && side.vertical != Side.Vertical.DOWN) animationY -= i.notifHeight - (if (barValue.get()) 2F else 0F)
-                i.drawNotification(animationY, this)
-                if (indexz < notifications.size - 1) indexz++
-                animationY += (when (styleValue.get().toLowerCase()) {
-                    "compact" -> 20F
-                    "full" -> 30F
-                    else -> (if (side.vertical == Side.Vertical.DOWN) i.notifHeight else notifications[indexz].notifHeight) + 5F + (if (barValue.get()) 2F else 0F)
-                }) * (if (side.vertical == Side.Vertical.DOWN) 1F else -1F)
+            if (notify.drawNotification(index, Companion, renderX.toFloat(), renderY.toFloat())) {
+                notifications.add(notify)
             }
-        } else {
-            exampleNotification.drawNotification(animationY - if (styleValue.get().equals("material", true) && side.vertical != Side.Vertical.DOWN) (exampleNotification.notifHeight - 5F - (if (barValue.get()) 2F else 0F)) else 0F, this)
+
+            GL11.glPopMatrix()
+        }
+        for (notify in notifications) {
+            LiquidBounce.hud.notifications.remove(notify)
         }
 
         if (mc.currentScreen is GuiHudDesigner) {
-            exampleNotification.fadeState = Notification.FadeState.STAY
-            exampleNotification.x = if (styleValue.get().equals("material", true)) 160F else exampleNotification.textLength + 8F
+            if (!LiquidBounce.hud.notifications.contains(exampleNotification))
+                LiquidBounce.hud.addNotification(exampleNotification)
 
-            if (exampleNotification.stayTimer.hasTimePassed(exampleNotification.displayTime))
-                exampleNotification.stayTimer.reset()
+            exampleNotification.fadeState = FadeState.STAY
+            exampleNotification.displayTime = System.currentTimeMillis()
+//            exampleNotification.x = exampleNotification.textLength + 8F
 
-            return getNotifBorder()
+            if (styleValue.get() == "Classic") return Border(-150F, -30F, 0F, 0F)
+            if (styleValue.get() == "IntelliJIDEA") return Border(-180F, -30F, 0F, 0F)
+            if (styleValue.get() == "TenacityOld") return Border(-138F, -30F, 0F, 0F)
+            if (styleValue.get() == "Novoline") return Border(-185F, -30F, 0F, 0F)
+            else return Border(-exampleNotification.width.toFloat(), exampleNotification.height.toFloat(), 0F,0F)
         }
 
         return null
     }
 
-    private fun getNotifBorder() = when (styleValue.get().toLowerCase()) {
-        "full" -> Border(-130F, -58F, 0F, -30F)
-        "compact" -> Border(-102F, -48F, 0F, -30F)
-        else -> if (side.vertical == Side.Vertical.DOWN) Border(-160F, -50F, 0F, -30F) else Border(-160F, -20F, 0F, 0F)
-    }
 }
-class Notification(message : String, type : Type, displayLength: Long) {
-    private val notifyDir = "liquidbounce+/notification/"
 
-    private val imgSuccess = ResourceLocation("${notifyDir}checkmark.png")
-    private val imgError = ResourceLocation("${notifyDir}error.png")
-    private val imgWarning = ResourceLocation("${notifyDir}warning.png")
-    private val imgInfo = ResourceLocation("${notifyDir}info.png")
-
-    private val newSuccess = ResourceLocation("${notifyDir}new/checkmark.png")
-    private val newError = ResourceLocation("${notifyDir}new/error.png")
-    private val newWarning = ResourceLocation("${notifyDir}new/warning.png")
-    private val newInfo = ResourceLocation("${notifyDir}new/info.png")
-
-    var x = 0F
-    var textLength = 0
-    var fadeState = FadeState.IN
-    var displayTime = 0L
-    var stayTimer = MSTimer()
-    var notifHeight = 0F
-    private var message = ""
-    var messageList : List<String>
-    private var stay = 0F
-    private var fadeStep = 0F
+class Notification(
+    val title: String,
+    val content: String,
+    val type: Type,
+    val time: Int = 1500,
+    val animeTime: Int = 500,
+) {
+    val width = 100.coerceAtLeast(
+        Fonts.fontSFUI35.getStringWidth(this.title)
+            .coerceAtLeast(Fonts.fontSFUI35.getStringWidth(this.content)) + 12
+    )
+    private val notifyDir = "liquidbounce+/notif/intellj/"
+    val height = 30
     private var firstY = 0f
-    private var type: Type
+    private var firstYz = 0
+    var x = 0f
+    var textLength = Fonts.minecraftFont.getStringWidth(content) + 10
 
-    init {
-        this.message = message
-        this.messageList = Fonts.font40.listFormattedStringToWidth(message, 105)
-        this.notifHeight = messageList.size.toFloat() * (Fonts.font40.FONT_HEIGHT.toFloat() + 2F) + 8F
-        this.type = type
-        this.displayTime = displayLength
-        this.firstY = 19190F
-        this.stayTimer.reset()
-        this.textLength = Fonts.font40.getStringWidth(message)
-    }
+    var fadeState = FadeState.IN
+    var nowY = -height
+    var displayTime = System.currentTimeMillis()
+    var animeXTime = System.currentTimeMillis()
+    var animeYTime = System.currentTimeMillis()
 
-    constructor(message: String, type: Type) : this(message, type, 2000L)
-
-    constructor(message: String) : this(message, Type.INFO, 500L)
-
-    constructor(message: String, displayLength: Long) : this(message, Type.INFO, displayLength)
-
-
-    enum class FadeState {
-        IN, STAY, OUT, END
-    }
-
-    fun drawNotification(animationY: Float, parent: Notifications) {
-        val delta = RenderUtils.deltaTime
-
+    /**
+     * Draw notification
+     */
+    fun drawNotification(index: Int, parent: Notifications.Companion, originalX: Float, originalY: Float): Boolean {
+        val nowTime = System.currentTimeMillis()
         val style = parent.styleValue.get()
-        val barMaterial = parent.barValue.get()
+        val realY = -(index + 1) * height
+        var pct = (nowTime - animeXTime) / animeTime.toDouble()
+        if (style.equals("Classic")) {
+            val image = ResourceLocation("liquidbounce+/ui/" + type.name + ".png")
+            //Y-Axis Animation
+            if (nowY != realY) {
+                var pct = (nowTime - animeYTime) / animeTime.toDouble()
+                if (pct > 1) {
+                    nowY = realY
+                    pct = 1.0
+                } else {
+                    pct = EaseUtils.easeOutExpo(pct)
+                }
+                GL11.glTranslated(0.0, (realY - nowY) * pct, 0.0)
+            } else {
+                animeYTime = nowTime
+            }
+            GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
 
-        val blur = parent.blurValue.get()
-        val strength = parent.blurStrength.get()
+            //X-Axis Animation
+            when (fadeState) {
+                FadeState.IN -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.STAY
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = EaseUtils.easeOutExpo(pct)
+                }
 
-        val hAnimMode = parent.hAnimModeValue.get()
-        val vAnimMode = parent.vAnimModeValue.get()
-        val animSpeed = parent.animationSpeed.get()
+                FadeState.STAY -> {
+                    pct = 1.0
+                    if ((nowTime - animeXTime) > time) {
+                        fadeState = FadeState.OUT
+                        animeXTime = nowTime
+                    }
+                }
 
-        val side = parent.side
+                FadeState.OUT -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.END
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = 1 - EaseUtils.easeInExpo(pct)
+                }
 
-        val originalX = parent.renderX.toFloat()
-        val originalY = parent.renderY.toFloat()
-        val width = if (style.equals("material", true)) 160F else textLength.toFloat() + 8.0f
-
-        val backgroundColor = Color(0, 0, 0, parent.bgAlphaValue.get())
-        val enumColor = when (type) {
-            Type.SUCCESS -> Color(80, 255, 80).rgb
-            Type.ERROR -> Color(255, 80, 80).rgb
-            Type.INFO -> Color(255, 255, 255).rgb
-            Type.WARNING -> Color(255, 255, 0).rgb
+                FadeState.END -> {
+                    return true
+                }
+            }
+            GL11.glTranslated(width - (width * pct), 0.0, 0.0)
+            GL11.glTranslatef(-width.toFloat(), 0F, 0F)
+            RenderUtils.drawShadow(-22F, 0F, width.toFloat() + 22, height.toFloat())
+            RenderUtils.drawRect(-22F, 0F, width.toFloat(), height.toFloat(), type.renderColor)
+            RenderUtils.drawRect(-22F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 100))
+            RenderUtils.drawRect(
+                -22F,
+                height - 2F,
+                max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), -22F),
+                height.toFloat(),
+                type.renderColor
+            )
+            Fonts.fontTahoma.drawString(title, 6F, 4F, -1)
+            Fonts.fontSFUI35.drawString(content, 6F, 17F, -1)
+            RenderUtils.drawImage(image, -19, 3, 22, 22)
+            GlStateManager.resetColor()
         }
+        if (style.equals("IntelliJIDEA")) {
 
-        if (vAnimMode.equals("smooth", true)) {
-            if (firstY == 19190.0F)
-                firstY = animationY
-            else
-                firstY = net.ccbluex.liquidbounce.utils.AnimationUtils.animate(animationY, firstY, 0.02F * delta)
-        } else {
-            firstY = animationY
+
+            if (nowY != realY) {
+                if (pct > 1) {
+                    nowY = realY
+                    pct = 1.0
+                } else {
+                    pct = EaseUtils.easeOutExpo(pct)
+                }
+                GL11.glTranslated(0.0, (realY - nowY) * pct, 0.0)
+            } else {
+                animeYTime = nowTime
+            }
+            GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
+            when (fadeState) {
+                FadeState.IN -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.STAY
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = EaseUtils.easeOutExpo(pct)
+                }
+
+                FadeState.STAY -> {
+                    pct = 1.0
+                    if ((nowTime - animeXTime) > time) {
+                        fadeState = FadeState.OUT
+                        animeXTime = nowTime
+                    }
+                }
+
+                FadeState.OUT -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.END
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = 1 - EaseUtils.easeInExpo(pct)
+                }
+
+                FadeState.END -> {
+                    return true
+                }
+            }
+
+            var y = firstYz
+            val kek = -x - 1 - 20F
+
+            GlStateManager.resetColor()
+            Stencil.write(true)
+
+            if (type == Type.ERROR) {
+                RenderUtils.drawRect(
+                    -textLength - 23f + 5,
+                    -y.toFloat(),
+                    kek + 21f,
+                    height.toFloat(),
+                    Color(115, 69, 75).rgb
+                )
+                RenderUtils.drawRect(
+                    -textLength.toFloat() - 22f + 5,
+                    -y.toFloat() + 1,
+                    kek + 20,
+                    height.toFloat() - 1,
+                    Color(89, 61, 65).rgb
+                )
+                Fonts.minecraftFont.drawStringWithShadow(
+                    "IDE Error:",
+                    -textLength.toFloat() - 1,
+                    -y.toFloat() + 2,
+                    Color(249, 130, 108).rgb
+                )
+            }
+            if (type == Type.INFO) {
+                RenderUtils.drawRect(
+                    -textLength - 23f + 5,
+                    -y.toFloat(),
+                    textLength.toFloat() - 162,
+                    height.toFloat(),
+                    Color(70, 94, 115).rgb
+                )
+                RenderUtils.drawRect(
+                    -textLength.toFloat() - 22f + 5,
+                    -y + 1f,
+                    textLength.toFloat() - 163,
+                    height.toFloat() - 1,
+                    Color(61, 72, 87).rgb
+                )
+                Fonts.minecraftFont.drawStringWithShadow(
+                    "IDE Information:",
+                    -textLength.toFloat() - 1,
+                    -y.toFloat() + 2,
+                    Color(119, 145, 147).rgb
+                )
+            }
+            if (type == Type.SUCCESS) {
+                RenderUtils.drawRect(
+                    -textLength - 23f + 5,
+                    -y.toFloat(),
+                    kek + 21f,
+                    height.toFloat(),
+                    Color(67, 104, 67).rgb
+                )
+                RenderUtils.drawRect(
+                    -textLength.toFloat() - 22f + 5,
+                    -y + 1f,
+                    kek + 20,
+                    height.toFloat() - 1,
+                    Color(55, 78, 55).rgb
+                )
+                Fonts.minecraftFont.drawStringWithShadow(
+                    "IDE Success:",
+                    -textLength.toFloat() - 1,
+                    -y.toFloat() + 2,
+                    Color(10, 142, 2).rgb
+                )
+            }
+            if (type == Type.WARNING) {
+                RenderUtils.drawRect(
+                    -textLength - 23f + 5,
+                    -y.toFloat(),
+                    kek + 21f,
+                    height.toFloat(),
+                    Color(103, 103, 63).rgb
+                )
+                RenderUtils.drawRect(
+                    -textLength.toFloat() - 22f + 5,
+                    -y + 1f,
+                    kek + 20,
+                    height.toFloat() - 1,
+                    Color(80, 80, 57).rgb
+                )
+                Fonts.minecraftFont.drawStringWithShadow(
+                    "IDE Warning:",
+                    -textLength.toFloat() - 1,
+                    -y.toFloat() + 2,
+                    Color(175, 163, 0).rgb
+                )
+            }
+            Stencil.erase(true)
+
+            GlStateManager.resetColor()
+
+            Stencil.dispose()
+
+            GL11.glPushMatrix()
+            GlStateManager.disableAlpha()
+            GlStateManager.resetColor()
+            GL11.glColor4f(1F, 1F, 1F, 1F)
+            val pn = ResourceLocation(
+                when (type.name) {
+                    "SUCCESS" -> "liquidbounce+/noti/intellj/checkmark.png"
+                    "ERROR" -> "liquidbounce+/noti/intellj/close.png"
+                    "WARNING" -> "liquidbounce+/noti/intellj/warning.png"
+                    "INFO" -> "liquidbounce+/noti/intellj/info.png"
+                    else -> "liquidbounce+/error/intellj/error1.png"
+                }
+            )
+            RenderUtils.drawImage(pn, -textLength - 11, -y + 2, 7, 7)
+            GlStateManager.enableAlpha()
+            GL11.glPopMatrix()
+
+            Fonts.minecraftFont.drawStringWithShadow(content, -textLength.toFloat() - 1, -y.toFloat() + 15, -1)
         }
+        if (style.equals("TenacityOld")) {
 
-        var y = firstY
+            val realY = -(index + 1) * (height + 10)
+            val nowTime = System.currentTimeMillis()
 
-        when (style.toLowerCase()) {
-            "compact" -> {
-                GlStateManager.resetColor()
+            val pn = ResourceLocation(
+                when (type.name) {
+                    "SUCCESS" -> "liquidbounce+/noti/SUCCESS.png"
+                    "ERROR" -> "liquidbounce+/noti/ERROR.png"
+                    "WARNING" -> "liquidbounce+/noti/WARNING.png"
+                    "INFO" -> "liquidbounce+/noti/INFO.png"
+                    else -> "liquidbounce+/error/error1.png"
+                }
+            )
+            //Y-Axis Animation
+            if (nowY != realY) {
+                var pct = (nowTime - animeYTime) / animeTime.toDouble()
+                if (pct > 1) {
+                    nowY = realY
+                    pct = 1.0
+                } else {
+                    pct = EaseUtils.easeOutExpo(pct)
+                }
+                GL11.glTranslated(0.0, (realY - nowY) * pct, 0.0)
+            } else {
+                animeYTime = nowTime
+            }
+            GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
 
-                if (blur) {
-                    GL11.glTranslatef(-originalX, -originalY, 0F)
-                    GL11.glPushMatrix()
-                    BlurUtils.blurAreaRounded(originalX + -x - 5F, originalY + -18F - y, originalX + -x + 8F + textLength, originalY + -y, 3F, strength)
-                    GL11.glPopMatrix()
-                    GL11.glTranslatef(originalX, originalY, 0F)
+            //X-Axis Animation
+            var pct = (nowTime - animeXTime) / animeTime.toDouble()
+            when (fadeState) {
+                FadeState.IN -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.STAY
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = EaseUtils.easeOutExpo(pct)
                 }
 
-                RenderUtils.customRounded(-x + 8F + textLength, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, backgroundColor.rgb)
-                RenderUtils.customRounded(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, when(type) {
-                    Type.SUCCESS -> Color(80, 255, 80).rgb
-                    Type.ERROR -> Color(255, 80, 80).rgb
-                    Type.INFO -> Color(255, 255, 255).rgb
-                    Type.WARNING -> Color(255, 255, 0).rgb
-                })
-
-                GlStateManager.resetColor()
-                Fonts.font40.drawString(message, -x + 3, -13F - y, -1)
-            }
-            "full" -> {
-                val dist = (x + 1 + 26F) - (x - 8 - textLength)
-                val kek = -x - 1 - 26F
-
-                GlStateManager.resetColor()
-
-                if (blur) {
-                    GL11.glTranslatef(-originalX, -originalY, 0F)
-                    GL11.glPushMatrix()
-                    BlurUtils.blurArea(originalX + kek, originalY + -28F - y, originalX + -x + 8 + textLength, originalY + -y, strength)
-                    GL11.glPopMatrix()
-                    GL11.glTranslatef(originalX, originalY, 0F)
+                FadeState.STAY -> {
+                    pct = 1.0
+                    if ((nowTime - animeXTime) > time) {
+                        fadeState = FadeState.OUT
+                        animeXTime = nowTime
+                    }
                 }
 
-                RenderUtils.drawRect(-x + 8 + textLength, -y, kek, -28F - y, backgroundColor.rgb)
-
-                GL11.glPushMatrix()
-                GlStateManager.disableAlpha()
-                RenderUtils.drawImage2(when (type) {
-                    Type.SUCCESS -> imgSuccess
-                    Type.ERROR -> imgError
-                    Type.WARNING -> imgWarning
-                    Type.INFO -> imgInfo
-                }, kek, -27F - y, 26, 26)
-                GlStateManager.enableAlpha()
-                GL11.glPopMatrix()
-
-                GlStateManager.resetColor()
-                if (fadeState == FadeState.STAY && !stayTimer.hasTimePassed(displayTime))
-                    RenderUtils.drawRect(kek, -y, kek + (dist * if (stayTimer.hasTimePassed(displayTime)) 0F else ((displayTime - (System.currentTimeMillis() - stayTimer.time)).toFloat() / displayTime.toFloat())), -1F - y, enumColor)
-                else if (fadeState == FadeState.IN)
-                    RenderUtils.drawRect(kek, -y, kek + dist, -1F - y, enumColor)
-
-                GlStateManager.resetColor()
-                Fonts.font40.drawString(message, -x + 2, -18F - y, -1)
-            }
-            "material" -> {
-                GlStateManager.resetColor()
-
-                GL11.glPushMatrix()
-                GL11.glTranslatef(-x, -y - notifHeight - (if (barMaterial) 2F else 0F), 0F)
-
-                RenderUtils.originalRoundedRect(1F, -1F, 159F, notifHeight + (if (barMaterial) 2F else 0F) + 1F, 1F, when (type) {
-                    Type.SUCCESS -> Color(72, 210, 48, 70).rgb
-                    Type.ERROR -> Color(227, 28, 28, 70).rgb
-                    Type.WARNING -> Color(245, 212, 25, 70).rgb
-                    Type.INFO -> Color(255, 255, 255, 70).rgb
-                })
-                RenderUtils.originalRoundedRect(-1F, 1F, 161F, notifHeight + (if (barMaterial) 2F else 0F) - 1F, 1F, when (type) {
-                    Type.SUCCESS -> Color(72, 210, 48, 70).rgb
-                    Type.ERROR -> Color(227, 28, 28, 70).rgb
-                    Type.WARNING -> Color(245, 212, 25, 70).rgb
-                    Type.INFO -> Color(255, 255, 255, 70).rgb
-                })
-                RenderUtils.originalRoundedRect(-0.5F, -0.5F, 160.5F, notifHeight + (if (barMaterial) 2F else 0F) + 0.5F, 1F, when (type) {
-                    Type.SUCCESS -> Color(72, 210, 48, 80).rgb
-                    Type.ERROR -> Color(227, 28, 28, 80).rgb
-                    Type.WARNING -> Color(245, 212, 25, 80).rgb
-                    Type.INFO -> Color(255, 255, 255, 80).rgb
-                })
-
-                if (barMaterial) {
-                    Stencil.write(true)
-                    RenderUtils.originalRoundedRect(0F, 0F, 160F, notifHeight + 2F, 1F, when (type) {
-                        Type.SUCCESS -> Color(72, 210, 48, 255).rgb
-                        Type.ERROR -> Color(227, 28, 28, 255).rgb
-                        Type.WARNING -> Color(245, 212, 25, 255).rgb
-                        Type.INFO -> Color(255, 255, 255, 255).rgb
-                    })
-                    Stencil.erase(true)
-                    if (fadeState == FadeState.STAY) RenderUtils.newDrawRect(0F, notifHeight, 160F * if (stayTimer.hasTimePassed(displayTime)) 1F else ((System.currentTimeMillis() - stayTimer.time).toFloat() / displayTime.toFloat()), notifHeight + 2F, when (type) {
-                        Type.SUCCESS -> Color(72 + 90, 210 + 30, 48 + 90, 255).rgb
-                        Type.ERROR -> Color(227 + 20, 28 + 90, 28 + 90, 255).rgb
-                        Type.WARNING -> Color(245 - 70, 212 - 70, 25, 255).rgb
-                        Type.INFO -> Color(155, 155, 155, 255).rgb
-                    })
-                    Stencil.dispose()
-                } else RenderUtils.originalRoundedRect(0F, 0F, 160F, notifHeight, 1F, when (type) {
-                    Type.SUCCESS -> Color(72, 210, 48, 255).rgb
-                    Type.ERROR -> Color(227, 28, 28, 255).rgb
-                    Type.WARNING -> Color(245, 212, 25, 255).rgb
-                    Type.INFO -> Color(255, 255, 255, 255).rgb
-                })
-
-                var yHeight = 7F
-                for (s in messageList) {
-                    Fonts.font40.drawString(s, 30F, yHeight, if (type == Type.ERROR) -1 else 0)
-                    yHeight += Fonts.font40.FONT_HEIGHT.toFloat() + 2F
+                FadeState.OUT -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.END
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = 1 - EaseUtils.easeInExpo(pct)
                 }
 
-                GL11.glPushMatrix()
-                GlStateManager.disableAlpha()
-                RenderUtils.drawImage3(when (type) {
-                    Type.SUCCESS -> newSuccess
-                    Type.ERROR -> newError
-                    Type.WARNING -> newWarning
-                    Type.INFO -> newInfo
-                }, 9F, notifHeight / 2F - 6F, 12, 12,
-                    if (type == Type.ERROR) 1F else 0F,
-                    if (type == Type.ERROR) 1F else 0F,
-                    if (type == Type.ERROR) 1F else 0F, 1F)
-                GlStateManager.enableAlpha()
-                GL11.glPopMatrix()
-
-                GL11.glPopMatrix()
-
-                GlStateManager.resetColor()
+                FadeState.END -> {
+                    return true
+                }
             }
+            GL11.glScaled(pct, pct, pct)
+            GL11.glTranslatef(-width.toFloat(), -height.toFloat() + 40, 0F)
+
+            var fontcolor = 0
+            if (type.toString() == "SUCCESS") {
+                fontcolor = Color(40, 250, 40, 75).rgb
+            }
+            if (type.toString() == "ERROR") {
+                fontcolor = Color(250, 40, 40, 75).rgb
+            }
+            if (type.toString() == "WARNING") {
+                fontcolor = Color(219, 167, 20, 75).rgb
+            }
+            if (type.toString() == "INFO") {
+                fontcolor = Color(106, 106, 245, 75).rgb
+            }
+            RenderUtils.drawRect(-10F, 0F, width.toFloat(), height.toFloat(), Color(63, 63, 63, 210))
+            RenderUtils.drawGradientSidewaysV(
+                -10.0,
+                height.toDouble(),
+                width.toDouble(),
+                height.toDouble() + 2,
+                Color(1, 1, 1, 15).rgb,
+                Color(1, 1, 1, 0).rgb
+            )
+            RenderUtils.drawGradientSidewaysV(
+                -10.0,
+                0.0,
+                width.toDouble(),
+                0.0 - 2,
+                Color(1, 1, 1, 15).rgb,
+                Color(1, 1, 1, 0).rgb
+            )
+            RenderUtils.drawRect(
+                -10.0f,
+                0F,
+                width * ((nowTime - displayTime) / (animeTime * 2F + time)),
+                height.toFloat(),
+                fontcolor
+            )
+            Fonts.fontTahoma.drawString(title, 10f, 5.5f, Color.WHITE.rgb)
+            Fonts.font35.drawString(content, 10f, 18f, Color.gray.rgb)
+            RenderUtils.drawFilledCircle(width - 7, 6, 2F, Color(255, 255, 255, 220))
+            RenderUtils.drawImage(pn, -8, 8, 17, 17)
+            GlStateManager.resetColor()
+
+
+            return false
         }
+        if (style.equals("Novoline")) {
+            val image = ResourceLocation("liquidbounce+/ui/" + type.name + ".png")
+            val width = 100.coerceAtLeast((Fonts.font35.getStringWidth(this.content)) + 70)
 
-        when (fadeState) {
-            FadeState.IN -> {
-                if (x < width) {
-                    if (hAnimMode.equals("smooth", true))
-                        x = net.ccbluex.liquidbounce.utils.AnimationUtils.animate(width, x, animSpeed * 0.025F * delta)
-                    else
-                        x = AnimationUtils.easeOut(fadeStep, width) * width
-                    fadeStep += delta / 4F
+            //Y-Axis Animation
+            if (nowY != realY) {
+                var pct = (nowTime - animeYTime) / animeTime.toDouble()
+                if (pct > 1) {
+                    nowY = realY
+                    pct = 1.0
+                } else {
+                    pct = EaseUtils.easeOutBack(pct)
                 }
-                if (x >= width) {
-                    fadeState = FadeState.STAY
-                    x = width
-                    fadeStep = width
+                GL11.glTranslated(0.0, (realY - nowY) * pct, 0.0)
+            } else {
+                animeYTime = nowTime
+            }
+            GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
+
+            //X-Axis Animation
+            var pct = (nowTime - animeXTime) / animeTime.toDouble()
+            when (fadeState) {
+                FadeState.IN -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.STAY
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = EaseUtils.easeOutBack(pct)
                 }
 
-                stay = 60F
-                stayTimer.reset()
+                FadeState.STAY -> {
+                    pct = 1.0
+                    if ((nowTime - animeXTime) > time) {
+                        fadeState = FadeState.OUT
+                        animeXTime = nowTime
+                    }
+                }
+
+                FadeState.OUT -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.END
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    pct = 1 - EaseUtils.easeInBack(pct)
+                }
+
+                FadeState.END -> {
+                    return true
+                }
+            }
+            GL11.glScaled(pct, pct, pct)
+            GL11.glTranslatef(-width.toFloat(), -height.toFloat() + 30, 0F)
+            RenderUtils.drawShadow(1F, 0F, width.toFloat() - 1, height.toFloat())
+            RenderUtils.drawRect(1F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 50))
+            fun drawCircle(x: Float, y: Float, radius: Float, start: Int, end: Int) {
+                GlStateManager.enableBlend()
+                GlStateManager.disableTexture2D()
+                GlStateManager.tryBlendFuncSeparate(
+                    GL11.GL_SRC_ALPHA,
+                    GL11.GL_ONE_MINUS_SRC_ALPHA,
+                    GL11.GL_ONE,
+                    GL11.GL_ZERO
+                )
+                GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                GL11.glLineWidth(2f)
+                GL11.glBegin(GL11.GL_LINE_STRIP)
+                var i = end.toFloat()
+                while (i >= start) {
+                    var c = RenderUtils.getGradientOffset(
+                        Color(redValue.get(), greenValue.get(), blueValue.get()),
+                        Color(red2Value.get(), green2Value.get(), blue2Value.get(), 1),
+                        (Math.abs(System.currentTimeMillis() / 360.0 + (i * 34 / 360) * 56 / 100) / 10)
+                    ).rgb
+                    val f2 = (c shr 24 and 255).toFloat() / 255.0f
+                    val f22 = (c shr 16 and 255).toFloat() / 255.0f
+                    val f3 = (c shr 8 and 255).toFloat() / 255.0f
+                    val f4 = (c and 255).toFloat() / 255.0f
+                    GlStateManager.color(f22, f3, f4, f2)
+                    GL11.glVertex2f(
+                        (x + Math.cos(i * Math.PI / 180) * (radius * 1.001f)).toFloat(),
+                        (y + Math.sin(i * Math.PI / 180) * (radius * 1.001f)).toFloat()
+                    )
+                    i -= 360f / 90.0f
+                }
+                GL11.glEnd()
+                GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                GlStateManager.enableTexture2D()
+                GlStateManager.disableBlend()
             }
 
-            FadeState.STAY -> {
-                if (stay > 0) {
-                    stay = 0F
-                    stayTimer.reset()
-                }
-                if (stayTimer.hasTimePassed(displayTime))
-                    fadeState = FadeState.OUT
+            RenderUtils.drawFilledCircle(16f, 15f, 12.85f, Color(255, 255, 255, 255))
+            RenderUtils.drawGradientSideways(
+                1.0,
+                height.toFloat() + 0.0,
+                width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 0.0,
+                height.toFloat() + 2.0,
+                Color(redValue.get(), greenValue.get(), blueValue.get()).rgb,
+                Color(red2Value.get(), green2Value.get(), blue2Value.get()).rgb
+            )
+            drawCircle(16f, 15f, 13f, 0, 360)
+            if (type == Type.INFO) {
+                Fonts.NOTIFICATIONS.drawString("B", 11F, 8F, 0)
+            } else if (type == Type.WARNING) {
+                Fonts.NOTIFICATIONS.drawString("A", 14F, 8F, 0)
+            } else if (type == Type.ERROR) {
+                Fonts.NOTIFICATIONS2.drawString("L", 9F, 10F, 0)
+            } else {
+                Fonts.NOTIFICATIONS2.drawString("M", 8F, 10F, 0)
             }
+            Fonts.fontSFUI40.drawString(title, 34F, 4F, -1)
+            Fonts.fontSFUI35.drawString(
+                content + "  (" + BigDecimal(((time - time * ((nowTime - displayTime) / (animeTime * 2F + time))) / 1000).toDouble()).setScale(
+                    1,
+                    BigDecimal.ROUND_HALF_UP
+                ).toString() + "s)", 34F, 17F, -1
+            )
 
-            FadeState.OUT -> if (x > 0) {
-                if (hAnimMode.equals("smooth", true))
-                    x = net.ccbluex.liquidbounce.utils.AnimationUtils.animate(-width / 2F, x, animSpeed * 0.025F * delta)
-                else
-                    x = AnimationUtils.easeOut(fadeStep, width) * width
 
-                fadeStep -= delta / 4F
-            } else
-                fadeState = FadeState.END
-
-            FadeState.END -> hud.removeNotification(this)
+            GlStateManager.resetColor()
+            return false
         }
+        return false
     }
 }
 
-enum class Type {
-    SUCCESS, INFO, WARNING, ERROR
+
+enum class Type(var renderColor: Color) {
+    SUCCESS(Color(0x60E066)),
+    ERROR(Color(0xFF2F3A)),
+    WARNING(Color(0xF5FD00)),
+    INFO( Color(106, 106, 220));
 }
+
+
+enum class FadeState { IN, STAY, OUT, END }

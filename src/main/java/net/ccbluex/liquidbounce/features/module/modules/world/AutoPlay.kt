@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.AutoDisable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
+
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -125,7 +126,7 @@ class AutoPlay : Module() {
                 }
                 "blocksmc" -> {
                     if (clickState == 1 && text.contains("Only VIP players can join full servers!", true)) {
-                        LiquidBounce.hud.addNotification(Notification("Join failed! trying again", Type.WARNING, 3000))
+                        LiquidBounce.hud.addNotification(Notification(name,"Join failed! trying again", Type.WARNING, 3000))
                         // connect failed so try to join again
                         Timer().schedule(1500L) {
                             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
@@ -177,7 +178,7 @@ class AutoPlay : Module() {
                         waitForLobby = false
                     }
                     if (showGuiWhenFailedValue.get() && text.contains("giây", false) && text.contains("thất bại", false)) {
-                        LiquidBounce.hud.addNotification(Notification("Failed to join, showing GUI", Type.ERROR, 1000))
+                        LiquidBounce.hud.addNotification(Notification(name,"Failed to join, showing GUI", Type.ERROR, 1000))
                         mc.thePlayer.sendChatMessage("/bw gui ${bwModeValue.get()}")
                     }
                 }
@@ -197,7 +198,7 @@ class AutoPlay : Module() {
                     runnable()
                 }
             }
-            LiquidBounce.hud.addNotification(Notification("Sending you to next game in ${delayValue.get()}s", Type.INFO, delayValue.get() * 1000L))
+            LiquidBounce.hud.addNotification(Notification(name,"Sending you to next game in ${delayValue.get()}s", Type.INFO, delayValue.get() * 1000))
         }
     }
 

@@ -96,8 +96,9 @@ class Speed : Module() {
         HiveHop(),
         MineplexGround(),
         TeleportCubeCraft(),
-        GrimCombat(),  // Verus
-        VerusHop(),
+        GrimCombat(),
+        IntaveStrafe(),
+        VerusHop(), // Verus
         VerusLowHop(),
         VerusHard(),  //Vulcan
         VulcanGroundSpeed(),
@@ -181,7 +182,7 @@ class Speed : Module() {
             if (state) onEnable()
         }
     }
-    val otherModeValue: ListValue = object : ListValue("Other-Mode", arrayOf("YPort", "YPort2", "Boost", "Frame", "MiJump", "OnGround", "SlowHop", "Jump", "Legit", "AEMine", "GWEN", "HiveHop", "MineplexGround", "TeleportCubeCraft", "GrimCombat"), "Boost", { typeValue.get().equals("other", ignoreCase = true) }) {
+    val otherModeValue: ListValue = object : ListValue("Other-Mode", arrayOf("YPort", "YPort2", "Boost", "Frame", "MiJump", "OnGround", "SlowHop", "Jump", "Legit", "AEMine", "GWEN", "HiveHop", "MineplexGround", "TeleportCubeCraft", "GrimCombat","IntaveStrafe"), "Boost", { typeValue.get().equals("other", ignoreCase = true) }) {
         override fun onChange(oldValue: String, newValue: String) {
             if (state) onDisable()
         }
@@ -307,7 +308,7 @@ class Speed : Module() {
         if (NoBob.get()) mc.gameSettings.viewBobbing = false
         if (mc.thePlayer == null) return
         if (bypassWarning.get() && typeValue.get().equals("hypixel", ignoreCase = true) && !LiquidBounce.moduleManager.getModule(Disabler::class.java)!!.state) {
-            LiquidBounce.hud.addNotification(Notification("Disabler is OFF! Disable this notification in settings.", Type.WARNING, 3000))
+            LiquidBounce.hud.addNotification(Notification(name,"Disabler is OFF! Disable this notification in settings.", Type.WARNING, 3000))
         }
         mc.timer.timerSpeed = 1f
         val speedMode = mode

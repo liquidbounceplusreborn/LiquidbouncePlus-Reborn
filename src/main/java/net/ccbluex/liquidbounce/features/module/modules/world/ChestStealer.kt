@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.player.InvManager
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
+
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -224,7 +225,7 @@ class ChestStealer : Module() {
         } else if (autoCloseValue.get() && screen.inventorySlots.windowId == contentReceived && autoCloseTimer.hasTimePassed(nextCloseDelay)) {
             mc.thePlayer.closeScreen()
 
-            if (silenceValue.get() && !stillDisplayValue.get()) LiquidBounce.hud.addNotification(Notification("Closed chest.", Type.INFO))
+            if (silenceValue.get() && !stillDisplayValue.get()) LiquidBounce.hud.addNotification(Notification(name,"Closed chest.", Type.INFO))
             nextCloseDelay = TimerUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
 
             if (once) {

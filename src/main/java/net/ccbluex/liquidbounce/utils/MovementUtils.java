@@ -14,7 +14,6 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
-import org.lwjgl.util.vector.Vector2f;
 
 public final class MovementUtils extends MinecraftInstance {
 
@@ -369,26 +368,32 @@ public final class MovementUtils extends MinecraftInstance {
         mc.thePlayer.motionZ = 0.0;
         if(y) mc.thePlayer.motionY = 0.0;
     }
-    public static void updateBlocksPerSecond() {
-        double bps = 0.0;
-        if (mc.thePlayer == null || mc.thePlayer.ticksExisted < 1) {
-            bps = 0.0;
+    public static void setMoveSpeed(double moveSpeed, float yaw, double strafe, double forward) {
+        if (forward != 0.0D) {
+            if (strafe > 0.0D) {
+                yaw += ((forward > 0.0D) ? -45 : 45);
+            } else if (strafe < 0.0D) {
+                yaw += ((forward > 0.0D) ? 45 : -45);
+            }
+            strafe = 0.0D;
+            if (forward > 0.0D) {
+                forward = 1.0D;
+            } else if (forward < 0.0D) {
+                forward = -1.0D;
+            }
         }
-        double distance = mc.thePlayer.getDistance(lastX, lastY, lastZ);
-        lastX = mc.thePlayer.posX;
-        lastY = mc.thePlayer.posY;
-        lastZ = mc.thePlayer.posZ;
-        bps = distance * (20 * mc.timer.timerSpeed);
+        if (strafe > 0.0D) {
+            strafe = 1.0D;
+        } else if (strafe < 0.0D) {
+            strafe = -1.0D;
+        }
+        double mx = Math.cos(Math.toRadians((yaw + 90.0F)));
+        double mz = Math.sin(Math.toRadians((yaw + 90.0F)));
+        mc.thePlayer.motionX = forward * moveSpeed * mx + strafe * moveSpeed * mz;
+        mc.thePlayer.motionZ = forward * moveSpeed * mz - strafe * moveSpeed * mx;
     }
-    public static float getMoveYaw(float yaw) {
-        Vector2f from = new Vector2f((float) mc.thePlayer.lastTickPosX, (float) mc.thePlayer.lastTickPosZ),
-                to = new Vector2f((float) mc.thePlayer.posX, (float) mc.thePlayer.posZ),
-                diff = new Vector2f(to.x - from.x, to.y - from.y);
 
-        double x = diff.x, z = diff.y;
-        if (x != 0 && z != 0) {
-            yaw = (float) Math.toDegrees((Math.atan2(-x, z) + Math.PI * 2F) % Math.PI * 2F);
-        }
-        return yaw;
+    public static void setMoveSpeed(double moveSpeed) {
+        setMoveSpeed(moveSpeed, mc.thePlayer.rotationYaw, mc.thePlayer.movementInput.moveStrafe, mc.thePlayer.movementInput.moveForward);
     }
 }

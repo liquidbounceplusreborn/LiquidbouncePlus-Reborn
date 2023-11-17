@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
+
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -72,7 +73,7 @@ class AutoLogin : Module() {
 		else if (regTimer.hasTimePassed(delayValue.get().toLong())) {
 			for (packet in registerPackets)
 				PacketUtils.sendPacketNoEvent(packet)
-			LiquidBounce.hud.addNotification(Notification("Successfully registered.", Type.SUCCESS))
+			LiquidBounce.hud.addNotification(Notification(name,"Successfully registered.", Type.SUCCESS))
 			registerPackets.clear()
 			regTimer.reset()
 		}
@@ -82,7 +83,7 @@ class AutoLogin : Module() {
 		else if (logTimer.hasTimePassed(delayValue.get().toLong())) {
 			for (packet in loginPackets)
 				PacketUtils.sendPacketNoEvent(packet)
-            LiquidBounce.hud.addNotification(Notification("Successfully logged in.", Type.SUCCESS))
+            LiquidBounce.hud.addNotification(Notification(name,"Successfully logged in.", Type.SUCCESS))
 			loginPackets.clear()
 			logTimer.reset()
 		}

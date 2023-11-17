@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
+
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils
@@ -91,7 +92,7 @@ class AntiStaff : Module() {
             chat("[AntiStaff] Detected staff: $name$msg")
         if (notify.get())
             LiquidBounce.hud.addNotification(
-                Notification(
+                Notification(name,
                     "Detected staff: $name$msg",
                     Type.ERROR,
                     4000

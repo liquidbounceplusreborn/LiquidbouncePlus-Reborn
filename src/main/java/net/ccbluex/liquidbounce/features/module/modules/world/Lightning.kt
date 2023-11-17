@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
+
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
@@ -36,7 +37,7 @@ class Lightning : Module() {
                 ClientUtils.displayChatMessage("§7[§6§lLightning§7] §fDetected lightning at §a$x $y $z §7($dist blocks away)")
             
             if (notifValue.get())
-                LiquidBounce.hud.addNotification(Notification("Lightning [$x $y $z] ($dist blocks away)", Type.WARNING, 3000))
+                LiquidBounce.hud.addNotification(Notification(name,"Lightning [$x $y $z] ($dist blocks away)", Type.WARNING, 3000))
         }
     }
 }

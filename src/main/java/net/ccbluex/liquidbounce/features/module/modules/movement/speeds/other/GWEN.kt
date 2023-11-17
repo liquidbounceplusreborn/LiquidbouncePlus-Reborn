@@ -17,11 +17,6 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 class GWEN : SpeedMode("GWEN") {
     private val timer = MSTimer()
     private var stage = false
-
-    
-    
-    
-
     override fun onMotion(event: MotionEvent) {
         if (event.eventState == EventState.PRE && MovementUtils.isMoving()) {
             if (stage) {

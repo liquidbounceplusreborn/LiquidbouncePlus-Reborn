@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud
 
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
@@ -234,8 +235,4 @@ open class HUD : MinecraftInstance() {
      * Remove [notification]
      */
     fun removeNotification(notification: Notification) = notifications.remove(notification)
-    fun addNotification(notification: String) {
-
-    }
-
 }

@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
+
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils.packets
@@ -558,7 +559,7 @@ class BackTrack : Module() {
                     if (!packetEvent.isCancelled) PacketUtils.sendPacketNoEvent(it)
                 } catch (e: Exception) {
                     LiquidBounce.hud.addNotification(
-                        Notification(
+                        Notification(name,
                             "Something went wrong when sending packet reversing",
                             Type.ERROR
                         )

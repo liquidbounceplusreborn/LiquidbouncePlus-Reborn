@@ -42,6 +42,8 @@ import java.util.ArrayList;
 
 import static net.ccbluex.liquidbounce.utils.MovementUtils.isBlockUnder;
 
+;
+
 @ModuleInfo(name = "Fly", description = "Allows you to fly in survival mode.", category = ModuleCategory.MOVEMENT, keyBind = Keyboard.KEY_F)
 public class Fly extends Module {
 
@@ -385,7 +387,7 @@ public class Fly extends Module {
             case "watchdog":
                 expectItemStack = getSlimeSlot();
                 if (expectItemStack == -1) {
-                    LiquidBounce.hud.addNotification(new Notification("The fly requires slime blocks to be activated properly.", Type.ERROR, 500));
+                    LiquidBounce.hud.addNotification(new Notification(getName(),"The fly requires slime blocks to be activated properly.", Type.ERROR,1500, 500));
                     break;
                 }
 
@@ -862,7 +864,7 @@ public class Fly extends Module {
                 int enderPearlSlot = getPearlSlot();
                 if (pearlState == 0) {
                     if (enderPearlSlot == -1) {
-                        LiquidBounce.hud.addNotification(new Notification("You don't have any ender pearl!", Type.ERROR, 500));
+                        LiquidBounce.hud.addNotification(new Notification(getName(),"You don't have any ender pearl!", Type.ERROR, 1500,500));
                         pearlState = -1;
                         this.setState(false);
                         return;

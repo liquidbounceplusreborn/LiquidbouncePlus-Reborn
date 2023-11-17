@@ -2,7 +2,7 @@
  * LiquidBounce+ Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/WYSI-Foundation/LiquidBouncePlus/
- * 
+ *
  * This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
  */
 package net.ccbluex.liquidbounce.features.command.commands
@@ -22,13 +22,13 @@ class PathfindingTeleportCommand : Command("ptp", emptyArray()) {
 
             // Get target player data
             val targetPlayer = mc.theWorld.playerEntities
-                    .filter { !AntiBot.isBot(it) && it.name.equals(theName, true) }
-                    .firstOrNull()
+                .filter { !AntiBot.isBot(it) && it.name.equals(theName, true) }
+                .firstOrNull()
 
             // Attempt to teleport to player's position.
             if (targetPlayer != null) {
                 val pathfinding = PathUtils.findBlinkPath(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ)
-                for (path in pathfinding) 
+                for (path in pathfinding)
                     mc.thePlayer.setPositionAndUpdate(path.x, path.y, path.z)
                 chat("Attempted to teleport you to §a${targetPlayer.name}§3.")
                 return
@@ -44,7 +44,7 @@ class PathfindingTeleportCommand : Command("ptp", emptyArray()) {
                 val posZ = if (args[3].equals("~", true)) mc.thePlayer.posZ else args[3].toDouble()
 
                 val pathfinding = PathUtils.findBlinkPath(posX, posY, posZ)
-                for (path in pathfinding) 
+                for (path in pathfinding)
                     mc.thePlayer.setPositionAndUpdate(path.x, path.y, path.z)
                 chat("Attempted to teleport you to §a$posX, $posY, $posZ§3.")
                 return
@@ -64,9 +64,9 @@ class PathfindingTeleportCommand : Command("ptp", emptyArray()) {
 
         return when (args.size) {
             1 -> mc.theWorld.playerEntities
-                    .filter { !AntiBot.isBot(it) && it.name.startsWith(pref, true) }
-                    .map { it.name }
-                    .toList()
+                .filter { !AntiBot.isBot(it) && it.name.startsWith(pref, true) }
+                .map { it.name }
+                .toList()
             else -> emptyList()
         }
     }
