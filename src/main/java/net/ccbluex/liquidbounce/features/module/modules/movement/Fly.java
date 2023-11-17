@@ -30,6 +30,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.*;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
+import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
 import org.lwjgl.input.Keyboard;
@@ -108,7 +109,8 @@ public class Fly extends Module {
             "Jump",
             "Derp",
             "Collide",
-            "BlocksMC"
+            "BlocksMC",
+            "Intave13"
     }, "Motion");
 
     private final FloatValue vanillaSpeedValue = new FloatValue("Speed", 2F, 0F, 5F, () -> {
@@ -237,6 +239,10 @@ public class Fly extends Module {
 
     private double bmcSpeed;
     private boolean started;
+    private double serverPosX;
+    private double serverPosY;
+    private double serverPosZ;
+    private boolean teleported = false;
 
     private void doMove(double h, double v) {
         if (mc.thePlayer == null) return;
@@ -316,6 +322,11 @@ public class Fly extends Module {
 
         bmcSpeed = 0;
         started = false;
+
+        serverPosX = mc.thePlayer.posX;
+        serverPosY = mc.thePlayer.posY;
+        serverPosZ = mc.thePlayer.posZ;
+        teleported = false;
 
         switch (mode.toLowerCase()) {
             case "ncp":
@@ -1059,6 +1070,23 @@ public class Fly extends Module {
                 }
             }
         }
+        if(modeValue.get() == "Intave13") {
+            if (!(event.getEventState() == EventState.POST)) {
+                if (!teleported) {
+                    float yaw = mc.thePlayer.rotationYaw * 3.1415927f / 180f;
+                    double speed = 6.0;
+                    if (mc.thePlayer.ticksExisted % 3 == 0) {
+                        mc.getNetHandler().addToSendQueue(new C03PacketPlayer(mc.thePlayer.onGround));
+                        mc.thePlayer.setPosition(serverPosX, serverPosY, serverPosZ);
+                    }
+                    event.setY(-1.1 + mc.thePlayer.ticksExisted % 3 == 0 ? 0.42f : 0f);
+                    event.setX(MathHelper.sin(yaw) * speed);
+                    event.setZ(MathHelper.sin(yaw) * speed);
+                } else {
+                    mc.timer.timerSpeed = 0.3f;
+                }
+            }
+        }
     }
     public float coerceAtMost(double value, double max) {
         return (float) Math.min(value, max);
@@ -1177,6 +1205,15 @@ public class Fly extends Module {
 
             if (verusDmgModeValue.get().equalsIgnoreCase("Jump") && verusJumpTimes < 5 && mode.equalsIgnoreCase("Verus")) {
                 packetPlayer.onGround = false;
+            }
+        }
+        if(modeValue.get() == "Intave13"){
+            if (packet instanceof S08PacketPlayerPosLook && !teleported) {
+                event.cancelEvent();
+            } else if (packet instanceof S12PacketEntityVelocity) {
+                if (((S12PacketEntityVelocity) packet).getEntityID() == mc.thePlayer.getEntityId() && ((S12PacketEntityVelocity) packet).motionY / 8000.0 > 0.5) {
+                    teleported = true;
+                }
             }
         }
     }

@@ -257,6 +257,7 @@ class Speed : Module() {
     val speedUp = BoolValue("SpeedUp", false) { modeName.equals("grimcombat", ignoreCase = true) }
     val speed = IntegerValue("Speed", 0, 0, 15) { modeName.equals("grimcombat", ignoreCase = true) }
     val distance = FloatValue("Range", 0f, 0f, 2f) { modeName.equals("grimcombat", ignoreCase = true) }
+    val intaveBoostTest = BoolValue("IntaveBoostTest", false) { modeName.equals("intavestrafe", ignoreCase = true) }
     val tagDisplay = ListValue("Tag", arrayOf("Type", "FullName", "All"), "Type")
 
     @EventTarget

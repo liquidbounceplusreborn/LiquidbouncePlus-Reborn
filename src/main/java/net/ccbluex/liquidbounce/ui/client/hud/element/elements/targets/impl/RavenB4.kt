@@ -7,18 +7,12 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidinstruction.main
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 
 class RavenB4(inst: Target) : TargetStyle("RavenB4", inst, false) {
-    private var mainStr = ""
-    private fun updateStr(entity: EntityPlayer) {
-        val maxHealth = entity.maxHealth
-        val health = entity.health
-        mainStr = "${entity.displayName.formattedText} ${if(health / maxHealth <= mc.thePlayer.health / mc.thePlayer.maxHealth) "§aW" else "§cL"}"
-    }
     override fun drawTarget(entity: EntityPlayer) {
         val font = Fonts.minecraftFont
         val hp = decimalFormat2.format(entity.health)
@@ -26,11 +20,10 @@ class RavenB4(inst: Target) : TargetStyle("RavenB4", inst, false) {
         val length = font.getStringWidth(entity.displayName.formattedText)
         GlStateManager.pushMatrix()
         updateAnim(entity.health)
-        updateStr(entity)
         RenderUtils.drawRoundedGradientOutlineCorner(
             0F,
             0F,
-            length + hplength + 25F,
+            length + hplength + 23F,
             35F,
             2F, 8F,
             targetInstance.barColor.rgb,
@@ -39,22 +32,22 @@ class RavenB4(inst: Target) : TargetStyle("RavenB4", inst, false) {
         RenderUtils.drawRoundedRect(0F, 0F, length + hplength + 23F, 35F, 4F, Color(0, 0, 0, 100).rgb)
         GlStateManager.enableBlend()
         font.drawStringWithShadow(
-            mainStr,
+            entity.displayName.formattedText,
             6F,
             8F,
             Color(255, 255, 255, 255).rgb
         )
-//        val winorlose = if(entity.health < mc.thePlayer.health) "W" else "L"
-//        font.drawStringWithShadow(
-//            winorlose,
-//            length + hplength + 11.6F,
-//            8F,  (if (winorlose == "W")  Color(0, 255, 0).rgb else Color(139, 0, 0).rgb))
-//        font.drawStringWithShadow(
-//            hp,
-//            length + 8F,
-//            8F,
-//            ColorUtils.reAlpha(BlendUtils.getHealthColor(entity.health, entity.maxHealth), 255).rgb
-//        )
+        val winorlose = if(entity.health < mc.thePlayer.health) "W" else "L"
+        font.drawStringWithShadow(
+            winorlose,
+            length + hplength + 11.6F,
+            8F,  (if (winorlose == "W")  Color(0, 255, 0).rgb else Color(139, 0, 0).rgb))
+        font.drawStringWithShadow(
+            hp,
+            length + 8F,
+            8F,
+            ColorUtils.reAlpha(BlendUtils.getHealthColor(entity.health, entity.maxHealth), 255).rgb
+        )
         GlStateManager.disableAlpha()
         GlStateManager.disableBlend()
         RenderUtils.drawRoundedRect(
@@ -75,9 +68,10 @@ class RavenB4(inst: Target) : TargetStyle("RavenB4", inst, false) {
             targetInstance.barColor.rgb
         )
         GlStateManager.popMatrix()
+
     }
 
-    override fun getBorder(entity: EntityPlayer?): Border {
-        return Border(0F, 0F, 40F + mc.fontRendererObj.getStringWidth(if (entity == null) "" else entity.name) ,35F)
+    override fun getBorder(entity: EntityPlayer?): Border? {
+        return Border(0F, 0F, 40F + mc.fontRendererObj.getStringWidth(entity!!.displayName.formattedText) ,35F)
     }
 }
