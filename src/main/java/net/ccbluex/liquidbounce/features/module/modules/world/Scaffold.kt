@@ -279,10 +279,7 @@ class Scaffold : Module() {
 
     private val sameYValue = BoolValue("SameY", false) { !towerEnabled.get() }
     private val autoJumpValue = BoolValue("AutoJump", false)
-    private val motionY = BoolValue("MotionY", false)
-    private val motionYValue = FloatValue("MotionYValue", 0.42f, 0f, 0.84f) { motionY.get() }
     private val smartSpeedValue = BoolValue("SmartSpeed", false)
-    private val parkourValue = BoolValue("Parkour", true)
     private val safeWalkValue = BoolValue("SafeWalk", true)
     private val airSafeValue = BoolValue("AirSafe", false) { safeWalkValue.get() }
     private val autoDisableSpeedValue = BoolValue("AutoDisable-Speed", true)
@@ -832,20 +829,6 @@ class Scaffold : Module() {
             if (!autoJumpValue.get() && !(smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state) || GameSettings.isKeyDown(mc.gameSettings.keyBindJump) || mc.thePlayer.posY < launchY
             ) launchY = mc.thePlayer.posY.toInt()
         }
-        if (motionY.get()) {
-            if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
-                mc.thePlayer.motionY = motionYValue.get().toDouble()
-            }
-        }
-        if (parkourValue.get()) {
-            if (MovementUtils.isMoving() && mc.thePlayer.onGround && !mc.thePlayer.isSneaking && !mc.gameSettings.keyBindSneak.isKeyDown && !mc.gameSettings.keyBindJump.isKeyDown &&
-                mc.theWorld.getCollidingBoundingBoxes(
-                    mc.thePlayer, mc.thePlayer.entityBoundingBox
-                        .offset(0.0, -0.5, 0.0).expand(-0.001, 0.0, -0.001)
-                ).isEmpty()
-            )
-                mc.thePlayer.jump()
-        }
     }
 
     @EventTarget
@@ -871,6 +854,18 @@ class Scaffold : Module() {
 
     @EventTarget //took it from applyrotationstrafe XD. staticyaw comes from bestnub.
     fun onStrafe(event: StrafeEvent) {
+        val sameY = sameYValue.get()
+        val smartSpeed = smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state
+        val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+        val blockPos = BlockPos(
+            mc.thePlayer.posX,
+            if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
+            mc.thePlayer.posZ
+        )
+        val check =
+            mc.theWorld.getBlockState(blockPos).block.material.isReplaceable || mc.theWorld.getBlockState(blockPos).block === Blocks.air
+        if (modeValue.get() == "Snap" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || modeValue.get() == "OffGround" && mc.thePlayer.onGround)
+            return
         if (lockRotation != null && rotationStrafeValue.get() == "LiquidBounce") {
             val dif =
                 ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - lockRotation!!.yaw - 23.5f - 135) + 180) / 45).toInt()
@@ -1170,7 +1165,7 @@ class Scaffold : Module() {
                 mc.thePlayer.motionX *= modifier.toDouble()
                 mc.thePlayer.motionZ *= modifier.toDouble()
             }
-            if (sprintModeValue.isMode("Off")) {
+            if (sprintModeValue.isMode("PlaceOff")) {
                 mc.thePlayer.isSprinting = false
             }
             if (sprintModeValue.isMode("PlaceOn")) {
