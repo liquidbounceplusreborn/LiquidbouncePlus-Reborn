@@ -14,17 +14,14 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.settings.GameSettings
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0APacketAnimation
-import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
@@ -72,7 +69,7 @@ class Velocity : Module() {
             "Legit",
             "AEMine",
             "GrimAC",
-            "GrimReduce",
+            "GrimCombat",
             "AllAC",
             "Intave",
             "JumpReset",
@@ -365,14 +362,6 @@ class Velocity : Module() {
                 }
             }
 
-            "grimreduce" -> if (velocityInput) {
-                if (attack) {
-                    mc.thePlayer!!.motionX *= 0.077760000
-                    mc.thePlayer!!.motionZ *= 0.077760000
-                    velocityInput = false
-                    attack = false
-                }
-            }
             "jumpreset" ->
                 if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
                     if (jumpResetMode.get() == "Reset") {
@@ -412,7 +401,9 @@ class Velocity : Module() {
 
         if (packet is S12PacketEntityVelocity) {
 
-            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer || !shouldAffect)
+            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID)
+                    ?: return) != mc.thePlayer || !shouldAffect
+            )
                 return
 
             velocityTimer.reset()
@@ -483,26 +474,22 @@ class Velocity : Module() {
                     grimPacket = true
                 }
 
-                "grimreduce" -> {
-                    velocityInput = true
-                    if (mc.thePlayer!!.onGround && mc.thePlayer.hurtTime > 0) {
-                        mc.gameSettings.keyBindJump.pressed = true
+                "grimcombat" -> {
+                    val target = LiquidBounce.combatManager.getNearByEntity(3f)
+                    repeat(12) {
+                        mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction())
+                        mc.thePlayer.sendQueue.addToSendQueue(
+                            C02PacketUseEntity(
+                                target,
+                                C02PacketUseEntity.Action.ATTACK
+                            )
+                        )
+                        mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
                     }
-                    if (killAura.state && killAura.target != null && mc.thePlayer!!.getDistanceToEntityBox(killAura.target!!) <= 3.01) {
-                        if (mc.thePlayer!!.movementInput.moveForward > 0.9f && mc.thePlayer!!.isSprinting && mc.thePlayer!!.serverSprintState) {
-                            repeat(5) {
-                                mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction(100, 100, true))
-                                mc.netHandler.addToSendQueue(
-                                    C02PacketUseEntity(
-                                        killAura.target,
-                                        C02PacketUseEntity.Action.ATTACK
-                                    )
-                                )
-                                mc.netHandler.addToSendQueue(C0APacketAnimation())
-                            }
-                            attack = true
-                        }
-                    }
+                    event.cancelEvent()
+                    mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
+                    mc.thePlayer.motionX *= 0
+                    mc.thePlayer.motionZ *= 0
                 }
             }
 
