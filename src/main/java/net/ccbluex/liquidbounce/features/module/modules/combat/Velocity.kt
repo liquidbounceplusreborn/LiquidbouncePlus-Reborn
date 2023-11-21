@@ -477,7 +477,6 @@ class Velocity : Module() {
                 "grimcombat" -> {
                     val target = LiquidBounce.combatManager.getNearByEntity(3f)
                     repeat(12) {
-                        mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction())
                         mc.thePlayer.sendQueue.addToSendQueue(
                             C02PacketUseEntity(
                                 target,
