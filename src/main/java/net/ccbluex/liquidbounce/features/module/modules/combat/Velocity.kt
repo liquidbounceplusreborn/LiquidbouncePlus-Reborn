@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 @ModuleInfo(
     name = "Velocity",
@@ -73,6 +74,7 @@ class Velocity : Module() {
             "AllAC",
             "Intave",
             "JumpReset",
+            "Sneak",
             "Smart"
         ), "Cancel"
     ) // later
@@ -105,16 +107,6 @@ class Velocity : Module() {
     private val phaseOffsetValue =
         FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m") { modeValue.get().equals("phase", true) }
 
-    // Jump Reset
-    private val jumpResetMode =
-        ListValue(
-            "JumpReset-Mode",
-            arrayOf("Normal", "Reset", "Reduce", "Combo"),
-            "Normal"
-        ) {
-            modeValue.get().equals("jumpreset", true)
-        }
-
     private val tagModeValue = ListValue("TagMode", arrayOf("Off", "Mode", "Percentage", "Both"), "Both")
 
     /**
@@ -135,9 +127,12 @@ class Velocity : Module() {
     // Grim
     private val transactionQueue: Queue<Short> = ConcurrentLinkedQueue()
     private var grimPacket = false
-    private var attack = false;
+    private var attack = false
 
     private var jumped = 0
+
+    private var start = 0
+    private var start2 = 0
 
     override val tag: String?
         get() = when (tagModeValue.get()) {
@@ -362,35 +357,43 @@ class Velocity : Module() {
                 }
             }
 
-            "jumpreset" ->
-                if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
-                    if (jumpResetMode.get() == "Reset") {
-                        mc.thePlayer.motionY = 0.0
-                        mc.thePlayer.motionX = 0.0
-                        mc.thePlayer.motionZ = 0.0
-
-                        mc.thePlayer.jump()
-                    } else if (jumpResetMode.get() == "Reduce") {
-                        mc.thePlayer.motionY = 0.0
-
-                        val yaw = mc.thePlayer.rotationYaw * 0.017453292F
-                        mc.thePlayer.motionX -= MathHelper.sin(yaw) * 0.2
-                        mc.thePlayer.motionZ += MathHelper.cos(yaw) * 0.2
-
-                        mc.thePlayer.jump()
-
-                        ClientUtils.displayChatMessage("Modified X:" + mc.thePlayer.motionX)
-                        ClientUtils.displayChatMessage("Modified Z:" + mc.thePlayer.motionZ)
-                    } else if (jumpResetMode.get() == "Normal") {
-                        mc.thePlayer.jump()
-                    }
-                } else if (
-                    jumpResetMode.get() == "Combo" &&
-                    mc.thePlayer.hurtTime == 9 &&
-                    mc.thePlayer.onGround
-                ) {
-                    mc.thePlayer.jump()
+            "jumpreset" -> {
+                if (mc.thePlayer.hurtTime >= 8) {
+                    mc.gameSettings.keyBindJump.pressed = true
                 }
+
+                if (mc.thePlayer.hurtTime >= 7 && !mc.gameSettings.keyBindForward.pressed) {
+                    mc.gameSettings.keyBindForward.pressed = true
+                    start = 1
+                }
+                if (mc.thePlayer.hurtTime in 1..6) {
+                    mc.gameSettings.keyBindJump.pressed = false
+                    if (start == 1) {
+                        mc.gameSettings.keyBindForward.pressed = false
+                        start = 0
+                    }
+                }
+            }
+            "sneak" ->{
+                if (mc.thePlayer.onGround) {
+                    while (mc.thePlayer.hurtTime >= 8) {
+                        mc.gameSettings.keyBindSneak.pressed = true
+                        break
+                    }
+                }
+                while (mc.thePlayer.hurtTime >= 7 && !mc.gameSettings.keyBindForward.pressed) {
+                    mc.gameSettings.keyBindForward.pressed = true
+                    start2 = 1
+                    break
+                }
+                if (mc.thePlayer.hurtTime in 1..6) {
+                    mc.gameSettings.keyBindSneak.pressed = false
+                    if (start2 == 1) {
+                        mc.gameSettings.keyBindForward.pressed = false;
+                        start2 = 0;
+                    }
+                }
+            }
         }
     }
 
@@ -494,9 +497,9 @@ class Velocity : Module() {
             }
 
             if (packet is S27PacketExplosion) {
-                mc.thePlayer.motionX = mc.thePlayer.motionX + packet.func_149149_c() * (horizontalExplosionValue.get())
-                mc.thePlayer.motionY = mc.thePlayer.motionY + packet.func_149144_d() * (verticalExplosionValue.get())
-                mc.thePlayer.motionZ = mc.thePlayer.motionZ + packet.func_149147_e() * (horizontalExplosionValue.get())
+                mc.thePlayer.motionX += packet.func_149149_c() * (horizontalExplosionValue.get())
+                mc.thePlayer.motionY += packet.func_149144_d() * (verticalExplosionValue.get())
+                mc.thePlayer.motionZ += packet.func_149147_e() * (horizontalExplosionValue.get())
                 event.cancelEvent()
             }
         }
