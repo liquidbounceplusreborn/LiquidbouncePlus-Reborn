@@ -251,14 +251,14 @@ public final class MovementUtils extends MinecraftInstance {
         return baseSpeed;
     }
 
-    public static double getJumpBoostModifier(double baseJumpHeight) {
+    public static double getJumpBoostModifier(float baseJumpHeight) {
         return getJumpBoostModifier(baseJumpHeight, true);
     }
 
-    public static double getJumpBoostModifier(double baseJumpHeight, boolean potionJump) {
+    public static double getJumpBoostModifier(float baseJumpHeight, boolean potionJump) {
         if (mc.thePlayer.isPotionActive(Potion.jump) && potionJump) {
             int amplifier = mc.thePlayer.getActivePotionEffect(Potion.jump).getAmplifier();
-            baseJumpHeight += ((float) (amplifier + 1) * 0.1f);
+            baseJumpHeight += ((amplifier + 1) * 0.1f);
         }
 
         return baseJumpHeight;
@@ -395,5 +395,12 @@ public final class MovementUtils extends MinecraftInstance {
 
     public static void setMoveSpeed(double moveSpeed) {
         setMoveSpeed(moveSpeed, mc.thePlayer.rotationYaw, mc.thePlayer.movementInput.moveStrafe, mc.thePlayer.movementInput.moveForward);
+    }
+    public static void setMotion2(double d, float f) {
+        mc.thePlayer.motionX = -Math.sin(Math.toRadians(f)) * d;
+        mc.thePlayer.motionZ = Math.cos(Math.toRadians(f)) * d;
+    }
+    public static double speed() {
+        return Math.hypot(mc.thePlayer.motionX, mc.thePlayer.motionZ);
     }
 }

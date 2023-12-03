@@ -1,3 +1,5 @@
+package net.ccbluex.liquidbounce.injection.forge.mixins.render;
+
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeLook;
 import net.minecraft.client.renderer.entity.RenderManager;
 import org.spongepowered.asm.mixin.Mixin;

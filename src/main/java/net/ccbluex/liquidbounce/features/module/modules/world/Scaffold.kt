@@ -44,6 +44,7 @@ import net.minecraft.entity.passive.EntityPig
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.client.C0APacketAnimation
@@ -56,6 +57,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
 import kotlin.math.*
+
 
 @ModuleInfo(
     name = "Scaffold",
@@ -81,12 +83,14 @@ class Scaffold : Module() {
             "AAC3.3.9",
             "AAC3.6.4",
             "Verus",
-            "Hypixel",
+            "Watchdog",
             "BlocksMC",
         ), "Motion"
     ) { towerEnabled.get() }
     private val noMoveOnlyValue = BoolValue("NoMove", true) { towerEnabled.get() }
     private val towerTimerValue = FloatValue("TowerTimer", 1f, 0.1f, 10f) { towerEnabled.get() }
+
+    private val hpxTowerSpeed = FloatValue("TowerSpeed", 100f, 0f, 100f) { towerEnabled.get() && towerModeValue.get() == "Watchdog"}
 
     // Jump mode
     private val jumpMotionValue = FloatValue("JumpMotion", 0.42f, 0.3681289f, 0.79f) {
@@ -136,7 +140,7 @@ class Scaffold : Module() {
      * OPTIONS (Scaffold)
      */
     // Mode
-    val modeValue = ListValue("Mode", arrayOf("Normal", "Expand", "Telly", "OffGround", "Snap"), "Normal")
+    val modeValue = ListValue("Mode", arrayOf("Normal", "Expand", "Telly", "OffGround","Snap", "Snap2"), "Normal")
 
     private val tellyTicks =
         IntegerValue("TellyTicks", 3, 1, 5) { modeValue.get() == "Telly" }
@@ -177,7 +181,6 @@ class Scaffold : Module() {
                 "NoPacket",
                 "PlaceOff",
                 "PlaceOn",
-                "FallDownOff",
                 "TellyTicks",
                 "Legit",
                 "Off"
@@ -348,6 +351,10 @@ class Scaffold : Module() {
     private var verusJumped = false
     private var offGroundTicks = 0
 
+    private var idk = false
+    private var idkTick = 0
+    private var towerTick = 0
+
     private val isTowerOnly: Boolean
         get() = towerEnabled.get()
 
@@ -361,6 +368,10 @@ class Scaffold : Module() {
      */
     override fun onEnable() {
         if (mc.thePlayer == null) return
+
+        if (towerModeValue.get() == "Watchdog")
+            idkTick = 5
+
         progress = 0f
         spinYaw = 0f
         launchY = mc.thePlayer.posY.toInt()
@@ -540,10 +551,6 @@ class Scaffold : Module() {
                 verusJumped = true
             }
 
-            "hypixel" -> {
-                hypixelTower()
-            }
-
             "blocksmc" -> {
                 if (mc.thePlayer.posY % 1 <= 0.00153598) {
                     mc.thePlayer.setPosition(
@@ -563,28 +570,6 @@ class Scaffold : Module() {
         }
     }
 
-    private fun hypixelTower() {
-        if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -0.76, 0.0))
-                .isNotEmpty() && mc.theWorld.getCollidingBoundingBoxes(
-                mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, -0.75, 0.0)
-            ).isEmpty() && mc.thePlayer.motionY > 0.23 && mc.thePlayer.motionY < 0.25
-        ) {
-            mc.thePlayer.motionY = mc.thePlayer.posY.roundToInt() - mc.thePlayer.posY
-        }
-        if (mc.theWorld.getCollidingBoundingBoxes(
-                mc.thePlayer,
-                mc.thePlayer.entityBoundingBox.offset(0.0, -0.0001, 0.0)
-            ).isNotEmpty()
-        ) {
-            mc.thePlayer.motionY = 0.41999998688698
-        } else if (mc.thePlayer.posY >= mc.thePlayer.posY.roundToInt() - 0.0001 && mc.thePlayer.posY <= mc.thePlayer.posY.roundToInt() + 0.0001 && !Keyboard.isKeyDown(
-                mc.gameSettings.keyBindSneak.keyCode
-            )
-        ) {
-            mc.thePlayer.motionY = 0.0
-        }
-    }
-
     private fun rotation() {
         val sameY = sameYValue.get()
         val smartSpeed = smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state
@@ -598,15 +583,17 @@ class Scaffold : Module() {
             mc.theWorld.getBlockState(blockPos).block.material.isReplaceable || mc.theWorld.getBlockState(blockPos).block === Blocks.air
         val blockData = get(blockPos)
 
-        if (modeValue.get() == "Snap" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || modeValue.get() == "OffGround" && mc.thePlayer.onGround)
+        val idk = if (modeValue.get() == "Snap") targetPlace else blockData
+
+        if (modeValue.get() == "Snap2" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || modeValue.get() == "OffGround" && mc.thePlayer.onGround || modeValue.get() == "Snap" && targetPlace == null)
             return
 
         when (rotationModeValue.get()) {
             "Novoline" -> {
                 val entity = EntityPig(mc.theWorld)
-                entity.posX = blockData?.blockPos!!.x + 0.5
-                entity.posY = blockData.blockPos.y + 0.5
-                entity.posZ = blockData.blockPos.z + 0.5
+                entity.posX = idk?.blockPos!!.x + 0.5
+                entity.posY = idk.blockPos.y + 0.5
+                entity.posZ = idk.blockPos.z + 0.5
 
                 lockRotation = RotationUtils.getAngles(entity)
             }
@@ -623,10 +610,10 @@ class Scaffold : Module() {
 
             "Rise" -> {
                 lockRotation = RotationUtils.getDirectionToBlock(
-                    blockData?.blockPos?.x!!.toDouble(),
-                    blockData.blockPos.y.toDouble(),
-                    blockData.blockPos.z.toDouble(),
-                    blockData.enumFacing
+                    idk?.blockPos?.x!!.toDouble(),
+                    idk.blockPos.y.toDouble(),
+                    idk.blockPos.z.toDouble(),
+                    idk.enumFacing
                 )
             }
         }
@@ -697,6 +684,13 @@ class Scaffold : Module() {
         }
     }
 
+    fun idk1(d: Double) {
+        val f = MathHelper.wrapAngleTo180_float(
+            Math.toDegrees(atan2(mc.thePlayer.motionZ, mc.thePlayer.motionX)).toFloat() - 90.0f
+        )
+        MovementUtils.setMotion2(d, f)
+    }
+
 
     /**
      * Update event
@@ -705,6 +699,25 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
+
+        if (towerModeValue.get() == "Watchdog") {
+            if (idkTick != 0) {
+                towerTick = 0
+                return
+            }
+            if (towerTick > 0) {
+                ++towerTick
+                if (towerTick > 6) {
+                    idk1(MovementUtils.speed() * ((100 - this.hpxTowerSpeed.get()) / 100.0))
+                }
+                if (towerTick > 16) {
+                    towerTick = 0
+                }
+            }
+            if (towering()) {
+                towerMove()
+            }
+        }
 
         if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround) {
             mc.thePlayer.jump()
@@ -807,17 +820,9 @@ class Scaffold : Module() {
         }
         if (sprintModeValue.get().equals("off", ignoreCase = true) || sprintModeValue.get()
                 .equals("ground", ignoreCase = true) && !mc.thePlayer.onGround || sprintModeValue.get()
-                .equals("air", ignoreCase = true) && mc.thePlayer.onGround || sprintModeValue.get()
-                .equals("falldownoff", ignoreCase = true) && mc.thePlayer.fallDistance > 0 ||
-            sprintModeValue.get().equals("tellyticks", ignoreCase = true) && offGroundTicks >= (tellyTicks.get() - 1) ||
-            sprintModeValue.get().equals(
-                "legit",
-                ignoreCase = true
-            ) && abs(
-                MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) - MathHelper.wrapAngleTo180_float(
-                    RotationUtils.targetRotation.yaw
-                )
-            ) > 90
+                .equals("air", ignoreCase = true) && mc.thePlayer.onGround  ||
+            sprintModeValue.get().equals("tellyticks", ignoreCase = true) && offGroundTicks >= tellyTicks.get() ||
+            sprintModeValue.get().equals("legit", ignoreCase = true) && abs(MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) - MathHelper.wrapAngleTo180_float(RotationUtils.targetRotation!!.yaw)) > 90
         ) {
             mc.thePlayer.isSprinting = false
         }
@@ -842,6 +847,16 @@ class Scaffold : Module() {
             ) event.cancelEvent()
         }
 
+        if(towerModeValue.get() == "Watchdog"){
+            if (packet is C03PacketPlayer) {
+                if (idk) {
+                    val c03PacketPlayer = event.packet as C03PacketPlayer
+                    c03PacketPlayer.onGround = true
+                    idk = false
+                }
+            }
+        }
+
         // AutoBlock
         if (packet is C09PacketHeldItemChange) {
             if (packet.slotId == slot) {
@@ -864,7 +879,7 @@ class Scaffold : Module() {
         )
         val check =
             mc.theWorld.getBlockState(blockPos).block.material.isReplaceable || mc.theWorld.getBlockState(blockPos).block === Blocks.air
-        if (modeValue.get() == "Snap" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || modeValue.get() == "OffGround" && mc.thePlayer.onGround)
+        if (modeValue.get() == "Snap2" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || modeValue.get() == "OffGround" && mc.thePlayer.onGround || modeValue.get() == "Snap" && targetPlace == null)
             return
         if (lockRotation != null && rotationStrafeValue.get() == "LiquidBounce") {
             val dif =
@@ -945,32 +960,32 @@ class Scaffold : Module() {
             event.cancelEvent()
         }
         if (lockRotation != null && rotationStrafeValue.get() == "FDP") {
+            if (event.isCancelled) {
+                return
+            }
             val (yaw) = RotationUtils.targetRotation ?: return
             var strafe = event.strafe
             var forward = event.forward
             var friction = event.friction
             var factor = strafe * strafe + forward * forward
 
-            val angleDiff =
-                ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0) / (45.0).toDouble()).toInt()
-            val calcYaw = { yaw + 45.0f * angleDiff.toFloat() }.toString().toFloat()
+            var angleDiff = ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
+            //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
+            var calcYaw =  yaw + 45.0f * angleDiff.toFloat()
 
-            var calcMoveDir = abs(strafe).coerceAtLeast(abs(forward))
-            calcMoveDir *= calcMoveDir
-            val calcMultiplier = MathHelper.sqrt_float(calcMoveDir / 1.0f.coerceAtMost(calcMoveDir * 2.0f))
+            var calcMoveDir = Math.max(Math.abs(strafe), Math.abs(forward)).toFloat()
+            calcMoveDir = calcMoveDir * calcMoveDir
+            var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
 
-            when (angleDiff) {
-                1, 3, 5, 7, 9 -> {
-                    if ((abs(forward) > 0.005 || abs(strafe) > 0.005) && !(abs(forward) > 0.005 && abs(
-                            strafe
-                        ) > 0.005)
-                    ) {
-                        friction /= calcMultiplier
-                    } else if (abs(forward) > 0.005 && abs(strafe) > 0.005) {
-                        friction *= calcMultiplier
+                when (angleDiff) {
+                    1, 3, 5, 7, 9 -> {
+                        if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
+                            friction = friction / calcMultiplier
+                        } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
+                            friction = friction * calcMultiplier
+                        }
                     }
                 }
-            }
 
             if (factor >= 1.0E-4F) {
                 factor = MathHelper.sqrt_float(factor)
@@ -996,12 +1011,18 @@ class Scaffold : Module() {
     private fun shouldPlace(): Boolean {
         val placeWhenAir  = modeValue.get() == "OffGround" && !mc.thePlayer.onGround
         val placeWhenTick = modeValue.get() == "Telly" && offGroundTicks >= tellyTicks.get()
-        val alwaysPlace = modeValue.get() == "Normal" || modeValue.get() == "Expand" || modeValue.get() == "Snap"
+        val alwaysPlace = modeValue.get() == "Normal" || modeValue.get() == "Expand"|| modeValue.get() == "Snap" || modeValue.get() == "Snap2"
         return towering() || alwaysPlace || placeWhenAir || placeWhenTick
     }
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+
+        if (towerModeValue.get() == "Watchdog") {
+            if (idkTick > 0) {
+                --idkTick
+            }
+        }
 
         // XZReducer
         mc.thePlayer.motionX *= xzMultiplier.get().toDouble()
@@ -1072,7 +1093,7 @@ class Scaffold : Module() {
         val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         val blockPos = BlockPos(
             mc.thePlayer.posX,
-            if ((!towering() || smartSpeed || sameY) && launchY <= mc.thePlayer.posY
+            if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY
             ) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
             mc.thePlayer.posZ
         )
@@ -1149,6 +1170,7 @@ class Scaffold : Module() {
             val block = (itemStack.item as ItemBlock).getBlock()
             if (InventoryUtils.BLOCK_BLACKLIST.contains(block) || !block.isFullCube || itemStack.stackSize <= 0) return
         }
+
         if (mc.playerController.onPlayerRightClick(
                 mc.thePlayer,
                 mc.theWorld,
@@ -1879,6 +1901,34 @@ class Scaffold : Module() {
             eyes.addVector(rotationVec.xCoord * maxReach, rotationVec.yCoord * maxReach, rotationVec.zCoord * maxReach)
 
         return world.rayTraceBlocks(eyes, reach, false, false, true)
+    }
+
+    private fun towerMove() {
+        if (mc.thePlayer.onGround) {
+            if (this.towerTick == 0 || this.towerTick == 5) {
+                val f = mc.thePlayer.rotationYaw * (Math.PI.toFloat() / 180)
+                mc.thePlayer.motionX -= MathHelper.sin(f) * 0.2f * this.hpxTowerSpeed.get() / 100.0
+                mc.thePlayer.motionY = 0.42
+                mc.thePlayer.motionZ += MathHelper.cos(f) * 0.2f * this.hpxTowerSpeed.get() / 100.0
+                this.towerTick = 1
+            }
+        } else if (mc.thePlayer.motionY > -0.0784000015258789) {
+            val n = Math.round(mc.thePlayer.posY % 1.0 * 100.0).toInt()
+            when (n) {
+                42 -> {
+                    mc.thePlayer.motionY = 0.33
+                }
+
+                75 -> {
+                    mc.thePlayer.motionY = 1.0 - mc.thePlayer.posY % 1.0
+                    this.idk = true
+                }
+
+                0 -> {
+                    mc.thePlayer.motionY = -0.0784000015258789
+                }
+            }
+        }
     }
     private val blocksAmount: Int
         /**

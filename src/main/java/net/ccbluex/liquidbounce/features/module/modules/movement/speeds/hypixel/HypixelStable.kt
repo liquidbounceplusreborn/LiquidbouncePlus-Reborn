@@ -25,7 +25,7 @@ class HypixelStable : SpeedMode("HypixelStable") {
             if (mc.thePlayer.onGround) {
                 if (speed.sendJumpValue.get()) mc.thePlayer.jump()
                 if (speed.recalcValue.get()) moveSpeed = max(MovementUtils.getBaseMoveSpeed() * speed.baseStrengthValue.get(), MovementUtils.getSpeed().toDouble())
-                mc.thePlayer.motionY = MovementUtils.getJumpBoostModifier(if (mc.thePlayer.isCollidedHorizontally) 0.42 else speed.jumpYValue.get().toDouble())
+                mc.thePlayer.motionY = MovementUtils.getJumpBoostModifier(if (mc.thePlayer.isCollidedHorizontally) 0.42F else speed.jumpYValue.get())
                 event.y = mc.thePlayer.motionY
                 moveSpeed *= speed.moveSpeedValue.get().toDouble()
             } else if (speed.glideStrengthValue.get() > 0 && event.y < 0) {

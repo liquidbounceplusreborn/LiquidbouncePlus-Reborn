@@ -270,6 +270,7 @@ class ModuleManager : Listenable {
         LiquidBounce.eventManager.unregisterListener(module)
     }
 
+
     /**
      * Generate command for [module]
      */

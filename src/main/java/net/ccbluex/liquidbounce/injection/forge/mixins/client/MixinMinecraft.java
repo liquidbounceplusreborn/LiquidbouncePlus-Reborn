@@ -35,6 +35,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.stream.IStream;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.profiler.Profiler;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Timer;
@@ -101,6 +102,9 @@ public abstract class MixinMinecraft {
 
     @Shadow
     public GameSettings gameSettings;
+
+    @Shadow
+    private Profiler mcProfiler;
 
     @Shadow
     public abstract void runTick();
@@ -211,7 +215,6 @@ public abstract class MixinMinecraft {
             this.runTick();
         }
     }*/
-
     @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;runTick()V"))
     private void skipTicksCheck(Minecraft instance) {
         LiquidBounce.INSTANCE.getModuleManager().getModule(TimerRange.class);

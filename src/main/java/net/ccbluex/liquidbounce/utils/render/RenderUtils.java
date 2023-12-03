@@ -7,6 +7,7 @@
 package net.ccbluex.liquidbounce.utils.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.render.AttackEffect;
 import net.ccbluex.liquidbounce.features.module.modules.render.TargetMark;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
@@ -3247,6 +3248,7 @@ public final class RenderUtils extends MinecraftInstance {
         ColorUtils.setColour(-1);
     }
     public static void renderParticles(java.util.List<AttackParticle> particles,Color color) {
+        AttackEffect attackEffect = LiquidBounce.INSTANCE.getModuleManager().getModule(AttackEffect.class);
         GL11.glEnable((int)3042);
         GL11.glDisable((int)3553);
         GL11.glEnable((int)2848);
@@ -3285,12 +3287,23 @@ public final class RenderUtils extends MinecraftInstance {
                 mc.getRenderManager();
                 GL11.glRotated((double)mc.getRenderManager().playerViewX, (double)(mc.gameSettings.thirdPersonView == 2 ? -1.0 : 1.0), (double)0.0, (double)0.0);
                 Color c = color;
-                glDrawTriangle(0.0, -1.5, -1.0, 0.0, 1.0, 0.0, c.hashCode());
-                if (distanceFromPlayer < 4.0) {
-                    glDrawTriangle(0.0, -1.5, -1.0, 0.0, 1.0, 0.0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode());
+                if(attackEffect.modeValue.get() == "Triangle") {
+                    glDrawTriangle(0.0, -1.5, -1.0, 0.0, 1.0, 0.0, c.hashCode());
+                    if (distanceFromPlayer < 4.0) {
+                        glDrawTriangle(0.0, -1.5, -1.0, 0.0, 1.0, 0.0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode());
+                    }
+                    if (distanceFromPlayer < 20.0) {
+                        glDrawTriangle(0.0, -1.5, -1.0, 0.0, 1.0, 0.0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 30).hashCode());
+                    }
                 }
-                if (distanceFromPlayer < 20.0) {
-                    glDrawTriangle(0.0, -1.5, -1.0, 0.0, 1.0, 0.0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 30).hashCode());
+                if(attackEffect.modeValue.get() == "Circle") {
+                    drawFilledCircleNoGL(0, 0, 0.7, c.hashCode(), quality);
+
+                    if (distanceFromPlayer < 4)
+                        drawFilledCircleNoGL(0, 0, 1.4, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode(), quality);
+
+                    if (distanceFromPlayer < 20)
+                        drawFilledCircleNoGL(0, 0, 2.3, new Color(c.getRed(), c.getGreen(), c.getBlue(), 30).hashCode(), quality);
                 }
                 GL11.glScalef((float)0.8f, (float)0.8f, (float)0.8f);
                 GL11.glPopMatrix();
@@ -3303,6 +3316,23 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glEnable((int)3553);
         GL11.glDisable((int)3042);
         GL11.glColor3d((double)255.0, (double)255.0, (double)255.0);
+    }
+    public static void drawFilledCircleNoGL(final int x, final int y, final double r, final int c, final int quality) {
+        final float f = ((c >> 24) & 0xff) / 255F;
+        final float f1 = ((c >> 16) & 0xff) / 255F;
+        final float f2 = ((c >> 8) & 0xff) / 255F;
+        final float f3 = (c & 0xff) / 255F;
+
+        GL11.glColor4f(f1, f2, f3, f);
+        GL11.glBegin(GL11.GL_TRIANGLE_FAN);
+
+        for (int i = 0; i <= 360 / quality; i++) {
+            final double x2 = Math.sin(((i * quality * Math.PI) / 180)) * r;
+            final double y2 = Math.cos(((i * quality * Math.PI) / 180)) * r;
+            GL11.glVertex2d(x + x2, y + y2);
+        }
+
+        GL11.glEnd();
     }
     public static void glDrawTriangle(double x, double y, double x1, double y1, double x2, double y2, int colour) {
         GL11.glDisable((int)3553);

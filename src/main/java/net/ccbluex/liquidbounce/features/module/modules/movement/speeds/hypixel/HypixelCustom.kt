@@ -32,7 +32,7 @@ class HypixelCustom: SpeedMode("HypixelCustom") {
         if (isMoving()) {
             when {
                 thePlayer.onGround && thePlayer.isCollidedVertically -> {
-                    thePlayer.motionY = getJumpBoostModifier(if (scaffoldModule!!.state) 0.41999 else speedModule.motionYValue.get().toDouble(), true)
+                    thePlayer.motionY = getJumpBoostModifier(if (scaffoldModule!!.state) 0.42F else speedModule.motionYValue.get(), true)
 
                     if (scaffoldModule.state) {
                         strafe(0.37F)

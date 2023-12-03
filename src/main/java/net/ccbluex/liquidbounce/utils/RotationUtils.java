@@ -556,7 +556,6 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         var4.posZ += (double) enumfacing.getDirectionVec().getZ() * 0.5D;
         return getRotations(var4.posX, var4.posY, var4.posZ);
     }
-
     /**
      * @return YESSSS!!!
      */

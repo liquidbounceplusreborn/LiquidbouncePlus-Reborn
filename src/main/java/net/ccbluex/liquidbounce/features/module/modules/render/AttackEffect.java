@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.utils.render.AttackParticle;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
+import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
@@ -24,7 +25,9 @@ import java.util.List;
 @ModuleInfo(name = "AttackEffect", spacedName = "Attack Effect", description = "Gey", category = ModuleCategory.RENDER)
 public class AttackEffect extends Module {
 
+    public final ListValue modeValue = new ListValue("Mode", new String[] {"Triangle","Circle"}, "Triangle");
     private final IntegerValue amount = new IntegerValue("Amount", 8, 0, 30);
+    final BoolValue physics = new BoolValue("Physics", true);
     private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Health", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
     private final IntegerValue colorRedValue = new IntegerValue("Red", 255, 0, 255);
     private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
@@ -53,7 +56,10 @@ public class AttackEffect extends Module {
             }
             int i = 0;
             while ((double)i <= (double)timer.getTime() / 1.0E11) {
-                particles.forEach(AttackParticle::updateWithoutPhysics);
+                if (physics.get())
+                    particles.forEach(AttackParticle::update);
+                else
+                    particles.forEach(AttackParticle::updateWithoutPhysics);
                 ++i;
             }
             particles.removeIf(particle -> mc.thePlayer.getDistanceSq(particle.position.xCoord, particle.position.yCoord, particle.position.zCoord) > 300.0);

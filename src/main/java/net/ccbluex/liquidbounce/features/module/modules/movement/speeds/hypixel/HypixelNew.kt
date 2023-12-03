@@ -17,28 +17,13 @@ class HypixelNew : SpeedMode("HypixelNew") {
     }
 
     override fun onUpdate() {
-        val speedModule = (LiquidBounce.moduleManager.getModule(Speed::class.java) as Speed)
         if (mc.thePlayer.onGround) {
-            mc.thePlayer.jump()
-            mc.thePlayer.motionY = speedModule.jumpYValue.get().toDouble()
-
-            oldMotionX = mc.thePlayer.motionX
-            oldMotionZ = mc.thePlayer.motionZ
-            MovementUtils.strafe(MovementUtils.getSpeed() * 1.01f)
-            mc.thePlayer.motionX = (mc.thePlayer.motionX * 1 + oldMotionX * 2) / 3
-            mc.thePlayer.motionZ = (mc.thePlayer.motionZ * 1 + oldMotionZ * 2) / 3
-
-            if (MovementUtils.getSpeed() < 0.47) {
-                watchdogMultiplier = 0.47 / (MovementUtils.getSpeed().toDouble() + 0.001)
-                mc.thePlayer.motionX *= watchdogMultiplier
-                mc.thePlayer.motionZ *= watchdogMultiplier
-            }
             if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                mc.thePlayer.motionX *= (1.0 + speedModule.customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(
-                    Potion.moveSpeed).amplifier + 1))
-                mc.thePlayer.motionZ *= (1.0 + speedModule.customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(
-                    Potion.moveSpeed).amplifier + 1))
+                MovementUtils.strafe(0.57f)
+            } else {
+                MovementUtils.strafe(0.47f)
             }
+            mc.thePlayer.motionY = MovementUtils.getJumpBoostModifier(0.42F, true)
         }
     }
 

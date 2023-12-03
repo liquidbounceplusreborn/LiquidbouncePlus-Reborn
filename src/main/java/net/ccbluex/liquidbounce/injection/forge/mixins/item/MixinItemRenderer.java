@@ -385,16 +385,16 @@ public abstract class MixinItemRenderer {
             }
             final KillAura killAura = LiquidBounce.moduleManager.getModule(KillAura.class);
 
-            boolean canBlockEverything = LiquidBounce.moduleManager.getModule(Animations.class).getState() && Animations.blockEverything.get() && killAura.getTarget() != null 
-                            && (itemToRender.getItem() instanceof ItemBucketMilk || itemToRender.getItem() instanceof ItemFood 
-                                || itemToRender.getItem() instanceof ItemPotion || itemToRender.getItem() instanceof ItemAxe || itemToRender.getItem().equals(Items.stick));
+            boolean canBlockEverything = LiquidBounce.moduleManager.getModule(Animations.class).getState() && Animations.blockEverything.get() && killAura.getTarget() != null
+                    && (itemToRender.getItem() instanceof ItemBucketMilk || itemToRender.getItem() instanceof ItemFood
+                    || itemToRender.getItem() instanceof ItemPotion || itemToRender.getItem() instanceof ItemAxe || itemToRender.getItem().equals(Items.stick));
 
             if (this.itemToRender.getItem() instanceof ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
             } else if (abstractclientplayer.getItemInUseCount() > 0
                     || (itemToRender.getItem() instanceof ItemSword && killAura.getBlockingStatus())
-                        || (itemToRender.getItem() instanceof ItemSword && LiquidBounce.moduleManager.getModule(Animations.class).getState() 
-                            && Animations.fakeBlock.get() && killAura.getTarget() != null) || canBlockEverything) {
+                    || (itemToRender.getItem() instanceof ItemSword && LiquidBounce.moduleManager.getModule(Animations.class).getState()
+                    && Animations.fakeBlock.get() && killAura.getTarget() != null) || canBlockEverything) {
 
                 EnumAction enumaction = (killAura.getBlockingStatus() || canBlockEverything) ? EnumAction.BLOCK : this.itemToRender.getItemUseAction();
 
@@ -405,7 +405,7 @@ public abstract class MixinItemRenderer {
                     case EAT:
                     case DRINK:
                         this.performDrinking(abstractclientplayer, partialTicks);
-                            transformFirstPersonItem(f, f1);
+                        transformFirstPersonItem(f, f1);
                         break;
                     case BLOCK:
                         if (LiquidBounce.moduleManager.getModule(Animations.class).getState()) {
@@ -477,12 +477,16 @@ public abstract class MixinItemRenderer {
                                     this.func_178103_d(0.2F);
                                     break;
                                 case "Exhibition": {
-                                    float f8 = MathHelper.sin(MathHelper.sqrt_float(this.mc.thePlayer.getSwingProgress(partialTicks)) * 3.1415927F);
-                                    func_178096_b(f, 0.0F);
-                                    GL11.glTranslated(0.0D, 0.5D, 0.0D);
-                                    GL11.glRotated((-f8 * 40F), (f8 / 2.0F), 0.0D, 9.0D);
-                                    GL11.glRotated((-f8 * 55F), 0.800000011920929D, (f8 / 2.0F), 0.0D);
-                                    this.func_178103_d(-0.05F);
+                                    float f8 = MathHelper.sin((float) (MathHelper.sqrt_float(this.mc.thePlayer.getSwingProgress(partialTicks)) * Math.PI));
+                                    GL11.glTranslated(-0.03, f8  * 0.062f, f8 * 0);
+                                    GL11.glTranslated(0.025D, 0.09615D, 0.0D);
+                                    transformFirstPersonItem(f / 3, 0.0F);
+                                    GlStateManager.rotate(-f8 * 9f, -f8 / 20F, -f8 / 20F, 1);
+                                    GlStateManager.rotate(-f8 * 55F, 1.2F, f8 / 4F, 0.36F);
+                                    if (mc.thePlayer.isSneaking()) {
+                                        GlStateManager.translate(-0.05, -0.05, 0);
+                                    }
+                                    this.doBlockTransformations();
                                     break;
                                 }
                                 case "OldExhibition": {
@@ -530,7 +534,7 @@ public abstract class MixinItemRenderer {
                                     GlStateManager.scale(2f, 2f, 2f);
                                     this.func_178103_d();
                                     break;
-                            }
+                                }
                                 case "Poke": {
                                     this.poke(0.1f, f1);
                                     GlStateManager.scale(2.5f, 2.5f, 2.5f);
