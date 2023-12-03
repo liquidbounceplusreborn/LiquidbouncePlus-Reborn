@@ -11,12 +11,8 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification;
-;
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.MovementUtils;
-import net.ccbluex.liquidbounce.utils.PacketUtils;
-import net.ccbluex.liquidbounce.utils.PosLookInstance;
+import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -24,18 +20,24 @@ import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.ItemEnderPearl;
+import net.minecraft.item.ItemFireball;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C09PacketHeldItemChange;
 import net.minecraft.network.play.server.S08PacketPlayerPosLook;
+import net.minecraft.network.play.server.S27PacketExplosion;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+
+import java.util.Objects;
+
+;
 
 @ModuleInfo(name = "LongJump", spacedName = "Long Jump", description = "Allows you to jump further.", category = ModuleCategory.MOVEMENT)
 public class LongJump extends Module {
 
-    private final ListValue modeValue = new ListValue("Mode", new String[] {"NCP", "Damage", "AACv1", "AACv2", "AACv3", "AACv4", "Mineplex", "Mineplex2", "Mineplex3", "RedeskyMaki", "Redesky", "InfiniteRedesky", "MatrixFlag", "VerusDmg", "Pearl"}, "NCP");
+    private final ListValue modeValue = new ListValue("Mode", new String[] {"NCP", "Damage", "AACv1", "AACv2", "AACv3", "AACv4", "Mineplex", "Mineplex2", "Mineplex3", "RedeskyMaki", "Redesky", "InfiniteRedesky", "MatrixFlag", "VerusDmg", "Pearl","Fireball","Fireball2"}, "NCP");
     private final BoolValue autoJumpValue = new BoolValue("AutoJump", false);
 
     private final FloatValue ncpBoostValue = new FloatValue("NCPBoost", 4.25F, 1F, 10F, () -> modeValue.get().equalsIgnoreCase("ncp"));
@@ -70,6 +72,10 @@ public class LongJump extends Module {
     private final BoolValue damageNoMoveValue = new BoolValue("Damage-NoMove", false, () -> modeValue.get().equalsIgnoreCase("damage"));
     private final BoolValue damageARValue = new BoolValue("Damage-AutoReset", false, () -> modeValue.get().equalsIgnoreCase("damage"));
 
+    private final FloatValue fbBoostValue = new FloatValue("FBBoost",1.91f, 1.0f, 1.91f);
+
+    private final BoolValue spoofItem = new BoolValue("SpoofItem",false, () -> modeValue.get() == "Fireball" ||modeValue.get()== "Fireball2");
+
     public final BoolValue fakeValue = new BoolValue("SpoofY", false);
 
     private final BoolValue autoDisableValue = new BoolValue("AutoDisable", false);
@@ -87,14 +93,15 @@ public class LongJump extends Module {
     public double rendery = 0.0;
     private float currentTimer = 1F;
 
-    private boolean verusDmged, hpxDamage, damaged = false;
+    private boolean verusDmged, damaged = false;
     private int verusJumpTimes = 0;
     private int pearlState = 0;
 
     private double lastMotX, lastMotY, lastMotZ;
     private boolean flagged = false;
     private boolean hasFell = false;
-
+    private boolean fireballDmged = false;
+    private boolean fbState = false;
     private final MSTimer dmgTimer = new MSTimer();
     private final PosLookInstance posLookInstance = new PosLookInstance();
 
@@ -114,12 +121,12 @@ public class LongJump extends Module {
         jumpState = 0;
         ticks = 0;
         verusDmged = false;
-        hpxDamage = false;
         damaged = false;
         flagged = false;
         hasFell = false;
         pearlState = 0;
         verusJumpTimes = 0;
+        fbState = false;
 
         dmgTimer.reset();
         posLookInstance.reset();
@@ -283,6 +290,78 @@ public class LongJump extends Module {
             return;
         }
 
+        if (Objects.equals(modeValue.get(), "Fireball")) {
+            int fbSlot = getFBSlot();
+
+            if (fbSlot == -1) {
+                LiquidBounce.hud.addNotification(new Notification(getName(), "You don't have any fire ball!", Type.ERROR, 1500, 500));
+                this.setState(false);
+                return;
+            }
+
+            RotationUtils.setTargetRotation(new Rotation(mc.thePlayer.rotationYaw, 90f));
+            mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(mc.thePlayer.rotationYaw, 90f, mc.thePlayer.onGround));
+
+            if (mc.thePlayer.inventory.currentItem != fbSlot) {
+                if (spoofItem.get())
+                    mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(fbSlot));
+                else
+                    mc.thePlayer.inventory.currentItem = fbSlot;
+            }
+
+            mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(fbSlot + 36).getStack()));
+
+            if (fireballDmged && mc.thePlayer.hurtTime > 0) {
+                mc.thePlayer.motionX *= fbBoostValue.get();
+                mc.thePlayer.motionZ *= fbBoostValue.get();
+                fireballDmged = false;
+            }
+
+            if (spoofItem.get()) {
+                if (fbSlot != mc.thePlayer.inventory.currentItem) {
+                    mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                }
+            }
+            return;
+        }
+
+        if (Objects.equals(modeValue.get(), "Fireball2")) {
+            mc.thePlayer.setSprinting(fbState);
+            int fbSlot = getFBSlot();
+
+            if (fbSlot == -1) {
+                LiquidBounce.hud.addNotification(new Notification(getName(), "You don't have any fire ball!", Type.ERROR, 1500, 500));
+                this.setState(false);
+                return;
+            }
+
+            RotationUtils.setTargetRotation(new Rotation(mc.thePlayer.rotationYaw + 180, 88f));
+            mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(mc.thePlayer.rotationYaw + 180, 88f, mc.thePlayer.onGround));
+
+            if (mc.thePlayer.inventory.currentItem != fbSlot) {
+                if (spoofItem.get())
+                    mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(fbSlot));
+                else
+                    mc.thePlayer.inventory.currentItem = fbSlot;
+            }
+
+            mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(fbSlot + 36).getStack()));
+            fbState = true;
+
+            if (fireballDmged && mc.thePlayer.hurtTime > 0) {
+                mc.thePlayer.motionX *= fbBoostValue.get();
+                mc.thePlayer.motionZ *= fbBoostValue.get();
+                fireballDmged = false;
+            }
+
+            if (spoofItem.get()) {
+                if (fbSlot != mc.thePlayer.inventory.currentItem) {
+                    mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                }
+            }
+            return;
+        }
+
         if(jumped) {
             final String mode = modeValue.get();
 
@@ -308,7 +387,6 @@ public class LongJump extends Module {
                     break;
                 case "aacv2":
                 case "mineplex3":
-                    mc.thePlayer.jumpMovementFactor = 0.09F;
                     mc.thePlayer.motionY += 0.0132099999999999999999999999999;
                     mc.thePlayer.jumpMovementFactor = 0.08F;
                     MovementUtils.strafe();
@@ -467,6 +545,9 @@ public class LongJump extends Module {
                 lastMotZ = mc.thePlayer.motionZ;
             }
         }
+        if(event.getPacket() instanceof S27PacketExplosion && (Objects.equals(mode, "Fireball") || Objects.equals(mode, "Fireball2"))){
+            fireballDmged = true;
+        }
     }
 
     @EventTarget(ignoreCondition = true)
@@ -492,7 +573,16 @@ public class LongJump extends Module {
                     break;
             }
         }
+    }
 
+    private int getFBSlot() {
+        for(int i = 36; i < 45; ++i) {
+            ItemStack stack = mc.thePlayer.inventoryContainer.getSlot(i).getStack();
+            if (stack != null && stack.getItem() instanceof ItemFireball) {
+                return i - 36;
+            }
+        }
+        return -1;
     }
 
     private int getPearlSlot() {

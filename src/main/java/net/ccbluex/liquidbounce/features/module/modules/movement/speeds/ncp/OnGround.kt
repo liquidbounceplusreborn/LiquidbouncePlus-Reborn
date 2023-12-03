@@ -17,7 +17,6 @@ class OnGround : SpeedMode("OnGround") {
         mc.thePlayer.posY -= 0.3993000090122223
         mc.thePlayer.motionY = -1000.0
         mc.thePlayer.cameraPitch = 0.3f
-        mc.thePlayer.distanceWalkedModified = 44.0f
         mc.timer.timerSpeed = 1f
         if (mc.thePlayer.onGround) {
             mc.thePlayer.posY += 0.3993000090122223

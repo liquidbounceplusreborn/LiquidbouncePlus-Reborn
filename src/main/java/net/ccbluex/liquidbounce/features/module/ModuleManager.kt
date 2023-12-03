@@ -218,6 +218,7 @@ class ModuleManager : Listenable {
             AntiBook::class.java,
             AttackEffect::class.java,
             FollowTargetHud::class.java,
+            Indicators::class.java,
         )
 
         registerModule(Breaker)
