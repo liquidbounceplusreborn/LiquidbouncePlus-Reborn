@@ -31,8 +31,6 @@ class InvMove : Module() {
 
     private val playerPackets = mutableListOf<C03PacketPlayer>()
 
-    private val invCheck = (mc.currentScreen is GuiInventory || mc.currentScreen is GuiChest)
-
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (event.eventState == EventState.PRE && playerPackets.size > 0 && (mc.currentScreen == null || mc.currentScreen is GuiChat || mc.currentScreen is GuiIngameMenu)) {
@@ -52,7 +50,6 @@ class InvMove : Module() {
             if (!speedModule.state || !speedModule.mode?.modeName.equals("Legit", true))
                 mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
             mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint)
-
         }
     }
 

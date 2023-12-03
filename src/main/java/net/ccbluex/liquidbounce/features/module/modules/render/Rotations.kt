@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.BowAimbot
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
+import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump
 import net.ccbluex.liquidbounce.features.module.modules.world.Breaker
 import net.ccbluex.liquidbounce.features.module.modules.world.ChestAura
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
@@ -52,7 +53,7 @@ class Rotations : Module() {
                     (getState(KillAura::class.java) && killAura.target != null) ||
                     (getState(Disabler::class.java) && disabler.canRenderInto3D) ||
                     getState(BowAimbot::class.java) || getState(Breaker::class.java) ||
-                    getState(ChestAura::class.java) || getState(Fly::class.java) || getState(Scaffold::class.java)
+                    getState(ChestAura::class.java) || getState(Fly::class.java) || getState(Scaffold::class.java) || getState(LongJump::class.java)
         }
     }
 

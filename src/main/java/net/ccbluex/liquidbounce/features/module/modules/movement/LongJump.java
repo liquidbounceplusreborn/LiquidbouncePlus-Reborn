@@ -39,9 +39,7 @@ public class LongJump extends Module {
 
     private final ListValue modeValue = new ListValue("Mode", new String[] {"NCP", "Damage", "AACv1", "AACv2", "AACv3", "AACv4", "Mineplex", "Mineplex2", "Mineplex3", "RedeskyMaki", "Redesky", "InfiniteRedesky", "MatrixFlag", "VerusDmg", "Pearl","Fireball","Fireball2"}, "NCP");
     private final BoolValue autoJumpValue = new BoolValue("AutoJump", false);
-
     private final FloatValue ncpBoostValue = new FloatValue("NCPBoost", 4.25F, 1F, 10F, () -> modeValue.get().equalsIgnoreCase("ncp"));
-
     private final FloatValue matrixBoostValue = new FloatValue("MatrixFlag-Boost", 1.95F, 0F, 3F, () -> modeValue.get().equalsIgnoreCase("matrixflag"));
     private final FloatValue matrixHeightValue = new FloatValue("MatrixFlag-Height", 5F, 0F, 10F, () -> modeValue.get().equalsIgnoreCase("matrixflag"));
     private final BoolValue matrixSilentValue = new BoolValue("MatrixFlag-Silent", true, () -> modeValue.get().equalsIgnoreCase("matrixflag"));
@@ -72,9 +70,9 @@ public class LongJump extends Module {
     private final BoolValue damageNoMoveValue = new BoolValue("Damage-NoMove", false, () -> modeValue.get().equalsIgnoreCase("damage"));
     private final BoolValue damageARValue = new BoolValue("Damage-AutoReset", false, () -> modeValue.get().equalsIgnoreCase("damage"));
 
-    private final FloatValue fbBoostValue = new FloatValue("FBBoost",1.91f, 1.0f, 1.91f);
+    private final FloatValue fbBoostValue = new FloatValue("FBBoost",1.91f, 1.0f, 1.91f, () -> Objects.equals(modeValue.get(), "Fireball") || Objects.equals(modeValue.get(), "Fireball2"));
 
-    private final BoolValue spoofItem = new BoolValue("SpoofItem",false, () -> modeValue.get() == "Fireball" ||modeValue.get()== "Fireball2");
+    private final BoolValue spoofItem = new BoolValue("SpoofItem",false, () -> Objects.equals(modeValue.get(), "Fireball") || Objects.equals(modeValue.get(), "Fireball2"));
 
     public final BoolValue fakeValue = new BoolValue("SpoofY", false);
 
@@ -82,10 +80,7 @@ public class LongJump extends Module {
 
     private boolean hasJumped = false;
     private boolean no = false;
-
     private boolean jumped;
-
-    private int jumpState = 0;
     private boolean canBoost;
     private boolean teleported;
     private boolean canMineplexBoost;
@@ -101,7 +96,7 @@ public class LongJump extends Module {
     private boolean flagged = false;
     private boolean hasFell = false;
     private boolean fireballDmged = false;
-    private boolean fbState = false;
+    private int fbState = 0;
     private final MSTimer dmgTimer = new MSTimer();
     private final PosLookInstance posLookInstance = new PosLookInstance();
 
@@ -118,7 +113,6 @@ public class LongJump extends Module {
         jumped = false;
         hasJumped = false;
         no = false;
-        jumpState = 0;
         ticks = 0;
         verusDmged = false;
         damaged = false;
@@ -126,7 +120,7 @@ public class LongJump extends Module {
         hasFell = false;
         pearlState = 0;
         verusJumpTimes = 0;
-        fbState = false;
+        fbState = 0;
 
         dmgTimer.reset();
         posLookInstance.reset();
@@ -185,7 +179,6 @@ public class LongJump extends Module {
         if (!no && autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving()) {
             jumped = true;
             if (hasJumped && autoDisableValue.get()) {
-                jumpState = 0;
                 this.setState(false);
                 return;
             }
@@ -292,72 +285,77 @@ public class LongJump extends Module {
 
         if (Objects.equals(modeValue.get(), "Fireball")) {
             int fbSlot = getFBSlot();
+            if(fbState == 0) {
+                if (fbSlot == -1) {
+                    LiquidBounce.hud.addNotification(new Notification(getName(), "You don't have any fire ball!", Type.ERROR, 1500, 500));
+                    this.setState(false);
+                    return;
+                }
 
-            if (fbSlot == -1) {
-                LiquidBounce.hud.addNotification(new Notification(getName(), "You don't have any fire ball!", Type.ERROR, 1500, 500));
-                this.setState(false);
-                return;
+                //RotationUtils.setTargetRotation(new Rotation(mc.thePlayer.rotationYaw, 90f),20);
+                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(mc.thePlayer.rotationYaw, 90f, mc.thePlayer.onGround));
+
+                if (mc.thePlayer.inventory.currentItem != fbSlot) {
+                    if (spoofItem.get())
+                        mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(fbSlot));
+                    else
+                        mc.thePlayer.inventory.currentItem = fbSlot;
+                }
+
+                mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(fbSlot + 36).getStack()));
+
+                if (spoofItem.get()) {
+                    if (fbSlot != mc.thePlayer.inventory.currentItem) {
+                        mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                    }
+                }
+                fbState = 1;
             }
 
-            RotationUtils.setTargetRotation(new Rotation(mc.thePlayer.rotationYaw, 90f));
-            mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(mc.thePlayer.rotationYaw, 90f, mc.thePlayer.onGround));
-
-            if (mc.thePlayer.inventory.currentItem != fbSlot) {
-                if (spoofItem.get())
-                    mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(fbSlot));
-                else
-                    mc.thePlayer.inventory.currentItem = fbSlot;
-            }
-
-            mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(fbSlot + 36).getStack()));
-
-            if (fireballDmged && mc.thePlayer.hurtTime > 0) {
+            if (fbState == 1 && fireballDmged && mc.thePlayer.hurtTime > 0) {
                 mc.thePlayer.motionX *= fbBoostValue.get();
                 mc.thePlayer.motionZ *= fbBoostValue.get();
                 fireballDmged = false;
-            }
-
-            if (spoofItem.get()) {
-                if (fbSlot != mc.thePlayer.inventory.currentItem) {
-                    mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-                }
             }
             return;
         }
 
         if (Objects.equals(modeValue.get(), "Fireball2")) {
-            mc.thePlayer.setSprinting(fbState);
             int fbSlot = getFBSlot();
+            if(fbState == 0) {
+                if (fbSlot == -1) {
+                    LiquidBounce.hud.addNotification(new Notification(getName(), "You don't have any fire ball!", Type.ERROR, 1500, 500));
+                    this.setState(false);
+                    return;
+                }
 
-            if (fbSlot == -1) {
-                LiquidBounce.hud.addNotification(new Notification(getName(), "You don't have any fire ball!", Type.ERROR, 1500, 500));
-                this.setState(false);
-                return;
+                mc.thePlayer.setSprinting(false);
+
+                //RotationUtils.setTargetRotation(new Rotation(mc.thePlayer.rotationYaw + 180, 88f),20);
+                mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(mc.thePlayer.rotationYaw + 180, 88f, mc.thePlayer.onGround));
+
+                if (mc.thePlayer.inventory.currentItem != fbSlot) {
+                    if (spoofItem.get())
+                        mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(fbSlot));
+                    else
+                        mc.thePlayer.inventory.currentItem = fbSlot;
+                }
+
+                mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(fbSlot + 36).getStack()));
+
+                if (spoofItem.get()) {
+                    if (fbSlot != mc.thePlayer.inventory.currentItem) {
+                        mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                    }
+                }
+                fbState = 1;
             }
 
-            RotationUtils.setTargetRotation(new Rotation(mc.thePlayer.rotationYaw + 180, 88f));
-            mc.getNetHandler().addToSendQueue(new C03PacketPlayer.C05PacketPlayerLook(mc.thePlayer.rotationYaw + 180, 88f, mc.thePlayer.onGround));
-
-            if (mc.thePlayer.inventory.currentItem != fbSlot) {
-                if (spoofItem.get())
-                    mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(fbSlot));
-                else
-                    mc.thePlayer.inventory.currentItem = fbSlot;
-            }
-
-            mc.getNetHandler().addToSendQueue(new C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(fbSlot + 36).getStack()));
-            fbState = true;
-
-            if (fireballDmged && mc.thePlayer.hurtTime > 0) {
+            if (fbState == 1 && fireballDmged && mc.thePlayer.hurtTime > 0) {
+                mc.thePlayer.setSprinting(true);
                 mc.thePlayer.motionX *= fbBoostValue.get();
                 mc.thePlayer.motionZ *= fbBoostValue.get();
                 fireballDmged = false;
-            }
-
-            if (spoofItem.get()) {
-                if (fbSlot != mc.thePlayer.inventory.currentItem) {
-                    mc.getNetHandler().addToSendQueue(new C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-                }
             }
             return;
         }
@@ -373,7 +371,6 @@ public class LongJump extends Module {
                     mc.thePlayer.motionX = 0;
                     mc.thePlayer.motionZ = 0;
                 }
-                return;
             }
 
             switch (mode.toLowerCase()) {
