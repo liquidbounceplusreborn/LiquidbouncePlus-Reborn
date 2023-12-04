@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import com.mojang.authlib.GameProfile;
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.features.module.modules.combat.KeepSprint;
 import net.ccbluex.liquidbounce.features.module.modules.movement.BowJump;
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump;
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,9 @@ import net.minecraft.util.FoodStats;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
@@ -93,5 +97,16 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
             return f;
         }
     }
-
+    @Inject(method = "attackTargetEntityWithCurrentItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;setSprinting(Z)V", shift = At.Shift.AFTER))
+    public void attackTargetEntityWithCurrentItem(CallbackInfo callbackInfo) {
+        final KeepSprint keepSprint = LiquidBounce.moduleManager.getModule(KeepSprint.class);
+        if (keepSprint.getState()) {
+            final float s = 1.0f;
+            this.motionX = this.motionX / 0.6 * s;
+            this.motionZ = this.motionZ / 0.6 * s;
+            if (Minecraft.getMinecraft().thePlayer.moveForward > 0) {
+                this.setSprinting(true);
+            }
+        }
+    }
 }

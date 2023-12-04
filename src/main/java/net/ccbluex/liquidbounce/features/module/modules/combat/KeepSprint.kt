@@ -1,0 +1,16 @@
+/*
+ * LiquidBounce+ Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/WYSI-Foundation/LiquidBouncePlus/
+ */
+package net.ccbluex.liquidbounce.features.module.modules.combat
+
+import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.minecraft.network.play.client.C0BPacketEntityAction
+
+@ModuleInfo(name = "KeepSprint", spacedName = "Keep Sprint", description = "Keep you sprint when hitting players.", category = ModuleCategory.MOVEMENT)
+class KeepSprint: Module()
+

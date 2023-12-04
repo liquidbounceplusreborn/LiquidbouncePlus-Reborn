@@ -178,6 +178,9 @@ public abstract class MixinEntity {
 
     @Shadow(remap = false) private CapabilityDispatcher capabilities;
 
+    @Shadow
+    public abstract void setSprinting(boolean sprinting);
+
     public int getNextStepDistance() {
         return nextStepDistance;
     }

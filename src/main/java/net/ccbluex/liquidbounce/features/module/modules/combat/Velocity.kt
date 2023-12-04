@@ -71,6 +71,7 @@ class Velocity : Module() {
             "AEMine",
             "GrimAC",
             "GrimCombat",
+            "GrimSmartCombat",
             "AllAC",
             "Intave",
             "JumpReset",
@@ -480,7 +481,7 @@ class Velocity : Module() {
                 "grimcombat" -> {
                     val target = LiquidBounce.combatManager.getNearByEntity(3f)
                     repeat(12) {
-                        mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction())
+                        mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction(100,100,true))
                         mc.thePlayer.sendQueue.addToSendQueue(
                             C02PacketUseEntity(
                                 target,
@@ -493,6 +494,33 @@ class Velocity : Module() {
                     mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
                     mc.thePlayer.motionX *= 0
                     mc.thePlayer.motionZ *= 0
+                }
+                "grimsmartcombat" -> {
+                    if (mc.thePlayer!!.movementInput.moveForward > 0.9f) {
+                        val target = LiquidBounce.combatManager.getNearByEntity(3f)
+                        repeat(12) {
+                            mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction(100,100,true))
+                            mc.thePlayer.sendQueue.addToSendQueue(
+                                C02PacketUseEntity(
+                                    target,
+                                    C02PacketUseEntity.Action.ATTACK
+                                )
+                            )
+                            mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
+                        }
+                        event.cancelEvent()
+                        mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
+                        mc.thePlayer.motionX *= 0
+                        mc.thePlayer.motionZ *= 0
+                    }else if (mc.thePlayer.hurtTime == 9) {
+                        if (++jumped % 2 == 0 && mc.thePlayer.onGround && mc.thePlayer.isSprinting && mc.currentScreen == null) {
+                            mc.gameSettings.keyBindJump.pressed = true
+                            jumped = 0 // reset
+                        }
+                    } else {
+                        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                        velocityInput = false
+                    }
                 }
             }
 

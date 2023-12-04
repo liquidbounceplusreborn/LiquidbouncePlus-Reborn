@@ -9,19 +9,15 @@ import net.minecraft.potion.Potion
 
 class HypixelNew : SpeedMode("HypixelNew") {
 
-    private var oldMotionX = 0.0
-    private var oldMotionZ = 0.0
-    private var watchdogMultiplier = 1.0
-
     override fun onMotion() {
     }
 
     override fun onUpdate() {
-        if (mc.thePlayer.onGround) {
+        if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
             if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                MovementUtils.strafe(0.57f)
+                MovementUtils.strafe(0.5f)
             } else {
-                MovementUtils.strafe(0.47f)
+                MovementUtils.strafe(0.44f)
             }
             mc.thePlayer.motionY = MovementUtils.getJumpBoostModifier(0.42F, true)
         }

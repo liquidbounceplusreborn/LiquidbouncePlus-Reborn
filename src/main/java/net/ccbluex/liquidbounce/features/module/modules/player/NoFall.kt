@@ -12,12 +12,13 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
+import net.ccbluex.liquidbounce.features.module.modules.movement.SafeWalk
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.VecRotation
+import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.misc.NewFallingPlayer
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -27,6 +28,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockLiquid
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
@@ -40,6 +42,8 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
+import org.lwjgl.input.Mouse
+import java.awt.Color
 import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.math.ceil
@@ -47,7 +51,7 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoFall", spacedName = "No Fall", description = "Prevents you from taking fall damage.", category = ModuleCategory.PLAYER)
 class NoFall : Module() {
-    val typeValue = ListValue("Type", arrayOf("Edit", "Packet", "MLG", "AAC", "Spartan", "CubeCraft", "Hypixel", "Phase", "Verus", "Medusa", "Motion", "Matrix", "Vulcan"), "Edit")
+    val typeValue = ListValue("Type", arrayOf("Edit", "Packet", "MLG", "AAC", "Spartan", "CubeCraft", "Hypixel", "Phase", "Verus", "Medusa", "Motion", "Matrix", "Vulcan","Blink"), "Edit")
 
     val editMode = ListValue("Edit-Mode", arrayOf("Always", "Default", "Smart", "NoGround", "Damage"), "Always", { typeValue.get().equals("edit", true) })
     private val packetMode = ListValue("Packet-Mode", arrayOf("Default", "Smart"), "Default", { typeValue.get().equals("packet", true) })
@@ -58,6 +62,10 @@ class NoFall : Module() {
     private val phaseOffsetValue = IntegerValue("PhaseOffset", 1, 0, 5, { typeValue.get().equals("phase", true) })
     private val minFallDistanceValue = FloatValue("MinMLGHeight", 5F, 2F, 50F, "m", { typeValue.get().equals("mlg", true) })
     private val flySpeedValue = FloatValue("MotionSpeed", -0.01F, -5F, 5F, { typeValue.get().equals("motion", true) })
+
+    private val fallDistValue = IntegerValue("FallDistance", 9, 3, 15) { typeValue.get().equals("blink", true) }
+    private val limitValue = BoolValue("limitUse", true) { typeValue.get().equals("blink", true) }
+    private val noMouse = BoolValue("NoMouse", false) { typeValue.get().equals("blink", true) }
 
     private val voidCheckValue = BoolValue("Void-Check", true)
 
@@ -97,6 +105,9 @@ class NoFall : Module() {
     private var vulcanNoFall = false
     private var lastFallDistRounded = 0
 
+    private var start = false
+    private var disable = false
+
     override fun onEnable() {
         aac4FlagCount = 0
         aac4Fakelag = false
@@ -117,6 +128,8 @@ class NoFall : Module() {
         aac4FlagCooldown.reset()
         nextSpoof = false
         doSpoof = false
+        start = false
+        disable = false
     }
 
     override fun onDisable() {
@@ -139,6 +152,8 @@ class NoFall : Module() {
         matrixFlagWait = 0
         aac4FlagCooldown.reset()
         mc.timer.timerSpeed = 1.0f
+        start = false
+        disable = false
     }
 
     @EventTarget
@@ -149,6 +164,7 @@ class NoFall : Module() {
 
     @EventTarget(ignoreCondition = true)
     fun onUpdate(event: UpdateEvent) {
+
         if (modifiedTimer) {
             mc.timer.timerSpeed = 1.0F
             modifiedTimer = false
@@ -610,6 +626,36 @@ class NoFall : Module() {
                 }
             }
         }
+        if(typeValue.get() == "Blink"){
+            val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
+            val scaffold = LiquidBounce.moduleManager[Scaffold::class.java]!!
+            val safeWalk = LiquidBounce.moduleManager[SafeWalk::class.java]!!
+            val blink = LiquidBounce.moduleManager[Blink::class.java]!!
+            val state = (killAura.state || scaffold.state || safeWalk.state || (noMouse.get() && (Mouse.isButtonDown(0) || Mouse.isButtonDown(1))))
+            if (limitValue.get() && state) {
+                start = false
+                disable = false
+                return
+            }
+            if (PlayerUtils.isOnEdge() && mc.thePlayer.fallDistance < fallDistValue.get()) {
+                start = true
+            }
+            if (start) {
+                blink.state = true
+                if (event.packet is C03PacketPlayer) {
+                    event.packet.onGround = true
+                }
+            } else {
+                blink.state = false
+            }
+            if (mc.thePlayer.fallDistance > 0.5) {
+                disable = true
+            }
+            if (mc.thePlayer.onGround && disable) {
+                disable = false
+                start = false
+            }
+        }
     }
 
     @EventTarget
@@ -624,6 +670,16 @@ class NoFall : Module() {
                 event.x = 0.0
                 event.z = 0.0
             }
+        }
+    }
+    @EventTarget
+    fun onRender2D(event: Render2DEvent) {
+        if (start) {
+            mc.fontRendererObj.drawStringWithShadow(
+                "Blinking",
+                ScaledResolution(mc).scaledWidth / 2F,
+                ScaledResolution(mc).scaledHeight / 2F + 10F, Color.WHITE.rgb,
+            )
         }
     }
 

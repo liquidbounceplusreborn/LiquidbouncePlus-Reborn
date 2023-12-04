@@ -48,7 +48,6 @@ class ModuleManager : Listenable {
             Aimbot::class.java,
             AutoBow::class.java,
             AutoSoup::class.java,
-            AutoArmor2::class.java,
             FastBow::class.java,
             Criticals::class.java,
             KillAura::class.java,
