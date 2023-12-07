@@ -72,6 +72,8 @@ public class LongJump extends Module {
 
     private final FloatValue fbBoostValue = new FloatValue("FBBoost",1.91f, 1.0f, 1.91f, () -> Objects.equals(modeValue.get(), "Fireball") || Objects.equals(modeValue.get(), "Fireball2"));
 
+    private final ListValue fbLaunchMode = new ListValue("FBLaunchMode", new String[]{"ExplosionPacket", "Hurttime"}, "ExplosionPacket", () -> Objects.equals(modeValue.get(), "Fireball") || Objects.equals(modeValue.get(), "Fireball2"));
+
     private final BoolValue spoofItem = new BoolValue("SpoofItem",false, () -> Objects.equals(modeValue.get(), "Fireball") || Objects.equals(modeValue.get(), "Fireball2"));
 
     public final BoolValue fakeValue = new BoolValue("SpoofY", false);
@@ -312,7 +314,7 @@ public class LongJump extends Module {
                 fbState = 1;
             }
 
-            if (fbState == 1 && fireballDmged && mc.thePlayer.hurtTime > 0) {
+            if (fbState == 1 && (fbLaunchMode.get() == "ExplosionPacket" ? fireballDmged : mc.thePlayer.hurtTime == 9)) {
                 mc.thePlayer.motionX *= fbBoostValue.get();
                 mc.thePlayer.motionZ *= fbBoostValue.get();
                 fireballDmged = false;
@@ -351,7 +353,7 @@ public class LongJump extends Module {
                 fbState = 1;
             }
 
-            if (fbState == 1 && fireballDmged && mc.thePlayer.hurtTime > 0) {
+            if (fbState == 1 && (fbLaunchMode.get() == "ExplosionPacket" ? fireballDmged : mc.thePlayer.hurtTime == 9)) {
                 mc.thePlayer.setSprinting(true);
                 mc.thePlayer.motionX *= fbBoostValue.get();
                 mc.thePlayer.motionZ *= fbBoostValue.get();

@@ -8,12 +8,10 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.JumpEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.misc.ViaVersionFix;
 import net.ccbluex.liquidbounce.features.module.modules.movement.AirJump;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.render.Camera;
 import net.ccbluex.liquidbounce.features.module.modules.render.Rotations;
 import net.minecraft.block.Block;
@@ -151,10 +149,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
             this.motionY += (float) (this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
 
         if (this.isSprinting()) {
-            final KillAura auraMod = LiquidBounce.moduleManager.getModule(KillAura.class);
-            final Sprint sprintMod = LiquidBounce.moduleManager.getModule(Sprint.class);
-            float yaw = this.rotationYaw;
-            float f = jumpEvent.getYaw() * ((float)Math.PI / 180F);
+            float f = jumpEvent.getYaw() * 0.017453292F;
             this.motionX -= MathHelper.sin(f) * 0.2F;
             this.motionZ += MathHelper.cos(f) * 0.2F;
         }

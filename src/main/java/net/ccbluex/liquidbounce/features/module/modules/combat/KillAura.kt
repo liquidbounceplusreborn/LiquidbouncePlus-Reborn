@@ -909,10 +909,10 @@ class KillAura : Module() {
 
     private fun startBlocking() {
         if (LiquidBounce.moduleManager.getModule(ViaVersionFix::class.java)?.state == true) {
-                val useItem = PacketWrapper.create(29, null, Via.getManager().connectionManager.connections.iterator().next())
-                useItem.write(Type.VAR_INT, 1)
-                PacketUtil.sendToServer(useItem, Protocol1_8TO1_9::class.java, true, true)
-            }
+            val useItem = PacketWrapper.create(29, null, Via.getManager().connectionManager.connections.iterator().next())
+            useItem.write(Type.VAR_INT, 1)
+            PacketUtil.sendToServer(useItem, Protocol1_8TO1_9::class.java, true, true)
+        }
 
         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
         blockingStatus = true
