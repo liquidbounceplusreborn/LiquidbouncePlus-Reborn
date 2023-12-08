@@ -25,11 +25,9 @@ import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.world.Teams
 import net.ccbluex.liquidbounce.utils.*
-import net.ccbluex.liquidbounce.utils.RotationUtils.serverRotation
-import net.ccbluex.liquidbounce.utils.RotationUtils.targetRotation
-import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.math.minus
-import net.ccbluex.liquidbounce.utils.math.times
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.utils.extensions.getNearestPointBB
+import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils
@@ -51,8 +49,6 @@ import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.util.*
-import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.min
 
 @ModuleInfo(name = "KillAura", spacedName = "Kill Aura", description = "Automatically attacks targets around you.",
@@ -140,11 +136,11 @@ class KillAura : Module() {
 
     private val autoBlockMode by ListValue(
         "AutoBlock",
-        arrayOf("None", "Vanilla"),
+        arrayOf("None", "Vanilla","HypixelBlinkTest"),
         "None"
     )
-    private val verusAutoBlockValue by BoolValue("VerusAutoBlock",false) { autoBlockMode != "None"}
 
+    private val verusAutoBlockValue by BoolValue("VerusAutoBlock",false) { autoBlockMode == "Vanilla"}
     private val bypassNote by NoteValue("Bypass") //region bypass
     private val raycast by BoolValue("RayCast", true)
     private val raycastIgnored by BoolValue("RayCastIgnored", false) { raycast }
@@ -196,6 +192,8 @@ class KillAura : Module() {
     // Block status
     var blockingStatus = false
     var verusBlocking = false
+    var blockingTicks = 0
+    var blinkState = false
 
     /**
      * Enable kill aura module
@@ -216,6 +214,7 @@ class KillAura : Module() {
         prevTargetEntities.clear()
         attackTimer.reset()
         clicks = 0
+        blockingTicks = 0
 
         stopBlocking()
         if (verusBlocking && !blockingStatus && !mc.thePlayer.isBlocking) {
@@ -746,8 +745,24 @@ class KillAura : Module() {
                 )
                     mc.thePlayer.onEnchantmentCritical(target)
             }
-            if(autoBlockMode != "None" && canBlock){
+            if (autoBlockMode == "Vanilla" && canBlock) {
                 startBlocking()
+            }
+            if (autoBlockMode == "HypixelBlinkTest" && canBlock) {
+                val blink = LiquidBounce.moduleManager[Blink::class.java]!!
+                blockingTicks++
+                if (blockingTicks == 4) {
+                    blockingTicks = 0
+                }
+                if (blockingTicks < 1) {
+                    blink.state = false
+                    stopBlocking()
+                    blinkState = false
+                } else if (blockingTicks > 1) {
+                    blink.state = true
+                    startBlocking()
+                    blinkState = true
+                }
             }
         }
     }

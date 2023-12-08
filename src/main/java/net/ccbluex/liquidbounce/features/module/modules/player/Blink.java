@@ -41,6 +41,8 @@ public class Blink extends Module {
     public final BoolValue c0FValue = new BoolValue("C0FCancel", false);
     private final IntegerValue pulseDelayValue = new IntegerValue("PulseDelay", 1000, 500, 5000, "ms");
 
+    public final BoolValue fake = new BoolValue("FakePlayer", false);
+
     private final MSTimer pulseTimer = new MSTimer();
 
     @Override
@@ -49,11 +51,13 @@ public class Blink extends Module {
             return;
 
         if (!pulseValue.get()) {
-            fakePlayer = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
-            fakePlayer.clonePlayer(mc.thePlayer, true);
-            fakePlayer.copyLocationAndAnglesFrom(mc.thePlayer);
-            fakePlayer.rotationYawHead = mc.thePlayer.rotationYawHead;
-            mc.theWorld.addEntityToWorld(-1337, fakePlayer);
+            if (fake.get()) {
+                fakePlayer = new EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.getGameProfile());
+                fakePlayer.clonePlayer(mc.thePlayer, true);
+                fakePlayer.copyLocationAndAnglesFrom(mc.thePlayer);
+                fakePlayer.rotationYawHead = mc.thePlayer.rotationYawHead;
+                mc.theWorld.addEntityToWorld(-1337, fakePlayer);
+            }
         }
 
         synchronized(positions) {
@@ -70,9 +74,11 @@ public class Blink extends Module {
             return;
 
         blink();
-        if (fakePlayer != null) {
-            mc.theWorld.removeEntityFromWorld(fakePlayer.getEntityId());
-            fakePlayer = null;
+        if (fake.get()) {
+            if (fakePlayer != null) {
+                mc.theWorld.removeEntityFromWorld(fakePlayer.getEntityId());
+                fakePlayer = null;
+            }
         }
     }
 

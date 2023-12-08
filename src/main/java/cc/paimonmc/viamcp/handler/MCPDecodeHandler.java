@@ -1,13 +1,20 @@
 package cc.paimonmc.viamcp.handler;
 
+import cc.paimonmc.viamcp.ViaMCP;
+import com.viaversion.viabackwards.protocol.protocol1_16_4to1_17.Protocol1_16_4To1_17;
 import com.viaversion.viaversion.api.connection.UserConnection;
+import com.viaversion.viaversion.api.protocol.packet.PacketWrapper;
+import com.viaversion.viaversion.api.type.Type;
 import com.viaversion.viaversion.exception.CancelCodecException;
 import com.viaversion.viaversion.exception.CancelDecoderException;
+import com.viaversion.viaversion.protocols.protocol1_17_1to1_17.ClientboundPackets1_17_1;
+import com.viaversion.viaversion.protocols.protocol1_17to1_16_4.ServerboundPackets1_17;
 import com.viaversion.viaversion.util.PipelineUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import net.minecraft.client.Minecraft;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -45,6 +52,34 @@ public class MCPDecodeHandler extends MessageToMessageDecoder<ByteBuf> {
         }
 
         final ByteBuf transformedBuf = ctx.alloc().buffer().writeBytes(bytebuf);
+
+        ByteBuf raw = transformedBuf.copy();
+
+        boolean cancel = false;
+
+        if(ViaMCP.getInstance().getVersion() == 755) {
+            try {
+                if (Type.VAR_INT.read(raw) == ClientboundPackets1_17_1.PING.getId()) {
+                    int id = Type.INT.read(raw);
+
+                    Minecraft.getMinecraft().addScheduledTask(() -> {
+                        PacketWrapper wrapper = PacketWrapper.create(ServerboundPackets1_17.PONG, info);
+                        wrapper.write(Type.INT, id);
+                        try {
+                            wrapper.sendToServer(Protocol1_16_4To1_17.class);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+                    cancel = true;
+                }
+            } finally {
+                raw.release();
+            }
+        }
+
+        if(cancel) return;
 
         try {
             final boolean needsCompress = handleCompressionOrder(ctx, transformedBuf);
