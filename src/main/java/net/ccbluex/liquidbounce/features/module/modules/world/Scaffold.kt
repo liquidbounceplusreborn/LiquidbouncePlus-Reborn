@@ -39,7 +39,6 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.settings.GameSettings
-import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.passive.EntityPig
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -212,19 +211,19 @@ class Scaffold : Module() {
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline", "Intave", "Rise"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","Legit"),
         "Normal"
     )
     private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() }
     private val maxTurnSpeed: FloatValue =
-        object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() }) {
+        object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
             override fun onChanged(oldValue: Float, newValue: Float) {
                 val i = minTurnSpeed.get()
                 if (i > newValue) set(i)
             }
         }
     private val minTurnSpeed: FloatValue =
-        object : FloatValue("MinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() }) {
+        object : FloatValue("MinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
             override fun onChanged(oldValue: Float, newValue: Float) {
                 val i = maxTurnSpeed.get()
                 if (i < newValue) set(i)
@@ -234,7 +233,7 @@ class Scaffold : Module() {
         rotationModeValue.get().equals("custom", ignoreCase = true)
     }
     private val customPitchValue = FloatValue("Custom-Pitch", 82f, -90f, 90f, "°") {
-        rotationModeValue.get().equals("custom", ignoreCase = true)
+        rotationModeValue.get().equals("custom", ignoreCase = true) || rotationModeValue.get() == "MoveYaw"
     }
     private val speenSpeedValue = FloatValue("Spin-Speed", 5f, -90f, 90f, "°") {
         rotationModeValue.get().equals("spin", ignoreCase = true)
@@ -258,7 +257,7 @@ class Scaffold : Module() {
     private val zitterModeValue =
         ListValue(
             "ZitterMode",
-            arrayOf("Teleport", "Smooth", "Test"),
+            arrayOf("Teleport", "Smooth"),
             "Teleport"
         ) { !isTowerOnly && zitterValue.get() }
     private val zitterSpeed = FloatValue("ZitterSpeed", 0.13f, 0.1f, 0.3f) {
@@ -616,6 +615,14 @@ class Scaffold : Module() {
                     idk.enumFacing
                 )
             }
+
+            "MoveYaw" -> {
+                lockRotation = Rotation(MovementUtils.getRawDirection() - 180, customPitchValue.get())
+            }
+
+            "Legit" -> {
+                    lockRotation?.yaw = MovementUtils.getRawDirection() - 180
+            }
         }
 
         faceBlock = true
@@ -630,58 +637,10 @@ class Scaffold : Module() {
         RotationUtils.setTargetRotation(rotation)
 
     }
-    @EventTarget
-    fun onEventSilentMove(eventSilentMove: EventSilentMove) {
-        val sameY = sameYValue.get()
-        val smartSpeed = smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state
-        val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-        val blockPos = BlockPos(
-            mc.thePlayer.posX,
-            if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
-            mc.thePlayer.posZ
-        )
-        val b = get(blockPos)
-        if (zitterModeValue.get() == "Test" && b != null) {
-            val bb = BlockPos(
-                mc.thePlayer.posX,
-                mc.thePlayer.posY - 1.0,
-                mc.thePlayer.posZ
-            )
-            if (mc.theWorld.getBlockState(bb).block.material === Material.air && mc.currentScreen == null && !Keyboard.isKeyDown(mc.gameSettings.keyBindJump.keyCodeDefault)) {
-                if (lockRotation?.yaw?.let { mc.thePlayer.getHorizontalFacing(it) } === EnumFacing.EAST) {
-                    if (b.blockPos.z + 0.5 > mc.thePlayer.posZ) {
-                        mc.thePlayer.movementInput.moveStrafe = 1.0f
-                    } else {
-                        mc.thePlayer.movementInput.moveStrafe = -1.0f
-                    }
-                } else if (lockRotation?.yaw?.let { mc.thePlayer.getHorizontalFacing(it) } === EnumFacing.WEST) {
-                    if (b.blockPos.z + 0.5 < mc.thePlayer.posZ) {
-                        mc.thePlayer.movementInput.moveStrafe = 1.0f
-                    } else {
-                        mc.thePlayer.movementInput.moveStrafe = -1.0f
-                    }
-                } else if (lockRotation?.yaw?.let { mc.thePlayer.getHorizontalFacing(it) } === EnumFacing.SOUTH) {
-                    if (b.blockPos.x + 0.5 < mc.thePlayer.posX) {
-                        mc.thePlayer.movementInput.moveStrafe = 1.0f
-                    } else {
-                        mc.thePlayer.movementInput.moveStrafe = -1.0f
-                    }
-                } else if (b.blockPos.x + 0.5 > mc.thePlayer.posX) {
-                    mc.thePlayer.movementInput.moveStrafe = 1.0f
-                } else {
-                    mc.thePlayer.movementInput.moveStrafe = -1.0f
-                }
-            } else {
-                KeyBinding.setKeyBindState(
-                    mc.gameSettings.keyBindLeft.keyCode,
-                    Keyboard.isKeyDown(mc.gameSettings.keyBindLeft.keyCode)
-                )
-                KeyBinding.setKeyBindState(
-                    mc.gameSettings.keyBindRight.keyCode,
-                    Keyboard.isKeyDown(mc.gameSettings.keyBindRight.keyCode)
-                )
-            }
-        }
+
+    private fun buildForward(): Boolean {
+        val realYaw = MathHelper.wrapAngleTo180_float(lockRotation!!.yaw)
+        return realYaw > 77.5 && realYaw < 102.5 || realYaw > 167.5 || realYaw < -167.0f || realYaw < -77.5 && realYaw > -102.5 || realYaw > -12.5 && realYaw < 12.5
     }
 
     fun idk1(d: Double) {
@@ -977,15 +936,15 @@ class Scaffold : Module() {
             calcMoveDir = calcMoveDir * calcMoveDir
             var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
 
-                when (angleDiff) {
-                    1, 3, 5, 7, 9 -> {
-                        if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
-                            friction = friction / calcMultiplier
-                        } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
-                            friction = friction * calcMultiplier
-                        }
+            when (angleDiff) {
+                1, 3, 5, 7, 9 -> {
+                    if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
+                        friction = friction / calcMultiplier
+                    } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
+                        friction = friction * calcMultiplier
                     }
                 }
+            }
 
             if (factor >= 1.0E-4F) {
                 factor = MathHelper.sqrt_float(factor)
@@ -1797,8 +1756,8 @@ class Scaffold : Module() {
                 currRotation, placeRotation.rotation, RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get())
             )
         }
-        if (rotationsValue.get() && rotationModeValue.isMode("Intave")) {
-            lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, placeRotation.rotation.pitch)
+        if (rotationsValue.get() && rotationModeValue.isMode("Legit")) {
+            lockRotation?.pitch = placeRotation.rotation.pitch
         }
 
         targetPlace = placeRotation.placeInfo

@@ -30,7 +30,6 @@ class HUD : Module() {
     val chatCombineValue = BoolValue("ChatCombine", false)
     val chatAnimationValue = BoolValue("ChatAnimation", true)
     val chatAnimationSpeedValue = FloatValue("Chat-AnimationSpeed", 0.1F, 0.01F, 0.1F)
-    val Hudcolor = IntegerValue("OTC-Color", 121,106,229)
 
 
     private val toggleMessageValue = BoolValue("DisplayToggleMessage", false)

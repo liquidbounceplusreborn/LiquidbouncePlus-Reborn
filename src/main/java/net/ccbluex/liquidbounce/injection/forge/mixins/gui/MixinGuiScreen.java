@@ -74,6 +74,7 @@ public abstract class MixinGuiScreen {
 
         final HUD hud = LiquidBounce.moduleManager.getModule(HUD.class);
 
+        assert hud != null;
         if(hud.getInventoryParticle().get() && mc.thePlayer != null) {
             final ScaledResolution scaledResolution = new ScaledResolution(mc);
             final int width = scaledResolution.getScaledWidth();
