@@ -54,6 +54,7 @@ class Camera : Module(){
     val customFogRValue = IntegerValue("FogRed", 255, 0, 255) { customFog.get() }
     val customFogGValue = IntegerValue("FogGreen", 255, 0, 255) { customFog.get() }
     val customFogBValue = IntegerValue("FogBlue", 255, 0, 255) { customFog.get() }
+    val smoothCamera = BoolValue("Smooth", false)
     val cameraPositionValue = BoolValue("CameraPosition", false)
     //CameraPosition
     val cameraPositionYawValue = FloatValue("Yaw", 10F, -50F, 50F) { cameraPositionValue.get() }
