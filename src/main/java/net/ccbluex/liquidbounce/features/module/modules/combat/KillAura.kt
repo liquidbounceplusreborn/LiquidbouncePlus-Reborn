@@ -756,9 +756,9 @@ class KillAura : Module() {
                 }
                 if (blockingTicks < 1) {
                     blink.state = false
-                    stopBlocking()
+                    //stopBlocking()
                     blinkState = false
-                } else if (blockingTicks > 1) {
+                } else if (blockingTicks > 1 && mc.thePlayer.onGround) {
                     blink.state = true
                     startBlocking()
                     blinkState = true
