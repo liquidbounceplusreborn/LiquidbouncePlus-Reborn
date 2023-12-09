@@ -13,6 +13,15 @@ const val DEGREES_TO_RADIANS = 0.017453292519943295
 const val RADIANS_TO_DEGREES = 57.29577951308232
 
 /**
+ * Provides:
+ * ```
+ * val (x, y, z) = vec
+ */
+operator fun Vec3.component1() = xCoord
+operator fun Vec3.component2() = yCoord
+operator fun Vec3.component3() = zCoord
+
+/**
  * Rounds double with [x] number of decimals
  */
 fun Double.round(x: Int): Double {
@@ -48,3 +57,4 @@ operator fun Vec3.plus(vec: Vec3): Vec3 = add(vec)
 operator fun Vec3.minus(vec: Vec3): Vec3 = subtract(vec)
 operator fun Vec3.times(number: Double) = Vec3(xCoord * number, yCoord * number, zCoord * number)
 operator fun Vec3.div(number: Double) = times(1 / number)
+fun Double.toDegreesF() = toDegrees().toFloat()

@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
-import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -56,7 +55,7 @@ class Ignite : Module() {
                     !(BlockUtils.getBlock(blockPos) is BlockAir))
                     continue
 
-                RotationUtils.keepCurrentRotation = true
+                //RotationUtils.keepCurrentRotation = true
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(fireInHotbar - 36))
                 val itemStack = mc.thePlayer.inventoryContainer.getSlot(fireInHotbar).stack ?: return
 
@@ -105,7 +104,7 @@ class Ignite : Module() {
                 }
 
                 mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                RotationUtils.keepCurrentRotation = false
+                //RotationUtils.keepCurrentRotation = false
                 mc.netHandler.addToSendQueue(C05PacketPlayerLook(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, mc.thePlayer.onGround))
 
                 msTimer.reset()

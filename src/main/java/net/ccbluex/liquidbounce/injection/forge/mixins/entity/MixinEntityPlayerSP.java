@@ -170,12 +170,12 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             if (this.isCurrentViewEntity()) {
                 float yaw = event.getYaw();
                 float pitch = event.getPitch();
-                float lastReportedYaw = RotationUtils.serverRotation.getYaw();
-                float lastReportedPitch = RotationUtils.serverRotation.getPitch();
+                float lastReportedYaw = RotationUtils.getServerRotation().getYaw();
+                float lastReportedPitch = RotationUtils.getServerRotation().getPitch();
 
-                if (RotationUtils.targetRotation != null) {
-                    yaw = RotationUtils.targetRotation.getYaw();
-                    pitch = RotationUtils.targetRotation.getPitch();
+                if (RotationUtils.getTargetRotation() != null) {
+                    yaw = RotationUtils.getTargetRotation().getYaw();
+                    pitch = RotationUtils.getTargetRotation().getPitch();
                 }
 
                 double xDiff = event.getX() - this.lastReportedPosX;
@@ -344,7 +344,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
         NoSlow noslow = LiquidBounce.moduleManager.getModule(NoSlow.class);
 
-        if (((scaffold.getState() && scaffold.getSprintModeValue().get().equalsIgnoreCase("Off"))  || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.targetRotation != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30)))
+        if (((scaffold.getState() && scaffold.getSprintModeValue().get().equalsIgnoreCase("Off"))  || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.getTargetRotation() != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30)))
             this.setSprinting(false);
 
         if (this.isSprinting() && ((!(sprint.getState() && sprint.getAllDirectionsValue().get()) && this.movementInput.moveForward < f) || this.isCollidedHorizontally || !flag3)) {

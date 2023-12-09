@@ -147,7 +147,7 @@ class Scaffold : Module() {
     // Mode
     val modeValue = ListValue("Mode", arrayOf("Normal", "Expand", "Telly", "OffGround","Snap", "Snap2"), "Normal")
 
-    private val tellyTicks =
+    val tellyTicks =
         IntegerValue("TellyTicks", 3, 1, 5) { modeValue.get() == "Telly" }
 
     // Delay
@@ -223,17 +223,47 @@ class Scaffold : Module() {
     ) { rotationsValue.get() }
     private val alwaysRotate = BoolValue("AlwaysRotate", false) { rotationsValue.get() }
     private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() }
-    private val maxTurnSpeed: FloatValue =
-        object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
+    private val yawMaxTurnSpeed: FloatValue =
+        object : FloatValue("YawMaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
             override fun onChanged(oldValue: Float, newValue: Float) {
-                val i = minTurnSpeed.get()
+                val i = yawMinTurnSpeed.get()
                 if (i > newValue) set(i)
             }
         }
-    private val minTurnSpeed: FloatValue =
-        object : FloatValue("MinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
+    private val yawMinTurnSpeed: FloatValue =
+        object : FloatValue("YawMinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
             override fun onChanged(oldValue: Float, newValue: Float) {
-                val i = maxTurnSpeed.get()
+                val i = yawMaxTurnSpeed.get()
+                if (i < newValue) set(i)
+            }
+        }
+    private val pitchMaxTurnSpeed: FloatValue =
+        object : FloatValue("PitchMaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = pitchMinTurnSpeed.get()
+                if (i > newValue) set(i)
+            }
+        }
+    private val pitchMinTurnSpeed: FloatValue =
+        object : FloatValue("PitchMinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = pitchMaxTurnSpeed.get()
+                if (i < newValue) set(i)
+            }
+        }
+    private val keepTicks = IntegerValue("KeepTicks", 20, 0,20) { rotationsValue.get() }
+    private val angleThresholdUntilReset = FloatValue("AngleThresholdUntilReset", 5f, 0.1f,180f) { rotationsValue.get() }
+    private val resetMaxTurnSpeed: FloatValue =
+        object : FloatValue("ResetMaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = resetMinTurnSpeed.get()
+                if (i > newValue) set(i)
+            }
+        }
+    private val resetMinTurnSpeed: FloatValue =
+        object : FloatValue("ResetMinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get()}) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = resetMaxTurnSpeed.get()
                 if (i < newValue) set(i)
             }
         }
@@ -251,13 +281,6 @@ class Scaffold : Module() {
     }
 
     private val searchBlockMode = ListValue("SearchBlockMode", arrayOf("Area", "Center","Smart"), "Area")
-
-    private val rotationStrafeValue =
-        ListValue(
-            "MovementCorrection",
-            arrayOf("LiquidBounce", "FDP", "None"),
-            "None"
-        ) { !isTowerOnly && rotationsValue.get() }
     private val speedPotSlow = BoolValue("SpeedPotDetect", true)
 
     // Zitter
@@ -357,7 +380,7 @@ class Scaffold : Module() {
     private var jumpGround = 0.0
     private var verusState = 0
     private var verusJumped = false
-    private var offGroundTicks = 0
+    var offGroundTicks = 0
 
     private var idk = false
     private var idkTick = 0
@@ -367,7 +390,7 @@ class Scaffold : Module() {
         get() = towerEnabled.get()
 
 
-    private fun towering(): Boolean {
+    fun towering(): Boolean {
         return towerEnabled.get() && mc.gameSettings.keyBindJump.isKeyDown
     }
 
@@ -584,7 +607,7 @@ class Scaffold : Module() {
         val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         val blockPos = BlockPos(
             mc.thePlayer.posX,
-            if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
+            if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - if (shouldGoDown) 1.0 else 0.0,
             mc.thePlayer.posZ
         )
         val check =
@@ -644,7 +667,7 @@ class Scaffold : Module() {
             } else {
                 lockRotation2
             }
-        RotationUtils.setTargetRotation(lockRotation2)
+        lockRotation2?.let { RotationUtils.setTargetRotation(it,keepTicks.get(),resetMinTurnSpeed.get() to resetMaxTurnSpeed.get(),angleThresholdUntilReset.get()) }
         faceBlock = true
     }
 
@@ -834,147 +857,6 @@ class Scaffold : Module() {
                 return
             }
             slot = packet.slotId
-        }
-    }
-
-    @EventTarget //took it from applyrotationstrafe XD. staticyaw comes from bestnub.
-    fun onStrafe(event: StrafeEvent) {
-        val sameY = sameYValue.get()
-        val smartSpeed = smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state
-        val autojump = autoJumpValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-        val blockPos = BlockPos(
-            mc.thePlayer.posX,
-            if ((!towering() || smartSpeed || sameY || autojump) && launchY <= mc.thePlayer.posY) launchY - 1.0 else mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
-            mc.thePlayer.posZ
-        )
-        val check =
-            mc.theWorld.getBlockState(blockPos).block.material.isReplaceable || mc.theWorld.getBlockState(blockPos).block === Blocks.air
-        if (modeValue.get() == "Snap2" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || modeValue.get() == "OffGround" && mc.thePlayer.onGround || modeValue.get() == "Snap" && targetPlace == null)
-            return
-        if (lockRotation2 != null && rotationStrafeValue.get() == "LiquidBounce") {
-            val dif =
-                ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - lockRotation2!!.yaw - 23.5f - 135) + 180) / 45).toInt()
-            val yaw = lockRotation2!!.yaw
-            val strafe = event.strafe
-            val forward = event.forward
-            val friction = event.friction
-            var calcForward = 0f
-            var calcStrafe = 0f
-            when (dif) {
-                0 -> {
-                    calcForward = forward
-                    calcStrafe = strafe
-                }
-
-                1 -> {
-                    calcForward += forward
-                    calcStrafe -= forward
-                    calcForward += strafe
-                    calcStrafe += strafe
-                }
-
-                2 -> {
-                    calcForward = strafe
-                    calcStrafe = -forward
-                }
-
-                3 -> {
-                    calcForward -= forward
-                    calcStrafe -= forward
-                    calcForward += strafe
-                    calcStrafe -= strafe
-                }
-
-                4 -> {
-                    calcForward = -forward
-                    calcStrafe = -strafe
-                }
-
-                5 -> {
-                    calcForward -= forward
-                    calcStrafe += forward
-                    calcForward -= strafe
-                    calcStrafe -= strafe
-                }
-
-                6 -> {
-                    calcForward = -strafe
-                    calcStrafe = forward
-                }
-
-                7 -> {
-                    calcForward += forward
-                    calcStrafe += forward
-                    calcForward -= strafe
-                    calcStrafe += strafe
-                }
-            }
-            if (calcForward > 1f || calcForward < 0.9f && calcForward > 0.3f || calcForward < -1f || calcForward > -0.9f && calcForward < -0.3f) {
-                calcForward *= 0.5f
-            }
-            if (calcStrafe > 1f || calcStrafe < 0.9f && calcStrafe > 0.3f || calcStrafe < -1f || calcStrafe > -0.9f && calcStrafe < -0.3f) {
-                calcStrafe *= 0.5f
-            }
-            var f = calcStrafe * calcStrafe + calcForward * calcForward
-            if (f >= 1.0E-4f) {
-                f = MathHelper.sqrt_float(f)
-                if (f < 1.0f) f = 1.0f
-                f = friction / f
-                calcStrafe *= f
-                calcForward *= f
-                val yawSin = MathHelper.sin((yaw * Math.PI / 180f).toFloat())
-                val yawCos = MathHelper.cos((yaw * Math.PI / 180f).toFloat())
-                mc.thePlayer.motionX += (calcStrafe * yawCos - calcForward * yawSin).toDouble()
-                mc.thePlayer.motionZ += (calcForward * yawCos + calcStrafe * yawSin).toDouble()
-            }
-            event.cancelEvent()
-        }
-        if (lockRotation2 != null && rotationStrafeValue.get() == "FDP") {
-            if (event.isCancelled) {
-                return
-            }
-            val (yaw) = RotationUtils.targetRotation ?: return
-            var strafe = event.strafe
-            var forward = event.forward
-            var friction = event.friction
-            var factor = strafe * strafe + forward * forward
-
-            var angleDiff = ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
-            //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
-            var calcYaw =  yaw + 45.0f * angleDiff.toFloat()
-
-            var calcMoveDir = Math.max(Math.abs(strafe), Math.abs(forward)).toFloat()
-            calcMoveDir = calcMoveDir * calcMoveDir
-            var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
-
-            when (angleDiff) {
-                1, 3, 5, 7, 9 -> {
-                    if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
-                        friction = friction / calcMultiplier
-                    } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
-                        friction = friction * calcMultiplier
-                    }
-                }
-            }
-
-            if (factor >= 1.0E-4F) {
-                factor = MathHelper.sqrt_float(factor)
-
-                if (factor < 1.0F) {
-                    factor = 1.0F
-                }
-
-                factor = friction / factor
-                strafe *= factor
-                forward *= factor
-
-                val yawSin = MathHelper.sin((calcYaw * Math.PI / 180F).toFloat())
-                val yawCos = MathHelper.cos((calcYaw * Math.PI / 180F).toFloat())
-
-                mc.thePlayer.motionX += strafe * yawCos - forward * yawSin
-                mc.thePlayer.motionZ += forward * yawCos + strafe * yawSin
-            }
-            event.cancelEvent()
         }
     }
 
@@ -1781,7 +1663,7 @@ class Scaffold : Module() {
 
         if (rotationsValue.get() && rotationModeValue.isMode("Normal")) {
             lockRotation2 = RotationUtils.limitAngleChange(
-                currRotation, placeRotation.rotation, RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get())
+                currRotation, placeRotation.rotation, RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
             )
         }
         if (rotationsValue.get() && rotationModeValue.isMode("Legit")) {

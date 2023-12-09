@@ -47,11 +47,11 @@ class Sprint : Module() {
         val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java)!!
 
         if (!MovementUtils.isMoving() || mc.thePlayer.isSneaking ||
-                (blindnessValue.get() && mc.thePlayer.isPotionActive(Potion.blindness)) ||
-                (foodValue.get() && !(mc.thePlayer.foodStats.foodLevel > 6.0F || mc.thePlayer.capabilities.allowFlying))
-                || (checkServerSide.get() && (mc.thePlayer.onGround || !checkServerSideGround.get())
-                && !allDirectionsValue.get() && RotationUtils.targetRotation != null &&
-                RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30F)) {
+            (blindnessValue.get() && mc.thePlayer.isPotionActive(Potion.blindness)) ||
+            (foodValue.get() && !(mc.thePlayer.foodStats.foodLevel > 6.0F || mc.thePlayer.capabilities.allowFlying))
+            || (checkServerSide.get() && (mc.thePlayer.onGround || !checkServerSideGround.get())
+                    && !allDirectionsValue.get() && RotationUtils.targetRotation != null &&
+                    RotationUtils.getRotationDifference(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30F)) {
             mc.thePlayer.isSprinting = false
             return
         }

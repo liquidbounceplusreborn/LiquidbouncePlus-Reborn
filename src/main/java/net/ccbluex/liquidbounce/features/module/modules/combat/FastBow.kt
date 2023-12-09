@@ -45,12 +45,12 @@ class FastBow : Module() {
                 PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(BlockPos.ORIGIN, 255, mc.thePlayer.currentEquippedItem, 0F, 0F, 0F))
 
             val yaw = if (RotationUtils.targetRotation != null)
-                RotationUtils.targetRotation.yaw
+                RotationUtils.targetRotation!!.yaw
             else
                 mc.thePlayer.rotationYaw
 
             val pitch = if (RotationUtils.targetRotation != null)
-                RotationUtils.targetRotation.pitch
+                RotationUtils.targetRotation!!.pitch
             else
                 mc.thePlayer.rotationPitch
 

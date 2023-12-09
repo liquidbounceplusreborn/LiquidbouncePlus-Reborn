@@ -133,7 +133,7 @@ class TargetStrafe : Module() {
         if (killAura.target == null) return
         val target = killAura.target
 
-        val rotYaw = RotationUtils.getRotationsEntity(killAura.target).yaw
+        val rotYaw = RotationUtils.getRotationsEntity(killAura.target!!).yaw
 
         when (radiusMode.get()){
             "TrueRadius" -> {

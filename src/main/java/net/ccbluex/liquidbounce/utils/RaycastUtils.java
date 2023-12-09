@@ -14,7 +14,7 @@ import java.util.List;
 public final class RaycastUtils extends MinecraftInstance {
 
     public static Entity raycastEntity(final double range, final IEntityFilter entityFilter) {
-        return raycastEntity(range, RotationUtils.serverRotation.getYaw(), RotationUtils.serverRotation.getPitch(),
+        return raycastEntity(range, RotationUtils.getServerRotation().getYaw(), RotationUtils.getServerRotation().getPitch(),
                 entityFilter);
     }
 

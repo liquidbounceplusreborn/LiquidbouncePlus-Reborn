@@ -9,11 +9,11 @@
     "block.MixinBlock",
     "block.MixinBlockAnvil",
     "block.MixinBlockLadder",
+    "block.MixinBlockLilyPad",
     "block.MixinBlockLiquid",
     "block.MixinBlockModelRenderer",
     "block.MixinBlockRedstoneTorch",
     "block.MixinBlockSoulSand",
-    "block.MixinBlockLilyPad",
     "client.MixinGameSettings",
     "client.MixinMinecraft",
     "client.MixinResourcePackRepository",
@@ -82,9 +82,9 @@
     "render.MixinEntityRenderer",
     "render.MixinFontRenderer",
     "render.MixinInventoryEffectRenderer",
+    "render.MixinLayerArmorBase",
     "render.MixinLayerArrow",
     "render.MixinLayerCape",
-    "render.MixinLayerArmorBase",
     "render.MixinLayerCreeperCharge",
     "render.MixinLayerHeldItem",
     "render.MixinLayerSpiderEyes",
@@ -110,5 +110,8 @@
     "resources.MixinSkinManager",
     "world.MixinWorld",
     "world.MixinWorldClient"
+  ],
+  "client": [
+    "client.MixinMovementInputFromOptions"
   ]
 }

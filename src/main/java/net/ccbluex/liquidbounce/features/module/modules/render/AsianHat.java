@@ -121,10 +121,10 @@ public class AsianHat extends Module {
             float pitch = RenderUtils.interpolate(entity.prevRotationPitch, entity.rotationPitch, partialTicks);
 
             if (rotMod != null && entity == mc.thePlayer) {
-                yaw = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getYaw() :
-                        (RotationUtils.serverRotation != null ? RotationUtils.serverRotation.getYaw() : yaw);
-                pitch = RotationUtils.targetRotation != null ? RotationUtils.targetRotation.getPitch() :
-                        (RotationUtils.serverRotation != null ? RotationUtils.serverRotation.getPitch() : pitch);
+                yaw = RotationUtils.getTargetRotation() != null ? RotationUtils.getTargetRotation().getYaw() :
+                        (RotationUtils.getServerRotation() != null ? RotationUtils.getServerRotation().getYaw() : yaw);
+                pitch = RotationUtils.getTargetRotation() != null ? RotationUtils.getTargetRotation().getPitch() :
+                        (RotationUtils.getServerRotation() != null ? RotationUtils.getServerRotation().getPitch() : pitch);
             }
 
             GlStateManager.rotate(-yaw, 0, 1, 0);

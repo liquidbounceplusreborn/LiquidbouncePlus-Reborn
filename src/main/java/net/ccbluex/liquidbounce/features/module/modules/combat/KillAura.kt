@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.misc.ViaVersionFix
-import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
@@ -122,6 +121,23 @@ class KillAura : Module() {
     private val pitchMaxTurnSpeed by pitchMaxTurnSpeedValue
     private val pitchMinTurnSpeed by FloatValue("PitchMinTurnSpeed", 180f, 0f, 180f) { rotations != "None" }.canSetIf { it <= pitchMaxTurnSpeed }
 
+    private val keepTicks = IntegerValue("KeepTicks", 20, 0,20) { rotations != "None" }
+    private val angleThresholdUntilReset = FloatValue("AngleThresholdUntilReset", 5f, 0.1f,180f) { rotations != "None" }
+    private val resetMaxTurnSpeed: FloatValue =
+        object : FloatValue("ResetMaxTurnSpeed", 180f, 0f, 180f, "°", { rotations != "None" }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = resetMinTurnSpeed.get()
+                if (i > newValue) set(i)
+            }
+        }
+    private val resetMinTurnSpeed: FloatValue =
+        object : FloatValue("ResetMinTurnSpeed", 180f, 0f, 180f, "°", { rotations != "None"}) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = resetMaxTurnSpeed.get()
+                if (i < newValue) set(i)
+            }
+        }
+
     private val roundTurnAngle by BoolValue("RoundAngle", false) { rotations != "None" }
     private val roundAngleDirs by IntegerValue("RoundAngle-Directions", 4, 2, 90) { rotations != "None" && roundTurnAngle }
 
@@ -146,8 +162,6 @@ class KillAura : Module() {
     private val raycastIgnored by BoolValue("RayCastIgnored", false) { raycast }
     private val livingRaycast by BoolValue("LivingRayCast", true) { raycast }
     private val aac by BoolValue("AAC", false)
-    private val rotationStrafe by ListValue("Strafe", arrayOf("Off", "Strict", "Silent", "Fdp"), "Off")
-    private val testSilent by BoolValue("Silent", true) { rotationStrafe == "Fdp" && rotations != "None" }
     private val failRate by FloatValue("FailRate", 0f, 0f, 100f)
     private val fakeSwing by BoolValue("FakeSwing", true)
     private val noInvAttack by BoolValue("NoInvAttack", false)
@@ -243,117 +257,8 @@ class KillAura : Module() {
             updateHitable()
         }
 
-        if (rotationStrafe == "Off")
+        //if (rotationStrafe == "Off")
             update()
-    }
-
-
-    /**
-     * Strafe event
-     */
-    @EventTarget
-    fun onStrafe(event: StrafeEvent) {
-        val targetStrafe = LiquidBounce.moduleManager.getModule(TargetStrafe::class.java)!!
-        if (rotationStrafe == "Off" && !targetStrafe.state)
-            return
-
-        update()
-
-        if (currentTarget != null && RotationUtils.targetRotation != null) {
-            when (rotationStrafe.lowercase(Locale.getDefault())) {
-                "strict" -> {
-                    val (yaw) = RotationUtils.targetRotation ?: return
-                    var strafe = event.strafe
-                    var forward = event.forward
-                    val friction = event.friction
-
-                    var f = strafe * strafe + forward * forward
-
-                    if (f >= 1.0E-4F) {
-                        f = MathHelper.sqrt_float(f)
-
-                        if (f < 1.0F)
-                            f = 1.0F
-
-                        f = friction / f
-                        strafe *= f
-                        forward *= f
-
-                        val yawSin = MathHelper.sin((yaw * Math.PI / 180F).toFloat())
-                        val yawCos = MathHelper.cos((yaw * Math.PI / 180F).toFloat())
-
-                        mc.thePlayer.motionX += strafe * yawCos - forward * yawSin
-                        mc.thePlayer.motionZ += forward * yawCos + strafe * yawSin
-                    }
-                    event.cancelEvent()
-                }
-
-                "silent" -> {
-                    update()
-
-                    RotationUtils.targetRotation.applyStrafeToPlayer(event)
-                    event.cancelEvent()
-                }
-
-                "fdp" -> {
-                    if (event.isCancelled) {
-                        return
-                    }
-                    val (yaw) = RotationUtils.targetRotation ?: return
-                    var strafe = event.strafe
-                    var forward = event.forward
-                    var friction = event.friction
-                    var factor = strafe * strafe + forward * forward
-
-                    var angleDiff = ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
-                    //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
-                    var calcYaw = if(testSilent) { yaw + 45.0f * angleDiff.toFloat() } else yaw
-
-                    var calcMoveDir = Math.max(Math.abs(strafe), Math.abs(forward)).toFloat()
-                    calcMoveDir = calcMoveDir * calcMoveDir
-                    var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
-
-                    if (testSilent) {
-                        when (angleDiff) {
-                            1, 3, 5, 7, 9 -> {
-                                if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
-                                    friction = friction / calcMultiplier
-                                } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
-                                    friction = friction * calcMultiplier
-                                }
-                            }
-                        }
-                    }
-                    if (factor >= 1.0E-4F) {
-                        factor = MathHelper.sqrt_float(factor)
-
-                        if (factor < 1.0F) {
-                            factor = 1.0F
-                        }
-
-                        factor = friction / factor
-                        strafe *= factor
-                        forward *= factor
-
-                        val yawSin = MathHelper.sin((calcYaw * Math.PI / 180F).toFloat())
-                        val yawCos = MathHelper.cos((calcYaw * Math.PI / 180F).toFloat())
-
-                        mc.thePlayer.motionX += strafe * yawCos - forward * yawSin
-                        mc.thePlayer.motionZ += forward * yawCos + strafe * yawSin
-                    }
-                    event.cancelEvent()
-                }
-            }
-        }
-    }
-
-
-    @EventTarget
-    fun onJump(event: JumpEvent) {
-        if (rotationStrafe == "Strict" || rotationStrafe == "Fdp" && !testSilent) {
-            val (yaw) = RotationUtils.targetRotation ?: return
-            event.yaw = yaw
-        }
     }
 
     /**
@@ -789,7 +694,7 @@ class KillAura : Module() {
             defRotation.yaw = RotationUtils.roundRotation(defRotation.yaw, roundAngleDirs)
 
         if (silentRotation) {
-            RotationUtils.setTargetRotation(defRotation, if (aac) 15 else 0)
+            RotationUtils.setTargetRotation(defRotation,keepTicks.get(),resetMinTurnSpeed.get() to resetMaxTurnSpeed.get(),angleThresholdUntilReset.get())
         } else {
             defRotation.toPlayer(mc.thePlayer!!)
         }
@@ -820,7 +725,7 @@ class KillAura : Module() {
             )
 
         if (rotations == "Vanilla"){
-            val (_, rotation) = RotationUtils.searchCenter(
+            val rotation = RotationUtils.searchCenter(
                 boundingBox,
                 false,
                 shake,
@@ -841,45 +746,47 @@ class KillAura : Module() {
             val thePlayer = mc.thePlayer
             val random = Random()
             var lastHitVec = Vec3(0.0, 0.0, 0.0)
-            return RotationUtils.limitAngleChange(
-                RotationUtils.serverRotation,
-                RotationUtils.OtherRotation(
-                    boundingBox,
-                    if (shake) {
-                        if (RotationUtils.targetRotation == null || (random.nextBoolean() && !attackTimer.hasTimePassed(
-                                attackDelay / 2
-                            ))
-                        ) {
-                            lastHitVec = Vec3(
-                                MathHelper.clamp_double(thePlayer.posX, bb.minX, bb.maxX) + RandomUtils.nextDouble(
-                                    -0.2,
-                                    0.2
-                                ),
-                                MathHelper.clamp_double(
-                                    thePlayer.posY + 1.62F,
-                                    bb.minY,
-                                    bb.maxY
-                                ) + RandomUtils.nextDouble(-0.2, 0.2),
-                                MathHelper.clamp_double(thePlayer.posZ, bb.minZ, bb.maxZ) + RandomUtils.nextDouble(
-                                    -0.2,
-                                    0.2
-                                )
+            return RotationUtils.OtherRotation(
+                boundingBox,
+                if (shake) {
+                    if (RotationUtils.targetRotation == null || (random.nextBoolean() && !attackTimer.hasTimePassed(
+                            attackDelay / 2
+                        ))
+                    ) {
+                        lastHitVec = Vec3(
+                            MathHelper.clamp_double(thePlayer.posX, bb.minX, bb.maxX) + RandomUtils.nextDouble(
+                                -0.2,
+                                0.2
+                            ),
+                            MathHelper.clamp_double(
+                                thePlayer.posY + 1.62F,
+                                bb.minY,
+                                bb.maxY
+                            ) + RandomUtils.nextDouble(-0.2, 0.2),
+                            MathHelper.clamp_double(thePlayer.posZ, bb.minZ, bb.maxZ) + RandomUtils.nextDouble(
+                                -0.2,
+                                0.2
                             )
-                        }
-                        lastHitVec
-                    } else getNearestPointBB(mc.thePlayer.getPositionEyes(1f), entity.entityBoundingBox),
-                    predict,
-                    !mc.thePlayer.canEntityBeSeen(entity),
-                    range
-                ),
-                (Math.random() * (yawMaxTurnSpeed - yawMinTurnSpeed) + yawMinTurnSpeed).toFloat(),
-                (Math.random() * (pitchMaxTurnSpeed - pitchMinTurnSpeed) + pitchMinTurnSpeed).toFloat()
-            )
+                        )
+                    }
+                    lastHitVec
+                } else getNearestPointBB(mc.thePlayer.getPositionEyes(1f), entity.entityBoundingBox),
+                predict,
+                !mc.thePlayer.canEntityBeSeen(entity),
+                range
+            )?.let {
+                RotationUtils.limitAngleChange(
+                    RotationUtils.serverRotation,
+                    it,
+                    (Math.random() * (yawMaxTurnSpeed - yawMinTurnSpeed) + yawMinTurnSpeed).toFloat(),
+                    (Math.random() * (pitchMaxTurnSpeed - pitchMinTurnSpeed) + pitchMinTurnSpeed).toFloat()
+                )
+            }
         }
         if (rotations == "Novoline") {
             return Rotation(
-                (RotationUtils.getAngles(entity).yaw + Math.random() * amount - amount / 2).toFloat(),
-                (RotationUtils.getAngles(entity).pitch + Math.random() * amount - amount / 2).toFloat()
+                (RotationUtils.getAngles(entity)!!.yaw + Math.random() * amount - amount / 2).toFloat(),
+                (RotationUtils.getAngles(entity)!!.pitch + Math.random() * amount - amount / 2).toFloat()
             )
         }
         return RotationUtils.serverRotation
@@ -915,7 +822,7 @@ class KillAura : Module() {
 
             hitable = if(yawMaxTurnSpeed > 0F) currentTarget == raycastedEntity else true
         } else
-            hitable = RotationUtils.isFaced(currentTarget, reach)
+            hitable = currentTarget?.let { RotationUtils.isFaced(it, reach) } == true
     }
 
     /**
