@@ -21,7 +21,6 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.isReplaceable
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.get
 import net.ccbluex.liquidbounce.utils.extensions.eyes
-import net.ccbluex.liquidbounce.utils.extensions.getHorizontalFacing
 import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.math.toRadiansD
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -34,7 +33,6 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.block.material.Material
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -87,9 +85,17 @@ class Scaffold : Module() {
         ), "Motion"
     ) { towerEnabled.get() }
     private val noMoveOnlyValue = BoolValue("NoMove", true) { towerEnabled.get() }
+    private val towerSprintModeValue = ListValue(
+        "WatchdogTowerSprint", arrayOf(
+            "Normal",
+            "Always",
+            "Off",
+        ), "Normal"
+    )  { towerEnabled.get() && towerModeValue.get() == "Watchdog"}
     private val towerTimerValue = FloatValue("TowerTimer", 1f, 0.1f, 10f) { towerEnabled.get() }
 
-    private val hpxTowerSpeed = FloatValue("TowerSpeed", 100f, 0f, 100f) { towerEnabled.get() && towerModeValue.get() == "Watchdog"}
+    private val hpxTowerSpeed = FloatValue("WatchdogSpeed", 100f, 0f, 100f) { towerEnabled.get() && towerModeValue.get() == "Watchdog"}
+    private val towerXZMultiplier = FloatValue("WatchdogXZ-Multiplier", 1f, 0f, 4f, "x") { towerEnabled.get() && towerModeValue.get() == "Watchdog"}
 
     // Jump mode
     private val jumpMotionValue = FloatValue("JumpMotion", 0.42f, 0.3681289f, 0.79f) {
@@ -182,6 +188,7 @@ class Scaffold : Module() {
                 "PlaceOn",
                 "TellyTicks",
                 "Legit",
+                "WatchdogTest",
                 "Off"
             ),
             "Off"
@@ -242,7 +249,7 @@ class Scaffold : Module() {
         rotationModeValue.get().equals("spin", ignoreCase = true)
     }
 
-    private val searchBlockMode = ListValue("SearchBlockMode", arrayOf("Area", "Center"), "Area")
+    private val searchBlockMode = ListValue("SearchBlockMode", arrayOf("Area", "Center","Smart"), "Area")
 
     private val rotationStrafeValue =
         ListValue(
@@ -639,7 +646,7 @@ class Scaffold : Module() {
     }
 
     private fun buildForward(): Boolean {
-        val realYaw = MathHelper.wrapAngleTo180_float(lockRotation!!.yaw)
+        val realYaw = MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw)
         return realYaw > 77.5 && realYaw < 102.5 || realYaw > 167.5 || realYaw < -167.0f || realYaw < -77.5 && realYaw > -102.5 || realYaw > -12.5 && realYaw < 12.5
     }
 
@@ -781,8 +788,9 @@ class Scaffold : Module() {
                 .equals("ground", ignoreCase = true) && !mc.thePlayer.onGround || sprintModeValue.get()
                 .equals("air", ignoreCase = true) && mc.thePlayer.onGround  ||
             sprintModeValue.get().equals("tellyticks", ignoreCase = true) && offGroundTicks >= tellyTicks.get() ||
-            sprintModeValue.get().equals("legit", ignoreCase = true) && abs(MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) - MathHelper.wrapAngleTo180_float(RotationUtils.targetRotation!!.yaw)) > 90
-        ) {
+            sprintModeValue.get().equals("legit", ignoreCase = true) && abs(MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) - MathHelper.wrapAngleTo180_float(RotationUtils.targetRotation!!.yaw)) > 90 || sprintModeValue.get()
+                .equals("watchdogtest", ignoreCase = true) && !mc.thePlayer.onGround)
+        {
             mc.thePlayer.isSprinting = false
         }
 
@@ -981,11 +989,21 @@ class Scaffold : Module() {
             if (idkTick > 0) {
                 --idkTick
             }
+            if(towering()) {
+                mc.thePlayer.motionX *= towerXZMultiplier.get()
+                mc.thePlayer.motionZ *= towerXZMultiplier.get()
+            }
+        }
+
+        if(sprintModeValue.get()  == "WatchdogTest" && !towering() && mc.thePlayer.onGround){
+            mc.thePlayer.motionX *= 0.9
+            mc.thePlayer.motionZ *= 0.9
         }
 
         // XZReducer
         mc.thePlayer.motionX *= xzMultiplier.get().toDouble()
         mc.thePlayer.motionZ *= xzMultiplier.get().toDouble()
+
         if (speedPotSlow.get()) {
             if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                 mc.thePlayer.motionX *= 0.85f
@@ -1020,8 +1038,11 @@ class Scaffold : Module() {
                             mc.thePlayer.heldItem.item !is ItemBlock)
             ) return
             findBlock(
-                mode == "Expand" && expandLengthValue.get() > 1 && !towering(),
-                searchBlockMode.get() == "Area"
+                mode == "Expand" && expandLengthValue.get() > 1 && !towering(),if(searchBlockMode.get() == "Smart"){
+                    !buildForward()
+                } else {
+                    searchBlockMode.get() == "Area"
+                }
             )
         }
         if (targetPlace == null) {
@@ -1863,6 +1884,14 @@ class Scaffold : Module() {
     }
 
     private fun towerMove() {
+        mc.thePlayer.cameraYaw = 0f
+        mc.thePlayer.cameraPitch = 0f
+        if(towerSprintModeValue.get() == "Off"){
+            mc.thePlayer.isSprinting = false
+        }
+        if(towerSprintModeValue.get() == "Always"){
+            mc.thePlayer.isSprinting = true
+        }
         if (mc.thePlayer.onGround) {
             if (this.towerTick == 0 || this.towerTick == 5) {
                 val f = mc.thePlayer.rotationYaw * (Math.PI.toFloat() / 180)
