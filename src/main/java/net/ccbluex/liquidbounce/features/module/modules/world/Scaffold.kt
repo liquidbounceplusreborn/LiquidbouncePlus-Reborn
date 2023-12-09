@@ -220,7 +220,8 @@ class Scaffold : Module() {
         "RotationMode",
         arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","Legit"),
         "Normal"
-    )
+    ) { rotationsValue.get() }
+    private val alwaysRotate = BoolValue("AlwaysRotate", false) { rotationsValue.get() }
     private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() }
     private val maxTurnSpeed: FloatValue =
         object : FloatValue("MaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
@@ -321,6 +322,7 @@ class Scaffold : Module() {
 
     // Rotation lock
     private var lockRotation: Rotation? = null
+    private var lockRotation2: Rotation? = null
     private val currRotation
         get() = RotationUtils.targetRotation ?: mc.thePlayer.rotation
 
@@ -628,21 +630,22 @@ class Scaffold : Module() {
             }
 
             "Legit" -> {
-                    lockRotation?.yaw = MovementUtils.getRawDirection() - 180
+                lockRotation?.yaw = MovementUtils.getRawDirection() - 180
             }
         }
 
-        faceBlock = true
+        if(alwaysRotate.get()) {
+            lockRotation2 = lockRotation
+        }
 
-        var rotation = lockRotation
-        rotation =
+        lockRotation2 =
             if (stabilizedRotation.get() && (!rotationModeValue.isMode("Normal"))) {
-                lockRotation?.let { Rotation(round(it.yaw / 45f) * 45f, it.pitch) }
+                lockRotation2?.let { Rotation(round(it.yaw / 45f) * 45f, it.pitch) }
             } else {
-                rotation
+                lockRotation2
             }
-        RotationUtils.setTargetRotation(rotation)
-
+        RotationUtils.setTargetRotation(lockRotation2)
+        faceBlock = true
     }
 
     private fun buildForward(): Boolean {
@@ -848,7 +851,7 @@ class Scaffold : Module() {
             mc.theWorld.getBlockState(blockPos).block.material.isReplaceable || mc.theWorld.getBlockState(blockPos).block === Blocks.air
         if (modeValue.get() == "Snap2" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || modeValue.get() == "OffGround" && mc.thePlayer.onGround || modeValue.get() == "Snap" && targetPlace == null)
             return
-        if (lockRotation != null && rotationStrafeValue.get() == "LiquidBounce") {
+        if (lockRotation2 != null && rotationStrafeValue.get() == "LiquidBounce") {
             val dif =
                 ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - lockRotation!!.yaw - 23.5f - 135) + 180) / 45).toInt()
             val yaw = lockRotation!!.yaw
@@ -926,7 +929,7 @@ class Scaffold : Module() {
             }
             event.cancelEvent()
         }
-        if (lockRotation != null && rotationStrafeValue.get() == "FDP") {
+        if (lockRotation2 != null && rotationStrafeValue.get() == "FDP") {
             if (event.isCancelled) {
                 return
             }
@@ -1770,15 +1773,19 @@ class Scaffold : Module() {
             }
         }
 
+        if(!alwaysRotate.get()) {
+            lockRotation2 = lockRotation
+        }
+
         placeRotation ?: return false
 
         if (rotationsValue.get() && rotationModeValue.isMode("Normal")) {
-            lockRotation = RotationUtils.limitAngleChange(
+            lockRotation2 = RotationUtils.limitAngleChange(
                 currRotation, placeRotation.rotation, RandomUtils.nextFloat(minTurnSpeed.get(), maxTurnSpeed.get())
             )
         }
         if (rotationsValue.get() && rotationModeValue.isMode("Legit")) {
-            lockRotation?.pitch = placeRotation.rotation.pitch
+            lockRotation2?.pitch = placeRotation.rotation.pitch
         }
 
         targetPlace = placeRotation.placeInfo
