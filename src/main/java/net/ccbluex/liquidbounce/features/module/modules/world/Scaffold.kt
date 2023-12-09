@@ -95,7 +95,7 @@ class Scaffold : Module() {
     private val towerTimerValue = FloatValue("TowerTimer", 1f, 0.1f, 10f) { towerEnabled.get() }
 
     private val hpxTowerSpeed = FloatValue("WatchdogSpeed", 100f, 0f, 100f) { towerEnabled.get() && towerModeValue.get() == "Watchdog"}
-    private val towerXZMultiplier = FloatValue("WatchdogXZ-Multiplier", 1f, 0f, 4f, "x") { towerEnabled.get() && towerModeValue.get() == "Watchdog"}
+    private val towerXZMultiplier = FloatValue("WatchdogXZ-Multiplier", 1f, 0f, 1.05f, "x") { towerEnabled.get() && towerModeValue.get() == "Watchdog"}
 
     // Jump mode
     private val jumpMotionValue = FloatValue("JumpMotion", 0.42f, 0.3681289f, 0.79f) {
@@ -792,7 +792,7 @@ class Scaffold : Module() {
                 .equals("air", ignoreCase = true) && mc.thePlayer.onGround  ||
             sprintModeValue.get().equals("tellyticks", ignoreCase = true) && offGroundTicks >= tellyTicks.get() ||
             sprintModeValue.get().equals("legit", ignoreCase = true) && abs(MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw) - MathHelper.wrapAngleTo180_float(RotationUtils.targetRotation!!.yaw)) > 90 || sprintModeValue.get()
-                .equals("watchdogtest", ignoreCase = true) && !mc.thePlayer.onGround)
+                .equals("watchdogtest", ignoreCase = true) && !mc.thePlayer.onGround && !towering())
         {
             mc.thePlayer.isSprinting = false
         }
@@ -853,8 +853,8 @@ class Scaffold : Module() {
             return
         if (lockRotation2 != null && rotationStrafeValue.get() == "LiquidBounce") {
             val dif =
-                ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - lockRotation!!.yaw - 23.5f - 135) + 180) / 45).toInt()
-            val yaw = lockRotation!!.yaw
+                ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - lockRotation2!!.yaw - 23.5f - 135) + 180) / 45).toInt()
+            val yaw = lockRotation2!!.yaw
             val strafe = event.strafe
             val forward = event.forward
             val friction = event.friction
