@@ -16,14 +16,16 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import kotlin.math.abs
+
 
 @ModuleInfo(name = "MovementCorrection", spacedName = "Movement Correction", description = "Allows you to follow rotation movement.", category = ModuleCategory.MOVEMENT)
 class MovementCorrection : Module() {
 
-    private val strafeMode = ListValue("StrafeFixMode", arrayOf("Vanilla","LiquidBounce", "FDP","Kevin","None"), "LiquidBounce")
-    val attackSilent = BoolValue("AttackSilentStrafe",true)
+    val strafeMode = ListValue("StrafeFixMode", arrayOf("Vanilla","LiquidBounce", "FDP","Kevin","Rise","InputOverride","None"), "LiquidBounce")
+    val attackSilent = BoolValue("AttackSilentStrafe",true){ strafeMode.get() == "LiquidBounce" || strafeMode.get() == "FDP" }
     val jump = BoolValue("JumpFix",true)
     val always = BoolValue("Always",true)
     val killAuraValue = BoolValue("KillAura",true){ !always.get() }
@@ -34,35 +36,28 @@ class MovementCorrection : Module() {
     private var fixed = false
     private var fixedYaw = 0f
 
-    @EventTarget
-    fun onStrafe(event: StrafeEvent) {
+    fun canFix() : Boolean{
         val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
         val scaffold = LiquidBounce.moduleManager[Scaffold::class.java]!!
         val breaker = LiquidBounce.moduleManager[Breaker::class.java]!!
         val antiFireBall = LiquidBounce.moduleManager[AntiFireBall::class.java]!!
+        return (always.get() || killAuraValue.get() && killAura.state && killAura.target != null || scaffoldValue.get() && scaffold.state ||breakerValue.get() &&  breaker.state ||antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null) && RotationUtils.targetRotation != null
+    }
+
+    @EventTarget
+    fun onStrafe(event: StrafeEvent) {
         val (yaw) = RotationUtils.targetRotation ?: return
         var strafe = event.strafe
         var forward = event.forward
         var friction = event.friction
-        if((always.get() || killAuraValue.get() && killAura.state && killAura.target != null || scaffoldValue.get() && scaffold.state ||breakerValue.get() &&  breaker.state ||antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null) && RotationUtils.targetRotation != null) {
+        val scaffold = LiquidBounce.moduleManager[Scaffold::class.java]!!
+        val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
+        val antiFireBall = LiquidBounce.moduleManager[AntiFireBall::class.java]!!
+        if(canFix()) {
             when (strafeMode.get()) {
                 "Vanilla" -> {
                     val yaw = if (scaffoldValue.get() && scaffold.state) MovementUtils.getRawDirectionRotation(yaw,event.forward,event.strafe) + 270 else yaw
-                    var f: Float = strafe * strafe + forward * forward
-                    if (f >= 1.0E-4f) {
-                        f = MathHelper.sqrt_float(f)
-                        if (f < 1.0f) {
-                            f = 1.0f
-                        }
-                        f = friction / f
-                        strafe *= f
-                        forward *= f
-                        val f1 = MathHelper.sin(yaw * 3.1415927f / 180.0f)
-                        val f2 = MathHelper.cos(yaw * 3.1415927f / 180.0f)
-                        mc.thePlayer.motionX += (strafe * f2 - forward * f1).toDouble()
-                        mc.thePlayer.motionZ += (forward * f2 + strafe * f1).toDouble()
-                    }
-                    event.cancelEvent()
+                    event.yaw = yaw
                 }
                 "LiquidBounce" -> {
                     RotationUtils.targetRotation!!.applyStrafeToPlayer(event,!scaffoldValue.get() && !scaffold.state || !attackSilent.get() && !(killAuraValue.get() && killAura.state && killAura.target != null || antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null))
@@ -75,27 +70,26 @@ class MovementCorrection : Module() {
                     }
                     var factor = strafe * strafe + forward * forward
 
-                    var angleDiff =
-                        ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
-                    //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
-                    var calcYaw = if (scaffoldValue.get() && scaffold.state || attackSilent.get() && (killAuraValue.get() && killAura.state && killAura.target != null || antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null)) {
+                    val angleDiff =
+                        ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0) / (45.0).toDouble()).toInt()
+                    val calcYaw = if (scaffoldValue.get() && scaffold.state || attackSilent.get() && (killAuraValue.get() && killAura.state && killAura.target != null || antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null)) {
                         yaw + 45.0f * angleDiff.toFloat()
                     } else yaw
 
-                    var calcMoveDir = Math.max(Math.abs(strafe), Math.abs(forward)).toFloat()
-                    calcMoveDir = calcMoveDir * calcMoveDir
-                    var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
+                    var calcMoveDir = Math.abs(strafe).coerceAtLeast(abs(forward))
+                    calcMoveDir *= calcMoveDir
+                    val calcMultiplier = MathHelper.sqrt_float(calcMoveDir / 1.0f.coerceAtMost(calcMoveDir * 2.0f))
 
                     if (scaffoldValue.get() && scaffold.state || attackSilent.get() && (killAuraValue.get() && killAura.state && killAura.target != null || antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null)) {
                         when (angleDiff) {
                             1, 3, 5, 7, 9 -> {
-                                if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(
+                                if ((abs(forward) > 0.005 || abs(strafe) > 0.005) && !(abs(forward) > 0.005 && abs(
                                         strafe
                                     ) > 0.005)
                                 ) {
-                                    friction = friction / calcMultiplier
-                                } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
-                                    friction = friction * calcMultiplier
+                                    friction /= calcMultiplier
+                                } else if (abs(forward) > 0.005 && abs(strafe) > 0.005) {
+                                    friction *= calcMultiplier
                                 }
                             }
                         }
@@ -122,8 +116,14 @@ class MovementCorrection : Module() {
                 "Kevin" -> {
                     if (fixed) {
                         fixed = false
-                        event.yaw = fixedYaw;
+                        event.yaw = fixedYaw
                     }
+                }
+                "Rise" -> {
+                    event.yaw = yaw
+                }
+                "InputOverride" -> {
+                    event.yaw = yaw
                 }
             }
         }
@@ -136,76 +136,215 @@ class MovementCorrection : Module() {
             event.yaw = yaw
         }
     }
+
     @EventTarget
     fun onMovementInput(event: MovementInputUpdateEvent) {
-        if (strafeMode.get() == "Kevin") {
-            val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
-            val scaffold = LiquidBounce.moduleManager[Scaffold::class.java]!!
-            val breaker = LiquidBounce.moduleManager[Breaker::class.java]!!
-            val antiFireBall = LiquidBounce.moduleManager[AntiFireBall::class.java]!!
-            val (yaw) = RotationUtils.targetRotation ?: return
-            if ((always.get() || killAuraValue.get() && killAura.state && killAura.target != null || scaffoldValue.get() && scaffold.state || breakerValue.get() && breaker.state || antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null) && RotationUtils.targetRotation != null) {
-                val forward: Float = event.forward
-                val strafe: Float = event.strafe
-                val yaw = if (scaffoldValue.get() && scaffold.state) MovementUtils.getRawDirectionRotation(yaw,event.forward,event.strafe) + 270 else yaw
-                fixedYaw = yaw
-                fixed = true
+        val (yaw) = RotationUtils.targetRotation ?: return
+        if (canFix()) {
+            when (strafeMode.get()) {
+                "Kevin" -> {
+                    val scaffold = LiquidBounce.moduleManager[Scaffold::class.java]!!
+                    val forward: Float = event.forward
+                    val strafe: Float = event.strafe
+                    val yaw = if (scaffoldValue.get() && scaffold.state) MovementUtils.getRawDirectionRotation(
+                        yaw,
+                        event.forward,
+                        event.strafe
+                    ) + 270 else yaw
+                    fixedYaw = yaw
+                    fixed = true
 
-                val angle = MathHelper.wrapAngleTo180_double(
-                    Math.toDegrees(
-                        direction(
-                            mc.thePlayer.rotationYaw,
-                            forward.toDouble(),
-                            strafe.toDouble()
+                    val angle = MathHelper.wrapAngleTo180_double(
+                        Math.toDegrees(
+                            direction(
+                                mc.thePlayer.rotationYaw,
+                                forward,
+                                strafe
+                            )
                         )
                     )
-                )
 
-                if (forward == 0f && strafe == 0f) {
-                    return
-                }
+                    if (forward == 0f && strafe == 0f) {
+                        return
+                    }
 
-                var closestForward = 0f
-                var closestStrafe = 0f
-                var closestDifference = Float.MAX_VALUE
+                    var closestForward = 0f
+                    var closestStrafe = 0f
+                    var closestDifference = Float.MAX_VALUE
 
-                run {
-                    var predictedForward = -1f
-                    while (predictedForward <= 1f) {
-                        var predictedStrafe = -1f
-                        while (predictedStrafe <= 1f) {
-                            if (predictedStrafe == 0f && predictedForward == 0f) {
-                                predictedStrafe += 1f
-                                continue
-                            }
-                            val predictedAngle = MathHelper.wrapAngleTo180_double(
-                                Math.toDegrees(
-                                    direction(
-                                        yaw,
-                                        predictedForward.toDouble(),
-                                        predictedStrafe.toDouble()
+                    run {
+                        var predictedForward = -1f
+                        while (predictedForward <= 1f) {
+                            var predictedStrafe = -1f
+                            while (predictedStrafe <= 1f) {
+                                if (predictedStrafe == 0f && predictedForward == 0f) {
+                                    predictedStrafe += 1f
+                                    continue
+                                }
+                                val predictedAngle = MathHelper.wrapAngleTo180_double(
+                                    Math.toDegrees(
+                                        direction(
+                                            yaw,
+                                            predictedForward,
+                                            predictedStrafe
+                                        )
                                     )
                                 )
-                            )
-                            val difference = abs(angle - predictedAngle)
-                            if (difference < closestDifference) {
-                                closestDifference = difference.toFloat()
-                                closestForward = predictedForward
-                                closestStrafe = predictedStrafe
+                                val difference = abs(angle - predictedAngle)
+                                if (difference < closestDifference) {
+                                    closestDifference = difference.toFloat()
+                                    closestForward = predictedForward
+                                    closestStrafe = predictedStrafe
+                                }
+                                predictedStrafe += 1f
                             }
-                            predictedStrafe += 1f
+                            predictedForward += 1f
                         }
-                        predictedForward += 1f
                     }
+
+                    event.forward = closestForward
+                    event.strafe = closestStrafe
                 }
 
-                event.forward = closestForward
-                event.strafe = closestStrafe
+                "Rise" -> {
+                    fixMovement(event, yaw)
+                }
+
+                "InputOverride" -> {
+                    if (event.forward != 0f || event.strafe != 0f) {
+                        val fixed = getMovementCorrection(event.forward, event.strafe)
+                        event.forward = fixed[0]
+                        event.strafe = fixed[1]
+                    }
+                }
             }
         }
     }
 
-    fun direction(rotationYaw: Float, moveForward: Double, moveStrafing: Double): Double {
+    fun getMovementCorrection(forward: Float, strafe: Float): FloatArray {
+        // Set the player's current mouse rotation yaw
+        val y = mc.thePlayer.rotationYaw
+
+        // If the player's mouse yaw is the same as the client yaw, return the current movement inputs
+        if (RotationUtils.targetRotation?.yaw == y) {
+            return floatArrayOf(forward, strafe)
+        }
+
+        // Determine the slipperiness factor based on the player's position
+        var slipperiness = 0.91f
+        if (mc.thePlayer.onGround) {
+            slipperiness = mc.theWorld.getBlockState(
+                BlockPos(
+                    MathHelper.floor_double(mc.thePlayer.posX),
+                    MathHelper.floor_double(mc.thePlayer.entityBoundingBox.minY) - 1,
+                    MathHelper.floor_double(mc.thePlayer.posZ)
+                )
+            ).block.slipperiness * 0.91f
+        }
+
+        // Calculate player's movement factor based on slipperiness and on-ground status
+        val moveFactor: Float
+        moveFactor = if (mc.thePlayer.onGround) {
+            mc.thePlayer.aiMoveSpeed * (0.16277136f / (slipperiness * slipperiness * slipperiness))
+        } else {
+            mc.thePlayer.jumpMovementFactor
+        }
+
+        // Calculate normalized movement inputs
+        var magnitude = strafe * strafe + forward * forward
+        magnitude = moveFactor / magnitude
+        val normalizedStrafe = strafe * magnitude
+        val normalizedForward = forward * magnitude
+
+        // Calculate motion values based on current mouse yaw
+        val realYawSin = MathHelper.sin(y * Math.PI.toFloat() / 180.0f)
+        val realYawCos = MathHelper.cos(y * Math.PI.toFloat() / 180.0f)
+        val realYawMotionX = normalizedStrafe * realYawCos - normalizedForward * realYawSin
+        val realYawMotionZ = normalizedForward * realYawCos + normalizedStrafe * realYawSin
+
+        // Calculate motion values based on client yaw
+        val rotationYawSin = MathHelper.sin(RotationUtils.targetRotation?.yaw!! * Math.PI.toFloat() / 180.0f)
+        val rotationYawCos = MathHelper.cos(RotationUtils.targetRotation?.yaw!!  * Math.PI.toFloat() / 180.0f)
+
+        // Store the closest movement direction found through testing different combinations
+        val closest = floatArrayOf(Float.NaN, 0f, 0f)
+
+        // bruteforce all possible strafe and forward combinations
+        for (possibleStrafe in -1..1) {
+            for (possibleForward in -1..1) {
+                val testFStrafe = possibleStrafe * magnitude
+                val testFForward = possibleForward * magnitude
+                val testYawMotionX = testFStrafe * rotationYawCos - testFForward * rotationYawSin
+                val testYawMotionZ = testFForward * rotationYawCos + testFStrafe * rotationYawSin
+
+                // Calculate the distance between the real and tested motions
+                val diffX = realYawMotionX - testYawMotionX
+                val diffZ = realYawMotionZ - testYawMotionZ
+                val distance = MathHelper.sqrt_float(diffX * diffX + diffZ * diffZ)
+
+                // Update closest if the current combination is closer
+                if (java.lang.Float.isNaN(closest[0]) || distance < closest[0]) {
+                    closest[0] = distance
+                    closest[1] = possibleForward.toFloat()
+                    closest[2] = possibleStrafe.toFloat()
+                }
+            }
+        }
+
+        // Return the movement inputs corresponding to the closest direction found
+        return floatArrayOf(closest[1], closest[2])
+    }
+
+    fun fixMovement(event: MovementInputUpdateEvent, yaw: Float) {
+        val forward: Float = event.forward
+        val strafe: Float = event.strafe
+        val angle = MathHelper.wrapAngleTo180_double(
+            Math.toDegrees(
+                direction(
+                    mc.thePlayer.rotationYaw,
+                    forward,
+                    strafe
+                )
+            )
+        )
+        if (forward == 0f && strafe == 0f) {
+            return
+        }
+        var closestForward = 0f
+        var closestStrafe = 0f
+        var closestDifference = Float.MAX_VALUE
+        var predictedForward = -1f
+        while (predictedForward <= 1f) {
+            var predictedStrafe = -1f
+            while (predictedStrafe <= 1f) {
+                if (predictedStrafe == 0f && predictedForward == 0f) {
+                    predictedStrafe += 1f
+                    continue
+                }
+                val predictedAngle = MathHelper.wrapAngleTo180_double(
+                    Math.toDegrees(
+                        direction(
+                            yaw,
+                            predictedForward,
+                            predictedStrafe
+                        )
+                    )
+                )
+                val difference = abs(angle - predictedAngle)
+                if (difference < closestDifference) {
+                    closestDifference = difference.toFloat()
+                    closestForward = predictedForward
+                    closestStrafe = predictedStrafe
+                }
+                predictedStrafe += 1f
+            }
+            predictedForward += 1f
+        }
+        event.forward = closestForward
+        event.strafe = closestStrafe
+    }
+
+    fun direction(rotationYaw: Float, moveForward: Float, moveStrafing: Float): Double {
         var yaw = rotationYaw
         if (moveForward < 0f) yaw += 180f
         var forward = 1f

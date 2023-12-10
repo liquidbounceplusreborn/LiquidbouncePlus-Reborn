@@ -218,7 +218,7 @@ class Scaffold : Module() {
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","Legit"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw"),
         "Normal"
     ) { rotationsValue.get() }
     private val alwaysRotate = BoolValue("AlwaysRotate", false) { rotationsValue.get() }
@@ -650,10 +650,6 @@ class Scaffold : Module() {
 
             "MoveYaw" -> {
                 lockRotation = Rotation(MovementUtils.getRawDirection() - 180, customPitchValue.get())
-            }
-
-            "Legit" -> {
-                lockRotation?.yaw = MovementUtils.getRawDirection() - 180
             }
         }
 
@@ -1675,9 +1671,6 @@ class Scaffold : Module() {
             lockRotation2 = RotationUtils.limitAngleChange(
                 currRotation, placeRotation.rotation, RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
             )
-        }
-        if (rotationsValue.get() && rotationModeValue.isMode("Legit")) {
-            lockRotation2?.pitch = placeRotation.rotation.pitch
         }
 
         targetPlace = placeRotation.placeInfo
