@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.combat.BackTrack;
+import net.ccbluex.liquidbounce.utils.BlinkUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetworkManager;
@@ -77,8 +78,10 @@ public class MixinNetworkManager {
         }
         LiquidBounce.eventManager.callEvent(event);
 
-        if(event.isCancelled())
+        if(event.isCancelled()) {
             callback.cancel();
+        } if (BlinkUtils.INSTANCE.pushPacket(packet))
+                callback.cancel();
     }
 
     /**

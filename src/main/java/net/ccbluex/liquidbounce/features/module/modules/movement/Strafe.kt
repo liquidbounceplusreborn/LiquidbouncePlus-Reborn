@@ -22,9 +22,10 @@ import kotlin.math.sqrt
 class Strafe : Module() {
 
     private var strengthValue = FloatValue("Strength", 0.5F, 0F, 1F, "x")
-    private var noMoveStopValue = BoolValue("NoMoveStop", false)
+    private var onGroundOnly = BoolValue("OnlyOnGroundStrafe", false)
     private var onGroundStrafeValue = BoolValue("OnGroundStrafe", false)
     private var allDirectionsJumpValue = BoolValue("AllDirectionsJump", false)
+    private var noMoveStopValue = BoolValue("NoMoveStop", false)
 
     private var wasDown: Boolean = false
     private var jump: Boolean = false
@@ -74,7 +75,7 @@ class Strafe : Module() {
             }
             return
         }
-        if (!mc.thePlayer!!.onGround || onGroundStrafeValue.get()) {
+        if (!mc.thePlayer!!.onGround && !onGroundOnly.get() || onGroundStrafeValue.get() || onGroundOnly.get()) {
             val yaw = getMoveYaw()
             mc.thePlayer!!.motionX = (((-sin(Math.toRadians(yaw.toDouble())) * speed) + motionX))
             mc.thePlayer!!.motionZ = (((cos(Math.toRadians(yaw.toDouble())) * speed) + motionZ))

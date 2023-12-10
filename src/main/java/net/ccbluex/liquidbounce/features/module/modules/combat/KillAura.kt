@@ -206,7 +206,6 @@ class KillAura : Module() {
     // Block status
     var blockingStatus = false
     var verusBlocking = false
-    var blockingTicks = 0
     var blinkState = false
 
     /**
@@ -228,7 +227,6 @@ class KillAura : Module() {
         prevTargetEntities.clear()
         attackTimer.reset()
         clicks = 0
-        blockingTicks = 0
 
         stopBlocking()
         if (verusBlocking && !blockingStatus && !mc.thePlayer.isBlocking) {
@@ -241,6 +239,10 @@ class KillAura : Module() {
                         EnumFacing.DOWN
                     )
                 )
+        }
+        if (blinkState) {
+            BlinkUtils.setBlinkState(off = true, release = true)
+            blinkState = false
         }
     }
 
@@ -258,7 +260,7 @@ class KillAura : Module() {
         }
 
         //if (rotationStrafe == "Off")
-            update()
+        update()
     }
 
     /**
@@ -280,6 +282,30 @@ class KillAura : Module() {
                     )
                 )
         }
+
+        if (target == null && currentTarget == null) {
+            stopBlocking()
+            if (blinkState) {
+                BlinkUtils.setBlinkState(off = true, release = true)
+                blinkState = false
+            }
+            return
+        }
+
+        if (autoBlockMode == "HypixelBlinkTest" && canBlock) {
+            if (mc.thePlayer.ticksExisted % 4 == 1 && mc.thePlayer.hurtTime < 3) {
+                if (blinkState) {
+                    BlinkUtils.setBlinkState(off = true, release = true)
+                    blinkState = false
+                }
+                startBlocking()
+            } else if (mc.thePlayer.ticksExisted % 4 == 3 || mc.thePlayer.hurtTime > 3) {
+                BlinkUtils.setBlinkState(all = true)
+                blinkState = true
+
+                stopBlocking()
+            }
+        }
     }
 
 
@@ -294,6 +320,10 @@ class KillAura : Module() {
             stopBlocking()
             return
         }
+
+        /*if (autoBlockMode != "None" && target != null && mc.thePlayer.getDistanceToEntityBox(target!!) > attackRange && canBlock) {
+                startBlocking()
+        }*/
 
         // Target
         currentTarget = target
@@ -323,6 +353,10 @@ class KillAura : Module() {
             currentTarget = null
             hitable = false
             stopBlocking()
+            if (blinkState) {
+                BlinkUtils.setBlinkState(off = true, release = true)
+                blinkState = false
+            }
             return
         }
 
@@ -331,7 +365,17 @@ class KillAura : Module() {
             currentTarget = null
             hitable = false
             if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
+            if (blinkState) {
+                BlinkUtils.setBlinkState(off = true, release = true)
+                blinkState = false
+            }
             return
+        }
+
+        if (autoBlockMode == "HypixelBlinkTest" && canBlock) {
+            if (mc.thePlayer.ticksExisted % 4 > 0 && mc.thePlayer.hurtTime < 3) {
+                return
+            }
         }
 
         if (target != null && currentTarget != null) {
@@ -652,22 +696,6 @@ class KillAura : Module() {
             }
             if (autoBlockMode == "Vanilla" && canBlock) {
                 startBlocking()
-            }
-            if (autoBlockMode == "HypixelBlinkTest" && canBlock) {
-                val blink = LiquidBounce.moduleManager[Blink::class.java]!!
-                blockingTicks++
-                if (blockingTicks == 4) {
-                    blockingTicks = 0
-                }
-                if (blockingTicks < 1) {
-                    blink.state = false
-                    //stopBlocking()
-                    blinkState = false
-                } else if (blockingTicks > 1 && mc.thePlayer.onGround) {
-                    blink.state = true
-                    startBlocking()
-                    blinkState = true
-                }
             }
         }
     }
