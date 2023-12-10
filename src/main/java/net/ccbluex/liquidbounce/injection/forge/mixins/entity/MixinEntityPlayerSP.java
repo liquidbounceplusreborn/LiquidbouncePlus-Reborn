@@ -340,7 +340,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
         EntityLivingBase entity;
 
-        final KillAura killaura = LiquidBounce.moduleManager.getModule(KillAura.class);
         final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
         NoSlow noslow = LiquidBounce.moduleManager.getModule(NoSlow.class);
 

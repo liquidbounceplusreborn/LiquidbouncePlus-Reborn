@@ -319,7 +319,7 @@ class Scaffold : Module() {
 
     // Visuals
     private val counterDisplayValue =
-        ListValue("Counter", arrayOf("Off", "Simple", "Advanced", "Sigma", "Novoline", "Exhibition"), "Simple")
+        ListValue("Counter", arrayOf("Off", "Simple","Simple2", "Advanced", "Sigma", "Novoline", "Exhibition"), "Simple")
     private val modeDisplay = BoolValue("ModeDisplay", true)
     private val markValue = BoolValue("Mark", false)
     private val redValue = IntegerValue("Red", 0, 0, 255) { markValue.get() }
@@ -1236,6 +1236,16 @@ class Scaffold : Module() {
                 renderItemStack(mc.thePlayer.inventory.mainInventory[slot], 0, 0)
                 GlStateManager.popMatrix()
             }
+            GlStateManager.resetColor()
+            Fonts.minecraftFont.drawString(
+                "$blocksAmount blocks",
+                (scaledResolution.scaledWidth / 2).toFloat(),
+                (scaledResolution.scaledHeight / 2 + 20).toFloat(),
+                -1,
+                true
+            )
+        }
+        if (counterMode.equals("simple2", ignoreCase = true)) {
             GlStateManager.resetColor()
             Fonts.minecraftFont.drawString(
                 "$blocksAmount blocks",

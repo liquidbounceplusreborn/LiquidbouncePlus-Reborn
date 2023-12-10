@@ -226,6 +226,7 @@ class ModuleManager : Listenable {
         registerModule(ChestAura)
         registerModule(NewGUI)
         registerModule(TimerRange)
+        registerModule(TimerRangeLB)
 
         ClientUtils.getLogger().info("[ModuleManager] Successfully loaded ${modules.size} modules.")
     }

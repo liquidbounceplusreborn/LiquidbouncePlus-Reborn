@@ -18,7 +18,7 @@ public final class RaycastUtils extends MinecraftInstance {
                 entityFilter);
     }
 
-    private static Entity raycastEntity(final double range, final float yaw, final float pitch, final IEntityFilter entityFilter) {
+    public static Entity raycastEntity(final double range, final float yaw, final float pitch, final IEntityFilter entityFilter) {
         final Entity renderViewEntity = mc.getRenderViewEntity();
 
         if(renderViewEntity != null && mc.theWorld != null) {

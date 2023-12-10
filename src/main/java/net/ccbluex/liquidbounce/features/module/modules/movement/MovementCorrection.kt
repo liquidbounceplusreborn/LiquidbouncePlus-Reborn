@@ -12,10 +12,10 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.AntiFireBall
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.world.Breaker
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.potion.Potion
 import net.minecraft.util.MathHelper
 import kotlin.math.abs
 
@@ -23,14 +23,13 @@ import kotlin.math.abs
 class MovementCorrection : Module() {
 
     private val strafeMode = ListValue("StrafeFixMode", arrayOf("Vanilla","LiquidBounce", "FDP","Kevin","None"), "LiquidBounce")
+    val attackSilent = BoolValue("AttackSilentStrafe",true)
     val jump = BoolValue("JumpFix",true)
     val always = BoolValue("Always",true)
     val killAuraValue = BoolValue("KillAura",true){ !always.get() }
     val scaffoldValue = BoolValue("Scaffold",true) { !always.get() }
     val breakerValue = BoolValue("Breaker",true) { !always.get() }
     val antiFireBallValue = BoolValue("AntiFireBall",true) { !always.get() }
-    private val fdpSilentValue = BoolValue("FDPSilent",true) { strafeMode.get() == "FDP" }
-    private val lbSilentValue = BoolValue("LBSilent",true) { strafeMode.get() == "LiquidBounce" }
 
     private var fixed = false
     private var fixedYaw = 0f
@@ -42,12 +41,13 @@ class MovementCorrection : Module() {
         val breaker = LiquidBounce.moduleManager[Breaker::class.java]!!
         val antiFireBall = LiquidBounce.moduleManager[AntiFireBall::class.java]!!
         val (yaw) = RotationUtils.targetRotation ?: return
-        if((always.get() || killAuraValue.get() && killAura.state && killAura.target != null || scaffoldValue.get() && scaffold.state ||breakerValue.get() &&  breaker.state ||antiFireBallValue.get() && antiFireBall.state) && RotationUtils.targetRotation != null) {
+        var strafe = event.strafe
+        var forward = event.forward
+        var friction = event.friction
+        if((always.get() || killAuraValue.get() && killAura.state && killAura.target != null || scaffoldValue.get() && scaffold.state ||breakerValue.get() &&  breaker.state ||antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null) && RotationUtils.targetRotation != null) {
             when (strafeMode.get()) {
                 "Vanilla" -> {
-                    var strafe = event.strafe
-                    var forward = event.forward
-                    var friction = event.friction
+                    val yaw = if (scaffoldValue.get() && scaffold.state) MovementUtils.getRawDirectionRotation(yaw,event.forward,event.strafe) + 270 else yaw
                     var f: Float = strafe * strafe + forward * forward
                     if (f >= 1.0E-4f) {
                         f = MathHelper.sqrt_float(f)
@@ -65,7 +65,7 @@ class MovementCorrection : Module() {
                     event.cancelEvent()
                 }
                 "LiquidBounce" -> {
-                    RotationUtils.targetRotation!!.applyStrafeToPlayer(event,!lbSilentValue.get())
+                    RotationUtils.targetRotation!!.applyStrafeToPlayer(event,!scaffoldValue.get() && !scaffold.state || !attackSilent.get() && !(killAuraValue.get() && killAura.state && killAura.target != null || antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null))
                     event.cancelEvent()
                 }
 
@@ -73,16 +73,12 @@ class MovementCorrection : Module() {
                     if (event.isCancelled) {
                         return
                     }
-
-                    var strafe = event.strafe
-                    var forward = event.forward
-                    var friction = event.friction
                     var factor = strafe * strafe + forward * forward
 
                     var angleDiff =
                         ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
                     //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
-                    var calcYaw = if (fdpSilentValue.get()) {
+                    var calcYaw = if (scaffoldValue.get() && scaffold.state || attackSilent.get() && (killAuraValue.get() && killAura.state && killAura.target != null || antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null)) {
                         yaw + 45.0f * angleDiff.toFloat()
                     } else yaw
 
@@ -90,7 +86,7 @@ class MovementCorrection : Module() {
                     calcMoveDir = calcMoveDir * calcMoveDir
                     var calcMultiplier = MathHelper.sqrt_float(calcMoveDir / Math.min(1.0f, calcMoveDir * 2.0f))
 
-                    if (fdpSilentValue.get()) {
+                    if (scaffoldValue.get() && scaffold.state || attackSilent.get() && (killAuraValue.get() && killAura.state && killAura.target != null || antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null)) {
                         when (angleDiff) {
                             1, 3, 5, 7, 9 -> {
                                 if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(
@@ -137,18 +133,7 @@ class MovementCorrection : Module() {
     fun onJump(event:JumpEvent){
         val (yaw) = RotationUtils.targetRotation ?: return
         if(jump.get() && RotationUtils.targetRotation != null){
-            mc.thePlayer.motionY = event.motion.toDouble()
-
-            if (mc.thePlayer.isPotionActive(Potion.jump)) mc.thePlayer.motionY += ((mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1).toFloat() * 0.1f).toDouble()
-
-            if (mc.thePlayer.isSprinting) {
-                val f: Float = yaw * 0.017453292f
-                mc.thePlayer.motionX -= (MathHelper.sin(f) * 0.2f).toDouble()
-                mc.thePlayer.motionZ += (MathHelper.cos(f) * 0.2f).toDouble()
-            }
-
-            mc.thePlayer.isAirBorne = true
-            event.cancelEvent()
+            event.yaw = yaw
         }
     }
     @EventTarget
@@ -159,9 +144,10 @@ class MovementCorrection : Module() {
             val breaker = LiquidBounce.moduleManager[Breaker::class.java]!!
             val antiFireBall = LiquidBounce.moduleManager[AntiFireBall::class.java]!!
             val (yaw) = RotationUtils.targetRotation ?: return
-            if ((always.get() || killAuraValue.get() && killAura.state && killAura.target != null || scaffoldValue.get() && scaffold.state || breakerValue.get() && breaker.state || antiFireBallValue.get() && antiFireBall.state) && RotationUtils.targetRotation != null) {
+            if ((always.get() || killAuraValue.get() && killAura.state && killAura.target != null || scaffoldValue.get() && scaffold.state || breakerValue.get() && breaker.state || antiFireBallValue.get() && antiFireBall.state && antiFireBall.target != null) && RotationUtils.targetRotation != null) {
                 val forward: Float = event.forward
                 val strafe: Float = event.strafe
+                val yaw = if (scaffoldValue.get() && scaffold.state) MovementUtils.getRawDirectionRotation(yaw,event.forward,event.strafe) + 270 else yaw
                 fixedYaw = yaw
                 fixed = true
 

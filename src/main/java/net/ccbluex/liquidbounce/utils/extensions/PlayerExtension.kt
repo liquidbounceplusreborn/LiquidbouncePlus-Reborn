@@ -113,3 +113,5 @@ fun Entity.interpolatedPosition() = Vec3(
     prevPosY + (posY - prevPosY) * mc.timer.renderPartialTicks,
     prevPosZ + (posZ - prevPosZ) * mc.timer.renderPartialTicks
 )
+
+fun Entity.getDistanceToBox(box: AxisAlignedBB) = eyes.distanceTo(getNearestPointBB(eyes, box))
