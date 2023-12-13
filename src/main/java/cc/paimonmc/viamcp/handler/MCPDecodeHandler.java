@@ -57,6 +57,7 @@ public class MCPDecodeHandler extends MessageToMessageDecoder<ByteBuf> {
 
         boolean cancel = false;
 
+        //1.17 fix by fyxar
         if(ViaMCP.getInstance().getVersion() >= 755) {
             try {
                 if (Type.VAR_INT.read(raw) == ClientboundPackets1_17_1.PING.getId()) {
