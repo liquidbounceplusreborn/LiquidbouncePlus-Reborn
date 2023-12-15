@@ -62,9 +62,9 @@ class Effects(x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
 
             val duration = if (effect.isPotionDurationMax) 30 else effect.duration / 20
             val name = if (anotherStyle.get())
-                            "${I18n.format(potion.name)} $number ${if (duration < 15) "§c" else if (duration < 30) "§6" else "§7"}${Potion.getDurationString(effect)}"
-                        else 
-                            "${I18n.format(potion.name)} $number§f: §7${Potion.getDurationString(effect)}"
+                "${I18n.format(potion.name)} $number ${if (duration < 15) "§c" else if (duration < 30) "§6" else "§7"}${Potion.getDurationString(effect)}"
+            else
+                "${I18n.format(potion.name)} $number§f: §7${Potion.getDurationString(effect)}"
             val stringWidth = fontRenderer.getStringWidth(name).toFloat()
 
             if (side.horizontal == Side.Horizontal.RIGHT) {

@@ -241,7 +241,7 @@ class KillAura : Module() {
                 )
         }
         if (blinkState) {
-            BlinkUtils.setBlinkState(off = true, release = true)
+            LiquidBounce.moduleManager[Blink::class.java]?.state = false
             blinkState = false
         }
     }
@@ -286,7 +286,7 @@ class KillAura : Module() {
         if (target == null && currentTarget == null) {
             stopBlocking()
             if (blinkState) {
-                BlinkUtils.setBlinkState(off = true, release = true)
+                LiquidBounce.moduleManager[Blink::class.java]?.state = false
                 blinkState = false
             }
             return
@@ -295,12 +295,12 @@ class KillAura : Module() {
         if (autoBlockMode == "HypixelBlinkTest" && canBlock) {
             if (mc.thePlayer.ticksExisted % 4 == 1 && mc.thePlayer.hurtTime < 3) {
                 if (blinkState) {
-                    BlinkUtils.setBlinkState(off = true, release = true)
+                    LiquidBounce.moduleManager[Blink::class.java]?.state = false
                     blinkState = false
                 }
                 startBlocking()
             } else if (mc.thePlayer.ticksExisted % 4 == 3 || mc.thePlayer.hurtTime > 3) {
-                BlinkUtils.setBlinkState(all = true)
+                LiquidBounce.moduleManager[Blink::class.java]?.state = true
                 blinkState = true
 
                 stopBlocking()
@@ -354,7 +354,7 @@ class KillAura : Module() {
             hitable = false
             stopBlocking()
             if (blinkState) {
-                BlinkUtils.setBlinkState(off = true, release = true)
+                LiquidBounce.moduleManager[Blink::class.java]?.state = false
                 blinkState = false
             }
             return
@@ -366,7 +366,7 @@ class KillAura : Module() {
             hitable = false
             if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
             if (blinkState) {
-                BlinkUtils.setBlinkState(off = true, release = true)
+                LiquidBounce.moduleManager[Blink::class.java]?.state = false
                 blinkState = false
             }
             return

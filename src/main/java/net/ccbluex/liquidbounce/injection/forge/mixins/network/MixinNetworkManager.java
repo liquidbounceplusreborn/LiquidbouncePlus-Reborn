@@ -8,11 +8,9 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.EventState;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.combat.BackTrack;
-import net.ccbluex.liquidbounce.utils.BlinkUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetworkManager;
@@ -81,8 +79,7 @@ public class MixinNetworkManager {
 
         if(event.isCancelled()) {
             callback.cancel();
-        } else if (BlinkUtils.INSTANCE.pushPacket(packet))
-            callback.cancel();
+        }
     }
 
     /**

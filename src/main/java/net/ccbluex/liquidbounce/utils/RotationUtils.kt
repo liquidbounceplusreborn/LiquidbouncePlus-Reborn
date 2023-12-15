@@ -235,7 +235,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
     ) {
         if (rotation.yaw.isNaN() || rotation.pitch.isNaN() || rotation.pitch > 90 || rotation.pitch < -90) return
 
-        targetRotation = rotation.fixedSensitivity(mc.gameSettings.mouseSensitivity)
+        targetRotation = rotation
 
         this.keepLength = keepLength
         this.speedForReset = resetSpeed

@@ -87,7 +87,7 @@ fun EntityPlayer.customRayTrace(blockReachDistance: Double, partialTicks: Float,
     )
     return this.worldObj.rayTraceBlocks(vec3, vec5, false, false, true)
 }
-private fun EntityPlayer.customGetLook(partialTicks: Float, yaw: Float, pitch: Float): Vec3 {
+fun EntityPlayer.customGetLook(partialTicks: Float, yaw: Float, pitch: Float): Vec3 {
     if (partialTicks == 1.0f || partialTicks == 2.0f) {
         return this.getVectorForRotation(pitch, yaw)
     }
