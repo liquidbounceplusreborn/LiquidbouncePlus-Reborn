@@ -196,7 +196,8 @@ class KillAura : Module() {
                 stopBlocking()
 
             while (clicks > 0) {
-                AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
+                LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                AttackOrder.sendFixedAttack(mc.thePlayer, target)
                 clicks--
             }
 
