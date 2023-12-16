@@ -73,8 +73,56 @@ class KillAura : Module() {
         }
     }
     private val range = FloatValue("Range", 4.0f, 2.0f, 10.0f)
+
     private val rotate = BoolValue("Rotate",true)
-    private val rotationMode = ListValue("RotateMode", arrayOf("Normal", "LiquidBounce","NearestPoint"), "LiquidBounce") {rotate.get()}
+    private val silentRotation by BoolValue("SilentRotation", true) { rotate.get() }
+    private val rotationMode = ListValue("RotateMode", arrayOf("Normal", "LiquidBounce","NearestPoint","Advanced"), "LiquidBounce") { rotate.get() }
+    private val yawMaxTurnSpeed: FloatValue =
+        object : FloatValue("YawMaxTurnSpeed", 180f, 0f, 180f, "°", { rotate.get() }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = yawMinTurnSpeed.get()
+                if (i > newValue) set(i)
+            }
+        }
+
+    private val yawMinTurnSpeed: FloatValue =
+        object : FloatValue("YawMinTurnSpeed", 180f, 0f, 180f, "°", { rotate.get() }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = yawMaxTurnSpeed.get()
+                if (i < newValue) set(i)
+            }
+        }
+    private val pitchMaxTurnSpeed: FloatValue =
+        object : FloatValue("PitchMaxTurnSpeed", 180f, 0f, 180f, "°", { rotate.get() }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = pitchMinTurnSpeed.get()
+                if (i > newValue) set(i)
+            }
+        }
+    private val pitchMinTurnSpeed: FloatValue =
+        object : FloatValue("PitchMinTurnSpeed", 180f, 0f, 180f, "°", { rotate.get() }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = pitchMaxTurnSpeed.get()
+                if (i < newValue) set(i)
+            }
+        }
+    
+    private val keepTicks = IntegerValue("KeepTicks", 20, 0,20) { rotate.get() }
+    private val angleThresholdUntilReset = FloatValue("AngleThresholdUntilReset", 5f, 0.1f,180f) { rotate.get() }
+    private val resetMaxTurnSpeed: FloatValue =
+        object : FloatValue("ResetMaxTurnSpeed", 180f, 0f, 180f, "°", { rotate.get() }) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = resetMinTurnSpeed.get()
+                if (i > newValue) set(i)
+            }
+        }
+    private val resetMinTurnSpeed: FloatValue =
+        object : FloatValue("ResetMinTurnSpeed", 180f, 0f, 180f, "°", { rotate.get()}) {
+            override fun onChanged(oldValue: Float, newValue: Float) {
+                val i = resetMaxTurnSpeed.get()
+                if (i < newValue) set(i)
+            }
+        }
 
     private val priority by ListValue(
         "Priority",
@@ -279,26 +327,48 @@ class KillAura : Module() {
         var boundingBox = entity.hitBox
 
         when (rotationMode.get()) {
-            "Normal" -> rotations = RotationUtils.getAngles(entity)!!
+            "Normal" -> {
+                rotations = RotationUtils.limitAngleChange(
+                    RotationUtils.serverRotation, RotationUtils.getAngles(entity)!!, RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
+                )
+            }
+            
             "LiquidBounce" -> {
-                rotations = RotationUtils.searchCenter(
-                    boundingBox,
-                    false,
-                    false,
-                    false,
-                    true,
-                    range.get(),
-                    0f,
-                    false
+                rotations = RotationUtils.limitAngleChange(
+                    RotationUtils.serverRotation, RotationUtils.searchCenter(
+                        boundingBox,
+                        outborder = false,
+                        random = false,
+                        predict = false,
+                        throughWalls = true,
+                        distance = range.get(),
+                        randomMultiply = 0f,
+                        newRandom = false
+                    ), RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
                 )
             }
             "NearestPoint" -> {
-                rotations = RotationUtils.OtherRotation(
+                rotations = RotationUtils.limitAngleChange(
+                    RotationUtils.serverRotation, RotationUtils.OtherRotation(
+                        boundingBox,
+                        getNearestPointBB(mc.thePlayer.getPositionEyes(1f), entity.entityBoundingBox),
+                        predict = false,
+                        throughWalls = true,
+                        distance = range.get()
+                    ), RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
+                )
+            }
+            "Advanced" -> {
+                val (_, rotation) = RotationUtils.newSearchCenter(
                     boundingBox,
-                    getNearestPointBB(mc.thePlayer.getPositionEyes(1f), entity.entityBoundingBox),
-                    false,
-                    true,
-                    range.get()
+                    outborder = false,
+                    random = false,
+                    predict = false, throughWalls = true,
+                    discoverRange = range.get(),
+                    hitRange = range.get()
+                ) ?: return
+                rotations = RotationUtils.limitAngleChange(
+                    RotationUtils.serverRotation, rotation, RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
                 )
             }
         }
@@ -309,7 +379,17 @@ class KillAura : Module() {
         rotations?.yaw = rotations?.yaw?.plus(if (jitter.get()) jitterYaw else 0f)!!
         rotations?.pitch = rotations?.pitch?.plus(if (jitter.get()) jitterPitch else 0f)!!
 
-        RotationUtils.setTargetRotation(rotations!!)
+        //RotationUtils.setTargetRotation(rotations!!)
+        if(silentRotation) {
+            RotationUtils.setTargetRotation(
+                rotations!!,
+                keepTicks.get(),
+                resetMinTurnSpeed.get() to resetMaxTurnSpeed.get(),
+                angleThresholdUntilReset.get()
+            )
+        } else {
+            rotations!!.toPlayer(mc.thePlayer)
+        }
     }
 
     private fun updateTarget() {
