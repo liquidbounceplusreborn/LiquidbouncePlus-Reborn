@@ -174,7 +174,7 @@ class KillAura : Module() {
 
     private val timerAttack: MSTimer = MSTimer()
     private var attackDelay = 0L
-    private var clicks = 0
+    var clicks = 0
 
     override fun onDisable() {
         target = null
