@@ -20,10 +20,7 @@ import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
-import net.ccbluex.liquidbounce.utils.extensions.getNearestPointBB
-import net.ccbluex.liquidbounce.utils.extensions.getPing
-import net.ccbluex.liquidbounce.utils.extensions.hitBox
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils
@@ -96,7 +93,9 @@ class KillAura : Module() {
     )
 
     private val hurtTime by IntegerValue("HurtTime", 10, 0, 10)
+
     private val smartAttackValue = BoolValue("SmartAttack", false)
+    private val extraRandomCPS = ListValue("ExtraCPSRandomization", arrayOf("Off", "Simple", "RangeBase"), "Off")
 
     private val autoBlockMode by ListValue("AutoBlock", arrayOf("None", "Vanilla"), "None")
     private val verusAutoBlockValue by BoolValue("VerusAutoBlock", false) { autoBlockMode == "Vanilla" }
@@ -257,7 +256,18 @@ class KillAura : Module() {
 
         target ?: return
 
-        if (target != null && timerAttack.hasTimePassed(attackDelay + if (!smartAttackValue.get() || mc.thePlayer.hurtTime != 0 || (target !is EntityLivingBase || (target as EntityLivingBase).hurtTime <= (3 + (mc.thePlayer.getPing() / 50.0).toInt()))) 0 else 500) &&
+        var timeAdder = if (!smartAttackValue.get() || mc.thePlayer.hurtTime != 0 || (target !is EntityLivingBase || (target as EntityLivingBase).hurtTime <= (3 + (mc.thePlayer.getPing() / 50.0).toInt()))) 0 else 500
+
+        if (extraRandomCPS.get() == "Simple") {
+            timeAdder += RandomUtils.nextInt(-50, 200)
+        } else if (extraRandomCPS.get() == "RangeBase") {
+            val distance = mc.thePlayer.getLookDistanceToEntityBox(target!!)
+            if (target is EntityLivingBase && distance in (range.get() + 0.01f)..(range.get() + 0.4f)) {
+                timeAdder += 200
+            }
+        }
+
+        if (target != null && timerAttack.hasTimePassed(attackDelay + timeAdder) &&
             (target !is EntityLivingBase || (target as EntityLivingBase).hurtTime <= hurtTime)) {
             ++clicks
             timerAttack.reset()
