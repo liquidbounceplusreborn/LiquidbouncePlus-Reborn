@@ -45,7 +45,7 @@ object TimerRange : Module() {
     private val delayValue = IntegerValue("Delay", 5, 0, 20)
     private val maxHurtTimeValue = IntegerValue("TargetMaxHurtTime", 2, 0, 10)
     private val onlyKillAura = BoolValue("OnlyKillAura", true)
-    private val auraClick = BoolValue("AuraClick", true)
+   //private val auraClick = BoolValue("AuraClick", true)
     private val onlyPlayer = BoolValue("OnlyPlayer", true)
     private val debug = BoolValue("Debug", false)
     private val betterAnimation = BoolValue("BetterAnimation", true)
@@ -74,7 +74,7 @@ object TimerRange : Module() {
     }
     private val reverseDelay = IntegerValue("ReverseDelay", 5, 0, 20)
     private val reverseTargetMaxHurtTime = IntegerValue("ReverseTargetMaxHurtTime", 3, 0, 10)
-    private val reverseAuraClick = ListValue("ReverseAuraClick", arrayOf("None", "BeforeTimer", "AfterTimer"), "None")
+    //private val reverseAuraClick = ListValue("ReverseAuraClick", arrayOf("None", "BeforeTimer", "AfterTimer"), "None")
 
     private val killAura: KillAura? = LiquidBounce.moduleManager.getModule(KillAura::class.java)
 
@@ -199,17 +199,18 @@ object TimerRange : Module() {
         working = true
         freezeTicks = 0
         if (betterAnimation.get()) firstAnimation = false
-        while (freezeTicks <= maxTimeValue.get() - (if (auraClick.get()) 1 else 0) && !stopWorking) {
+        while (freezeTicks <= maxTimeValue.get()){
+            //(if (auraClick.get()) 1 else 0) && !stopWorking) {
             ++freezeTicks
             mc.runTick()
         }
         if (debug.get()) ClientUtils.displayChatMessage("Timer-ed")
-        if (auraClick.get()) {
+        /*if (auraClick.get()) {
             killAura?.clicks = killAura?.clicks!! + 1
             ++freezeTicks
             mc.runTick()
             if (debug.get()) ClientUtils.displayChatMessage("Clicked")
-        }
+        }*/
         stopWorking = false
         working = false
     }
@@ -225,14 +226,14 @@ object TimerRange : Module() {
             reverseFreeze = false
             var time = reverseTickTime.get()
             working = true
-            if (reverseAuraClick .get() === "BeforeTimer") killAura?.clicks = killAura?.clicks!! + 1
+            //if (reverseAuraClick .get() === "BeforeTimer") killAura?.clicks = killAura?.clicks!! + 1
             while (time > 0) {
                 --time
                 mc.runTick()
             }
             working = false
             cooldown = reverseDelay.get()
-            if (reverseAuraClick .get() == "AfterTimer") killAura?.clicks = killAura?.clicks!! + 1
+            //if (reverseAuraClick .get() == "AfterTimer") killAura?.clicks = killAura?.clicks!! + 1
         }
         if (cooldown > 0) --cooldown
         return false

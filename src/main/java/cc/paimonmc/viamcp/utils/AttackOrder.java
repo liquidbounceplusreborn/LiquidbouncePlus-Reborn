@@ -29,8 +29,7 @@ public class AttackOrder {
         }
     }
 
-    private static void send1_8Attack(EntityPlayer entityIn, Entity target)
-    {
+    private static void send1_8Attack(EntityPlayer entityIn, Entity target) {
         mc.thePlayer.swingItem();
         mc.playerController.attackEntity(entityIn, target);
     }

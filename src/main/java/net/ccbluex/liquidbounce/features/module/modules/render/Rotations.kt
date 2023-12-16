@@ -47,13 +47,11 @@ class Rotations : Module() {
 
         @JvmStatic
         fun shouldRotate(): Boolean {
-            val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
-            val disabler = LiquidBounce.moduleManager.getModule(Disabler::class.java) as Disabler
-            return getState(Scaffold::class.java) ||
-                    (getState(KillAura::class.java) && killAura.target != null) ||
-                    (getState(Disabler::class.java) && disabler.canRenderInto3D) ||
+            return (getState(Scaffold::class.java) ||
+                    (getState(KillAura::class.java)) ||
+                    (getState(Disabler::class.java)) ||
                     getState(BowAimbot::class.java) || getState(Breaker::class.java) ||
-                    getState(ChestAura::class.java) || getState(Fly::class.java) || getState(Scaffold::class.java) || getState(LongJump::class.java)
+                    getState(ChestAura::class.java) || getState(Fly::class.java) || getState(Scaffold::class.java) || getState(LongJump::class.java)) && RotationUtils.targetRotation != null
         }
     }
 

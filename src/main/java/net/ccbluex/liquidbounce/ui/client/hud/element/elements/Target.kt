@@ -18,11 +18,9 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl.*
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.render.animations.Direction
 import net.ccbluex.liquidbounce.utils.render.animations.impl.EaseBackIn
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
