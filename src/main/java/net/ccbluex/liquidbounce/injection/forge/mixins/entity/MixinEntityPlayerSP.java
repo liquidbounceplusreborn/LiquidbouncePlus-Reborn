@@ -339,7 +339,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         EntityLivingBase entity;
 
         final Scaffold scaffold = LiquidBounce.moduleManager.getModule(Scaffold.class);
-        NoSlow noslow = LiquidBounce.moduleManager.getModule(NoSlow.class);
 
         if (((scaffold.getState() && scaffold.getSprintModeValue().get().equalsIgnoreCase("Off"))  || (sprint.getState() && sprint.getCheckServerSide().get() && (onGround || !sprint.getCheckServerSideGround().get()) && !sprint.getAllDirectionsValue().get() && RotationUtils.getTargetRotation() != null && RotationUtils.getRotationDifference(new Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)) > 30)))
             this.setSprinting(false);
