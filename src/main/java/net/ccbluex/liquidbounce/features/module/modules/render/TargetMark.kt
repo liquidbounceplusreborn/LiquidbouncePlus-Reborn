@@ -72,12 +72,12 @@ class TargetMark : Module() {
 
     @EventTarget
     fun onTick(event: TickEvent?) {
-        if (modeValue.get().equals("jello", ignoreCase = true) && aura!!.targetMode != "Multi") al = AnimationUtils.changer(al, if (aura!!.target != null) jelloFadeSpeedValue.get() else -jelloFadeSpeedValue.get(), 0f, colorAlphaValue.get() / 255.0f)
+        if (modeValue.get().equals("jello", ignoreCase = true)) al = AnimationUtils.changer(al, if (aura!!.target != null) jelloFadeSpeedValue.get() else -jelloFadeSpeedValue.get(), 0f, colorAlphaValue.get() / 255.0f)
     }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent?) {
-        if (modeValue.get().equals("jello", ignoreCase = true) && aura!!.targetMode != "Multi") {
+        if (modeValue.get().equals("jello", ignoreCase = true)) {
             val lastY = yPos
             if (al > 0f) {
                 if (System.currentTimeMillis() - lastMS >= 1000L) {
@@ -127,9 +127,9 @@ class TargetMark : Module() {
             drawCircle(posX, posY + yPos, posZ, jelloWidthValue.get(), radius, r, g, b, al)
             post3D()
         } else if (modeValue.get().equals("default", ignoreCase = true)) {
-            if (aura!!.targetMode != "Multi" && aura!!.target != null) RenderUtils.drawPlatform(aura!!.currentTarget, if (aura!!.currentTarget!!.hurtTime > 0) reAlpha(getColor(aura!!.target), colorAlphaValue.get()) else Color(235, 40, 40, colorAlphaValue.get()))
+            if (aura!!.target != null) RenderUtils.drawPlatform(aura!!.target, if (aura!!.target!!.hurtTime > 0) reAlpha(getColor(aura!!.target), colorAlphaValue.get()) else Color(235, 40, 40, colorAlphaValue.get()))
         } else if (modeValue.get().equals("tracers", ignoreCase = true)) {
-            if (aura!!.targetMode != "Multi" && aura!!.target != null) {
+            if (aura!!.target != null) {
                 val tracers = LiquidBounce.moduleManager.getModule(Tracers::class.java) ?: return
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
                 GL11.glEnable(GL11.GL_BLEND)
@@ -151,7 +151,7 @@ class TargetMark : Module() {
                 GlStateManager.resetColor()
             }
         } else {
-            if (aura!!.targetMode != "Multi" && aura!!.target != null) RenderUtils.drawEntityBox(aura!!.target, if (aura!!.target!!.hurtTime > 3) reAlpha(getColor(aura!!.target), colorAlphaValue.get()) else Color(255, 0, 0, colorAlphaValue.get()), false)
+            if (aura!!.target != null) RenderUtils.drawEntityBox(aura!!.target, if (aura!!.target!!.hurtTime > 3) reAlpha(getColor(aura!!.target), colorAlphaValue.get()) else Color(255, 0, 0, colorAlphaValue.get()), false)
         }
     }
 

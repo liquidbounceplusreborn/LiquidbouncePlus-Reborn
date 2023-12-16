@@ -221,31 +221,31 @@ class Scaffold : Module() {
         arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw"),
         "Normal"
     ) { rotationsValue.get() }
-    private val alwaysRotate = BoolValue("AlwaysRotate", false) { rotationsValue.get() }
+    private val alwaysRotate = BoolValue("AlwaysRotate", false) { rotationsValue.get() && rotationModeValue.get() != "Normal" }
     private val stabilizedRotation = BoolValue("StabilizedRotation", false) { rotationsValue.get() }
     private val yawMaxTurnSpeed: FloatValue =
-        object : FloatValue("YawMaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
+        object : FloatValue("YawMaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && (rotationModeValue.get() == "Normal" || rotationModeValue.get() == "Novoline" || rotationModeValue.get() == "Rise") }) {
             override fun onChanged(oldValue: Float, newValue: Float) {
                 val i = yawMinTurnSpeed.get()
                 if (i > newValue) set(i)
             }
         }
     private val yawMinTurnSpeed: FloatValue =
-        object : FloatValue("YawMinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
+        object : FloatValue("YawMinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && (rotationModeValue.get() == "Normal" || rotationModeValue.get() == "Novoline" || rotationModeValue.get() == "Rise") }) {
             override fun onChanged(oldValue: Float, newValue: Float) {
                 val i = yawMaxTurnSpeed.get()
                 if (i < newValue) set(i)
             }
         }
     private val pitchMaxTurnSpeed: FloatValue =
-        object : FloatValue("PitchMaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
+        object : FloatValue("PitchMaxTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && (rotationModeValue.get() == "Normal" || rotationModeValue.get() == "Novoline" || rotationModeValue.get() == "Rise") }) {
             override fun onChanged(oldValue: Float, newValue: Float) {
                 val i = pitchMinTurnSpeed.get()
                 if (i > newValue) set(i)
             }
         }
     private val pitchMinTurnSpeed: FloatValue =
-        object : FloatValue("PitchMinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && rotationModeValue.get() == "Normal" }) {
+        object : FloatValue("PitchMinTurnSpeed", 180f, 0f, 180f, "°", { rotationsValue.get() && (rotationModeValue.get() == "Normal" || rotationModeValue.get() == "Novoline" || rotationModeValue.get() == "Rise") }) {
             override fun onChanged(oldValue: Float, newValue: Float) {
                 val i = pitchMaxTurnSpeed.get()
                 if (i < newValue) set(i)
@@ -626,7 +626,9 @@ class Scaffold : Module() {
                 entity.posY = idk.blockPos.y + 0.5
                 entity.posZ = idk.blockPos.z + 0.5
 
-                lockRotation = RotationUtils.getAngles(entity)
+                lockRotation = RotationUtils.limitAngleChange(
+                    currRotation, RotationUtils.getAngles(entity), RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
+                )
             }
 
             "Spin" -> {
@@ -640,11 +642,13 @@ class Scaffold : Module() {
             }
 
             "Rise" -> {
-                lockRotation = RotationUtils.getDirectionToBlock(
-                    idk?.blockPos?.x!!.toDouble(),
-                    idk.blockPos.y.toDouble(),
-                    idk.blockPos.z.toDouble(),
-                    idk.enumFacing
+                lockRotation = RotationUtils.limitAngleChange(
+                    currRotation, RotationUtils.getDirectionToBlock(
+                        idk?.blockPos?.x!!.toDouble(),
+                        idk.blockPos.y.toDouble(),
+                        idk.blockPos.z.toDouble(),
+                        idk.enumFacing
+                    ), RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
                 )
             }
 
@@ -653,7 +657,7 @@ class Scaffold : Module() {
             }
         }
 
-        if(alwaysRotate.get()) {
+        if(alwaysRotate.get() && rotationModeValue.get() != "Normal") {
             lockRotation2 = lockRotation
         }
 
@@ -707,7 +711,7 @@ class Scaffold : Module() {
             }
         }
 
-        if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround) {
+        if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
             mc.thePlayer.jump()
         }
 
@@ -1826,5 +1830,5 @@ class Scaffold : Module() {
             return amount
         }
     override val tag: String
-        get() = placeModeValue.get()
+        get() = rotationModeValue.get()
 }

@@ -1,20 +1,20 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.script.api.global.Chat
+import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.random.Random
 
 @ModuleInfo(
@@ -25,7 +25,10 @@ import kotlin.random.Random
 object TimerRangeLB : Module() {
 
     private var playerTicks = 0
-    private var smartCounter = 0
+    private var smartTick = 0
+    private var cooldownTick = 0
+    private var confirmTick = false
+    private var confirmMove = false
 
     // Condition to prevent getting timer speed stuck
     private var confirmAttack = false
@@ -33,18 +36,24 @@ object TimerRangeLB : Module() {
     // Condition to makesure timer isn't reset on lagback, when not attacking
     private var confirmLagBack = false
 
-    private val timerBoostMode by ListValue("TimerMode", arrayOf("Normal", "Smart"), "Normal")
+    // Condition to makesure timer isn't reset on knockback, when timer isn't changed
+    private var confirmKnockback = false
+
+    private val timerBoostMode by ListValue("TimerMode", arrayOf("Normal", "Smart", "SmartMove"), "Normal")
 
     private val ticksValue by IntegerValue("Ticks", 10, 1,20)
     private val timerBoostValue by FloatValue("TimerBoost", 1.5f, 0.01f,35f)
     private val timerChargedValue by FloatValue("TimerCharged", 0.45f, 0.05f,5f)
 
-    private val rangeValue by FloatValue("Range", 3.5f, 1f,5f) { timerBoostMode != "Smart" }
+    // Normal Mode Settings
+    private val rangeValue by FloatValue("Range", 3.5f, 1f,5f) { timerBoostMode == "Normal" }
+    private val cooldownTickValue by IntegerValue("CooldownTick", 10, 1,50) { timerBoostMode == "Normal" }
 
-    private val minRange by FloatValue("MinRange", 1f, 1f,5f) { timerBoostMode == "Smart" }
-    private val maxRange by FloatValue("MaxRange", 5f, 1f,5f) { timerBoostMode == "Smart" }
+    // Smart & SmartMove Mode Settings
+    private val minRange by FloatValue("MinRange", 1f, 1f,5f) { timerBoostMode != "Normal" }
+    private val maxRange by FloatValue("MaxRange", 5f, 1f,5f) { timerBoostMode != "Normal" }
 
-    private val minTickDelay: IntegerValue = object : IntegerValue("MinTickDelay", 5, 1,100,{timerBoostMode == "Smart"}) {
+    private val minTickDelay: IntegerValue = object : IntegerValue("MinTickDelay", 50, 1,100,{timerBoostMode == "Smart"}) {
         override fun onChange(oldValue: Int, newValue: Int) {
             newValue.coerceAtMost(maxTickDelay.get())
         }
@@ -56,7 +65,12 @@ object TimerRangeLB : Module() {
         }
     }
 
-    private val resetlagBack by BoolValue("ResetOnLagback", false)
+    private val lookThreshold by FloatValue("LookThreshold", 0.5f, 0.1f,1f) { timerBoostMode == "SmartMove" }
+
+    // Optional
+    private val resetOnlagBack by BoolValue("ResetOnLagback", false)
+    private val resetOnKnockback by BoolValue("ResetOnKnockback", false)
+    private val chatDebug by BoolValue("ChatDebug", true) { resetOnlagBack || resetOnKnockback }
 
     private fun timerReset() {
         mc.timer.timerSpeed = 1f
@@ -68,7 +82,8 @@ object TimerRangeLB : Module() {
 
     override fun onDisable() {
         timerReset()
-        smartCounter = 0
+        smartTick = 0
+        cooldownTick = 0
         playerTicks = 0
     }
 
@@ -83,26 +98,75 @@ object TimerRangeLB : Module() {
 
         val targetEntity = event.targetEntity
         val entityDistance = mc.thePlayer.getDistanceToEntityBox(targetEntity)
-        val randomCounter = Random.nextInt(minTickDelay.get(), maxTickDelay.get())
+        val randomTickDelay = Random.nextInt(minTickDelay.get(), maxTickDelay.get())
         val randomRange = Random.nextDouble(minRange.toDouble(), maxRange.toDouble())
 
-        smartCounter++
+        smartTick++
+        cooldownTick++
 
         val shouldSlowed = when (timerBoostMode) {
-            "Normal" -> entityDistance <= rangeValue
-            "Smart" -> smartCounter >= randomCounter && entityDistance <= randomRange
+            "Normal" -> cooldownTick >= cooldownTickValue && entityDistance <= rangeValue
+            "Smart" -> smartTick >= randomTickDelay && entityDistance <= randomRange
             else -> false
         }
 
         if (shouldSlowed && confirmAttack) {
             confirmAttack = false
             playerTicks = ticksValue
-            if (resetlagBack) {
+
+            if (resetOnKnockback) {
+                confirmKnockback = true
+            }
+            if (resetOnlagBack) {
                 confirmLagBack = true
             }
-            smartCounter = 0
+            cooldownTick = 0
+            smartTick = 0
         } else {
             timerReset()
+        }
+    }
+
+    @EventTarget
+    fun onMove(event: MoveEvent) {
+        if (timerBoostMode != "SmartMove") {
+            return
+        }
+
+        val randomTickDelay = Random.nextInt(minTickDelay.get(), maxTickDelay.get())
+        val randomRange = Random.nextDouble(minRange.toDouble(), maxRange.toDouble())
+
+        if (isPlayerMoving()) {
+            smartTick++
+
+            if (smartTick >= randomTickDelay) {
+                confirmTick = true
+                smartTick = 0
+            }
+        } else {
+            smartTick = 0
+            confirmMove = false
+        }
+
+        val nearbyEntity = getNearestEntityInRange()
+
+        if (nearbyEntity != null && isPlayerMoving()) {
+            if (isLookingTowardsEntities(nearbyEntity)) {
+                val entityDistance = mc.thePlayer.getDistanceToEntityBox(nearbyEntity)
+
+                if (confirmTick && entityDistance <= randomRange) {
+                    playerTicks = ticksValue
+                    confirmTick = false
+                    confirmMove = true
+
+                    if (resetOnKnockback) {
+                        confirmKnockback = true
+                    }
+                    if (resetOnlagBack) {
+                        confirmLagBack = true
+                    }
+                }
+            }
         }
     }
 
@@ -133,6 +197,50 @@ object TimerRangeLB : Module() {
     }
 
     /**
+     * This check is useful to prevent player from changing speed while looking away
+     * And prevent player from changing speed toward unintended entity/target while moving.
+     */
+    private fun isLookingTowardsEntities(entity: Entity): Boolean {
+        val lookVec = mc.thePlayer.lookVec.normalize()
+        val playerPos = mc.thePlayer.positionVector.addVector(0.0, mc.thePlayer.eyeHeight.toDouble(), 0.0)
+        val entityPos = entity.positionVector.addVector(0.0, entity.eyeHeight.toDouble(), 0.0)
+
+        val directionToEntity = entityPos.subtract(playerPos).normalize()
+        val dotProductThreshold = lookVec.dotProduct(directionToEntity)
+
+        // Player needs to be facing the entity/target with chosen dotproduct, in this case default threshold of at least 0.5
+        return dotProductThreshold > lookThreshold.toDouble()
+    }
+
+    /**
+     * Check if player is moving
+     */
+    private fun isPlayerMoving(): Boolean {
+        return mc.thePlayer.moveForward != 0f || mc.thePlayer.moveStrafing != 0f
+    }
+
+    /**
+     * Get all entities in the world.
+     */
+    private fun getAllEntities(): List<Entity> {
+        return mc.theWorld.loadedEntityList
+            .filter { EntityUtils.isSelected(it, true) }
+            .toList()
+    }
+
+    /**
+     * Find the nearest entity in range.
+     */
+    private fun getNearestEntityInRange(): Entity? {
+        val player = mc.thePlayer
+
+        val entitiesInRange = getAllEntities()
+            .filter { player.getDistanceToEntityBox(it) <= rangeValue }
+
+        return entitiesInRange.minByOrNull { player.getDistanceToEntityBox(it) }
+    }
+
+    /**
      * Separate condition to make it cleaner
      */
     private fun shouldResetTimer(): Boolean {
@@ -144,16 +252,38 @@ object TimerRangeLB : Module() {
     }
 
     /**
-     * Inspired from Nextgen TimerRange
-     * Reset Timer on Lagback.
+     * Lagback Reset is Inspired from Nextgen TimerRange
+     * Reset Timer on Lagback & Knockback.
      */
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (event.packet is S08PacketPlayerPosLook
-            && resetlagBack && confirmLagBack && !shouldResetTimer()) {
-            confirmLagBack = false
-            timerReset()
-            Chat.print("Lagback Detected | Timer Reset")
+        val packet = event.packet
+
+        if (isPlayerMoving() && !shouldResetTimer()
+            && mc.timer.timerSpeed > 1.0 || mc.timer.timerSpeed < 1.0 ) {
+
+            // Check for lagback
+            if (resetOnlagBack && confirmLagBack) {
+                if (packet is S08PacketPlayerPosLook) {
+                    confirmLagBack = false
+                    timerReset()
+                    if (chatDebug) {
+                        Chat.print("Lagback Received | Timer Reset")
+                    }
+                }
+            }
+
+            // Check for knockback
+            if (resetOnKnockback && confirmKnockback) {
+                if (packet is S12PacketEntityVelocity && mc.thePlayer.entityId == packet.entityID
+                    && packet.motionY > 0 && (packet.motionX.toDouble() != 0.0 || packet.motionZ.toDouble() != 0.0)) {
+                    confirmKnockback = false
+                    timerReset()
+                    if (chatDebug) {
+                        Chat.print("Knockback Received | Timer Reset")
+                    }
+                }
+            }
         }
     }
 

@@ -624,5 +624,86 @@ object RotationUtils : MinecraftInstance(), Listenable {
     fun isRotationFaced(targetEntity: Entity, blockReachDistance: Double, rotation: Rotation) =
         RaycastUtils.raycastEntity(blockReachDistance, rotation.yaw, rotation.pitch)
         { entity: Entity -> targetEntity == entity } != null
+
+
+    fun newSearchCenter(
+        bb: AxisAlignedBB, outborder: Boolean, random: Boolean,
+        predict: Boolean, throughWalls: Boolean, discoverRange: Float, hitRange: Float
+    ): VecRotation? {
+        val lastRandomDeltaRotation = floatArrayOf(0f, 0f)
+        var lastHitable = false
+        val eyes = mc.thePlayer.getPositionEyes(1f)
+        var vecRotation: VecRotation? = null
+        val rot: Rotation = serverRotation
+        val nearestPointBB: Vec3 = getNearestPointBB(eyes, bb)
+        if (random || outborder) {
+            lastRandomDeltaRotation[0] *= 0.5f
+            lastRandomDeltaRotation[1] *= 0.5f
+            if (RotationUtils.random.nextGaussian() > 0.2) {
+                lastRandomDeltaRotation[0] += RandomUtils.nextFloat(-5f, 5f)
+                rot.yaw += lastRandomDeltaRotation[0]
+            }
+            if (RotationUtils.random.nextGaussian() > 0.2) {
+                lastRandomDeltaRotation[1] += RandomUtils.nextFloat(-2.5f, 2.5f)
+                rot.pitch += lastRandomDeltaRotation[1]
+            }
+            if (outborder) {
+                return VecRotation(nearestPointBB, rot)
+            }
+        }
+        val nearestRot =
+            toRotation(Vec3((bb.minX + bb.maxX) / 2, nearestPointBB.yCoord, (bb.minZ + bb.maxZ) / 2), predict)
+        nearestRot.yaw = nearestRot.yaw + RandomUtils.nextFloat(-2.5f, 2.5f)
+        nearestRot.pitch = nearestRot.pitch + RandomUtils.nextFloat(-1f, 1f)
+        var xSearch = 0.1
+        while (xSearch < 0.9) {
+            var ySearch = 0.1
+            while (ySearch < 0.9) {
+                var zSearch = 0.1
+                while (zSearch < 0.9) {
+                    val vec3 = Vec3(
+                        bb.minX + (bb.maxX - bb.minX) * xSearch,
+                        bb.minY + (bb.maxY - bb.minY) * ySearch,
+                        bb.minZ + (bb.maxZ - bb.minZ) * zSearch
+                    )
+                    val rotation = toRotation(vec3, predict)
+                    val vecDist = eyes.distanceTo(vec3)
+                    if (vecDist > discoverRange) {
+                        zSearch += 0.1
+                        continue
+                    }
+                    if (throughWalls || isVisible(vec3)) {
+                        val currentVec = VecRotation(vec3, rotation)
+                        if (vecRotation == null || getRotationDifference(
+                                currentVec.rotation,
+                                rot
+                            ) < getRotationDifference(vecRotation.rotation, rot)
+                        ) vecRotation = currentVec else if (!lastHitable) {
+                            if ((getRotationDifference(
+                                    currentVec.rotation,
+                                    rot
+                                ) + getRotationDifference(
+                                    currentVec.rotation,
+                                    nearestRot
+                                )) / 1.3 < (getRotationDifference(vecRotation.rotation, rot) + getRotationDifference(
+                                    vecRotation.rotation,
+                                    nearestRot
+                                )) / 1.3
+                            ) {
+                                vecRotation = currentVec
+                            }
+                        }
+                    }
+                    zSearch += 0.1
+                }
+                ySearch += 0.02
+            }
+            xSearch += 0.1
+        }
+        if (vecRotation != null) {
+            lastHitable = vecRotation.vec.distanceTo(eyes) > hitRange
+        } else lastHitable = false
+        return vecRotation
+    }
 }
 
