@@ -707,7 +707,7 @@ class Scaffold : Module() {
             }
         }
 
-        if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround) {
+        if (autoJumpValue.get() && !LiquidBounce.moduleManager.getModule(Speed::class.java)!!.state && MovementUtils.isMoving() && mc.thePlayer.onGround && !GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) {
             mc.thePlayer.jump()
         }
 
@@ -1826,5 +1826,5 @@ class Scaffold : Module() {
             return amount
         }
     override val tag: String
-        get() = placeModeValue.get()
+        get() = rotationModeValue.get()
 }

@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
-import net.ccbluex.liquidbounce.features.module.modules.misc.ViaVersionFix
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
 import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
@@ -23,8 +22,11 @@ import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.getNearestPointBB
+import net.ccbluex.liquidbounce.utils.extensions.getPing
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -35,6 +37,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemSword
 import net.minecraft.network.handshake.client.C00Handshake
+import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
@@ -42,7 +45,12 @@ import net.minecraft.network.play.server.S45PacketTitle
 import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.Vec3
+import org.lwjgl.opengl.GL11
 import java.util.*
+import kotlin.math.cos
+import kotlin.math.min
+import kotlin.math.sin
 
 @ModuleInfo(
     name = "KillAura",
@@ -50,10 +58,26 @@ import java.util.*
     description = "Auto-attacks entities"
 )
 class KillAura : Module() {
-    val range = FloatValue("Range", 4.0f, 2.0f, 10.0f)
-    val apsValue = IntegerValue("APS", 8, 1, 20)
-    val rotate = BoolValue("Rotate",true)
-    val rotationMode = ListValue("RotateMode", arrayOf("Normal", "LiquidBounce","NearestPoint"), "LiquidBounce"){rotate.get()}
+    private val maxCPS: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 20) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val i = minCPS.get()
+            if (i > newValue) set(i)
+
+            attackDelay = TimerUtils.randomClickDelay(minCPS.get(), this.get())
+        }
+    }
+
+    private val minCPS: IntegerValue = object : IntegerValue("MinCPS", 5, 1, 20) {
+        override fun onChanged(oldValue: Int, newValue: Int) {
+            val i = maxCPS.get()
+            if (i < newValue) set(i)
+
+            attackDelay = TimerUtils.randomClickDelay(this.get(), maxCPS.get())
+        }
+    }
+    private val range = FloatValue("Range", 4.0f, 2.0f, 10.0f)
+    private val rotate = BoolValue("Rotate",true)
+    private val rotationMode = ListValue("RotateMode", arrayOf("Normal", "LiquidBounce","NearestPoint"), "LiquidBounce") {rotate.get()}
 
     private val priority by ListValue(
         "Priority",
@@ -70,21 +94,40 @@ class KillAura : Module() {
         ),
         "Distance"
     )
-    val autoBlockMode by ListValue("AutoBlock", arrayOf("None", "Vanilla"), "None")
-    val verusAutoBlockValue by BoolValue("VerusAutoBlock", false) { autoBlockMode == "Vanilla" }
-    val jitter = BoolValue("Jitter", true)
-    val jitterStrengthYaw = FloatValue("JitterStrengthYaw", 10.0f, 0.0f, 20.0f) { jitter.get() }
-    val jitterStrengthPitch = FloatValue("JitterStrengthPitch", 10.0f, 0.0f, 20.0f) { jitter.get() }
+
+    private val hurtTime by IntegerValue("HurtTime", 10, 0, 10)
+    private val smartAttackValue = BoolValue("SmartAttack", false)
+
+    private val autoBlockMode by ListValue("AutoBlock", arrayOf("None", "Vanilla"), "None")
+    private val verusAutoBlockValue by BoolValue("VerusAutoBlock", false) { autoBlockMode == "Vanilla" }
+    private val interactAutoBlockValue by BoolValue("InteractAutoBlock", true) { autoBlockMode == "Vanilla" }
+    private val sendsShieldPacket by BoolValue("SendsShieldPacket(ViaAutoBlock)", true) { autoBlockMode == "Vanilla" }
+    private val blockRate by IntegerValue("BlockRate", 100, 1,100) { autoBlockMode == "Vanilla" }
+
+    private val jitter = BoolValue("Jitter", true)
+    private val jitterStrengthYaw = FloatValue("JitterStrengthYaw", 10.0f, 0.0f, 20.0f) { jitter.get() }
+    private val jitterStrengthPitch = FloatValue("JitterStrengthPitch", 10.0f, 0.0f, 20.0f) { jitter.get() }
+
     private val noInvAttack by BoolValue("NoInvAttack", false)
     private val noBlink by BoolValue("NoBlink", true)
     private val noScaff by BoolValue("NoScaffold", true)
 
-    var rotations: Rotation? = null
+    private val circle by BoolValue("Circle", true)
+    private val circleAccuracy by IntegerValue("Accuracy", 59, 0, 59) { circle }
+    private val circleThickness by FloatValue("Thickness", 2f, 0f, 20f) { circle }
+    private val circleRed by IntegerValue("Red", 255, 0, 255) { circle }
+    private val circleGreen by IntegerValue("Green", 255, 0, 255) { circle }
+    private val circleBlue by IntegerValue("Blue", 255, 0, 255) { circle }
+    private val circleAlpha by IntegerValue("Alpha", 255, 0, 255) { circle }
+
+    private var rotations: Rotation? = null
     var target: EntityLivingBase? = null
     var blockingStatus = false
-    var verusBlocking = false
+    private var verusBlocking = false
 
     private val timerAttack: MSTimer = MSTimer()
+    private var attackDelay = 0L
+    private var clicks = 0
 
     override fun onDisable() {
         target = null
@@ -122,8 +165,14 @@ class KillAura : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+
+        if(target == null){
+            stopBlocking()
+        }
+
         if (cancelRun)
             return
+
         if (blockingStatus || mc.thePlayer.isBlocking)
             verusBlocking = true
         else if (verusBlocking) {
@@ -141,17 +190,77 @@ class KillAura : Module() {
         if (target != null) {
 
             if(rotate.get())
-            rotate(target!!)
+                rotate(target!!)
 
             if (mc.thePlayer.isBlocking || blockingStatus)
                 stopBlocking()
-            if (timerAttack.hasTimePassed(1000L / (apsValue.get() + 2))) {
+
+            while (clicks > 0) {
                 AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
-                timerAttack.reset()
+                clicks--
             }
+
             if (autoBlockMode == "Vanilla" && canBlock) {
-                startBlocking()
+                startBlocking(target!!,interactAutoBlockValue)
             }
+        }
+    }
+
+    @EventTarget
+    fun onRender3D(event: Render3DEvent) {
+        if (circle) {
+            GL11.glPushMatrix()
+            GL11.glTranslated(
+                mc.thePlayer.lastTickPosX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX,
+                mc.thePlayer.lastTickPosY + (mc.thePlayer.posY - mc.thePlayer.lastTickPosY) * mc.timer.renderPartialTicks - mc.renderManager.renderPosY,
+                mc.thePlayer.lastTickPosZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks - mc.renderManager.renderPosZ
+            )
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glEnable(GL11.GL_LINE_SMOOTH)
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glDisable(GL11.GL_DEPTH_TEST)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+
+            GL11.glLineWidth(circleThickness)
+            GL11.glColor4f(
+                circleRed.toFloat() / 255.0F,
+                circleGreen.toFloat() / 255.0F,
+                circleBlue.toFloat() / 255.0F,
+                circleAlpha.toFloat() / 255.0F
+            )
+            GL11.glRotatef(90F, 1F, 0F, 0F)
+            GL11.glBegin(GL11.GL_LINE_STRIP)
+
+            for (i in 0..360 step 60 - circleAccuracy) { // You can change circle accuracy  (60 - accuracy)
+                GL11.glVertex2f(
+                    cos(i * Math.PI / 180.0).toFloat() * range.get(),
+                    (sin(i * Math.PI / 180.0).toFloat() * range.get())
+                )
+            }
+
+            GL11.glEnd()
+
+            GL11.glDisable(GL11.GL_BLEND)
+            GL11.glEnable(GL11.GL_TEXTURE_2D)
+            GL11.glEnable(GL11.GL_DEPTH_TEST)
+            GL11.glDisable(GL11.GL_LINE_SMOOTH)
+
+            GL11.glPopMatrix()
+        }
+
+        if (cancelRun) {
+            target = null
+            stopBlocking()
+            return
+        }
+
+        target ?: return
+
+        if (target != null && timerAttack.hasTimePassed(attackDelay + if (!smartAttackValue.get() || mc.thePlayer.hurtTime != 0 || (target !is EntityLivingBase || (target as EntityLivingBase).hurtTime <= (3 + (mc.thePlayer.getPing() / 50.0).toInt()))) 0 else 500) &&
+            (target !is EntityLivingBase || (target as EntityLivingBase).hurtTime <= hurtTime)) {
+            ++clicks
+            timerAttack.reset()
+            attackDelay = TimerUtils.randomClickDelay(minCPS.get(), maxCPS.get())
         }
     }
 
@@ -203,7 +312,7 @@ class KillAura : Module() {
 
             val distance = mc.thePlayer.getDistanceToEntityBox(entity)
 
-            if (distance <= range.get())
+            if (distance <= range.get() && entity.hurtTime <= hurtTime)
                 targets.add(entity)
         }
 
@@ -264,8 +373,11 @@ class KillAura : Module() {
     private val canBlock: Boolean
         get() = mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
 
-    private fun startBlocking() {
-        if (LiquidBounce.moduleManager.getModule(ViaVersionFix::class.java)?.state == true) {
+    private fun startBlocking(interactEntity: Entity, interact: Boolean) {
+
+        if (!(blockRate > 0 && RandomUtils.nextInt(0,100) <= blockRate)) return
+
+        if (sendsShieldPacket) {
             val useItem = PacketWrapper.create(29, null, Via.getManager().connectionManager.connections.iterator().next())
             useItem.write(Type.VAR_INT, 1)
             PacketUtil.sendToServer(useItem, Protocol1_8TO1_9::class.java, true, true)
@@ -273,6 +385,27 @@ class KillAura : Module() {
 
         PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
         blockingStatus = true
+
+        if (interact) {
+            val positionEye = mc.renderViewEntity?.getPositionEyes(1F)
+
+            val expandSize = interactEntity.collisionBorderSize.toDouble()
+            val boundingBox = interactEntity.entityBoundingBox.expand(expandSize, expandSize, expandSize)
+
+            val (yaw, pitch) = RotationUtils.targetRotation ?: Rotation(mc.thePlayer!!.rotationYaw, mc.thePlayer!!.rotationPitch)
+            val yawCos = cos(-yaw * 0.017453292F - Math.PI.toFloat())
+            val yawSin = sin(-yaw * 0.017453292F - Math.PI.toFloat())
+            val pitchCos = -cos(-pitch * 0.017453292F)
+            val pitchSin = sin(-pitch * 0.017453292F)
+            val range = min(range.get().toDouble(), mc.thePlayer!!.getDistanceToEntityBox(interactEntity)) + 1
+            val lookAt = positionEye!!.addVector(yawSin * pitchCos * range, pitchSin * range, yawCos * pitchCos * range)
+
+            val movingObject = boundingBox.calculateIntercept(positionEye, lookAt) ?: return
+            val hitVec = movingObject.hitVec
+
+            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, Vec3(hitVec.xCoord - interactEntity.posX, hitVec.yCoord - interactEntity.posY, hitVec.zCoord - interactEntity.posZ)))
+            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
+        }
     }
 
     /**
@@ -343,4 +476,3 @@ class KillAura : Module() {
     override val tag: String
         get() = rotationMode.get()
 }
-
