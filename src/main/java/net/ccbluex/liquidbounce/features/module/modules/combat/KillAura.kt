@@ -55,7 +55,7 @@ import kotlin.math.sin
     description = "Auto-attacks entities"
 )
 class KillAura : Module() {
-    private val maxCPS: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 20) {
+    private val maxCPS: IntegerValue = object : IntegerValue("MaxCPS", 10, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minCPS.get()
             if (i > newValue) set(i)
@@ -64,7 +64,7 @@ class KillAura : Module() {
         }
     }
 
-    private val minCPS: IntegerValue = object : IntegerValue("MinCPS", 5, 1, 20) {
+    private val minCPS: IntegerValue = object : IntegerValue("MinCPS", 8, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = maxCPS.get()
             if (i < newValue) set(i)
@@ -140,26 +140,28 @@ class KillAura : Module() {
         "Distance"
     )
 
-    private val hurtTime by IntegerValue("HurtTime", 10, 0, 10)
+    private val smartHurtTimeValue = BoolValue("SmartHurttime", false)
+    private val hurtTime by IntegerValue("HurtTime", 10, 0, 10) { !smartHurtTimeValue.get() }
 
     private val smartAttackValue = BoolValue("SmartAttack", false)
+    private val noSpamClick = BoolValue("NoSpamClick", true)
     private val extraRandomCPS = ListValue("ExtraCPSRandomization", arrayOf("Off", "Simple", "RangeBase"), "Off")
 
     private val autoBlockMode by ListValue("AutoBlock", arrayOf("None", "Vanilla"), "None")
     private val verusAutoBlockValue by BoolValue("VerusAutoBlock", false) { autoBlockMode == "Vanilla" }
-    private val interactAutoBlockValue by BoolValue("InteractAutoBlock", true) { autoBlockMode == "Vanilla" }
-    private val sendsShieldPacket by BoolValue("SendsShieldPacket(ViaAutoBlock)", true) { autoBlockMode == "Vanilla" }
+    private val interactAutoBlockValue by BoolValue("InteractAutoBlock", false) { autoBlockMode == "Vanilla" }
+    private val sendsShieldPacket by BoolValue("SendsShieldPacket(ViaAutoBlock)", false) { autoBlockMode == "Vanilla" }
     private val blockRate by IntegerValue("BlockRate", 100, 1,100) { autoBlockMode == "Vanilla" }
 
-    private val jitter = BoolValue("Jitter", true)
+    private val jitter = BoolValue("Jitter", false)
     private val jitterStrengthYaw = FloatValue("JitterStrengthYaw", 10.0f, 0.0f, 20.0f) { jitter.get() }
     private val jitterStrengthPitch = FloatValue("JitterStrengthPitch", 10.0f, 0.0f, 20.0f) { jitter.get() }
 
-    private val noInvAttack by BoolValue("NoInvAttack", false)
+    private val noInvAttack by BoolValue("NoInvAttack", true)
     private val noBlink by BoolValue("NoBlink", true)
     private val noScaff by BoolValue("NoScaffold", true)
 
-    private val circle by BoolValue("Circle", true)
+    private val circle by BoolValue("Circle", false)
     private val circleAccuracy by IntegerValue("Accuracy", 59, 0, 59) { circle }
     private val circleThickness by FloatValue("Thickness", 2f, 0f, 20f) { circle }
     private val circleRed by IntegerValue("Red", 255, 0, 255) { circle }
@@ -242,10 +244,18 @@ class KillAura : Module() {
             if (mc.thePlayer.isBlocking || blockingStatus)
                 stopBlocking()
 
-            while (clicks > 0) {
-                LiquidBounce.eventManager.callEvent(AttackEvent(target))
-                AttackOrder.sendFixedAttack(mc.thePlayer, target)
-                clicks--
+            if (noSpamClick.get()) {
+                if (clicks > 0) {
+                    LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                    AttackOrder.sendFixedAttack(mc.thePlayer, target)
+                    clicks = 0
+                }
+            } else {
+                while (clicks > 0) {
+                    LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                    AttackOrder.sendFixedAttack(mc.thePlayer, target)
+                    clicks--
+                }
             }
 
             if (autoBlockMode == "Vanilla" && canBlock) {
@@ -316,7 +326,7 @@ class KillAura : Module() {
         }
 
         if (target != null && timerAttack.hasTimePassed(attackDelay + timeAdder) &&
-            (target !is EntityLivingBase || (target as EntityLivingBase).hurtTime <= hurtTime)) {
+            (target !is EntityLivingBase || (!smartHurtTimeValue.get() && (target as EntityLivingBase).hurtTime <= hurtTime) || (smartHurtTimeValue.get() && ((target as EntityLivingBase).hurtTime == 0 || mc.thePlayer.hurtTime != 0)))) {
             ++clicks
             timerAttack.reset()
             attackDelay = TimerUtils.randomClickDelay(minCPS.get(), maxCPS.get())
