@@ -29,6 +29,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils.randomDelay
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -145,10 +146,21 @@ class Scaffold : Module() {
      * OPTIONS (Scaffold)
      */
     // Mode
-    val modeValue = ListValue("Mode", arrayOf("Normal", "Expand", "Telly", "OffGround","Snap", "Snap2"), "Normal")
+    val modeValue = ListValue("Mode", arrayOf("Normal", "Expand", "Telly", "OffGround","Snap", "Snap2","GodBridge","GrimTellyTest"), "Normal")//u can use offground to bypass grim scaffold,igrone grimtellytest pls
 
-    val tellyTicks =
-        IntegerValue("TellyTicks", 3, 1, 5) { modeValue.get() == "Telly" }
+    private val tellyTicks = IntegerValue("TellyTicks", 3, 1, 5) { modeValue.get() == "Telly" || modeValue.get() == "GrimTellyTest" }
+
+    private val maxBlocksToJump: IntegerValue = object : IntegerValue("MaxBlocksToJump", 4, 1,8, { modeValue.get() == "GodBridge"}) {
+        override fun onChange(oldValue: Int, newValue: Int) {
+            newValue.coerceAtLeast(minBlocksToJump.get())
+        }
+    }
+
+    private val minBlocksToJump: IntegerValue = object : IntegerValue("MinBlocksToJump", 4, 1,8, { modeValue.get() == "GodBridge"}) {
+        override fun onChange(oldValue: Int, newValue: Int) {
+            newValue.coerceAtMost(maxBlocksToJump.get())
+        }
+    }
 
     // Delay
     private val placeableDelay = BoolValue("PlaceableDelay", false)
@@ -218,7 +230,7 @@ class Scaffold : Module() {
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","GodBridge1","GodBridge2"),
         "Normal"
     ) { rotationsValue.get() }
     private val alwaysRotate = BoolValue("AlwaysRotate", false) { rotationsValue.get() && rotationModeValue.get() != "Normal" }
@@ -386,6 +398,10 @@ class Scaffold : Module() {
     private var idkTick = 0
     private var towerTick = 0
 
+    private var blocksPlacedUntilJump = 0
+    private var blocksToJump = randomDelay(minBlocksToJump.get(), maxBlocksToJump.get())
+    private var enableRotation = false
+
     private val isTowerOnly: Boolean
         get() = towerEnabled.get()
 
@@ -424,8 +440,8 @@ class Scaffold : Module() {
                 )
             )
         }
-        faceBlock = false
         lastMS = System.currentTimeMillis()
+        enableRotation = true
     }
 
     //Send jump packets, bypasses Hypixel.
@@ -616,7 +632,7 @@ class Scaffold : Module() {
 
         val idk = if (modeValue.get() == "Snap") targetPlace else blockData
 
-        if (modeValue.get() == "Snap2" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || modeValue.get() == "OffGround" && mc.thePlayer.onGround || modeValue.get() == "Snap" && targetPlace == null)
+        if (modeValue.get() == "Snap2" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || (modeValue.get() == "OffGround" || modeValue.get() == "GrimTellyTest") && mc.thePlayer.onGround || modeValue.get() == "Snap" && targetPlace == null)
             return
 
         when (rotationModeValue.get()) {
@@ -627,7 +643,10 @@ class Scaffold : Module() {
                 entity.posZ = idk.blockPos.z + 0.5
 
                 lockRotation = RotationUtils.limitAngleChange(
-                    currRotation, RotationUtils.getAngles(entity), RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
+                    currRotation,
+                    RotationUtils.getAngles(entity),
+                    RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),
+                    RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
                 )
             }
 
@@ -643,17 +662,50 @@ class Scaffold : Module() {
 
             "Rise" -> {
                 lockRotation = RotationUtils.limitAngleChange(
-                    currRotation, RotationUtils.getDirectionToBlock(
+                    currRotation,
+                    RotationUtils.getDirectionToBlock(
                         idk?.blockPos?.x!!.toDouble(),
                         idk.blockPos.y.toDouble(),
                         idk.blockPos.z.toDouble(),
                         idk.enumFacing
-                    ), RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
+                    ),
+                    RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),
+                    RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
                 )
             }
 
             "MoveYaw" -> {
                 lockRotation = Rotation(MovementUtils.getRawDirection() - 180, customPitchValue.get())
+            }
+
+            "GodBridge1" -> {
+                var state = 0
+
+                if (buildForward()) {
+                    if (mc.gameSettings.keyBindRight.isKeyDown) {
+                        state = 1
+                        enableRotation = false
+                    } else if (mc.gameSettings.keyBindLeft.isKeyDown) {
+                        state = 2
+                        enableRotation = false
+                    }
+                } else {
+                    lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, 78f)
+                }
+
+                if(enableRotation) {
+                    lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, 75f)
+                }
+
+                if (state == 1) {
+                    lockRotation = Rotation(mc.thePlayer.rotationYaw - 135, 75f)
+                }
+                if (state == 2) {
+                    lockRotation = Rotation(mc.thePlayer.rotationYaw + 135, 75f)
+                }
+                if (!buildForward()) {
+                    lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, 77f)
+                }
             }
         }
 
@@ -722,6 +774,20 @@ class Scaffold : Module() {
         if ((!rotationsValue.get() || noHitCheckValue.get() || faceBlock) && placeModeValue.get() === "Legit") {
             place()
         }
+
+        if(modeValue.get() == "GodBridge") {
+            val shouldJumpForcefully = blocksPlacedUntilJump >= blocksToJump && buildForward()
+            val isSneaking = mc.thePlayer.movementInput.sneak
+            if ((!isSneaking || MovementUtils.isMoving()) && shouldJumpForcefully) {
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+
+                    blocksPlacedUntilJump = 0
+                    blocksToJump = randomDelay(minBlocksToJump.get(), maxBlocksToJump.get())
+                }
+            }
+        }
+
         if (towering()) {
             shouldGoDown = false
             mc.gameSettings.keyBindSneak.pressed = false
@@ -862,8 +928,8 @@ class Scaffold : Module() {
 
     private fun shouldPlace(): Boolean {
         val placeWhenAir  = modeValue.get() == "OffGround" && !mc.thePlayer.onGround
-        val placeWhenTick = modeValue.get() == "Telly" && offGroundTicks >= tellyTicks.get()
-        val alwaysPlace = modeValue.get() == "Normal" || modeValue.get() == "Expand"|| modeValue.get() == "Snap" || modeValue.get() == "Snap2"
+        val placeWhenTick = (modeValue.get() == "Telly" || modeValue.get()  == "GrimTellyTest") && offGroundTicks >= tellyTicks.get()
+        val alwaysPlace = modeValue.get() == "Normal" || modeValue.get() == "Expand"|| modeValue.get() == "Snap" || modeValue.get() == "Snap2" || modeValue.get() == "GodBridge"
         return towering() || alwaysPlace || placeWhenAir || placeWhenTick
     }
 
@@ -1059,6 +1125,9 @@ class Scaffold : Module() {
                 mc.thePlayer.isSprinting = true
             }
             if (swingValue.get()) mc.thePlayer.swingItem() else mc.netHandler.addToSendQueue(C0APacketAnimation())
+
+            if (modeValue.get() == "GodBridge")
+                blocksPlacedUntilJump++
         }
 
         // Reset
@@ -1096,6 +1165,7 @@ class Scaffold : Module() {
                 mc.thePlayer.inventory.currentItem
             )
         )
+        enableRotation = false
     }
 
     /**
@@ -1665,7 +1735,7 @@ class Scaffold : Module() {
             }
         }
 
-        if(!alwaysRotate.get()) {
+        if (!alwaysRotate.get()) {
             lockRotation2 = lockRotation
         }
 
@@ -1673,12 +1743,55 @@ class Scaffold : Module() {
 
         if (rotationsValue.get() && rotationModeValue.isMode("Normal")) {
             lockRotation2 = RotationUtils.limitAngleChange(
-                currRotation, placeRotation.rotation, RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
+                currRotation,
+                placeRotation.rotation,
+                RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),
+                RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
             )
+        }
+
+        if (rotationsValue.get() && rotationModeValue.get() == "GodBridge2") {
+            var state = 0
+
+            if (buildForward()) {
+                if (mc.gameSettings.keyBindRight.isKeyDown) {
+                    state = 1
+                    enableRotation = false
+                } else if (mc.gameSettings.keyBindLeft.isKeyDown) {
+                    state = 2
+                    enableRotation = false
+                }
+            } else {
+                lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, 78f)
+            }
+
+            if(enableRotation) {
+                lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, 75f)
+            }
+
+            if (state == 1) {
+                lockRotation = Rotation(mc.thePlayer.rotationYaw - 135, 75f)
+            }
+            if (state == 2) {
+                lockRotation = Rotation(mc.thePlayer.rotationYaw + 135, 75f)
+            }
+            if (!buildForward()) {
+                lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, 77f)
+            }
+
+            lockRotation = lockRotation?.let { compareDifferences(it, placeRotation.rotation) }
         }
 
         targetPlace = placeRotation.placeInfo
         return true
+    }
+
+    private fun compareDifferences(new: Rotation, old: Rotation?, rotation: Rotation = currRotation): Rotation {
+        if (old == null || RotationUtils.getRotationDifference(new, rotation) < RotationUtils.getRotationDifference(old, rotation)) {
+            return new
+        }
+
+        return old
     }
 
     /**
@@ -1830,5 +1943,5 @@ class Scaffold : Module() {
             return amount
         }
     override val tag: String
-        get() = rotationModeValue.get()
+        get() = modeValue.get()
 }

@@ -58,3 +58,17 @@ operator fun Vec3.minus(vec: Vec3): Vec3 = subtract(vec)
 operator fun Vec3.times(number: Double) = Vec3(xCoord * number, yCoord * number, zCoord * number)
 operator fun Vec3.div(number: Double) = times(1 / number)
 fun Double.toDegreesF() = toDegrees().toFloat()
+
+class RangeIterator(private val range: ClosedFloatingPointRange<Double>, private val step: Double = 0.1): Iterator<Double> {
+    private var value = range.start
+
+    override fun hasNext() = value < range.endInclusive
+
+    override fun next(): Double {
+        val returned = value
+        value = (value + step).coerceAtMost(range.endInclusive)
+        return returned
+    }
+}
+
+infix fun ClosedFloatingPointRange<Double>.step(step: Double) = RangeIterator(this, step)
