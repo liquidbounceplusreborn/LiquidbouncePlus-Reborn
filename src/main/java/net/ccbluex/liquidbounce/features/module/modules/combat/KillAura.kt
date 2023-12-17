@@ -140,8 +140,9 @@ class KillAura : Module() {
         "Distance"
     )
 
-    private val smartHurtTimeValue = BoolValue("SmartHurttime", false)
-    private val hurtTime by IntegerValue("HurtTime", 10, 0, 10) { !smartHurtTimeValue.get() }
+    private val smartHurtTime = BoolValue("SmartHurttime", false)
+    private val smartHurtTimeValue by IntegerValue("SmartHurttimeValue", 7, 0, 10) { smartHurtTime.get() }
+    private val hurtTime by IntegerValue("HurtTime", 10, 0, 10) { !smartHurtTime.get() }
 
     private val smartAttackValue = BoolValue("SmartAttack", false)
     private val noSpamClick = BoolValue("NoSpamClick", true)
@@ -326,7 +327,7 @@ class KillAura : Module() {
         }
 
         if (target != null && timerAttack.hasTimePassed(attackDelay + timeAdder) &&
-            (target !is EntityLivingBase || (!smartHurtTimeValue.get() && (target as EntityLivingBase).hurtTime <= hurtTime) || (smartHurtTimeValue.get() && ((target as EntityLivingBase).hurtTime == 0 || mc.thePlayer.hurtTime != 0)))) {
+            (target !is EntityLivingBase || (!smartHurtTime.get() && (target as EntityLivingBase).hurtTime <= hurtTime) || (smartHurtTime.get() && ((target as EntityLivingBase).hurtTime == 0 || (target as EntityLivingBase).hurtTime > smartHurtTimeValue || mc.thePlayer.hurtTime != 0)))) {
             ++clicks
             timerAttack.reset()
             attackDelay = TimerUtils.randomClickDelay(minCPS.get(), maxCPS.get())
