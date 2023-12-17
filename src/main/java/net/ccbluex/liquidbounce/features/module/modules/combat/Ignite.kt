@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -13,6 +14,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
+import net.ccbluex.liquidbounce.utils.Rotation
+import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -28,8 +31,11 @@ import java.lang.Math.*
 @ModuleInfo(name = "Ignite", description = "Automatically sets targets around you on fire.", category = ModuleCategory.COMBAT)
 class Ignite : Module() {
 
+    private val packetRotation = BoolValue("PacketRotation", true)
+    private val spoofItem = BoolValue("SpoofItem", true)
     private val lighterValue = BoolValue("Lighter", true)
     private val lavaBucketValue = BoolValue("Lava", true)
+    private val checkKillAura = BoolValue("CheckKillAura", true)
 
     private val msTimer = MSTimer()
 
@@ -48,6 +54,10 @@ class Ignite : Module() {
 
         for (entity in mc.theWorld.loadedEntityList)
             if (EntityUtils.isSelected(entity, true) && !entity.isBurning) {
+
+                if(checkKillAura.get() && LiquidBounce.moduleManager[KillAura::class.java]?.target == null)
+                    return
+
                 val blockPos = entity.position
 
                 if (mc.thePlayer.getDistanceSq(blockPos) >= 22.3 ||
@@ -56,7 +66,12 @@ class Ignite : Module() {
                     continue
 
                 //RotationUtils.keepCurrentRotation = true
-                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(fireInHotbar - 36))
+                if(spoofItem.get()) {
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(fireInHotbar - 36))
+                }else{
+                    mc.thePlayer.inventory.currentItem = fireInHotbar - 36
+                }
+
                 val itemStack = mc.thePlayer.inventoryContainer.getSlot(fireInHotbar).stack ?: return
 
                 if (itemStack.item!! is ItemBucket) {
@@ -68,10 +83,18 @@ class Ignite : Module() {
                     val yaw = (atan2(diffZ, diffX) * 180.0 / PI).toFloat() - 90F
                     val pitch = -(atan2(diffY, sqrtz) * 180.0 / PI).toFloat()
 
-                    mc.netHandler.addToSendQueue(C05PacketPlayerLook(
-                        mc.thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(yaw - mc.thePlayer.rotationYaw),
-                        mc.thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(pitch - mc.thePlayer.rotationPitch),
-                        mc.thePlayer.onGround))
+                    if(packetRotation.get()) {
+                        mc.netHandler.addToSendQueue(
+                            C05PacketPlayerLook(
+                                mc.thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(yaw - mc.thePlayer.rotationYaw),
+                                mc.thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(pitch - mc.thePlayer.rotationPitch),
+                                mc.thePlayer.onGround
+                            )
+                        )
+                    }else{
+                        RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw + MathHelper.wrapAngleTo180_float(yaw - mc.thePlayer.rotationYaw),
+                            mc.thePlayer.rotationPitch + MathHelper.wrapAngleTo180_float(pitch - mc.thePlayer.rotationPitch)))
+                    }
 
                     mc.playerController.sendUseItem(mc.thePlayer, mc.theWorld, itemStack)
                 } else {
@@ -88,12 +111,22 @@ class Ignite : Module() {
                         val yaw = (atan2(diffZ, diffX) * 180.0 / PI).toFloat() - 90F
                         val pitch = -(atan2(diffY, sqrtz) * 180.0 / PI).toFloat()
 
-                        mc.netHandler.addToSendQueue(C05PacketPlayerLook(
-                            mc.thePlayer.rotationYaw +
-                            MathHelper.wrapAngleTo180_float(yaw - mc.thePlayer.rotationYaw),
-                            mc.thePlayer.rotationPitch +
-                            MathHelper.wrapAngleTo180_float(pitch - mc.thePlayer.rotationPitch),
-                            mc.thePlayer.onGround))
+                        if(packetRotation.get()) {
+                            mc.netHandler.addToSendQueue(
+                                C05PacketPlayerLook(
+                                    mc.thePlayer.rotationYaw +
+                                            MathHelper.wrapAngleTo180_float(yaw - mc.thePlayer.rotationYaw),
+                                    mc.thePlayer.rotationPitch +
+                                            MathHelper.wrapAngleTo180_float(pitch - mc.thePlayer.rotationPitch),
+                                    mc.thePlayer.onGround
+                                )
+                            )
+                        }else {
+                            RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw +
+                                    MathHelper.wrapAngleTo180_float(yaw - mc.thePlayer.rotationYaw),
+                                mc.thePlayer.rotationPitch +
+                                        MathHelper.wrapAngleTo180_float(pitch - mc.thePlayer.rotationPitch)))
+                        }
 
                         if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, itemStack, neighbor,
                                                 side.opposite, Vec3(side.directionVec))) {
@@ -102,10 +135,21 @@ class Ignite : Module() {
                         }
                     }
                 }
-
-                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                if(spoofItem.get()) {
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }
                 //RotationUtils.keepCurrentRotation = false
-                mc.netHandler.addToSendQueue(C05PacketPlayerLook(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, mc.thePlayer.onGround))
+                if(packetRotation.get()) {
+                    mc.netHandler.addToSendQueue(
+                        C05PacketPlayerLook(
+                            mc.thePlayer.rotationYaw,
+                            mc.thePlayer.rotationPitch,
+                            mc.thePlayer.onGround
+                        )
+                    )
+                }else{
+                    RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch))
+                }
 
                 msTimer.reset()
                 break
