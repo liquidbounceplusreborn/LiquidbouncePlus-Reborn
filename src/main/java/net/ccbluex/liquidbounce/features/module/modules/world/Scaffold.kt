@@ -20,20 +20,25 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.canBeClicked
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isReplaceable
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.get
+import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.getPlaceInfo
 import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.extensions.rotation
+import net.ccbluex.liquidbounce.utils.math.times
 import net.ccbluex.liquidbounce.utils.math.toRadiansD
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.BlurUtils.blurArea
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TickTimer
-import net.ccbluex.liquidbounce.utils.timer.TimerUtils
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils.randomDelay
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.BlockAir
+import net.minecraft.block.BlockChest
+import net.minecraft.block.BlockFurnace
+import net.minecraft.block.BlockLiquid
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -232,7 +237,7 @@ class Scaffold : Module() {
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","GodBridge1","GodBridge2","IDK"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","GodBridge1","GodBridge2","IDK","IDK2","Augustus"),
         "Normal"
     ) { rotationsValue.get() }
     private val alwaysRotate = BoolValue("AlwaysRotate", false) { rotationsValue.get() && rotationModeValue.get() != "Normal" }
@@ -265,6 +270,10 @@ class Scaffold : Module() {
                 if (i < newValue) set(i)
             }
         }
+
+    val yawSpeed = FloatValue("YawSpeed", 40.0f, 0.0f, 180.0f){ rotationsValue.get() && rotationModeValue.get() == "Augustus" }
+    val pitchSpeed = FloatValue("PitchSpeed", 40.0f, 0.0f, 180.0f){ rotationsValue.get() && rotationModeValue.get() == "Augustus" }
+    val yawOffset = FloatValue("YawOffSet", -180f, -200f, 200f){ rotationsValue.get() && rotationModeValue.get() == "Augustus" }
     private val keepTicks = IntegerValue("KeepTicks", 20, 0,20) { rotationsValue.get() }
     private val angleThresholdUntilReset = FloatValue("AngleThresholdUntilReset", 5f, 0.1f,180f) { rotationsValue.get() }
     private val resetMaxTurnSpeed: FloatValue =
@@ -404,6 +413,14 @@ class Scaffold : Module() {
     private var blocksToJump = randomDelay(minBlocksToJump.get(), maxBlocksToJump.get())
     private var enableRotation = false
 
+    private var rots = Rotation(0f, 0f)
+    private var objectPosition: MovingObjectPosition? = null
+    private var blockPos: BlockPos? = null
+    private var start = true
+    private var xyz = DoubleArray(3)
+    private val hashMap = HashMap<Float, MovingObjectPosition>()
+    private val startTimeHelper = MSTimer()
+
     private val isTowerOnly: Boolean
         get() = towerEnabled.get()
 
@@ -445,6 +462,13 @@ class Scaffold : Module() {
         lastMS = System.currentTimeMillis()
         enableRotation = true
         blocksPlacedUntilJump = 0
+
+        rots.pitch = (mc.thePlayer.rotationPitch)
+        rots.yaw = (mc.thePlayer.rotationYaw)
+        objectPosition = null
+        blockPos = null
+        start = true
+        this.startTimeHelper.reset()
     }
 
     //Send jump packets, bypasses Hypixel.
@@ -631,7 +655,8 @@ class Scaffold : Module() {
         )
         val check =
             mc.theWorld.getBlockState(blockPos).block.material.isReplaceable || mc.theWorld.getBlockState(blockPos).block === Blocks.air
-        val blockData = get(blockPos)
+
+        val blockData = getPlaceInfo(blockPos)
 
         val idk = if (modeValue.get() == "Snap") targetPlace else blockData
 
@@ -711,6 +736,14 @@ class Scaffold : Module() {
             "IDK" -> {
                 lockRotation = RotationUtils.faceBlock(blockData?.blockPos)?.rotation?.let { Rotation(mc.thePlayer.rotationYaw + 180, it.pitch) }
             }
+
+            "IDK2" -> {
+                lockRotation = RotationUtils.faceBlock(blockData?.blockPos)?.rotation
+            }
+
+            "Augustus" -> {
+                lockRotation = rots
+            }
         }
 
         if(grimMoment.get()){
@@ -753,6 +786,93 @@ class Scaffold : Module() {
         MovementUtils.setMotion2(d, f)
     }
 
+    @EventTarget
+    fun onTick(event: TickEvent?) {
+        blockPos = this.getAimBlockPos()
+        start =
+            mc.thePlayer.motionX === 0.0 && mc.thePlayer.motionZ === 0.0 && mc.thePlayer.onGround || !this.startTimeHelper.hasTimePassed(
+                200L
+            )
+        if (blockPos != null) {
+            rots = getNearestRotation()
+        }
+        if (objectPosition != null) {
+            mc.objectMouseOver = objectPosition
+        }
+    }
+
+    private fun getAimBlockPos(): BlockPos? {
+        val playerPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)
+        return if ((mc.gameSettings.keyBindJump.isKeyDown || !mc.thePlayer.onGround) && mc.thePlayer.moveForward === 0.0f && mc.thePlayer.moveStrafing === 0.0f && isOkBlock(
+                playerPos.add(0, -1, 0)
+            )
+        ) {
+            playerPos.add(0, -1, 0)
+        } else {
+            var blockPos: BlockPos? = null
+            val bp: ArrayList<BlockPos> = this.getBlockPos()
+            val blockPositions = ArrayList<BlockPos>()
+            if (!bp.isEmpty()) {
+                for (i in 0 until min(bp.size.toDouble(), 18.0).toInt()) {
+                    blockPositions.add(bp[i])
+                }
+                blockPositions.sortWith<BlockPos>(Comparator.comparingDouble<BlockPos> { blockPos: BlockPos ->
+                    this.getDistanceToBlockPos(
+                        blockPos
+                    )
+                })
+                if (blockPositions.isNotEmpty()) {
+                    blockPos = blockPositions[0]
+                }
+            }
+            blockPos
+        }
+    }
+
+    private fun getBlockPos(): ArrayList<BlockPos> {
+        val playerPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)
+        val blockPoses = ArrayList<BlockPos>()
+        for (x in playerPos.x - 2..playerPos.x + 2) {
+            for (y in playerPos.y - 1..playerPos.y) {
+                for (z in playerPos.z - 2..playerPos.z + 2) {
+                    if (isOkBlock(BlockPos(x, y, z))) {
+                        blockPoses.add(BlockPos(x, y, z))
+                    }
+                }
+            }
+        }
+        if (blockPoses.isNotEmpty()) {
+            blockPoses.sortWith(Comparator.comparingDouble { blockPos: BlockPos ->
+                mc.thePlayer.getDistanceSq(
+                    blockPos.x.toDouble() + 0.5,
+                    blockPos.y.toDouble() + 0.5,
+                    blockPos.z.toDouble() + 0.5
+                )
+            })
+        }
+        return blockPoses
+    }
+
+    private fun getDistanceToBlockPos(blockPos: BlockPos): Double {
+        var distance = 1337.0
+        var x = blockPos.x.toFloat()
+        while (x <= (blockPos.x + 1).toFloat()) {
+            var y = blockPos.y.toFloat()
+            while (y <= (blockPos.y + 1).toFloat()) {
+                var z = blockPos.z.toFloat()
+                while (z <= (blockPos.z + 1).toFloat()) {
+                    val d0 = mc.thePlayer.getDistanceSq(x.toDouble(), y.toDouble(), z.toDouble())
+                    if (d0 < distance) {
+                        distance = d0
+                    }
+                    z = (z.toDouble() + 0.2).toFloat()
+                }
+                y = (y.toDouble() + 0.2).toFloat()
+            }
+            x = (x.toDouble() + 0.2).toFloat()
+        }
+        return distance
+    }
 
     /**
      * Update event
@@ -1141,7 +1261,7 @@ class Scaffold : Module() {
             )
         ) {
             delayTimer.reset()
-            delay = if (!placeableDelay.get()) 0L else TimerUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+            delay = if (!placeableDelay.get()) 0L else randomDelay(minDelayValue.get(), maxDelayValue.get())
             if (mc.thePlayer.onGround) {
                 val modifier = speedModifierValue.get()
                 mc.thePlayer.motionX *= modifier.toDouble()
@@ -1919,6 +2039,98 @@ class Scaffold : Module() {
             eyes.addVector(rotationVec.xCoord * maxReach, rotationVec.yCoord * maxReach, rotationVec.zCoord * maxReach)
 
         return world.rayTraceBlocks(eyes, reach, false, false, true)
+    }
+
+    private fun getNearestRotation(): Rotation {
+        this.objectPosition = null
+        var rot: Rotation = this.rots
+        val b = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 0.5, mc.thePlayer.posZ)
+        this.hashMap.clear()
+        if (this.start) {
+            rot.pitch = (80.34f)
+            rot.yaw = (mc.thePlayer.rotationYaw + yawOffset.get())
+            rot = RotationUtils.limitAngleChange(
+                RotationUtils.serverRotation,
+                rot,
+                yawSpeed.get() + RandomUtils.nextFloat(0f, 2f),
+                pitchSpeed.get() - RandomUtils.nextFloat(0f, 2f)
+            )
+        } else {
+            rot.yaw = (mc.thePlayer.rotationYaw + yawOffset.get())
+            rot = RotationUtils.limitAngleChange(
+                RotationUtils.serverRotation,
+                rot,
+                yawSpeed.get() + RandomUtils.nextFloat(0f, 2f),
+                pitchSpeed.get() + RandomUtils.nextFloat(0f, 2f)
+            )
+            var x = mc.thePlayer.posX
+            var z = mc.thePlayer.posZ
+            val add1 = 1.288
+            val add2 = 0.288
+            if (!buildForward()) {
+                x += mc.thePlayer.posX - this.xyz.get(0)
+                z += mc.thePlayer.posZ - this.xyz.get(2)
+            }
+            this.xyz = doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+            val maX: Double = this.blockPos?.getX()?.toDouble()!! + add1
+            val miX: Double = this.blockPos?.getX()?.toDouble()!! - add2
+            val maZ: Double = this.blockPos?.getZ()?.toDouble()!! + add1
+            val miZ: Double = this.blockPos?.getZ()?.toDouble()!! - add2
+            if (x <= maX && x >= miX && z <= maZ && z >= miZ) {
+                rot.pitch = (rots.pitch)
+            } else {
+                val movingObjectPositions = ArrayList<MovingObjectPosition>()
+                val pitches = ArrayList<Float>()
+                val vec3 = mc.thePlayer.getPositionEyes(1f)
+                var mm = Math.max(rots.pitch - 20.0f, -90.0f)
+                while (mm < Math.min(rots.pitch + 20.0f, 90.0f)) {
+                    rot.pitch = (mm)
+                    rot.fixedSensitivity()
+                    val vec31: Vec3 = (rot.toDirection() * 4.5).add(vec3)
+                    val m4 = mc.theWorld.rayTraceBlocks(vec3, vec31, false, false, true)
+                    if (m4.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && this.isOkBlock(m4.blockPos) && m4.blockPos == this.blockPos && m4.sideHit != EnumFacing.DOWN && (m4.sideHit != EnumFacing.UP || !sameYValue.get() && mc.gameSettings.keyBindJump.isKeyDown) && m4.blockPos.y <= b.y) {
+                        movingObjectPositions.add(m4)
+                        val rotPitch: Float = rot.pitch
+                        this.hashMap.put(rotPitch, m4)
+                        pitches.add(rotPitch)
+                    }
+                    mm += 0.02f
+                }
+                movingObjectPositions.sortWith(Comparator.comparingDouble { m: MovingObjectPosition ->
+                    mc.thePlayer.getDistanceSq(
+                        m.blockPos.add(0.5, 0.5, 0.5)
+                    )
+                })
+                var mm1: MovingObjectPosition? = null
+                if (!movingObjectPositions.isEmpty()) {
+                    mm1 = movingObjectPositions[0]
+                }
+                if (mm1 != null) {
+                    pitches.sortWith<Float>(Comparator.comparingDouble<Float> { pitch: Float ->
+                        this.distanceToLastPitch(
+                            pitch
+                        )
+                    })
+                    if (pitches.isNotEmpty()) {
+                        val rotPitch = pitches[0]
+                        rot.pitch = (rotPitch)
+                        this.objectPosition = this.hashMap[rotPitch]
+                        this.blockPos = this.objectPosition?.blockPos
+                    }
+                    return rot
+                }
+            }
+        }
+        return rot
+    }
+
+    private fun distanceToLastPitch(pitch: Float): Double {
+        return Math.abs(pitch - this.rots.pitch).toDouble()
+    }
+
+    private fun isOkBlock(blockPos: BlockPos): Boolean {
+        val block = mc.theWorld.getBlockState(blockPos).block
+        return block !is BlockLiquid && block !is BlockAir && block !is BlockChest && block !is BlockFurnace
     }
 
     private fun towerMove() {
