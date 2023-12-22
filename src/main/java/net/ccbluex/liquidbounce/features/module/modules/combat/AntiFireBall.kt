@@ -88,8 +88,8 @@ class AntiFireBall : Module() {
                         RotationUtils.toRotation(nearestPoint, true).fixedSensitivity(),
                         RandomUtils.nextFloat(minTurnSpeed, maxTurnSpeed)
                     ),
-                    resetSpeed = minTurnSpeed to maxTurnSpeed,
-                    angleThresholdForReset = angleThresholdUntilReset
+                    //resetSpeed = minTurnSpeed to maxTurnSpeed,
+                   // angleThresholdForReset = angleThresholdUntilReset
                 )
             }
 

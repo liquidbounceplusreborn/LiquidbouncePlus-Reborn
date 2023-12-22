@@ -167,8 +167,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             if (this.isCurrentViewEntity()) {
                 float yaw = event.getYaw();
                 float pitch = event.getPitch();
-                //float lastReportedYaw = RotationUtils.getServerRotation().getYaw();
-                //float lastReportedPitch = RotationUtils.getServerRotation().getPitch();
+                float lastReportedYaw = RotationUtils.getServerRotation().getYaw();
+                float lastReportedPitch = RotationUtils.getServerRotation().getPitch();
 
                 if (RotationUtils.getTargetRotation() != null) {
                     yaw = RotationUtils.getTargetRotation().getYaw();
@@ -178,8 +178,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 double xDiff = event.getX() - this.lastReportedPosX;
                 double yDiff = event.getY() - this.lastReportedPosY;
                 double zDiff = event.getZ() - this.lastReportedPosZ;
-                double yawDiff = yaw - this.lastReportedYaw;
-                double pitchDiff = pitch - this.lastReportedPitch;
+                double yawDiff = yaw - lastReportedYaw;
+                double pitchDiff = pitch - lastReportedPitch;
                 boolean moved = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > (LiquidBounce.moduleManager.getModule(AntiDesync.class).getState() ? 0D : 9.0E-4D) || this.positionUpdateTicks >= 20;
                 boolean rotated = yawDiff != 0.0D || pitchDiff != 0.0D;
 
