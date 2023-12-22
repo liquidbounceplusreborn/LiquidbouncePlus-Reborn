@@ -44,6 +44,7 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C0BPacketEntityAction
@@ -227,6 +228,7 @@ class Scaffold : Module() {
 
     // Rotations
     private val rotationsValue = BoolValue("Rotations", true)
+    private val grimMoment = BoolValue("Grim1.17Sprint", false) { rotationsValue.get() }
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val rotationModeValue = ListValue(
         "RotationMode",
@@ -442,6 +444,7 @@ class Scaffold : Module() {
         }
         lastMS = System.currentTimeMillis()
         enableRotation = true
+        blocksPlacedUntilJump = 0
     }
 
     //Send jump packets, bypasses Hypixel.
@@ -632,9 +635,6 @@ class Scaffold : Module() {
 
         val idk = if (modeValue.get() == "Snap") targetPlace else blockData
 
-        if (modeValue.get() == "Snap2" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || (modeValue.get() == "OffGround" || modeValue.get() == "GrimTellyTest") && mc.thePlayer.onGround || modeValue.get() == "Snap" && targetPlace == null)
-            return
-
         when (rotationModeValue.get()) {
             "Novoline" -> {
                 val entity = EntityPig(mc.theWorld)
@@ -708,6 +708,20 @@ class Scaffold : Module() {
                 }
             }
         }
+
+        if(grimMoment.get()){
+            mc.netHandler.addToSendQueue(lockRotation?.yaw?.let {
+                lockRotation?.pitch?.let { it1 ->
+                    C06PacketPlayerPosLook(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ,
+                        it, it1, mc.thePlayer.onGround)
+                }
+            })
+            faceBlock = true
+        }
+
+
+        if (modeValue.get() == "Snap2" && !check || modeValue.get() == "Telly" && offGroundTicks < tellyTicks.get() || (modeValue.get() == "OffGround" || modeValue.get() == "GrimTellyTest") && mc.thePlayer.onGround || modeValue.get() == "Snap" && targetPlace == null || grimMoment.get())
+            return
 
         if(alwaysRotate.get() && rotationModeValue.get() != "Normal") {
             lockRotation2 = lockRotation
@@ -935,6 +949,17 @@ class Scaffold : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
+
+        if(grimMoment.get()) {
+            if (event.eventState == EventState.POST) {
+                mc.netHandler.addToSendQueue(
+                    C06PacketPlayerPosLook(
+                        mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ,
+                        mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, mc.thePlayer.onGround
+                    )
+                )
+            }
+        }
 
         if (towerModeValue.get() == "Watchdog") {
             if (idkTick > 0) {

@@ -25,7 +25,7 @@ import java.util.*
 @ModuleInfo(name = "FastUse", spacedName = "Fast Use", description = "Allows you to use items faster.", category = ModuleCategory.PLAYER)
 class FastUse : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Instant", "NCP", "AAC" ,"CustomDelay", "AACv4_2"), "NCP")
+    private val modeValue = ListValue("Mode", arrayOf("Instant", "NCP", "AAC" ,"CustomDelay", "AACv4_2","1.17"), "NCP")
 
     private val noMoveValue = BoolValue("NoMove", false)
 
@@ -97,6 +97,22 @@ class FastUse : Module() {
 
                         mc.playerController.onStoppedUsingItem(mc.thePlayer)
                     }
+                }
+
+                "1.17" -> {
+                        mc.rightClickDelayTimer = 0
+                        repeat(10) {
+                            mc.netHandler.addToSendQueue(
+                                C03PacketPlayer.C06PacketPlayerPosLook(
+                                    mc.thePlayer.posX,
+                                    mc.thePlayer.posY,
+                                    mc.thePlayer.posZ,
+                                    mc.thePlayer.rotationYaw,
+                                    mc.thePlayer.rotationPitch,
+                                    mc.thePlayer.onGround
+                                )
+                            )
+                        }
                 }
             }
         }

@@ -20,12 +20,13 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
+import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C0APacketAnimation
-import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -67,8 +68,8 @@ class Velocity : Module() {
             "Matrix",
             "Legit",
             "AEMine",
-            "GrimAC",
             "GrimCombat",
+            "Grim1.17",
             "AllAC",
             "Intave",
             "JumpReset",
@@ -326,9 +327,6 @@ class Velocity : Module() {
                 }
             }
 
-            "grimac" ->
-                if (transactionQueue.isEmpty() && grimPacket) grimPacket = false
-
             "intave" -> if (velocityInput) {
                 if (mc.thePlayer.hurtTime == 9) {
                     if (++jumped % 2 == 0 && mc.thePlayer.onGround && mc.thePlayer.isSprinting && mc.currentScreen == null) {
@@ -372,7 +370,8 @@ class Velocity : Module() {
                     }
                 }
             }
-            "sneak" ->{
+
+            "sneak" -> {
                 if (mc.thePlayer.onGround) {
                     while (mc.thePlayer.hurtTime >= 8) {
                         mc.gameSettings.keyBindSneak.pressed = true
@@ -390,6 +389,33 @@ class Velocity : Module() {
                         mc.gameSettings.keyBindForward.pressed = false;
                         start2 = 0;
                     }
+                }
+            }
+
+            "grimcombat" -> {
+                if (velocityInput) {
+                    val target = LiquidBounce.combatManager.getNearByEntity(3f)
+                    repeat(12) {
+                        //mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction(100, 100, true))
+                        mc.thePlayer.sendQueue.addToSendQueue(
+                            C02PacketUseEntity(
+                                target,
+                                C02PacketUseEntity.Action.ATTACK
+                            )
+                        )
+                        mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
+                    }
+                    mc.thePlayer.motionX *= 0.077760000
+                    mc.thePlayer.motionZ *= 0.077760000
+                    velocityInput = false
+                }
+            }
+
+            "grim1.17" -> {
+                if (velocityInput) {
+                    mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,mc.thePlayer.rotationYaw,mc.thePlayer.rotationPitch,mc.thePlayer.onGround))
+                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,mc.thePlayer.position,EnumFacing.DOWN))
+                    velocityInput = false
                 }
             }
         }
@@ -470,27 +496,14 @@ class Velocity : Module() {
                     pos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
                 }
 
-                "grimac" -> {
-                    event.cancelEvent()
-                    grimPacket = true
-                }
-
                 "grimcombat" -> {
-                    val target = LiquidBounce.combatManager.getNearByEntity(3f)
-                    repeat(12) {
-                        mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction(100,100,true))
-                        mc.thePlayer.sendQueue.addToSendQueue(
-                            C02PacketUseEntity(
-                                target,
-                                C02PacketUseEntity.Action.ATTACK
-                            )
-                        )
-                        mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
-                    }
+                    velocityInput = true
                     event.cancelEvent()
                     mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
-                    mc.thePlayer.motionX *= 0.077760000
-                    mc.thePlayer.motionZ *= 0.077760000
+                }
+                "grim1.17" -> {
+                    event.cancelEvent()
+                    velocityInput = true
                 }
             }
 
@@ -499,17 +512,6 @@ class Velocity : Module() {
                 mc.thePlayer.motionY += packet.func_149144_d() * (verticalExplosionValue.get())
                 mc.thePlayer.motionZ += packet.func_149147_e() * (horizontalExplosionValue.get())
                 event.cancelEvent()
-            }
-        }
-        if (modeValue.get() == "GrimAC") {
-            if (packet is S32PacketConfirmTransaction) {
-                if (!grimPacket) return
-                event.cancelEvent()
-                transactionQueue.add(packet.actionNumber)
-            }
-            if (packet is C0FPacketConfirmTransaction) {
-                if (!grimPacket || transactionQueue.isEmpty()) return
-                if (transactionQueue.remove(packet.getUid())) event.cancelEvent()
             }
         }
     }

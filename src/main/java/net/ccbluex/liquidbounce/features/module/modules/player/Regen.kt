@@ -1,13 +1,3 @@
-/*
- * LiquidBounce+ Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/WYSI-Foundation/LiquidBouncePlus/
- */
-/*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
- */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -26,7 +16,7 @@ import java.util.*
 @ModuleInfo(name = "Regen", category = ModuleCategory.PLAYER , description = "Regen")
 class Regen : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan", "AAC4NoFire"), "Vanilla")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan", "AAC4NoFire","1.17"), "Vanilla")
     private val healthValue = IntegerValue("Health", 18, 0, 20)
     private val foodValue = IntegerValue("Food", 18, 0, 20)
     private val speedValue = IntegerValue("Speed", 100, 1, 100)
@@ -86,6 +76,20 @@ class Regen : Module() {
 
                     mc.timer.timerSpeed = 0.45F
                     resetTimer = true
+                }
+                "1.17" -> {
+                    repeat(40) {
+                        mc.netHandler.addToSendQueue(
+                            C03PacketPlayer.C06PacketPlayerPosLook(
+                                mc.thePlayer.posX,
+                                mc.thePlayer.posY,
+                                mc.thePlayer.posZ,
+                                mc.thePlayer.rotationYaw,
+                                mc.thePlayer.rotationPitch,
+                                mc.thePlayer.onGround
+                            )
+                        )
+                    }
                 }
             }
         }

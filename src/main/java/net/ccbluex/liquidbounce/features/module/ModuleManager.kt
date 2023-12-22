@@ -218,7 +218,6 @@ class ModuleManager : Listenable {
             AttackEffect::class.java,
             FollowTargetHud::class.java,
             Indicators::class.java,
-            Test::class.java,
             MovementCorrection::class.java,
         )
 
