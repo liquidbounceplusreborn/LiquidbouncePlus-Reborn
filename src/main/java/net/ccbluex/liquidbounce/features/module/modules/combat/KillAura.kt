@@ -405,8 +405,9 @@ class KillAura : Module() {
         if(silentRotation) {
             RotationUtils.setTargetRotation(
                 rotations!!,
-                keepTicks.get()
-                //, resetMinTurnSpeed.get() to resetMaxTurnSpeed.get(), angleThresholdUntilReset.get()
+                keepTicks.get(),
+                resetMinTurnSpeed.get() to resetMaxTurnSpeed.get(),
+                angleThresholdUntilReset.get()
             )
         } else {
             rotations!!.toPlayer(mc.thePlayer)

@@ -737,9 +737,7 @@ class Scaffold : Module() {
             } else {
                 lockRotation2
             }
-        lockRotation2?.let { RotationUtils.setTargetRotation(it,keepTicks.get()
-           // ,resetMinTurnSpeed.get() to resetMaxTurnSpeed.get(),angleThresholdUntilReset.get()
-        ) }
+        lockRotation2?.let { RotationUtils.setTargetRotation(it,keepTicks.get(),resetMinTurnSpeed.get() to resetMaxTurnSpeed.get(),angleThresholdUntilReset.get()) }
         faceBlock = true
     }
 
