@@ -234,3 +234,10 @@ class EventSilentMove(var yaw: Float) : Event()
 class ChangeValueEvent(var valKey: String, var valName: String, var oldVal: Any, var `val`: Any) : Event()
 
 class MovementInputUpdateEvent(var strafe: Float, var forward: Float, var jump: Boolean, var sneak: Boolean) : Event()
+
+
+object ClickUpdateEvent : CancellableEvent() {
+    fun reInit() {
+        isCancelled = false
+    }
+}

@@ -12,31 +12,47 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.material.Material
 import net.minecraft.item.*
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.util.BlockPos
+import net.minecraft.util.MovingObjectPosition.MovingObjectType
 
 @ModuleInfo(name = "NoSlow", spacedName = "No Slow", category = ModuleCategory.MOVEMENT, description = "Prevent you from getting slowed down by items (swords, foods, etc.) and liquids.")
 class NoSlow : Module() {
     private val sword = BoolValue("Sword", false)
-    private val swordMode = ListValue("SwordMode", arrayOf("Vanilla","AAC5","SwitchItem","ReverseEventSwitchItem","OldIntave"), "Vanilla") { sword.get() }
+    private val swordMode = ListValue(
+        "SwordMode",
+        arrayOf("Vanilla", "AAC5", "SwitchItem", "ReverseEventSwitchItem", "OldIntave"),
+        "Vanilla"
+    ) { sword.get() }
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F, "x")
 
     private val bow = BoolValue("Bow", false)
-    private val bowMode = ListValue("BowMode", arrayOf("Vanilla","SwitchItem","ReverseEventSwitchItem","OldIntave"), "Vanilla") { bow.get() }
+    private val bowMode = ListValue(
+        "BowMode",
+        arrayOf("Vanilla", "SwitchItem", "ReverseEventSwitchItem", "OldIntave"),
+        "Vanilla"
+    ) { bow.get() }
     private val bowForwardMultiplier = FloatValue("BowForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F, "x")
 
     private val consume = BoolValue("Consume", false)
-    private val consumeMode = ListValue("ConsumeMode", arrayOf("Vanilla","SwitchItem","ReverseEventSwitchItem","OldIntave"), "Vanilla") { consume.get() }
+    private val consumeMode = ListValue(
+        "ConsumeMode",
+        arrayOf("Vanilla", "SwitchItem", "ReverseEventSwitchItem", "OldIntave", "Bug"),
+        "Vanilla"
+    ) { consume.get() }
+
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val consumeStrafeMultiplier = FloatValue("ConsumeStrafeMultiplier", 1.0F, 0.2F, 1.0F, "x")
 
     private val ciucValue = BoolValue("CheckInUseCount", true) { consumeMode.get() == "Blink" }
-    private val packetTriggerValue = ListValue("PacketTrigger", arrayOf("PreRelease", "PostRelease"), "PostRelease") { consumeMode.get() == "Blink" }
+    private val packetTriggerValue =
+        ListValue("PacketTrigger", arrayOf("PreRelease", "PostRelease"), "PostRelease") { consumeMode.get() == "Blink" }
     private val debugValue = BoolValue("Debug", false) { consumeMode.get() == "Blink" }
 
     val soulsandValue = BoolValue("Soulsand", true)
@@ -48,6 +64,9 @@ class NoSlow : Module() {
     private var lastY = 0.0
     private var lastZ = 0.0
     private var lastOnGround = false
+
+    private var lastItem: ItemStack? = null
+    private var count = 0
 
     override fun onEnable() {
         blinkPackets.clear()
@@ -66,14 +85,15 @@ class NoSlow : Module() {
         val player = mc.thePlayer ?: return
         val heldItem = player.heldItem ?: return
         val currentItem = player.inventory.currentItem
-        val isUsingItem = mc.thePlayer?.heldItem != null && (mc.thePlayer.isUsingItem || (mc.thePlayer.heldItem?.item is ItemSword && LiquidBounce.moduleManager[KillAura::class.java]?.blockingStatus == true))
+        val isUsingItem =
+            mc.thePlayer?.heldItem != null && (mc.thePlayer.isUsingItem || (mc.thePlayer.heldItem?.item is ItemSword && LiquidBounce.moduleManager[KillAura::class.java]?.blockingStatus == true))
 
         if (mc.thePlayer.motionX == 0.0 && mc.thePlayer.motionZ == 0.0)
             return
 
         if (sword.get() && heldItem.item is ItemSword && isUsingItem) {
             when (swordMode.get()) {
-                "AAC5" ->{
+                "AAC5" -> {
                     if (event.eventState == EventState.POST) {
                         mc.netHandler.addToSendQueue(
                             C08PacketPlayerBlockPlacement(
@@ -82,12 +102,14 @@ class NoSlow : Module() {
                         )
                     }
                 }
+
                 "SwitchItem" -> {
                     if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
                 }
+
                 "ReverseEventSwitchItem" -> {
                     if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
@@ -95,13 +117,20 @@ class NoSlow : Module() {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
                 }
+
                 "OldIntave" -> {
-                    if(event.eventState == EventState.PRE){
+                    if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
-                    if(event.eventState == EventState.POST){
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
+                    if (event.eventState == EventState.POST) {
+                        mc.netHandler.addToSendQueue(
+                            C08PacketPlayerBlockPlacement(
+                                mc.thePlayer.inventoryContainer.getSlot(
+                                    mc.thePlayer.inventory.currentItem + 36
+                                ).stack
+                            )
+                        )
                     }
                 }
             }
@@ -115,6 +144,7 @@ class NoSlow : Module() {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
                 }
+
                 "ReverseEventSwitchItem" -> {
                     if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
@@ -122,13 +152,20 @@ class NoSlow : Module() {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
                 }
+
                 "OldIntave" -> {
-                    if(event.eventState == EventState.PRE){
+                    if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
-                    if(event.eventState == EventState.POST){
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
+                    if (event.eventState == EventState.POST) {
+                        mc.netHandler.addToSendQueue(
+                            C08PacketPlayerBlockPlacement(
+                                mc.thePlayer.inventoryContainer.getSlot(
+                                    mc.thePlayer.inventory.currentItem + 36
+                                ).stack
+                            )
+                        )
                     }
                 }
             }
@@ -142,6 +179,7 @@ class NoSlow : Module() {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
                 }
+
                 "ReverseEventSwitchItem" -> {
                     if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
@@ -149,15 +187,23 @@ class NoSlow : Module() {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
                 }
+
                 "OldIntave" -> {
-                    if(event.eventState == EventState.PRE){
+                    if (event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                     }
-                    if(event.eventState == EventState.POST){
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
+                    if (event.eventState == EventState.POST) {
+                        mc.netHandler.addToSendQueue(
+                            C08PacketPlayerBlockPlacement(
+                                mc.thePlayer.inventoryContainer.getSlot(
+                                    mc.thePlayer.inventory.currentItem + 36
+                                ).stack
+                            )
+                        )
                     }
                 }
+
                 "Blink" -> {
                     if (event.eventState == EventState.PRE && !mc.thePlayer.isUsingItem && !mc.thePlayer.isBlocking) {
                         lastX = event.x
@@ -179,7 +225,7 @@ class NoSlow : Module() {
     }
 
     @EventTarget
-    fun onPacket(event: PacketEvent){
+    fun onPacket(event: PacketEvent) {
         mc.thePlayer ?: return
         mc.thePlayer.heldItem ?: return
         val packet = event.packet
@@ -240,6 +286,56 @@ class NoSlow : Module() {
             }
         }
     }
+
+    @EventTarget
+    fun onClick(event: ClickUpdateEvent) {
+        val player = mc.thePlayer ?: return
+        val heldItem = player.heldItem ?: return
+        val currentItem = player.currentEquippedItem
+        val isUsingItem =
+            mc.thePlayer?.heldItem != null && (mc.thePlayer.isUsingItem || (mc.thePlayer.heldItem?.item is ItemSword && LiquidBounce.moduleManager[KillAura::class.java]?.blockingStatus == true))
+        if (consume.get() && (heldItem.item is ItemFood || heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk) && isUsingItem && consumeMode.get() == "Bug") {
+            var idk = false
+            if (lastItem != null && lastItem!! != currentItem) {
+                count = 0
+            }
+            val state = if (currentItem.item is ItemSword) 1 else 3
+            if (count != state) {
+                idk = true
+                PacketUtils.sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                player.stopUsingItem()
+                player.closeScreen()
+                count = state
+            }
+            if (idk) sendClickBlockToController(mc.currentScreen == null && mc.gameSettings.keyBindAttack.isKeyDown && mc.inGameHasFocus)
+            lastItem = currentItem
+        } else {
+            count = 0
+        }
+    }
+
+    private fun sendClickBlockToController(p_sendClickBlockToController_1_: Boolean) {
+        if (!p_sendClickBlockToController_1_) {
+            mc.leftClickCounter = 0
+        }
+        if (mc.leftClickCounter <= 0 && !mc.thePlayer.isUsingItem) {
+            if (p_sendClickBlockToController_1_ && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectType.BLOCK) {
+                val blockpos: BlockPos = mc.objectMouseOver.blockPos
+                if (mc.theWorld.getBlockState(blockpos).block
+                        .material !== Material.air && mc.playerController.onPlayerDamageBlock(
+                        blockpos,
+                        mc.objectMouseOver.sideHit
+                    )
+                ) {
+                    mc.effectRenderer.addBlockHitEffects(blockpos, mc.objectMouseOver)
+                    mc.thePlayer.swingItem()
+                }
+            } else {
+                mc.playerController.resetBlockRemoving()
+            }
+        }
+    }
+
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
         val heldItem = mc.thePlayer.heldItem?.item
@@ -250,15 +346,18 @@ class NoSlow : Module() {
 
     private fun getMultiplier(item: Item?, isForward: Boolean) =
         when (item) {
-        is ItemFood, is ItemPotion, is ItemBucketMilk -> {
-            if (isForward) this.consumeForwardMultiplier.get() else this.consumeStrafeMultiplier.get()
+            is ItemFood, is ItemPotion, is ItemBucketMilk -> {
+                if (isForward) this.consumeForwardMultiplier.get() else this.consumeStrafeMultiplier.get()
+            }
+
+            is ItemSword -> {
+                if (isForward) this.blockForwardMultiplier.get() else this.blockStrafeMultiplier.get()
+            }
+
+            is ItemBow -> {
+                if (isForward) this.bowForwardMultiplier.get() else this.bowStrafeMultiplier.get()
+            }
+
+            else -> 0.2F
         }
-        is ItemSword -> {
-            if (isForward) this.blockForwardMultiplier.get() else this.blockStrafeMultiplier.get()
-        }
-        is ItemBow -> {
-            if (isForward) this.bowForwardMultiplier.get() else this.bowStrafeMultiplier.get()
-        }
-        else -> 0.2F
-    }
 }

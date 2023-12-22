@@ -8,7 +8,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
-
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils.packets
@@ -37,7 +36,6 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
@@ -87,11 +85,17 @@ class BackTrack : Module() {
 
     private val reverse = BoolValue("Reverse", false)
     private val reverseRange : FloatValue = object : FloatValue("ReverseStartRange", 5f, 1f, 6f) {
-        override fun onChanged(oldValue: Float, newValue: Float) = set(newValue.coerceAtMost(reverseMaxRange.get()))
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            //newValue.coerceAtMost(reverseMaxRange.get())
+            if (newValue > reverseMaxRange.get()) set(reverseMaxRange.get())
+        }
     }
 
     private val reverseMaxRange : FloatValue = object : FloatValue("ReverseMaxRange", 6f, 1f, 6f) {
-        override fun onChanged(oldValue: Float, newValue: Float) = set(newValue.coerceAtLeast(reverseRange.get()))
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            //(newValue.coerceAtLeast(reverseRange.get()))
+                    if (newValue < reverseRange.get()) set(reverseRange.get())
+        }
     }
     private val reverseSelfMaxHurtTime = IntegerValue("ReverseSelfMaxHurtTime", 1, 0, 10)
     private val reverseTargetMaxHurtTime = IntegerValue("ReverseTargetMaxHurtTime", 10, 0, 10)

@@ -232,7 +232,7 @@ class Scaffold : Module() {
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","GodBridge1","GodBridge2"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","GodBridge1","GodBridge2","IDK"),
         "Normal"
     ) { rotationsValue.get() }
     private val alwaysRotate = BoolValue("AlwaysRotate", false) { rotationsValue.get() && rotationModeValue.get() != "Normal" }
@@ -706,6 +706,10 @@ class Scaffold : Module() {
                 if (!buildForward()) {
                     lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, 77f)
                 }
+            }
+
+            "IDK" -> {
+                lockRotation = RotationUtils.faceBlock(blockData?.blockPos)?.rotation?.let { Rotation(mc.thePlayer.rotationYaw + 180, it.pitch) }
             }
         }
 

@@ -20,6 +20,7 @@ class PlaceInfo(val blockPos: BlockPos, var enumFacing: EnumFacing,
         @JvmStatic
         fun get(blockPos: BlockPos) =
             when {
+                //1
                 BlockUtils.canBeClicked(blockPos.add(0, -1, 0)) ->
                     PlaceInfo(blockPos.add(0, -1, 0), EnumFacing.UP)
                 BlockUtils.canBeClicked(blockPos.add(0, 0, 1)) ->
@@ -30,6 +31,30 @@ class PlaceInfo(val blockPos: BlockPos, var enumFacing: EnumFacing,
                     PlaceInfo(blockPos.add(0, 0, -1), EnumFacing.SOUTH)
                 BlockUtils.canBeClicked(blockPos.add(1, 0, 0)) ->
                     PlaceInfo(blockPos.add(1, 0, 0), EnumFacing.WEST)
+
+                //2
+                BlockUtils.canBeClicked(blockPos.add(0, -2, 0)) ->
+                    PlaceInfo(blockPos.add(0, -2, 0), EnumFacing.UP)
+                BlockUtils.canBeClicked(blockPos.add(0, 0, 2)) ->
+                    PlaceInfo(blockPos.add(0, 0, 2), EnumFacing.NORTH)
+                BlockUtils.canBeClicked(blockPos.add(-2, 0, 0)) ->
+                    PlaceInfo(blockPos.add(-2, 0, 0), EnumFacing.EAST)
+                BlockUtils.canBeClicked(blockPos.add(0, 0, -2)) ->
+                    PlaceInfo(blockPos.add(0, 0, -2), EnumFacing.SOUTH)
+                BlockUtils.canBeClicked(blockPos.add(2, 0, 0)) ->
+                    PlaceInfo(blockPos.add(2, 0, 0), EnumFacing.WEST)
+
+                //3
+                BlockUtils.canBeClicked(blockPos.add(0, -3, 0)) ->
+                    PlaceInfo(blockPos.add(0, -3, 0), EnumFacing.UP)
+                BlockUtils.canBeClicked(blockPos.add(0, 0, 3)) ->
+                    PlaceInfo(blockPos.add(0, 0, 3), EnumFacing.NORTH)
+                BlockUtils.canBeClicked(blockPos.add(-3, 0, 0)) ->
+                    PlaceInfo(blockPos.add(-3, 0, 0), EnumFacing.EAST)
+                BlockUtils.canBeClicked(blockPos.add(0, 0, -3)) ->
+                    PlaceInfo(blockPos.add(0, 0, -3), EnumFacing.SOUTH)
+                BlockUtils.canBeClicked(blockPos.add(3, 0, 0)) ->
+                    PlaceInfo(blockPos.add(3, 0, 0), EnumFacing.WEST)
                 else -> null
             }
 
