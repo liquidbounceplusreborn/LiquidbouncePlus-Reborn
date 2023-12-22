@@ -412,7 +412,7 @@ class Velocity : Module() {
             }
 
             "grim1.17" -> {
-                if (velocityInput) {
+                if (velocityInput && mc.thePlayer.hurtTime != 0) {
                     mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,mc.thePlayer.rotationYaw,mc.thePlayer.rotationPitch,mc.thePlayer.onGround))
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,mc.thePlayer.position,EnumFacing.DOWN))
                     velocityInput = false

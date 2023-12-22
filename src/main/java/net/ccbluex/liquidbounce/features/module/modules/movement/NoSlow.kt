@@ -18,6 +18,7 @@ import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 
 @ModuleInfo(name = "NoSlow", spacedName = "No Slow", category = ModuleCategory.MOVEMENT, description = "Prevent you from getting slowed down by items (swords, foods, etc.) and liquids.")
@@ -25,7 +26,7 @@ class NoSlow : Module() {
     private val sword = BoolValue("Sword", false)
     private val swordMode = ListValue(
         "SwordMode",
-        arrayOf("Vanilla", "AAC5", "SwitchItem", "ReverseEventSwitchItem", "OldIntave"),
+        arrayOf("Vanilla", "AAC5", "SwitchItem", "ReverseEventSwitchItem", "OldIntave","Bug"),
         "Vanilla"
     ) { sword.get() }
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
@@ -43,7 +44,7 @@ class NoSlow : Module() {
     private val consume = BoolValue("Consume", false)
     private val consumeMode = ListValue(
         "ConsumeMode",
-        arrayOf("Vanilla", "SwitchItem", "ReverseEventSwitchItem", "OldIntave", "Bug"),
+        arrayOf("Vanilla", "SwitchItem", "ReverseEventSwitchItem", "OldIntave", "Bug","Intave"),
         "Vanilla"
     ) { consume.get() }
 
@@ -220,6 +221,14 @@ class NoSlow : Module() {
                         }
                     }
                 }
+
+                "Intave" -> {
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
+                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM,
+                        BlockPos(-1,-1,-1),EnumFacing.DOWN
+                    ))
+                    mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }
             }
         }
     }
@@ -294,7 +303,7 @@ class NoSlow : Module() {
         val currentItem = player.currentEquippedItem
         val isUsingItem =
             mc.thePlayer?.heldItem != null && (mc.thePlayer.isUsingItem || (mc.thePlayer.heldItem?.item is ItemSword && LiquidBounce.moduleManager[KillAura::class.java]?.blockingStatus == true))
-        if (consume.get() && (heldItem.item is ItemFood || heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk) && isUsingItem && consumeMode.get() == "Bug") {
+        if ((consume.get() && (heldItem.item is ItemFood || heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk) && isUsingItem && consumeMode.get() == "Bug") || (sword.get() && heldItem.item is ItemSword && isUsingItem && swordMode.get() == "Bug")) {
             var idk = false
             if (lastItem != null && lastItem!! != currentItem) {
                 count = 0
