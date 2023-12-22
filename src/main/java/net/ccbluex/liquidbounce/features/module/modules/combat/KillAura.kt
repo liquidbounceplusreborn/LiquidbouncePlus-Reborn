@@ -72,7 +72,16 @@ class KillAura : Module() {
             attackDelay = TimerUtils.randomClickDelay(this.get(), maxCPS.get())
         }
     }
-    private val range = FloatValue("Range", 4.0f, 2.0f, 10.0f)
+    private val rotationRange : FloatValue = object : FloatValue("Rotation-Range", 4.0f, 2.0f, 10.0f){
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            if (newValue < range.get()) set(range.get())
+        }
+    }
+    private val range : FloatValue = object : FloatValue("Attack-Range", 4.0f, 2.0f, 10.0f){
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            if (newValue > rotationRange.get()) set(rotationRange.get())
+        }
+    }
 
     private val rotate = BoolValue("Rotate",true)
     private val silentRotation by BoolValue("SilentRotation", true) { rotate.get() }
@@ -245,17 +254,19 @@ class KillAura : Module() {
             if (mc.thePlayer.isBlocking || blockingStatus)
                 stopBlocking()
 
-            if (noSpamClick.get()) {
-                if (clicks > 0) {
-                    LiquidBounce.eventManager.callEvent(AttackEvent(target))
-                    AttackOrder.sendFixedAttack(mc.thePlayer, target)
-                    clicks = 0
-                }
-            } else {
-                while (clicks > 0) {
-                    LiquidBounce.eventManager.callEvent(AttackEvent(target))
-                    AttackOrder.sendFixedAttack(mc.thePlayer, target)
-                    clicks--
+            if(mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get()) {
+                if (noSpamClick.get()) {
+                    if (clicks > 0) {
+                        LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                        AttackOrder.sendFixedAttack(mc.thePlayer, target)
+                        clicks = 0
+                    }
+                } else {
+                    while (clicks > 0) {
+                        LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                        AttackOrder.sendFixedAttack(mc.thePlayer, target)
+                        clicks--
+                    }
                 }
             }
 
@@ -352,7 +363,7 @@ class KillAura : Module() {
                         random = false,
                         predict = false,
                         throughWalls = true,
-                        distance = range.get(),
+                        distance = rotationRange.get(),
                         randomMultiply = 0f,
                         newRandom = false
                     ), RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
@@ -365,7 +376,7 @@ class KillAura : Module() {
                         getNearestPointBB(mc.thePlayer.getPositionEyes(1f), entity.entityBoundingBox),
                         predict = false,
                         throughWalls = true,
-                        distance = range.get()
+                        distance = rotationRange.get()
                     ), RandomUtils.nextFloat(yawMinTurnSpeed.get(), yawMaxTurnSpeed.get()),RandomUtils.nextFloat(pitchMinTurnSpeed.get(), pitchMaxTurnSpeed.get())
                 )
             }
@@ -375,7 +386,7 @@ class KillAura : Module() {
                     outborder = false,
                     random = false,
                     predict = false, throughWalls = true,
-                    discoverRange = range.get(),
+                    discoverRange = rotationRange.get(),
                     hitRange = range.get()
                 ) ?: return
                 rotations = RotationUtils.limitAngleChange(
@@ -414,7 +425,7 @@ class KillAura : Module() {
 
             val distance = mc.thePlayer.getDistanceToEntityBox(entity)
 
-            if (distance <= range.get() && entity.hurtTime <= hurtTime)
+            if (distance <= rotationRange.get() && entity.hurtTime <= hurtTime)
                 targets.add(entity)
         }
 
