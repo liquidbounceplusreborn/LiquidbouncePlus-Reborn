@@ -11,7 +11,6 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.projectile.EntityEgg
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.*
-import org.apache.commons.lang3.tuple.MutableTriple
 import java.util.*
 import kotlin.math.*
 
@@ -25,7 +24,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        targetRotation?.let { rotation ->
+        /*targetRotation?.let { rotation ->
             setbackRotation?.let {
                 if (it.middle) {
                     targetRotation = it.left
@@ -51,6 +50,15 @@ object RotationUtils : MinecraftInstance(), Listenable {
                     targetRotation = limitAngleChange(rotation, mc.thePlayer.rotation, speed).fixedSensitivity()
                 }
             }
+        }
+
+        if (random.nextGaussian() > 0.8) x = Math.random()
+        if (random.nextGaussian() > 0.8) y = Math.random()
+        if (random.nextGaussian() > 0.8) z = Math.random()*/
+
+        if (targetRotation != null) {
+            keepLength--
+            if (keepLength <= 0) resetRotation()
         }
 
         if (random.nextGaussian() > 0.8) x = Math.random()
@@ -93,9 +101,6 @@ object RotationUtils : MinecraftInstance(), Listenable {
     var targetRotation: Rotation? = null
     @JvmStatic
     var serverRotation = Rotation(0f, 0f)
-
-    // (The priority, the active check and the original rotation)
-    var setbackRotation: MutableTriple<Rotation, Boolean, Rotation>? = null
 
     private val random = Random()
     private var x = random.nextDouble()
@@ -228,18 +233,18 @@ object RotationUtils : MinecraftInstance(), Listenable {
     @JvmStatic
     fun setTargetRotation(
         rotation: Rotation,
-        keepLength: Int = 1,
+        keepLength: Int = 1
 
-        resetSpeed: Pair<Float, Float> = 180f to 180f,
-        angleThresholdForReset: Float = 180f
+        //resetSpeed: Pair<Float, Float> = 180f to 180f,
+        //angleThresholdForReset: Float = 180f
     ) {
         if (rotation.yaw.isNaN() || rotation.pitch.isNaN() || rotation.pitch > 90 || rotation.pitch < -90) return
 
         targetRotation = rotation
 
         this.keepLength = keepLength
-        this.speedForReset = resetSpeed
-        this.angleThresholdForReset = angleThresholdForReset
+        //this.speedForReset = resetSpeed
+        //this.angleThresholdForReset = angleThresholdForReset
     }
 
     fun resetRotation() {
