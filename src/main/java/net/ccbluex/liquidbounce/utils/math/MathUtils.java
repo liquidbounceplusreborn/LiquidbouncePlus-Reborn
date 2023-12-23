@@ -25,6 +25,10 @@ public final class MathUtils {
     public static float interpolateFloat(float oldValue, float newValue, double interpolationValue){
         return interpolate(oldValue, newValue, (float) interpolationValue).floatValue();
     }
+
+    public static int interpolateInt(int oldValue, int newValue, double interpolationValue){
+        return interpolate(oldValue, newValue, (float) interpolationValue).intValue();
+    }
     public static double roundToHalf(double d) {
         return Math.round(d * 2) / 2.0;
     }

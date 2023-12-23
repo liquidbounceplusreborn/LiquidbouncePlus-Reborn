@@ -3373,4 +3373,9 @@ public final class RenderUtils extends MinecraftInstance {
         frustrum.setPosition(player.posX, player.posY, player.posZ);
         return frustrum.isBoundingBoxInFrustum(aabb);
     }
+
+    public static void setAlphaLimit(float limit) {
+        GlStateManager.enableAlpha();
+        GlStateManager.alphaFunc(GL_GREATER, (float) (limit * .01));
+    }
 }

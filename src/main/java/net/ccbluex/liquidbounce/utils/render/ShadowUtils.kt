@@ -60,7 +60,7 @@ object ShadowUtils : MinecraftInstance() {
                 shaderGroup!!.listShaders[i].shaderManager.getShaderUniform("Radius").set(strength)
         }
     }
-
+    @JvmStatic
     fun shadow(strength: Float, drawMethod: (() -> Unit), cutMethod: (() -> Unit)) {
         if (!OpenGlHelper.isFramebufferEnabled()) return
 
