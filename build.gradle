@@ -75,7 +75,9 @@ dependencies {
 
     include 'com.github.ben-manes.caffeine:caffeine:2.9.0'
 
-    include group: 'com.sksamuel.scrimage', name: 'scrimage-filters_2.11', version: '1.4.2'
+    //include group: 'com.sksamuel.scrimage', name: 'scrimage-filters_2.11', version: '1.4.2'
+
+    include 'com.jhlabs:filters:2.0.235'
 
     include fileTree(include: ["*.jar"], dir: "libs")
 }
