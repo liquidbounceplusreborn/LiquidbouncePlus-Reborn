@@ -13,9 +13,12 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.math.toDegrees
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C02PacketUseEntity
@@ -30,9 +33,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
+import kotlin.math.*
 
 @ModuleInfo(
     name = "Velocity",
@@ -102,6 +103,14 @@ class Velocity : Module() {
     //add strafe in aac
     private val aacStrafeValue = BoolValue("AACStrafeValue", false) { modeValue.get().equals("aac", true) }
 
+    // Jump
+    private val jumpCooldownMode by ListValue("JumpCooldownMode", arrayOf("Ticks", "ReceivedHits"), "Ticks")
+    { modeValue.get() == "Jump" }
+    private val ticksUntilJump by IntegerValue("TicksUntilJump", 4, 0,20)
+    { jumpCooldownMode == "Ticks" && modeValue.get() == "Jump" }
+    private val hitsUntilJump by IntegerValue("ReceivedHitsUntilJump", 2, 0,5)
+    { jumpCooldownMode == "ReceivedHits" && modeValue.get() == "Jump" }
+
     //epic
     private val phaseOffsetValue =
         FloatValue("Phase-Offset", 0.05F, -10F, 10F, "m") { modeValue.get().equals("phase", true) }
@@ -133,6 +142,9 @@ class Velocity : Module() {
     private var start = 0
     private var start2 = 0
 
+    // Jump
+    private var limitUntilJump = 0
+
     override val tag: String?
         get() = when (tagModeValue.get()) {
             "Mode" -> modeValue.get()
@@ -156,14 +168,6 @@ class Velocity : Module() {
             return
 
         when (modeValue.get().lowercase(Locale.getDefault())) {
-            "jump" -> if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
-                mc.thePlayer.motionY = 0.42
-
-                val yaw = mc.thePlayer.rotationYaw * 0.017453292F
-                mc.thePlayer.motionX -= MathHelper.sin(yaw) * 0.2
-                mc.thePlayer.motionZ += MathHelper.cos(yaw) * 0.2
-            }
-
             "glitch" -> {
                 mc.thePlayer.noClip = velocityInput
                 if (mc.thePlayer.hurtTime == 7)
@@ -505,6 +509,32 @@ class Velocity : Module() {
                     event.cancelEvent()
                     velocityInput = true
                 }
+                "jump" -> {
+                    // TODO: Recode and make all velocity modes support velocity direction checks
+                    var packetDirection = 0.0
+                    when (packet) {
+                        is S12PacketEntityVelocity -> {
+                            val motionX = packet.motionX.toDouble()
+                            val motionZ = packet.motionZ.toDouble()
+
+                            packetDirection = atan2(motionX, motionZ)
+                        }
+                        is S27PacketExplosion -> {
+                            val motionX = mc.thePlayer.motionX + packet.func_149149_c()
+                            val motionZ = mc.thePlayer.motionZ + packet.func_149147_e()
+
+                            packetDirection = atan2(motionX, motionZ)
+                        }
+                    }
+                    val degreePlayer = getDirection()
+                    val degreePacket = Math.floorMod(packetDirection.toDegrees().toInt(), 360).toDouble()
+                    var angle = abs(degreePacket + degreePlayer)
+                    val threshold = 120.0
+                    angle = Math.floorMod(angle.toInt(), 360).toDouble()
+                    val inRange = angle in 180-threshold/2..180+threshold/2
+                    if (inRange)
+                        velocityInput = true
+                }
             }
 
             if (packet is S27PacketExplosion) {
@@ -514,6 +544,19 @@ class Velocity : Module() {
                 event.cancelEvent()
             }
         }
+    }
+
+    private fun getDirection(): Double {
+        var moveYaw = mc.thePlayer.rotationYaw
+        if (mc.thePlayer.moveForward != 0f && mc.thePlayer.moveStrafing == 0f) {
+            moveYaw += if (mc.thePlayer.moveForward > 0) 0 else 180
+        } else if (mc.thePlayer.moveForward != 0f && mc.thePlayer.moveStrafing != 0f) {
+            if (mc.thePlayer.moveForward > 0) moveYaw += if (mc.thePlayer.moveStrafing > 0) -45 else 45 else moveYaw -= if (mc.thePlayer.moveStrafing > 0) -45 else 45
+            moveYaw += if (mc.thePlayer.moveForward > 0) 0 else 180
+        } else if (mc.thePlayer.moveStrafing != 0f && mc.thePlayer.moveForward == 0f) {
+            moveYaw += if (mc.thePlayer.moveStrafing > 0) -90 else 90
+        }
+        return Math.floorMod(moveYaw.toInt(), 360).toDouble()
     }
 
     @EventTarget
@@ -558,7 +601,27 @@ class Velocity : Module() {
                     }
                 }
             }
+            "jump" -> {
+                if(velocityInput)
+                if (!mc.thePlayer.isJumping && RandomUtils.nextInt(0,100) < reduceChance.get() && shouldJump() && mc.thePlayer.isSprinting && mc.thePlayer.onGround && mc.thePlayer.hurtTime == 9) {
+                    mc.thePlayer.jump()
+                    limitUntilJump = 0
+                }
+                velocityInput = false
+                return
+            }
         }
+
+        when (jumpCooldownMode.lowercase()) {
+            "ticks" -> limitUntilJump++
+            "receivedhits" -> if (mc.thePlayer.hurtTime == 9) limitUntilJump++
+        }
+    }
+
+    private fun shouldJump() = when (jumpCooldownMode.lowercase()) {
+        "ticks" -> limitUntilJump >= ticksUntilJump
+        "receivedhits" -> limitUntilJump >= hitsUntilJump
+        else -> false
     }
 
     @EventTarget
