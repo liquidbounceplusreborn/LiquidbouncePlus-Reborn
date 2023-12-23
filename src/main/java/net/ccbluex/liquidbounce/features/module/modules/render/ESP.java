@@ -38,6 +38,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.util.Objects;
 
 import static net.ccbluex.liquidbounce.utils.render.WorldToScreen.getMatrix;
 import static org.lwjgl.opengl.GL11.*;
@@ -48,7 +49,9 @@ public class ESP extends Module {
 	private final DecimalFormat decimalFormat = new DecimalFormat("0.0");
 
 	public static boolean renderNameTags = true;
-	public final ListValue modeValue = new ListValue("Mode", new String[]{"Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "ShaderOutline", "ShaderGlow"}, "Box");
+	public final ListValue modeValue = new ListValue("Mode", new String[]{"Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline","Shader"}, "Box");
+	private final BoolValue outline = new BoolValue("ShaderOutline", false, () -> Objects.equals(modeValue.get(), "Shader"));
+	private final BoolValue glow = new BoolValue("ShaderGlow", false ,() -> Objects.equals(modeValue.get(), "Shader"));
 	public final BoolValue real2dcsgo = new BoolValue("2D-CSGOStyle", true, () -> modeValue.get().equalsIgnoreCase("real2d"));
 	public final BoolValue real2dShowHealth = new BoolValue("2D-ShowHealth", true, () -> modeValue.get().equalsIgnoreCase("real2d"));
 	public final BoolValue real2dShowHeldItem = new BoolValue("2D-ShowHeldItem", true, () -> modeValue.get().equalsIgnoreCase("real2d"));
@@ -56,9 +59,12 @@ public class ESP extends Module {
 	public final BoolValue real2dOutline = new BoolValue("2D-Outline", true, () -> modeValue.get().equalsIgnoreCase("real2d"));
 	public final FloatValue outlineWidth = new FloatValue("Outline-Width", 3F, 0.5F, 5F, () -> modeValue.get().equalsIgnoreCase("outline"));
 	public final FloatValue wireframeWidth = new FloatValue("WireFrame-Width", 2F, 0.5F, 5F, () -> modeValue.get().equalsIgnoreCase("wireframe"));
-	private final FloatValue shaderOutlineRadius = new FloatValue("ShaderOutline-Radius", 1.35F, 1F, 2F, "x", () -> modeValue.get().equalsIgnoreCase("shaderoutline"));
-	private final FloatValue shaderGlowRadius = new FloatValue("ShaderGlow-Radius", 2.3F, 2F, 3F, "x", () -> modeValue.get().equalsIgnoreCase("shaderglow"));
+	private final FloatValue shaderOutlineRadius = new FloatValue("ShaderOutline-Radius", 1.35F, 1F, 2F, "x", () -> Objects.equals(modeValue.get(), "Shader") && outline.get());
+	private final FloatValue shaderGlowRadius = new FloatValue("ShaderGlow-Radius", 2.3F, 2F, 3F, "x", () -> Objects.equals(modeValue.get(), "Shader") && glow.get());
 	private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Health", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom");
+	private final ListValue outlineColorValue = new ListValue("OutlineColor", new String[] {"Custom", "Health", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom", () -> Objects.equals(modeValue.get(), "Shader") && outline.get());
+	private final ListValue glowColorValue = new ListValue("GlowColor", new String[] {"Custom", "Health", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"}, "Custom", () -> Objects.equals(modeValue.get(), "Shader") && glow.get());
+
 	private final IntegerValue colorRedValue = new IntegerValue("Red", 255, 0, 255);
 	private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
 	private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
@@ -335,36 +341,41 @@ public class ESP extends Module {
 
 	@EventTarget
 	public void onRender2D(final Render2DEvent event) {
-		final String mode = modeValue.get().toLowerCase();
+		if (modeValue.get() == "Shader") {
 
-		final FramebufferShader shader = mode.equalsIgnoreCase("shaderoutline")
-				? OutlineShader.OUTLINE_SHADER : mode.equalsIgnoreCase("shaderglow")
-				? GlowShader.GLOW_SHADER : null;
+			final FramebufferShader outlineShader = OutlineShader.OUTLINE_SHADER;
+			final FramebufferShader glowShader = GlowShader.GLOW_SHADER;
 
-		if (shader == null) return;
+			if (outline.get())
+				outlineShader.startDraw(event.getPartialTicks());
 
-		shader.startDraw(event.getPartialTicks());
+			if (glow.get())
+				glowShader.startDraw(event.getPartialTicks());
 
-		renderNameTags = false;
+			renderNameTags = false;
 
-		try {
-			for (final Entity entity : mc.theWorld.loadedEntityList) {
-				if (!EntityUtils.isSelected(entity, false))
-					continue;
+			try {
+				for (final Entity entity : mc.theWorld.loadedEntityList) {
+					if (!EntityUtils.isSelected(entity, false))
+						continue;
 
-				mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
+					mc.getRenderManager().renderEntityStatic(entity, mc.timer.renderPartialTicks, true);
+				}
+			} catch (final Exception ex) {
+				ClientUtils.getLogger().error("An error occurred while rendering all entities for shader esp", ex);
 			}
-		} catch (final Exception ex) {
-			ClientUtils.getLogger().error("An error occurred while rendering all entities for shader esp", ex);
+
+			renderNameTags = true;
+
+			final float outlineRadius = shaderOutlineRadius.get();
+			final float glowRadius = shaderGlowRadius.get();
+
+			if (outline.get())
+				outlineShader.stopDraw(getOutlineColor(null), outlineRadius, 1F);
+
+			if (glow.get())
+				glowShader.stopDraw(getGlowColor(null), glowRadius, 1F);
 		}
-
-		renderNameTags = true;
-
-		final float radius = mode.equalsIgnoreCase("shaderoutline")
-				? shaderOutlineRadius.get() : mode.equalsIgnoreCase("shaderglow")
-				? shaderGlowRadius.get() : 1F;
-
-		shader.stopDraw(getColor(null), radius, 1F);
 	}
 
 	public final Color getColor(final Entity entity) {
@@ -402,6 +413,104 @@ public class ESP extends Module {
 		}
 
 		switch (colorModeValue.get()) {
+			case "Custom":
+				return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
+			case "Rainbow":
+				return new Color(RenderUtils.getRainbowOpaque(mixerSecondsValue.get(), saturationValue.get(), brightnessValue.get(), 0));
+			case "Sky":
+				return RenderUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get());
+			case "LiquidSlowly":
+				return ColorUtils.LiquidSlowly(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get());
+			case "Mixer":
+				return ColorMixer.getMixedColor(0, mixerSecondsValue.get());
+			case "Fade":
+				return ColorUtils.fade(new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), 0, 100);
+			default:
+				return Color.white;
+		}
+	}
+
+	public final Color getGlowColor(final Entity entity) {
+		if (entity instanceof EntityLivingBase) {
+			final EntityLivingBase entityLivingBase = (EntityLivingBase) entity;
+
+			if (entityLivingBase.hurtTime > 0)
+				return Color.RED;
+
+			if (EntityUtils.isFriend(entityLivingBase))
+				return Color.BLUE;
+
+			if (colorTeam.get()) {
+				final char[] chars = entityLivingBase.getDisplayName().getFormattedText().toCharArray();
+				int color = Integer.MAX_VALUE;
+
+				for (int i = 0; i < chars.length; i++) {
+					if (chars[i] != '§' || i + 1 >= chars.length)
+						continue;
+
+					final int index = GameFontRenderer.getColorIndex(chars[i + 1]);
+
+					if (index < 0 || index > 15)
+						continue;
+
+					color = ColorUtils.hexColors[index];
+					break;
+				}
+
+				return new Color(color);
+			}
+		}
+
+		switch (glowColorValue.get()) {
+			case "Custom":
+				return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
+			case "Rainbow":
+				return new Color(RenderUtils.getRainbowOpaque(mixerSecondsValue.get(), saturationValue.get(), brightnessValue.get(), 0));
+			case "Sky":
+				return RenderUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get());
+			case "LiquidSlowly":
+				return ColorUtils.LiquidSlowly(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get());
+			case "Mixer":
+				return ColorMixer.getMixedColor(0, mixerSecondsValue.get());
+			case "Fade":
+				return ColorUtils.fade(new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), 0, 100);
+			default:
+				return Color.white;
+		}
+	}
+
+	public final Color getOutlineColor(final Entity entity) {
+		if (entity instanceof EntityLivingBase) {
+			final EntityLivingBase entityLivingBase = (EntityLivingBase) entity;
+
+			if (entityLivingBase.hurtTime > 0)
+				return Color.RED;
+
+			if (EntityUtils.isFriend(entityLivingBase))
+				return Color.BLUE;
+
+			if (colorTeam.get()) {
+				final char[] chars = entityLivingBase.getDisplayName().getFormattedText().toCharArray();
+				int color = Integer.MAX_VALUE;
+
+				for (int i = 0; i < chars.length; i++) {
+					if (chars[i] != '§' || i + 1 >= chars.length)
+						continue;
+
+					final int index = GameFontRenderer.getColorIndex(chars[i + 1]);
+
+					if (index < 0 || index > 15)
+						continue;
+
+					color = ColorUtils.hexColors[index];
+					break;
+				}
+
+				return new Color(color);
+			}
+		}
+
+		switch (outlineColorValue.get()) {
 			case "Custom":
 				return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
 			case "Rainbow":

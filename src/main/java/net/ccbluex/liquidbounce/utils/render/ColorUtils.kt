@@ -11,6 +11,8 @@ import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
 object ColorUtils {
 
@@ -171,6 +173,15 @@ object ColorUtils {
         brightness = 0.5f + 0.5f * brightness
         hsb[2] = brightness % 2.0f
         return Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]))
+    }
+
+    @JvmStatic
+    fun fade(speed: Int, index: Int, color: Color, alpha: Float): Color {
+        val hsb = Color.RGBtoHSB(color.red, color.green, color.blue, null)
+        var angle = ((System.currentTimeMillis() / speed + index) % 360L).toInt()
+        angle = (if (angle > 180) 360 - angle else angle) + 180
+        val colorHSB = Color(Color.HSBtoRGB(hsb[0], hsb[1], angle / 360.0f))
+        return Color(colorHSB.red, colorHSB.green, colorHSB.blue, (max(0.0, min(255.0, (alpha * 255.0f).toDouble()))).toInt())
     }
 
     @JvmStatic

@@ -219,6 +219,7 @@ class ModuleManager : Listenable {
             FollowTargetHud::class.java,
             Indicators::class.java,
             MovementCorrection::class.java,
+            Title::class.java,
         )
 
         registerModule(Breaker)

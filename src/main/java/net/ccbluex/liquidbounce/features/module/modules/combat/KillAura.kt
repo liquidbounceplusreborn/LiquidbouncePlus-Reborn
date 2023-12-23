@@ -83,6 +83,7 @@ class KillAura : Module() {
             if (newValue > rotationRange.get()) set(rotationRange.get())
         }
     }
+    private val throughWalls by BoolValue("ThroughWalls", true)
 
     private val rotate = BoolValue("Rotate",true)
     private val silentRotation by BoolValue("SilentRotation", true) { rotate.get() }
@@ -261,75 +262,78 @@ class KillAura : Module() {
         updateTarget()
         if (target != null) {
 
-            if(rotate.get())
-                rotate(target!!)
+            if (isVisible(target!!.positionVector) || isVisible(getNearestPointBB(mc.thePlayer.getPositionEyes(1f), target!!.entityBoundingBox)) || throughWalls) {
 
-            if (mc.thePlayer.isBlocking || blockingStatus)
-                stopBlocking()
+                if (rotate.get())
+                    rotate(target!!)
 
-            if(mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get()) {
-                if (noSpamClick.get()) {
-                    if (clicks > 0) {
-                        //LiquidBounce.eventManager.callEvent(AttackEvent(target))
-                        AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
-                        clicks = 0
-                    }
-                } else {
-                    while (clicks > 0) {
-                        //LiquidBounce.eventManager.callEvent(AttackEvent(target))
-                        AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
-                        clicks--
+                if (mc.thePlayer.isBlocking || blockingStatus)
+                    stopBlocking()
+
+                if (mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get()) {
+                    if (noSpamClick.get()) {
+                        if (clicks > 0) {
+                            //LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                            AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
+                            clicks = 0
+                        }
+                    } else {
+                        while (clicks > 0) {
+                            //LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                            AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
+                            clicks--
+                        }
                     }
                 }
-            }
 
-            if (autoBlockMode == "Vanilla" && canBlock) {
-                startBlocking(target!!,interactAutoBlockValue)
+                if (autoBlockMode == "Vanilla" && canBlock) {
+                    startBlocking(target!!, interactAutoBlockValue)
+                }
             }
         }
     }
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (target != null && event.eventState == EventState.PRE && canBlock && autoBlockMode == "HypixelBlink") {
-            val blink = LiquidBounce.moduleManager[Blink::class.java]!!
-            unb2 = false
-            delay = 0
-            started = true
-            stage += 1
-
-            if (stage == 1) {
-                blink.state = true
-                stopBlocking()
-            } else if (stage == 2) {
-                mc.thePlayer.swingItem()
-                mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.ATTACK))
-                mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.INTERACT))
-                blink.state = false
-                startBlocking(target!!, false)
-                stage = 0
-            }
-
-
-            if (started && target == null) {
-                if (canBlock) {
-                    unb2 = true
-                }
-                started = false
+            if (target != null && event.eventState == EventState.PRE && canBlock && autoBlockMode == "HypixelBlink" && mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get()) {
+                val blink = LiquidBounce.moduleManager[Blink::class.java]!!
+                unb2 = false
                 delay = 0
-                stage = 0
-            }
+                started = true
+                stage += 1
 
-            if (unb2) {
-                delay += 1
-                if (delay == 2) {
-                    PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging())
-                    unb2 = false
+                if (stage == 1) {
+                    blink.state = true
+                    stopBlocking()
+                } else if (stage == 2) {
+                    mc.thePlayer.swingItem()
+                    mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.ATTACK))
+                    mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.INTERACT))
+                    blink.state = false
+                    startBlocking(target!!, false)
+                    stage = 0
+                }
+
+
+                if (started && target == null) {
+                    if (canBlock) {
+                        unb2 = true
+                    }
+                    started = false
                     delay = 0
+                    stage = 0
+                }
+
+                if (unb2) {
+                    delay += 1
+                    if (delay == 2) {
+                        PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging())
+                        unb2 = false
+                        delay = 0
+                    }
                 }
             }
         }
-    }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -537,6 +541,15 @@ class KillAura : Module() {
         return false
     }
     private fun isAlive(entity: EntityLivingBase) = entity.isEntityAlive && entity.health > 0
+
+    fun isVisible(vec3: Vec3?): Boolean {
+        val eyesPos = Vec3(
+            mc.thePlayer.posX,
+            mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight(),
+            mc.thePlayer.posZ
+        )
+        return mc.theWorld.rayTraceBlocks(eyesPos, vec3) == null
+    }
 
     private val canBlock: Boolean
         get() = mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
