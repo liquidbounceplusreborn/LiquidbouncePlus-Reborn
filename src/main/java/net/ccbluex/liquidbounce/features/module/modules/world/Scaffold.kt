@@ -731,6 +731,8 @@ class Scaffold : Module() {
                 if (!buildForward()) {
                     lockRotation = Rotation(mc.thePlayer.rotationYaw + 180, 77f)
                 }
+
+                lockRotation = lockRotation?.let { compareDifferences(it, RotationUtils.faceBlock(blockData?.blockPos)?.rotation) }
             }
 
             "IDK" -> {
