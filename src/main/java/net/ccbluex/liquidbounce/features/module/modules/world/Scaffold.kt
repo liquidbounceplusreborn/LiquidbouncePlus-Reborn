@@ -768,9 +768,9 @@ class Scaffold : Module() {
 
         lockRotation2 =
             if (stabilizedRotation.get() && (!rotationModeValue.isMode("Normal"))) {
-                lockRotation2?.let { Rotation(round(it.yaw / 45f) * 45f, it.pitch) }
+                lockRotation2?.let { Rotation(round(it.yaw / 45f) * 45f, it.pitch) }?.fixedSensitivity()
             } else {
-                lockRotation2
+                lockRotation2?.fixedSensitivity()
             }
         lockRotation2?.let { RotationUtils.setTargetRotation(it,keepTicks.get(),resetMinTurnSpeed.get() to resetMaxTurnSpeed.get(),angleThresholdUntilReset.get()) }
         faceBlock = true
@@ -1887,7 +1887,7 @@ class Scaffold : Module() {
         }
 
         if (!alwaysRotate.get()) {
-            lockRotation2 = lockRotation
+            lockRotation2 = lockRotation?.fixedSensitivity()
         }
 
         placeRotation ?: return false

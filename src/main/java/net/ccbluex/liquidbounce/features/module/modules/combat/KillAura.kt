@@ -459,13 +459,13 @@ class KillAura : Module() {
         //RotationUtils.setTargetRotation(rotations!!)
         if(silentRotation) {
             RotationUtils.setTargetRotation(
-                rotations!!,
+                rotations!!.fixedSensitivity(),
                 keepTicks.get(),
                 resetMinTurnSpeed.get() to resetMaxTurnSpeed.get(),
                 angleThresholdUntilReset.get()
             )
         } else {
-            rotations!!.toPlayer(mc.thePlayer)
+            rotations!!.fixedSensitivity().toPlayer(mc.thePlayer)
         }
     }
 
@@ -593,7 +593,7 @@ class KillAura : Module() {
     }
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
-                || (noBlink && LiquidBounce.moduleManager[Blink::class.java]!!.state) || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
+                || (noBlink && LiquidBounce.moduleManager[Blink::class.java]!!.state && autoBlockMode != "HypixelBlink") || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
                 (noScaff && (LiquidBounce.moduleManager[Scaffold::class.java]!!.state)) || noInvAttack && mc.currentScreen is GuiContainer
 
     object CombatListener : Listenable {
