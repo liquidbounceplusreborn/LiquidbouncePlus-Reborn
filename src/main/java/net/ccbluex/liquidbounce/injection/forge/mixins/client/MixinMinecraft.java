@@ -596,7 +596,6 @@ public abstract class MixinMinecraft {
 
     /**
      * @author
-     * @reason
      */
     @Overwrite
     public void runTick() throws IOException {
@@ -895,8 +894,6 @@ public abstract class MixinMinecraft {
                             {
                                 this.rightClickMouse();
                             }
-
-                            this.sendClickBlockToController(this.currentScreen == null && this.gameSettings.keyBindAttack.isKeyDown() && this.inGameHasFocus);
                         }
 
                         if (this.gameSettings.keyBindUseItem.isKeyDown() && this.rightClickDelayTimer == 0 && !this.thePlayer.isUsingItem()) {

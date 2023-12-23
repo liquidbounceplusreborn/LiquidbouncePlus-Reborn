@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import cc.paimonmc.viamcp.ViaMCP
-import cc.paimonmc.viamcp.protocols.ProtocolCollection
+import cc.paimonmc.viamcp.utils.AttackOrder
 import com.viaversion.viaversion.api.Via
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper
 import com.viaversion.viaversion.api.type.Type
@@ -271,14 +270,14 @@ class KillAura : Module() {
             if(mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get()) {
                 if (noSpamClick.get()) {
                     if (clicks > 0) {
-                         LiquidBounce.eventManager.callEvent(AttackEvent(target))
-                        sendFixedAttack(mc.thePlayer, target!!)
+                        //LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                        AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
                         clicks = 0
                     }
                 } else {
                     while (clicks > 0) {
-                        LiquidBounce.eventManager.callEvent(AttackEvent(target))
-                        sendFixedAttack(mc.thePlayer, target!!)
+                        //LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                        AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
                         clicks--
                     }
                 }
@@ -288,26 +287,6 @@ class KillAura : Module() {
                 startBlocking(target!!,interactAutoBlockValue)
             }
         }
-    }
-
-    fun sendFixedAttack(entityIn: EntityPlayer, target: Entity) {
-        // Using this instead of ViaMCP.PROTOCOL_VERSION so does not need to be changed between 1.8.x and 1.12.2 base
-        // getVersion() can be null, but not in this case, as ID 47 exists, if not removed
-        if (ViaMCP.getInstance().version <= ProtocolCollection.getProtocolById(47).version) {
-            send1_8Attack(entityIn, target)
-        } else {
-            send1_9Attack(entityIn, target)
-        }
-    }
-
-    private fun send1_8Attack(entityIn: EntityPlayer, target: Entity) {
-        mc.thePlayer.swingItem()
-        mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.ATTACK))
-    }
-
-    private fun send1_9Attack(entityIn: EntityPlayer, target: Entity) {
-        mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.ATTACK))
-        mc.thePlayer.swingItem()
     }
 
     @EventTarget
@@ -593,7 +572,7 @@ class KillAura : Module() {
             val hitVec = movingObject.hitVec
 
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, Vec3(hitVec.xCoord - interactEntity.posX, hitVec.yCoord - interactEntity.posY, hitVec.zCoord - interactEntity.posZ)))
-            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
+            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, Action.INTERACT))
         }
     }
 

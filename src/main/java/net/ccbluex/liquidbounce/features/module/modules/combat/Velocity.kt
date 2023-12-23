@@ -416,7 +416,7 @@ class Velocity : Module() {
             }
 
             "grim1.17" -> {
-                if (velocityInput && mc.thePlayer.hurtTime != 0) {
+                if (velocityInput) {
                     mc.netHandler.addToSendQueue(C06PacketPlayerPosLook(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,mc.thePlayer.rotationYaw,mc.thePlayer.rotationPitch,mc.thePlayer.onGround))
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,mc.thePlayer.position,EnumFacing.DOWN))
                     velocityInput = false
@@ -509,6 +509,7 @@ class Velocity : Module() {
                     event.cancelEvent()
                     velocityInput = true
                 }
+
                 "jump" -> {
                     // TODO: Recode and make all velocity modes support velocity direction checks
                     var packetDirection = 0.0
