@@ -270,13 +270,13 @@ class KillAura : Module() {
             if(mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get()) {
                 if (noSpamClick.get()) {
                     if (clicks > 0) {
-                        LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                         //LiquidBounce.eventManager.callEvent(AttackEvent(target))
                         AttackOrder.sendFixedAttack(mc.thePlayer, target)
                         clicks = 0
                     }
                 } else {
                     while (clicks > 0) {
-                        LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                        //LiquidBounce.eventManager.callEvent(AttackEvent(target))
                         AttackOrder.sendFixedAttack(mc.thePlayer, target)
                         clicks--
                     }
