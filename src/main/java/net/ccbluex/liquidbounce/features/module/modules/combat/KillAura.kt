@@ -35,6 +35,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemSword
 import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.play.client.C02PacketUseEntity
+import net.minecraft.network.play.client.C02PacketUseEntity.Action
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
@@ -157,7 +158,7 @@ class KillAura : Module() {
     private val noSpamClick = BoolValue("NoSpamClick", true)
     private val extraRandomCPS = ListValue("ExtraCPSRandomization", arrayOf("Off", "Simple", "RangeBase"), "Off")
 
-    private val autoBlockMode by ListValue("AutoBlock", arrayOf("None", "Vanilla"), "None")
+    private val autoBlockMode by ListValue("AutoBlock", arrayOf("None", "Vanilla","HypixelBlink"), "None")
     private val verusAutoBlockValue by BoolValue("VerusAutoBlock", false) { autoBlockMode == "Vanilla" }
     private val interactAutoBlockValue by BoolValue("InteractAutoBlock", false) { autoBlockMode == "Vanilla" }
     private val sendsShieldPacket by BoolValue("SendsShieldPacket(ViaAutoBlock)", false) { autoBlockMode == "Vanilla" }
@@ -188,6 +189,11 @@ class KillAura : Module() {
     private var attackDelay = 0L
     var clicks = 0
 
+    var unb2 = false
+    var delay = 0
+    var started = false
+    var stage = 0
+
     override fun onDisable() {
         target = null
         timerAttack.reset()
@@ -203,6 +209,13 @@ class KillAura : Module() {
                     )
                 )
         }
+        if(autoBlockMode == "HypixelBlink"){
+            LiquidBounce.moduleManager[Blink::class.java]!!.state = false
+        }
+        started = false
+        unb2 = false
+        delay = 0
+        stage = 0
     }
 
     @EventTarget
@@ -272,6 +285,48 @@ class KillAura : Module() {
 
             if (autoBlockMode == "Vanilla" && canBlock) {
                 startBlocking(target!!,interactAutoBlockValue)
+            }
+        }
+    }
+
+    @EventTarget
+    fun onMotion(event: MotionEvent) {
+        if (target != null && event.eventState == EventState.PRE && canBlock && autoBlockMode == "HypixelBlink") {
+            val blink = LiquidBounce.moduleManager[Blink::class.java]!!
+            unb2 = false
+            delay = 0
+            started = true
+            stage += 1
+
+            if (stage == 1) {
+                blink.state = true
+                stopBlocking()
+            } else if (stage == 2) {
+                mc.thePlayer.swingItem()
+                mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.ATTACK))
+                mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.INTERACT))
+                blink.state = false
+                startBlocking(target!!, false)
+                stage = 0
+            }
+
+
+            if (started && target == null) {
+                if (canBlock) {
+                    unb2 = true
+                }
+                started = false
+                delay = 0
+                stage = 0
+            }
+
+            if (unb2) {
+                delay += 1
+                if (delay == 2) {
+                    PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging())
+                    unb2 = false
+                    delay = 0
+                }
             }
         }
     }
