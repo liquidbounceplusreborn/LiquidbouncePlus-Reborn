@@ -358,15 +358,16 @@ class Velocity : Module() {
             }
 
             "jumpreset" -> {
-                if (mc.thePlayer.hurtTime >= 8) {
+                while (mc.thePlayer.hurtTime >= 8) {
                     mc.gameSettings.keyBindJump.pressed = true
+                    break
                 }
-
-                if (mc.thePlayer.hurtTime >= 7 && !mc.gameSettings.keyBindForward.pressed) {
+                while (mc.thePlayer.hurtTime >= 7 && mc.gameSettings.keyBindForward.pressed == false) {
                     mc.gameSettings.keyBindForward.pressed = true
                     start = 1
+                    break
                 }
-                if (mc.thePlayer.hurtTime in 1..6) {
+                if (mc.thePlayer.hurtTime < 7 && mc.thePlayer.hurtTime > 0) {
                     mc.gameSettings.keyBindJump.pressed = false
                     if (start == 1) {
                         mc.gameSettings.keyBindForward.pressed = false
@@ -382,16 +383,16 @@ class Velocity : Module() {
                         break
                     }
                 }
-                while (mc.thePlayer.hurtTime >= 7 && !mc.gameSettings.keyBindForward.pressed) {
+                while (mc.thePlayer.hurtTime >= 7 && mc.gameSettings.keyBindForward.pressed == false) {
                     mc.gameSettings.keyBindForward.pressed = true
                     start2 = 1
                     break
                 }
-                if (mc.thePlayer.hurtTime in 1..6) {
+                if (mc.thePlayer.hurtTime < 7 && mc.thePlayer.hurtTime > 0) {
                     mc.gameSettings.keyBindSneak.pressed = false
                     if (start2 == 1) {
-                        mc.gameSettings.keyBindForward.pressed = false;
-                        start2 = 0;
+                        mc.gameSettings.keyBindForward.pressed = false
+                        start2 = 0
                     }
                 }
             }

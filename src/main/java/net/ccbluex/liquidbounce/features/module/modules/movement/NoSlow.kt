@@ -12,11 +12,14 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.Block
 import net.minecraft.block.material.Material
 import net.minecraft.item.*
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
+import net.minecraft.network.play.server.S2FPacketSetSlot
+import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
@@ -26,9 +29,7 @@ class NoSlow : Module() {
     private val sword = BoolValue("Sword", false)
     private val swordMode = ListValue(
         "SwordMode",
-        arrayOf("Vanilla", "AAC5", "SwitchItem", "ReverseEventSwitchItem", "OldIntave","Bug"),
-        "Vanilla"
-    ) { sword.get() }
+        arrayOf("Vanilla", "AAC5", "SwitchItem", "ReverseEventSwitchItem", "OldIntave","Bug","GrimPost"), "Vanilla") { sword.get() } //grimpost work on hyt?idk
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F, "x")
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F, "x")
 
@@ -44,7 +45,7 @@ class NoSlow : Module() {
     private val consume = BoolValue("Consume", false)
     private val consumeMode = ListValue(
         "ConsumeMode",
-        arrayOf("Vanilla", "SwitchItem", "ReverseEventSwitchItem", "OldIntave", "Bug","Intave"),
+        arrayOf("Vanilla", "SwitchItem", "ReverseEventSwitchItem", "OldIntave", "Bug","Intave","Grim"),
         "Vanilla"
     ) { consume.get() }
 
@@ -130,6 +131,20 @@ class NoSlow : Module() {
                                 mc.thePlayer.inventoryContainer.getSlot(
                                     mc.thePlayer.inventory.currentItem + 36
                                 ).stack
+                            )
+                        )
+                    }
+                }
+
+                "GrimPost" -> {
+                    mc.netHandler.addToSendQueue(C0FPacketConfirmTransaction())
+                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer!!.inventory.getCurrentItem(), 0.0F, 0.0F, 0.0F))
+                    if (event.eventState == EventState.PRE) {
+                        mc.netHandler.addToSendQueue(
+                            C07PacketPlayerDigging(
+                                C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                                BlockPos.ORIGIN,
+                                EnumFacing.DOWN
                             )
                         )
                     }
@@ -224,10 +239,28 @@ class NoSlow : Module() {
 
                 "Intave" -> {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange((mc.thePlayer.inventory.currentItem + 1) % 9))
-                    mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.DROP_ITEM,
-                        BlockPos(-1,-1,-1),EnumFacing.DOWN
-                    ))
+                    mc.netHandler.addToSendQueue(
+                        C07PacketPlayerDigging(
+                            C07PacketPlayerDigging.Action.DROP_ITEM,
+                            BlockPos(-1, -1, -1), EnumFacing.DOWN
+                        )
+                    )
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }
+
+                "Grim" -> {
+                    if (event.eventState == EventState.PRE) {
+                        mc.netHandler.addToSendQueue(
+                            C0EPacketClickWindow(
+                                0,
+                                36,
+                                0,
+                                2,
+                                ItemStack(Block.getBlockById(166)),
+                                0
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -291,6 +324,17 @@ class NoSlow : Module() {
                             ClientUtils.displayChatMessage("sent ${blinkPackets.size} packets.")
                         blinkPackets.clear()
                     }
+                }
+            }
+        }
+
+        if(consume.get() && consumeMode.get() == "Grim" && (mc.thePlayer.heldItem.item is ItemFood || mc.thePlayer.heldItem.item is ItemPotion || mc.thePlayer.heldItem.item is ItemBucketMilk) && mc.thePlayer.isUsingItem) {
+            run {
+                if (packet is S30PacketWindowItems) {
+                    event.cancelEvent()
+                }
+                if (packet is S2FPacketSetSlot) {
+                    event.cancelEvent()
                 }
             }
         }
