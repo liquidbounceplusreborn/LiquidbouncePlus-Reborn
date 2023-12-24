@@ -172,7 +172,7 @@ public class Title extends Module {
                 Fonts.fontSFUI40.drawString(name, 8, 9, -1, true);
                 break;
             }
-            case "Test9":{
+            case "Test9": {
                 String append5 = name.substring(0, 1);
                 String append6 = name.substring(1);
 
@@ -189,62 +189,62 @@ public class Title extends Module {
 
                 GameFontRenderer watermarkfont2 = Fonts.fontSFUI40;
 
-                RoundedUtil.drawRound(10 + x,5 + y,watermarkfont.getStringWidth(username2) +
+                RoundedUtil.drawRound(10 + x, 5 + y, watermarkfont.getStringWidth(username2) +
                         watermarkfont.getStringWidth(clientname) +
                         watermarkfont.getStringWidth(servername2) +
                         watermarkfont.getStringWidth(fps2) +
                         watermarkfont.getStringWidth(time2) +
                         (watermarkfont2.getStringWidth(" | ") * 4)
-                        + 2.5f,11.5f,0,new Color(0,0,0,90));
+                        + 2.5f, 11.5f, 0, new Color(0, 0, 0, 90));
 
-                RoundedUtil.drawRound(10+ x,4.3f+ y,watermarkfont.getStringWidth(username2) +
+                RoundedUtil.drawRound(10 + x, 4.3f + y, watermarkfont.getStringWidth(username2) +
                         watermarkfont.getStringWidth(clientname) +
                         watermarkfont.getStringWidth(servername2) +
                         watermarkfont.getStringWidth(fps2) +
                         watermarkfont.getStringWidth(time2) +
                         (watermarkfont2.getStringWidth(" | ") * 4)
-                        + 2.5f,0.7f,0,new Color(getColor().getRGB()));
+                        + 2.5f, 0.7f, 0, new Color(getColor().getRGB()));
 
-                watermarkfont.drawString(clientname,11f+ x,9f+ y, getColor().getRGB());
+                watermarkfont.drawString(clientname, 11f + x, 9f + y, getColor().getRGB());
 
-                watermarkfont2.drawString(" | ",11+ x + watermarkfont.getStringWidth(clientname),8f+ y,getColor().getRGB(),false);
+                watermarkfont2.drawString(" | ", 11 + x + watermarkfont.getStringWidth(clientname), 8f + y, getColor().getRGB(), false);
 
-                watermarkfont.drawString(username2,11f + x+watermarkfont.getStringWidth(clientname)
+                watermarkfont.drawString(username2, 11f + x + watermarkfont.getStringWidth(clientname)
                                 + watermarkfont2.getStringWidth(" | ")
-                        ,9f+ y, -1);
+                        , 9f + y, -1);
 
-                watermarkfont2.drawString(" | ",11 + x+ watermarkfont.getStringWidth(username2)+
-                        watermarkfont.getStringWidth(clientname)+
-                        watermarkfont2.getStringWidth(" | "),8f+ y,getColor().getRGB(),false);
+                watermarkfont2.drawString(" | ", 11 + x + watermarkfont.getStringWidth(username2) +
+                        watermarkfont.getStringWidth(clientname) +
+                        watermarkfont2.getStringWidth(" | "), 8f + y, getColor().getRGB(), false);
 
-                watermarkfont.drawString(servername2,11f+ x +watermarkfont.getStringWidth(clientname)
+                watermarkfont.drawString(servername2, 11f + x + watermarkfont.getStringWidth(clientname)
                                 + watermarkfont.getStringWidth(username2)
                                 + watermarkfont2.getStringWidth(" | ") * 2
-                        ,9f+ y, -1);
+                        , 9f + y, -1);
 
-                watermarkfont2.drawString(" | ",11+ x + watermarkfont.getStringWidth(username2)+
-                        watermarkfont.getStringWidth(clientname)+
+                watermarkfont2.drawString(" | ", 11 + x + watermarkfont.getStringWidth(username2) +
+                        watermarkfont.getStringWidth(clientname) +
                         watermarkfont.getStringWidth(servername2) +
-                        watermarkfont2.getStringWidth(" | ") * 2,8f+ y,getColor().getRGB(),false);
+                        watermarkfont2.getStringWidth(" | ") * 2, 8f + y, getColor().getRGB(), false);
 
-                watermarkfont.drawString(fps2,11f+ x +watermarkfont.getStringWidth(clientname)
+                watermarkfont.drawString(fps2, 11f + x + watermarkfont.getStringWidth(clientname)
                                 + watermarkfont.getStringWidth(servername2)
                                 + watermarkfont.getStringWidth(username2)
                                 + watermarkfont2.getStringWidth(" | ") * 3
-                        ,9f+ y, -1);
+                        , 9f + y, -1);
 
-                watermarkfont2.drawString(" | ",11+ x +  watermarkfont.getStringWidth(username2)+
+                watermarkfont2.drawString(" | ", 11 + x + watermarkfont.getStringWidth(username2) +
                         watermarkfont.getStringWidth(fps2) +
-                        watermarkfont.getStringWidth(clientname)+
+                        watermarkfont.getStringWidth(clientname) +
                         watermarkfont.getStringWidth(servername2) +
-                        watermarkfont2.getStringWidth(" | ") * 3,8f+ y,getColor().getRGB(),false);
+                        watermarkfont2.getStringWidth(" | ") * 3, 8f + y, getColor().getRGB(), false);
 
-                watermarkfont.drawString(time2,11f+ x +watermarkfont.getStringWidth(clientname)
+                watermarkfont.drawString(time2, 11f + x + watermarkfont.getStringWidth(clientname)
                                 + watermarkfont.getStringWidth(fps2)
                                 + watermarkfont.getStringWidth(servername2)
                                 + watermarkfont.getStringWidth(username2)
                                 + watermarkfont2.getStringWidth(" | ") * 4
-                        ,9f+ y, -1);
+                        , 9f + y, -1);
 
                 break;
             }

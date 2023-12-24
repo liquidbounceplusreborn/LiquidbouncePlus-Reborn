@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.canBeClicked
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isReplaceable
@@ -237,7 +238,7 @@ class Scaffold : Module() {
     private val noHitCheckValue = BoolValue("NoHitCheck", false) { rotationsValue.get() }
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","GodBridge1","GodBridge2","IDK","IDK2","Augustus"),
+        arrayOf("Normal", "Spin", "Custom", "Novoline", "Rise","MoveYaw","GodBridge1","GodBridge2","IDK","IDK2","Augustus","Test"),
         "Normal"
     ) { rotationsValue.get() }
     private val alwaysRotate = BoolValue("AlwaysRotate", false) { rotationsValue.get() && rotationModeValue.get() != "Normal" }
@@ -302,6 +303,8 @@ class Scaffold : Module() {
     private val speenPitchValue = FloatValue("Spin-Pitch", 90f, -90f, 90f, "°") {
         rotationModeValue.get().equals("spin", ignoreCase = true)
     }
+
+    private val staticPitch = BoolValue("StaticPitch",true)
 
     private val searchBlockMode = ListValue("SearchBlockMode", arrayOf("Area", "Center","Smart"), "Area")
     private val speedPotSlow = BoolValue("SpeedPotDetect", true)
@@ -746,6 +749,76 @@ class Scaffold : Module() {
             "Augustus" -> {
                 lockRotation = rots
             }
+
+            "Test" -> {
+                var yaw = mc.thePlayer.rotationYaw
+                var pitch = mc.thePlayer.rotationPitch
+
+                val pos: BlockPos? = blockData?.blockPos
+                val facing: EnumFacing? = blockData?.enumFacing
+                val playerPos = mc.thePlayer.position
+                when (facing) {
+                    EnumFacing.EAST -> if (yaw > 136.0f || yaw < 44.0f) {
+                        yaw = if (playerPos.z > pos?.z!!) {
+                            135.0f
+                        } else {
+                            45.0f
+                        }
+                    }
+
+                    EnumFacing.WEST -> if (yaw < -135.0f || yaw > -45.0f) {
+                        yaw = if (playerPos.z > pos?.z!!) {
+                            -135.0f
+                        } else {
+                            -45.0f
+                        }
+                    }
+
+                    EnumFacing.NORTH -> if (yaw < -45.0f || yaw > 45.0f) {
+                        yaw = if (playerPos.x > pos?.x!!) {
+                            45.0f
+                        } else {
+                            -45.0f
+                        }
+                    }
+
+                    EnumFacing.SOUTH -> if (yaw < 135.0f && yaw > -135.0f) {
+                        yaw = if (playerPos.x > pos?.x!!) {
+                            135.0f
+                        } else {
+                            -135.0f
+                        }
+                    }
+                }
+
+                if (!buildForward()) {
+                    yaw = mc.thePlayer.rotationYaw + 180
+                }
+
+                if(staticPitch.get()){
+                    pitch = 75f
+                }else
+                if (facing == EnumFacing.UP) {
+                    pitch = 90.0f
+                } else {
+                    var found = false
+                    var i = 75.0f
+                    while (i <= 85.0f) {
+                        val movingObjectPosition: MovingObjectPosition? = yaw?.let { raytrace(it, i) }
+                        if (movingObjectPosition != null && movingObjectPosition.sideHit == blockData?.enumFacing) {
+                            pitch = i
+                            found = true
+                            break
+                        }
+                        i += 0.5f
+                    }
+                    if (!found) {
+                        pitch = 80.0f
+                    }
+                }
+
+                lockRotation = pitch?.let { yaw?.let { it1 -> Rotation(it1, it) } }
+            }
         }
 
         if(grimMoment.get()){
@@ -801,6 +874,19 @@ class Scaffold : Module() {
         if (objectPosition != null) {
             mc.objectMouseOver = objectPosition
         }
+    }
+
+    fun raytrace(yaw: Float, pitch: Float): MovingObjectPosition {
+        val partialTicks = mc.timer.renderPartialTicks
+        val blockReachDistance = mc.playerController.blockReachDistance
+        val vec3 = mc.thePlayer.getPositionEyes(partialTicks)
+        val vec31 = getVectorForRotation(pitch, yaw)
+        val vec32 = vec3.addVector(
+            vec31.xCoord * blockReachDistance.toDouble(),
+            vec31.yCoord * blockReachDistance.toDouble(),
+            vec31.zCoord * blockReachDistance.toDouble()
+        )
+        return mc.theWorld.rayTraceBlocks(vec3, vec32, false, false, true)
     }
 
     private fun getAimBlockPos(): BlockPos? {
