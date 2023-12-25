@@ -345,19 +345,19 @@ class KillAura : Module() {
     }
 
     fun getRotationRange(entity:Entity):Boolean{
-        return reachMode == "1" && mc.thePlayer.getDistanceToEntityBox(entity) - 0.125 <= rotationRange.get() || reachMode == "2" && mc.thePlayer.eyes.distanceTo(
+        return reachMode == "Old" && mc.thePlayer.getDistanceToEntityBox(entity) - 0.125 <= rotationRange.get() || reachMode == "New" && mc.thePlayer.eyes.distanceTo(
             entity.eyes
         ) - 0.5 <= rotationRange.get()
     }
 
-    fun getSwingRange() : Boolean {4
-        return reachMode == "1" && mc.thePlayer.getDistanceToEntityBox(target!!) - 0.125 <= swingRange.get() || reachMode == "2" && mc.thePlayer.eyes.distanceTo(
+    fun getSwingRange() : Boolean {
+        return reachMode == "Old" && mc.thePlayer.getDistanceToEntityBox(target!!) - 0.125 <= swingRange.get() || reachMode == "New" && mc.thePlayer.eyes.distanceTo(
             target?.eyes
         ) - 0.5 <= swingRange.get()
     }
 
     fun getAttackRange():Boolean{
-        return reachMode == "1" && mc.thePlayer.getDistanceToEntityBox(target!!) - 0.125 <= range.get() || reachMode == "2" && mc.thePlayer.eyes.distanceTo(
+        return reachMode == "Old" && mc.thePlayer.getDistanceToEntityBox(target!!) - 0.125 <= range.get() || reachMode == "New" && mc.thePlayer.eyes.distanceTo(
             target?.eyes
         ) - 0.5 <= range.get()
     }

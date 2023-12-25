@@ -17,7 +17,7 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
-@ModuleInfo(name = "Indicators", description = "Indicators2", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "Indicators", description = "Indicators", category = ModuleCategory.RENDER)
 class Indicators : Module() {
 
     private val fireBall = BoolValue("FireBall", true)
