@@ -158,12 +158,15 @@ class KillAura : Module() {
     private val smartAttackValue = BoolValue("SmartAttack", false)
     private val noSpamClick = BoolValue("NoSpamClick", true)
     private val extraRandomCPS = ListValue("ExtraCPSRandomization", arrayOf("Off", "Simple", "RangeBase"), "Off")
+    private val cpsReduceValue = BoolValue("CPSReduceVelocity", false)
 
     private val autoBlockMode by ListValue("AutoBlock", arrayOf("None", "Vanilla","HypixelBlink"), "None")
     private val verusAutoBlockValue by BoolValue("VerusAutoBlock", false) { autoBlockMode == "Vanilla" }
     private val interactAutoBlockValue by BoolValue("InteractAutoBlock", false) { autoBlockMode == "Vanilla" }
     private val sendsShieldPacket by BoolValue("SendsShieldPacket(ViaAutoBlock)", false) { autoBlockMode == "Vanilla" }
     private val blockRate by IntegerValue("BlockRate", 100, 1,100) { autoBlockMode == "Vanilla" }
+
+    private val hitableCheck = BoolValue("HitableCheck", true)
 
     private val jitter = BoolValue("Jitter", false)
     private val jitterStrengthYaw = FloatValue("JitterStrengthYaw", 10.0f, 0.0f, 20.0f) { jitter.get() }
@@ -183,12 +186,14 @@ class KillAura : Module() {
 
     private var rotations: Rotation? = null
     var target: EntityLivingBase? = null
+    private val prevTargetEntities = mutableListOf<Int>()
     var blockingStatus = false
     private var verusBlocking = false
 
     private val timerAttack: MSTimer = MSTimer()
     private var attackDelay = 0L
     var clicks = 0
+    var hitable = false
 
     var unb2 = false
     var delay = 0
@@ -197,6 +202,7 @@ class KillAura : Module() {
 
     override fun onDisable() {
         target = null
+        prevTargetEntities.clear()
         timerAttack.reset()
         stopBlocking()
         if (verusBlocking && !blockingStatus && !mc.thePlayer.isBlocking) {
@@ -217,6 +223,7 @@ class KillAura : Module() {
         unb2 = false
         delay = 0
         stage = 0
+        hitable = false
     }
 
     @EventTarget
@@ -235,6 +242,7 @@ class KillAura : Module() {
         if (packet is C09PacketHeldItemChange)
             verusBlocking = false
     }
+
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -259,10 +267,19 @@ class KillAura : Module() {
                     )
                 )
         }
+
         updateTarget()
         if (target != null) {
 
-            if (isVisible(target!!.positionVector) || isVisible(getNearestPointBB(mc.thePlayer.getPositionEyes(1f), target!!.entityBoundingBox)) || throughWalls) {
+            hitable = if(hitableCheck.get())
+                target?.let { RotationUtils.isFaced(it, rotationRange.get().toDouble()) } == true
+            else true
+
+            if (cpsReduceValue.get() && mc.thePlayer.hurtTime > 8){
+                clicks += 4
+            }
+
+            if (isVisible(target!!.positionVector) || isVisible(getNearestPointBB(mc.thePlayer.getPositionEyes(1f), target!!.entityBoundingBox)) || mc.thePlayer.canEntityBeSeen(target) || throughWalls) {
 
                 if (rotate.get())
                     rotate(target!!)
@@ -270,7 +287,7 @@ class KillAura : Module() {
                 if (mc.thePlayer.isBlocking || blockingStatus)
                     stopBlocking()
 
-                if (mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get()) {
+                if (mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get() && hitable) {
                     if (noSpamClick.get()) {
                         if (clicks > 0) {
                             //LiquidBounce.eventManager.callEvent(AttackEvent(target))
@@ -295,45 +312,49 @@ class KillAura : Module() {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-            if (target != null && event.eventState == EventState.PRE && canBlock && autoBlockMode == "HypixelBlink" && mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get()) {
-                val blink = LiquidBounce.moduleManager[Blink::class.java]!!
-                unb2 = false
+
+        if (target != null && event.eventState == EventState.PRE && canBlock && autoBlockMode == "HypixelBlink" && mc.thePlayer.getDistanceToEntityBox(
+                target!!
+            ) <= range.get()
+        ) {
+            val blink = LiquidBounce.moduleManager[Blink::class.java]!!
+            unb2 = false
+            delay = 0
+            started = true
+            stage += 1
+
+            if (stage == 1) {
+                blink.state = true
+                stopBlocking()
+            } else if (stage == 2) {
+                mc.thePlayer.swingItem()
+                mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.ATTACK))
+                mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.INTERACT))
+                blink.state = false
+                startBlocking(target!!, false)
+                stage = 0
+            }
+
+
+            if (started && target == null) {
+                if (canBlock) {
+                    unb2 = true
+                }
+                started = false
                 delay = 0
-                started = true
-                stage += 1
+                stage = 0
+            }
 
-                if (stage == 1) {
-                    blink.state = true
-                    stopBlocking()
-                } else if (stage == 2) {
-                    mc.thePlayer.swingItem()
-                    mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.ATTACK))
-                    mc.netHandler.addToSendQueue(C02PacketUseEntity(target, Action.INTERACT))
-                    blink.state = false
-                    startBlocking(target!!, false)
-                    stage = 0
-                }
-
-
-                if (started && target == null) {
-                    if (canBlock) {
-                        unb2 = true
-                    }
-                    started = false
+            if (unb2) {
+                delay += 1
+                if (delay == 2) {
+                    PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging())
+                    unb2 = false
                     delay = 0
-                    stage = 0
-                }
-
-                if (unb2) {
-                    delay += 1
-                    if (delay == 2) {
-                        PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging())
-                        unb2 = false
-                        delay = 0
-                    }
                 }
             }
         }
+    }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {

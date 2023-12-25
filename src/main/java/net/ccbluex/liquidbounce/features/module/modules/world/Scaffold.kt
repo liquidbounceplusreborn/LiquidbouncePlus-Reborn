@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.get
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.getPlaceInfo
 import net.ccbluex.liquidbounce.utils.extensions.eyes
+import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.math.times
 import net.ccbluex.liquidbounce.utils.math.toRadiansD
@@ -304,7 +305,9 @@ class Scaffold : Module() {
         rotationModeValue.get().equals("spin", ignoreCase = true)
     }
 
-    private val staticPitch = BoolValue("StaticPitch",true)
+    private val staticPitch = BoolValue("StaticPitch",true) { rotationsValue.get() && rotationModeValue.get() == "Test" }
+
+    private val hitableCheckValue = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple") { rotationsValue.get() }
 
     private val searchBlockMode = ListValue("SearchBlockMode", arrayOf("Area", "Center","Smart"), "Area")
     private val speedPotSlow = BoolValue("SpeedPotDetect", true)
@@ -1306,6 +1309,23 @@ class Scaffold : Module() {
         if (targetPlace == null) {
             if (placeableDelay.get()) delayTimer.reset()
             return
+        }
+
+        if(rotationsValue.get()) {
+            val rayTraceInfo = mc.thePlayer.rayTraceWithServerSideRotation(mc.playerController.blockReachDistance)
+            when (hitableCheckValue.get().lowercase()) {
+                "simple" -> {
+                    if (rayTraceInfo != null && !rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)) {
+                        return
+                    }
+                }
+
+                "strict" -> {
+                    if (rayTraceInfo != null && (!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos) || rayTraceInfo.sideHit != targetPlace!!.enumFacing)) {
+                        return
+                    }
+                }
+            }
         }
 
         if (!towering() && (!delayTimer.hasTimePassed(delay) || smartDelay.get() && mc.rightClickDelayTimer > 0 || (sameYValue.get() || (autoJumpValue.get() || smartSpeedValue.get() && LiquidBounce.moduleManager.getModule(

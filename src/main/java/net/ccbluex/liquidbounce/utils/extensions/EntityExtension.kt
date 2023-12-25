@@ -61,4 +61,19 @@ fun Entity.getHorizontalFacing(yaw: Float): EnumFacing {
     return EnumFacing.getHorizontal(MathHelper.floor_double(yaw * 4.0f / 360.0f + 0.5) and 0x3)
 }
 
+fun Entity.rayTraceWithCustomRotation(blockReachDistance: Float, yaw: Float, pitch: Float): MovingObjectPosition? {
+    val vec3 = this.getPositionEyes(1f)
+    val vec31 = this.getVectorForRotation(pitch, yaw)
+    val vec32 = vec3.addVector(vec31.xCoord * blockReachDistance, vec31.yCoord * blockReachDistance, vec31.zCoord * blockReachDistance)
+    return this.worldObj.rayTraceBlocks(vec3, vec32, false, false, true)
+}
+
+fun Entity.rayTraceWithCustomRotation(blockReachDistance: Float, rotation: Rotation): MovingObjectPosition? {
+    return this.rayTraceWithCustomRotation(blockReachDistance, rotation.yaw, rotation.pitch)
+}
+
+fun Entity.rayTraceWithServerSideRotation(blockReachDistance: Float): MovingObjectPosition? {
+    return this.rayTraceWithCustomRotation(blockReachDistance, RotationUtils.serverRotation)
+}
+
 fun EntityLivingBase.getHealth1D(): Float = round((this.health + this.absorptionAmount)*10)/10
