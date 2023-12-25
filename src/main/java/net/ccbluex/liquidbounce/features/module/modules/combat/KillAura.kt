@@ -1,5 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import cc.paimonmc.viamcp.ViaMCP
+import cc.paimonmc.viamcp.protocols.ProtocolCollection
 import cc.paimonmc.viamcp.utils.AttackOrder
 import com.viaversion.viaversion.api.Via
 import com.viaversion.viaversion.api.protocol.packet.PacketWrapper
@@ -73,14 +75,22 @@ class KillAura : Module() {
             attackDelay = TimerUtils.randomClickDelay(this.get(), maxCPS.get())
         }
     }
-    private val rotationRange : FloatValue = object : FloatValue("Rotation-Range", 4.0f, 2.0f, 10.0f){
+
+    private val reachMode by ListValue("CheckTargetDistance", arrayOf("Old", "New"), "New")
+
+    private val rotationRange : FloatValue = object : FloatValue("Rotation-Range", 7.0f, 2.0f, 10.0f){
         override fun onChanged(oldValue: Float, newValue: Float) {
             if (newValue < range.get()) set(range.get())
         }
     }
-    private val range : FloatValue = object : FloatValue("Attack-Range", 4.0f, 2.0f, 10.0f){
+    private val swingRange : FloatValue = object : FloatValue("Swing-Range", 6.0f, 2.0f, 10.0f){
         override fun onChanged(oldValue: Float, newValue: Float) {
             if (newValue > rotationRange.get()) set(rotationRange.get())
+        }
+    }
+    private val range : FloatValue = object : FloatValue("Attack-Range", 4.0f, 2.0f, 10.0f){
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            if (newValue > swingRange.get()) set(swingRange.get())
         }
     }
     private val throughWalls by BoolValue("ThroughWalls", true)
@@ -271,15 +281,21 @@ class KillAura : Module() {
         updateTarget()
         if (target != null) {
 
-            hitable = if(hitableCheck.get())
+            hitable = if (hitableCheck.get())
                 target?.let { RotationUtils.isFaced(it, rotationRange.get().toDouble()) } == true
             else true
 
-            if (cpsReduceValue.get() && mc.thePlayer.hurtTime > 8){
+            if (cpsReduceValue.get() && mc.thePlayer.hurtTime > 8) {
                 clicks += 4
             }
 
-            if (isVisible(target!!.positionVector) || isVisible(getNearestPointBB(mc.thePlayer.getPositionEyes(1f), target!!.entityBoundingBox)) || mc.thePlayer.canEntityBeSeen(target) || throughWalls) {
+            if (isVisible(target!!.positionVector) || isVisible(
+                    getNearestPointBB(
+                        mc.thePlayer.getPositionEyes(1f),
+                        target!!.entityBoundingBox
+                    )
+                ) || mc.thePlayer.canEntityBeSeen(target) || throughWalls
+            ) {
 
                 if (rotate.get())
                     rotate(target!!)
@@ -287,27 +303,63 @@ class KillAura : Module() {
                 if (mc.thePlayer.isBlocking || blockingStatus)
                     stopBlocking()
 
-                if (mc.thePlayer.getDistanceToEntityBox(target!!) <= range.get() && hitable) {
-                    if (noSpamClick.get()) {
-                        if (clicks > 0) {
-                            //LiquidBounce.eventManager.callEvent(AttackEvent(target))
-                            AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
-                            clicks = 0
-                        }
-                    } else {
-                        while (clicks > 0) {
-                            //LiquidBounce.eventManager.callEvent(AttackEvent(target))
-                            AttackOrder.sendFixedAttack(mc.thePlayer, target!!)
-                            clicks--
-                        }
-                    }
-                }
+                            if (noSpamClick.get()) {
+                                if (clicks > 0) {
+                                    //LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                                    if (ViaMCP.getInstance().version <= ProtocolCollection.getProtocolById(AttackOrder.VER_1_8_ID).version && getSwingRange()) {
+                                        mc.thePlayer.swingItem()
+                                    }
+                                    if (getAttackRange() && hitable) {
+                                        mc.playerController.attackEntity(mc.thePlayer, target)
+                                    }
+                                    if (ViaMCP.getInstance().version > ProtocolCollection.getProtocolById(
+                                            AttackOrder.VER_1_8_ID
+                                        ).version
+                                        && getSwingRange()
+                                    ) {
+                                        mc.thePlayer.swingItem()
+                                    }
+                                    clicks = 0
+                                }
+                            }else {
+                                while (clicks > 0) {
+                                    //LiquidBounce.eventManager.callEvent(AttackEvent(target))
+                                    if (ViaMCP.getInstance().version <= ProtocolCollection.getProtocolById(AttackOrder.VER_1_8_ID).version && getSwingRange()) {
+                                        mc.thePlayer.swingItem()
+                                    }
+                                    if (getAttackRange() && hitable) {
+                                        mc.playerController.attackEntity(mc.thePlayer, target)
+                                    }
+                                    if (ViaMCP.getInstance().version > ProtocolCollection.getProtocolById(AttackOrder.VER_1_8_ID).version && getSwingRange()) {
+                                        mc.thePlayer.swingItem()
+                                    }
+                                    clicks--
+                                }
+                            }
 
                 if (autoBlockMode == "Vanilla" && canBlock) {
                     startBlocking(target!!, interactAutoBlockValue)
                 }
             }
         }
+    }
+
+    fun getRotationRange(entity:Entity):Boolean{
+        return reachMode == "1" && mc.thePlayer.getDistanceToEntityBox(entity) - 0.125 <= rotationRange.get() || reachMode == "2" && mc.thePlayer.eyes.distanceTo(
+            entity.eyes
+        ) - 0.5 <= rotationRange.get()
+    }
+
+    fun getSwingRange() : Boolean {4
+        return reachMode == "1" && mc.thePlayer.getDistanceToEntityBox(target!!) - 0.125 <= swingRange.get() || reachMode == "2" && mc.thePlayer.eyes.distanceTo(
+            target?.eyes
+        ) - 0.5 <= swingRange.get()
+    }
+
+    fun getAttackRange():Boolean{
+        return reachMode == "1" && mc.thePlayer.getDistanceToEntityBox(target!!) - 0.125 <= range.get() || reachMode == "2" && mc.thePlayer.eyes.distanceTo(
+            target?.eyes
+        ) - 0.5 <= range.get()
     }
 
     @EventTarget
@@ -505,7 +557,7 @@ class KillAura : Module() {
 
             val distance = mc.thePlayer.getDistanceToEntityBox(entity)
 
-            if (distance <= rotationRange.get() && entity.hurtTime <= hurtTime)
+            if (getRotationRange(entity) && entity.hurtTime <= hurtTime)
                 targets.add(entity)
         }
 
