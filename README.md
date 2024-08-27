@@ -1,7 +1,7 @@
 # LiquidBounce+ Reborn(Unofficial)
 
 # DEAD
-shitty pasted lb lmfao
+new open src client soon
 
 A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
 ### LiquidBounce+ Reborn contact info
