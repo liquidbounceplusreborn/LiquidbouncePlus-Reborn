@@ -1,7 +1,8 @@
 # LiquidBounce+ Reborn(Unofficial)
 
 # DEAD
-new open src client soon
+new open src client
+https://github.com/randomguy3725/MoonLight-public
 
 A free mixin-based injection hacked-client for Minecraft 1.8.9 using Minecraft Forge.
 ### LiquidBounce+ Reborn contact info
